@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{25DEBDED-4F9C-47F5-BC3F-4D5ED7D42090}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wikiled.Instagram.Api", "Wikiled.Instagram.Api\Wikiled.Instagram.Api.csproj", "{2A588963-CEBE-47EC-BFBB-2F3D405E4C80}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wikiled.Instagram.Api", "src\Wikiled.Instagram.Api\Wikiled.Instagram.Api.csproj", "{2A588963-CEBE-47EC-BFBB-2F3D405E4C80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples", "Examples\Examples.csproj", "{ACEC2BFB-274A-4250-B82C-96812C22A132}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{5E33EE0C-BF45-4CC7-A1A0-2C70CACBD2D0}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{A01F2D1F-3963-4F4B-BA1D-BD1A7048F8CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "samples\Examples\Examples.csproj", "{ACEC2BFB-274A-4250-B82C-96812C22A132}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wikiled.Instagram.App", "Wikiled.Instagram.App\Wikiled.Instagram.App.csproj", "{59EC818A-F4D7-4CDB-B7A0-781279F9A766}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,13 +54,29 @@ Global
 		{ACEC2BFB-274A-4250-B82C-96812C22A132}.Release|x64.Build.0 = Release|Any CPU
 		{ACEC2BFB-274A-4250-B82C-96812C22A132}.Release|x86.ActiveCfg = Release|Any CPU
 		{ACEC2BFB-274A-4250-B82C-96812C22A132}.Release|x86.Build.0 = Release|Any CPU
+		{59EC818A-F4D7-4CDB-B7A0-781279F9A766}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59EC818A-F4D7-4CDB-B7A0-781279F9A766}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59EC818A-F4D7-4CDB-B7A0-781279F9A766}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{59EC818A-F4D7-4CDB-B7A0-781279F9A766}.Debug|ARM.Build.0 = Debug|Any CPU
+		{59EC818A-F4D7-4CDB-B7A0-781279F9A766}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{59EC818A-F4D7-4CDB-B7A0-781279F9A766}.Debug|x64.Build.0 = Debug|Any CPU
+		{59EC818A-F4D7-4CDB-B7A0-781279F9A766}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{59EC818A-F4D7-4CDB-B7A0-781279F9A766}.Debug|x86.Build.0 = Debug|Any CPU
+		{59EC818A-F4D7-4CDB-B7A0-781279F9A766}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59EC818A-F4D7-4CDB-B7A0-781279F9A766}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59EC818A-F4D7-4CDB-B7A0-781279F9A766}.Release|ARM.ActiveCfg = Release|Any CPU
+		{59EC818A-F4D7-4CDB-B7A0-781279F9A766}.Release|ARM.Build.0 = Release|Any CPU
+		{59EC818A-F4D7-4CDB-B7A0-781279F9A766}.Release|x64.ActiveCfg = Release|Any CPU
+		{59EC818A-F4D7-4CDB-B7A0-781279F9A766}.Release|x64.Build.0 = Release|Any CPU
+		{59EC818A-F4D7-4CDB-B7A0-781279F9A766}.Release|x86.ActiveCfg = Release|Any CPU
+		{59EC818A-F4D7-4CDB-B7A0-781279F9A766}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{2A588963-CEBE-47EC-BFBB-2F3D405E4C80} = {25DEBDED-4F9C-47F5-BC3F-4D5ED7D42090}
-		{ACEC2BFB-274A-4250-B82C-96812C22A132} = {5E33EE0C-BF45-4CC7-A1A0-2C70CACBD2D0}
+		{ACEC2BFB-274A-4250-B82C-96812C22A132} = {A01F2D1F-3963-4F4B-BA1D-BD1A7048F8CE}
+		{59EC818A-F4D7-4CDB-B7A0-781279F9A766} = {A01F2D1F-3963-4F4B-BA1D-BD1A7048F8CE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {47999AC0-6BDC-43EB-BB19-674E8470ECDD}
