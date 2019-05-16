@@ -1,10 +1,6 @@
-﻿using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Stories
 {
     internal class InstaStorySliderItemConverter : IObjectConverter<InstaStorySliderItem, InstaStorySliderItemResponse>
     {
@@ -12,20 +8,26 @@ namespace InstagramApiSharp.Converters
 
         public InstaStorySliderItem Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
-            var Slider = new InstaStorySliderItem
+            if (SourceObject == null)
             {
-                Height = SourceObject.Height,
-                IsHidden = SourceObject.IsHidden,
-                IsPinned = SourceObject.IsPinned,
-                Rotation = SourceObject.Rotation,
-                Width = SourceObject.Width,
-                X = SourceObject.X,
-                Y = SourceObject.Y,
-                Z = SourceObject.Z
-            };
+                throw new ArgumentNullException("Source object");
+            }
+
+            var Slider = new InstaStorySliderItem
+                         {
+                             Height = SourceObject.Height,
+                             IsHidden = SourceObject.IsHidden,
+                             IsPinned = SourceObject.IsPinned,
+                             Rotation = SourceObject.Rotation,
+                             Width = SourceObject.Width,
+                             X = SourceObject.X,
+                             Y = SourceObject.Y,
+                             Z = SourceObject.Z
+                         };
             if (SourceObject.SliderSticker != null)
+            {
                 Slider.SliderSticker = ConvertersFabric.Instance.GetStorySliderStickerItemConverter(SourceObject.SliderSticker).Convert();
+            }
 
             return Slider;
         }

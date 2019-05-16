@@ -1,15 +1,17 @@
 ﻿using System.Threading.Tasks;
-using InstagramApiSharp.Classes;
-using InstagramApiSharp.Classes.Models;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.Models.Comment;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.Other;
+using Wikiled.Instagram.Api.Classes.Models.User;
 
-namespace InstagramApiSharp.API.Processors
+namespace Wikiled.Instagram.Api.API.Processors
 {
     /// <summary>
     ///     Comments api functions.
     /// </summary>
     public interface ICommentProcessor
     {
-
         /// <summary>
         ///     Block an user from commenting to medias
         /// </summary>
@@ -67,6 +69,7 @@ namespace InstagramApiSharp.API.Processors
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
         Task<IResult<InstaCommentList>>
             GetMediaCommentsAsync(string mediaId, PaginationParameters paginationParameters);
+
         /// <summary>
         ///     Get media inline comments
         /// </summary>
@@ -74,7 +77,8 @@ namespace InstagramApiSharp.API.Processors
         /// <param name="targetCommentId">Target comment id</param>
         /// <param name="paginationParameters">Maximum amount of pages to load and start id</param>
         Task<IResult<InstaInlineCommentList>>
-           GetMediaRepliesCommentsAsync(string mediaId, string targetCommentId, PaginationParameters paginationParameters);
+            GetMediaRepliesCommentsAsync(string mediaId, string targetCommentId, PaginationParameters paginationParameters);
+
         /// <summary>
         ///     Like media comment
         /// </summary>
@@ -97,6 +101,13 @@ namespace InstagramApiSharp.API.Processors
         Task<IResult<bool>> ReportCommentAsync(string mediaId, string commentId);
 
         /// <summary>
+        ///     Translate comment or captions
+        ///     <para>Note: use this function to translate captions too! (i.e: <see cref="InstaCaption.Pk" />)</para>
+        /// </summary>
+        /// <param name="commentIds">Comment id(s) (Array of <see cref="InstaComment.Pk" />)</param>
+        Task<IResult<InstaTranslateList>> TranslateCommentAsync(params long[] commentIds);
+
+        /// <summary>
         ///     Unblock an user from commenting to medias
         /// </summary>
         /// <param name="userIds">User ids (pk)</param>
@@ -107,12 +118,5 @@ namespace InstagramApiSharp.API.Processors
         /// </summary>
         /// <param name="commentId">Comment id</param>
         Task<IResult<bool>> UnlikeCommentAsync(string commentId);
-
-        /// <summary>
-        ///     Translate comment or captions
-        ///     <para>Note: use this function to translate captions too! (i.e: <see cref="InstaCaption.Pk"/>)</para>
-        /// </summary>
-        /// <param name="commentIds">Comment id(s) (Array of <see cref="InstaComment.Pk"/>)</param>
-        Task<IResult<InstaTranslateList>> TranslateCommentAsync(params long[] commentIds);
     }
 }

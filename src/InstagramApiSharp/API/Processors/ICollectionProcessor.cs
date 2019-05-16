@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
-using InstagramApiSharp.Classes;
-using InstagramApiSharp.Classes.Models;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.Models.Collection;
+using Wikiled.Instagram.Api.Classes.Models.Media;
 
-namespace InstagramApiSharp.API.Processors
+namespace Wikiled.Instagram.Api.API.Processors
 {
     /// <summary>
     ///     Collection api functions.
@@ -38,21 +39,10 @@ namespace InstagramApiSharp.API.Processors
         /// <param name="collectionId">Collection ID to edit</param>
         /// <param name="name">New name for giving collection (set null if you don't want to change it)</param>
         /// <param name="photoCoverMediaId">
-        ///     New photo cover media Id (get it from <see cref="InstaMedia.InstaIdentifier"/>) => Optional
+        ///     New photo cover media Id (get it from <see cref="InstaMedia.InstaIdentifier" />) => Optional
         ///     <para>Important note: media id must be exists in giving collection!</para>
         /// </param>
         Task<IResult<InstaCollectionItem>> EditCollectionAsync(long collectionId, string name, string photoCoverMediaId = null);
-
-        /// <summary>
-        ///     Get your collection for given collection id
-        /// </summary>
-        /// <param name="collectionId">Collection ID</param>
-        /// <param name="paginationParameters">Pagination parameters: next max id and max amount of pages to load</param>
-        /// <returns>
-        ///     <see cref="T:InstagramApiSharp.Classes.Models.InstaCollectionItem" />
-        /// </returns>
-        Task<IResult<InstaCollectionItem>> GetSingleCollectionAsync(long collectionId,
-            PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Get your collections
@@ -62,5 +52,17 @@ namespace InstagramApiSharp.API.Processors
         ///     <see cref="T:InstagramApiSharp.Classes.Models.InstaCollections" />
         /// </returns>
         Task<IResult<InstaCollections>> GetCollectionsAsync(PaginationParameters paginationParameters);
+
+        /// <summary>
+        ///     Get your collection for given collection id
+        /// </summary>
+        /// <param name="collectionId">Collection ID</param>
+        /// <param name="paginationParameters">Pagination parameters: next max id and max amount of pages to load</param>
+        /// <returns>
+        ///     <see cref="T:InstagramApiSharp.Classes.Models.InstaCollectionItem" />
+        /// </returns>
+        Task<IResult<InstaCollectionItem>> GetSingleCollectionAsync(
+            long collectionId,
+            PaginationParameters paginationParameters);
     }
 }

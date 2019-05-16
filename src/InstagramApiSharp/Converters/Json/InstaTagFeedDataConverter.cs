@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using InstagramApiSharp.Classes.ResponseWrappers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace InstagramApiSharp.Converters.Json
+namespace Wikiled.Instagram.Api.Converters.Json
 {
     internal class InstaTagFeedDataConverter : JsonConverter
     {
@@ -14,7 +13,8 @@ namespace InstagramApiSharp.Converters.Json
             return objectType == typeof(InstaTagFeedResponse);
         }
 
-        public override object ReadJson(JsonReader reader,
+        public override object ReadJson(
+            JsonReader reader,
             Type objectType,
             object existingValue,
             JsonSerializer serializer)
@@ -32,18 +32,32 @@ namespace InstagramApiSharp.Converters.Json
             List<InstaMediaItemResponse> GetMedias(JToken token)
             {
                 return token.Select(item => item?.ToObject<InstaMediaItemResponse>())
-                    .Where(media => !string.IsNullOrEmpty(media?.Pk)).ToList();
+                            .Where(media => !string.IsNullOrEmpty(media?.Pk)).ToList();
             }
 
             if (items != null)
+            {
                 feed.Medias.AddRange(GetMedias(items));
+            }
+
             if (rankedItems != null)
+            {
                 feed.RankedItems.AddRange(GetMedias(rankedItems));
-            if (storiesTray == null) return feed;
+            }
+
+            if (storiesTray == null)
+            {
+                return feed;
+            }
+
             foreach (var storyItem in storiesTray)
             {
                 var storyTrayIem = storyItem.ToObject<InstaStoryResponse>();
-                if (story == null) continue;
+                if (story == null)
+                {
+                    continue;
+                }
+
                 feed.Stories.Add(storyTrayIem);
             }
 

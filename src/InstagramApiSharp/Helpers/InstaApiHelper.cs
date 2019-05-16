@@ -1,4 +1,4 @@
-﻿namespace InstagramApiSharp.Helpers
+﻿namespace Wikiled.Instagram.Api.Helpers
 {
     public class InstaApiHelper
     {

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
 
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Feeds
 {
     internal class InstaTagFeedConverter : IObjectConverter<InstaTagFeed, InstaTagFeedResponse>
     {
@@ -12,7 +10,10 @@ namespace InstagramApiSharp.Converters
         public InstaTagFeed Convert()
         {
             if (SourceObject?.Medias == null)
+            {
                 throw new ArgumentNullException("InstaFeedResponse or its media list");
+            }
+
             var feed = new InstaTagFeed();
 
             List<InstaMedia> ConvertMedia(List<InstaMediaItemResponse> mediasResponse)
@@ -20,9 +21,13 @@ namespace InstagramApiSharp.Converters
                 var medias = new List<InstaMedia>();
                 foreach (var instaUserFeedItemResponse in mediasResponse)
                 {
-                    if (instaUserFeedItemResponse?.Type != 0) continue;
+                    if (instaUserFeedItemResponse?.Type != 0)
+                    {
+                        continue;
+                    }
+
                     var feedItem = ConvertersFabric.Instance.GetSingleMediaConverter(instaUserFeedItemResponse)
-                        .Convert();
+                                                   .Convert();
                     medias.Add(feedItem);
                 }
 

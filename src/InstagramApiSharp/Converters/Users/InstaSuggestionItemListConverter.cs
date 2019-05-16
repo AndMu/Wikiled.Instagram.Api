@@ -1,18 +1,6 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System;
 
-using System;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-
-
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Users
 {
     internal class InstaSuggestionItemListConverter : IObjectConverter<InstaSuggestionItemList, InstaSuggestionItemListResponse>
     {
@@ -20,7 +8,11 @@ namespace InstagramApiSharp.Converters
 
         public InstaSuggestionItemList Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
+            if (SourceObject == null)
+            {
+                throw new ArgumentNullException("Source object");
+            }
+
             var suggest = new InstaSuggestionItemList();
 
             if (SourceObject != null && SourceObject?.Count > 0)
@@ -32,9 +24,12 @@ namespace InstagramApiSharp.Converters
                         var convertedItem = ConvertersFabric.Instance.GetSuggestionItemConverter(item).Convert();
                         suggest.Add(convertedItem);
                     }
-                    catch { }
+                    catch
+                    {
+                    }
                 }
             }
+
             return suggest;
         }
     }

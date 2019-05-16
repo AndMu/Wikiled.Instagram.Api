@@ -1,18 +1,6 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System;
 
-using System;
-using System.Linq;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-
-namespace InstagramApiSharp.Converters.Users
+namespace Wikiled.Instagram.Api.Converters.Users
 {
     internal class InstaUserChainingListConverter : IObjectConverter<InstaUserChainingList, InstaUserChainingContainerResponse>
     {
@@ -20,12 +8,16 @@ namespace InstagramApiSharp.Converters.Users
 
         public InstaUserChainingList Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
-            var users = new InstaUserChainingList
+            if (SourceObject == null)
             {
-                Status = SourceObject.Status,
-                IsBackup = SourceObject.IsBackup
-            };
+                throw new ArgumentNullException("Source object");
+            }
+
+            var users = new InstaUserChainingList
+                        {
+                            Status = SourceObject.Status,
+                            IsBackup = SourceObject.IsBackup
+                        };
             if (SourceObject.Users != null && SourceObject.Users.Any())
             {
                 foreach (var u in SourceObject.Users)
@@ -34,9 +26,12 @@ namespace InstagramApiSharp.Converters.Users
                     {
                         users.Add(ConvertersFabric.Instance.GetSingleUserChainingConverter(u).Convert());
                     }
-                    catch { }
+                    catch
+                    {
+                    }
                 }
             }
+
             return users;
         }
     }

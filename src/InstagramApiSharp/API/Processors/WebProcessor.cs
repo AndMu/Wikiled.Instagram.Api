@@ -1,41 +1,43 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
-
-using InstagramApiSharp.Classes;
-using InstagramApiSharp.Classes.Android.DeviceInfo;
-using InstagramApiSharp.Logger;
-using System;
-using Newtonsoft.Json;
-using System.Threading.Tasks;
-using InstagramApiSharp.Helpers;
-using System.Net.Http;
-using System.Net;
+﻿using System;
 using System.Linq;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Converters;
-using InstagramApiSharp.Classes.ResponseWrappers.Web;
-using InstagramApiSharp.Enums;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.Android.DeviceInfo;
+using Wikiled.Instagram.Api.Classes.Models.Web;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Web;
+using Wikiled.Instagram.Api.Converters;
+using Wikiled.Instagram.Api.Enums;
+using Wikiled.Instagram.Api.Helpers;
+using Wikiled.Instagram.Api.Logger;
 
-namespace InstagramApiSharp.API.Processors
+namespace Wikiled.Instagram.Api.API.Processors
 {
     internal class WebProcessor : IWebProcessor
     {
         private readonly AndroidDevice _deviceInfo;
+
         private readonly HttpHelper _httpHelper;
+
         private readonly IHttpRequestProcessor _httpRequestProcessor;
+
         private readonly InstaApi _instaApi;
+
         private readonly IInstaLogger _logger;
+
         private readonly UserSessionData _user;
+
         private readonly UserAuthValidate _userAuthValidate;
 
-        public WebProcessor(AndroidDevice deviceInfo, UserSessionData user, IHttpRequestProcessor httpRequestProcessor,
-            IInstaLogger logger, UserAuthValidate userAuthValidate, InstaApi instaApi,
+        public WebProcessor(
+            AndroidDevice deviceInfo,
+            UserSessionData user,
+            IHttpRequestProcessor httpRequestProcessor,
+            IInstaLogger logger,
+            UserAuthValidate userAuthValidate,
+            InstaApi instaApi,
             HttpHelper httpHelper)
         {
             _deviceInfo = deviceInfo;
@@ -63,11 +65,15 @@ namespace InstagramApiSharp.API.Processors
                 var html = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.Fail($"Error! Status code: {response.StatusCode}", default(InstaWebAccountInfo));
+                }
 
                 var json = html.GetJson();
                 if (json.IsEmpty())
-                    return Result.Fail($"Json response isn't available.", default(InstaWebAccountInfo));
+                {
+                    return Result.Fail("Json response isn't available.", default(InstaWebAccountInfo));
+                }
 
                 var obj = JsonConvert.DeserializeObject<InstaWebContainerResponse>(json);
 
@@ -75,9 +81,12 @@ namespace InstagramApiSharp.API.Processors
                 {
                     var first = obj.Entry.SettingsPages.FirstOrDefault();
                     if (first != null)
+                    {
                         return Result.Success(ConvertersFabric.Instance.GetWebAccountInfoConverter(first).Convert());
+                    }
                 }
-                return Result.Fail($"Date joined isn't available.", default(InstaWebAccountInfo));
+
+                return Result.Fail("Date joined isn't available.", default(InstaWebAccountInfo));
             }
             catch (HttpRequestException httpException)
             {
@@ -102,23 +111,29 @@ namespace InstagramApiSharp.API.Processors
             try
             {
                 if (paginationParameters == null)
+                {
                     paginationParameters = PaginationParameters.MaxPagesToLoad(1);
+                }
 
                 InstaWebTextData Convert(InstaWebSettingsPageResponse settingsPageResponse)
                 {
                     return ConvertersFabric.Instance.GetWebTextDataListConverter(settingsPageResponse).Convert();
                 }
+
                 Uri CreateUri(string cursor = null)
                 {
                     return WebUriCreator.GetCurrentFollowRequestsUri(cursor);
                 }
+
                 var request = await GetRequest(CreateUri(paginationParameters?.NextMaxId));
                 if (!request.Succeeded)
                 {
                     if (request.Value != null)
+                    {
                         return Result.Fail(request.Info, Convert(request.Value));
-                    else
-                        return Result.Fail(request.Info, textDataList);
+                    }
+
+                    return Result.Fail(request.Info, textDataList);
                 }
 
                 var response = request.Value;
@@ -126,19 +141,25 @@ namespace InstagramApiSharp.API.Processors
                 paginationParameters.NextMaxId = response.Data.Cursor;
 
                 while (!string.IsNullOrEmpty(paginationParameters.NextMaxId)
-                     && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
+                       && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var nextRequest = await GetRequest(CreateUri(paginationParameters?.NextMaxId));
                     if (!nextRequest.Succeeded)
+                    {
                         return Result.Fail(nextRequest.Info, Convert(response));
+                    }
+
                     var nextResponse = nextRequest.Value;
 
                     if (nextResponse.Data != null)
+                    {
                         response.Data.Data.AddRange(nextResponse.Data.Data);
+                    }
 
                     response.Data.Cursor = paginationParameters.NextMaxId = nextResponse.Data?.Cursor;
                     paginationParameters.PagesLoaded++;
                 }
+
                 return Result.Success(Convert(response));
             }
             catch (HttpRequestException httpException)
@@ -170,6 +191,7 @@ namespace InstagramApiSharp.API.Processors
         {
             return await GetFormerAsync(InstaWebType.FormerBioTexts, paginationParameters);
         }
+
         /// <summary>
         ///     Get former emails
         /// </summary>
@@ -205,7 +227,7 @@ namespace InstagramApiSharp.API.Processors
         {
             return await GetFormerAsync(InstaWebType.FormerUsernames, paginationParameters);
         }
-        
+
         #endregion public part
 
         #region private part
@@ -217,15 +239,18 @@ namespace InstagramApiSharp.API.Processors
             try
             {
                 if (paginationParameters == null)
+                {
                     paginationParameters = PaginationParameters.MaxPagesToLoad(1);
+                }
 
                 InstaWebData Convert(InstaWebSettingsPageResponse settingsPageResponse)
                 {
                     return ConvertersFabric.Instance.GetWebDataConverter(settingsPageResponse).Convert();
                 }
+
                 Uri CreateUri(string cursor = null)
                 {
-                    switch(type)
+                    switch (type)
                     {
                         case InstaWebType.FormerBioTexts:
                             return WebUriCreator.GetFormerBiographyTextsUri(cursor);
@@ -243,13 +268,16 @@ namespace InstagramApiSharp.API.Processors
                             return WebUriCreator.GetFormerBiographyLinksUri(cursor);
                     }
                 }
+
                 var request = await GetRequest(CreateUri(paginationParameters?.NextMaxId));
                 if (!request.Succeeded)
                 {
                     if (request.Value != null)
+                    {
                         return Result.Fail(request.Info, Convert(request.Value));
-                    else
-                        return Result.Fail(request.Info, webData);
+                    }
+
+                    return Result.Fail(request.Info, webData);
                 }
 
                 var response = request.Value;
@@ -257,19 +285,25 @@ namespace InstagramApiSharp.API.Processors
                 paginationParameters.NextMaxId = response.Data.Cursor;
 
                 while (!string.IsNullOrEmpty(paginationParameters.NextMaxId)
-                     && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
+                       && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var nextRequest = await GetRequest(CreateUri(paginationParameters?.NextMaxId));
                     if (!nextRequest.Succeeded)
+                    {
                         return Result.Fail(nextRequest.Info, Convert(response));
+                    }
+
                     var nextResponse = nextRequest.Value;
 
                     if (nextResponse.Data != null)
+                    {
                         response.Data.Data.AddRange(nextResponse.Data.Data);
+                    }
 
                     response.Data.Cursor = paginationParameters.NextMaxId = nextResponse.Data?.Cursor;
                     paginationParameters.PagesLoaded++;
                 }
+
                 return Result.Success(Convert(response));
             }
             catch (HttpRequestException httpException)
@@ -296,26 +330,33 @@ namespace InstagramApiSharp.API.Processors
                 var html = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.Fail($"Error! Status code: {response.StatusCode}", default(InstaWebSettingsPageResponse));
+                }
 
                 if (instaUri.ToString().ToLower().Contains("a=1&cursor="))
-                    return Result.Success(JsonConvert.DeserializeObject<InstaWebSettingsPageResponse>(html));
-                else
                 {
-                    var json = html.GetJson();
-                    if (json.IsEmpty())
-                        return Result.Fail($"Json response isn't available.", default(InstaWebSettingsPageResponse));
-
-                    var obj = JsonConvert.DeserializeObject<InstaWebContainerResponse>(json);
-
-                    if (obj.Entry?.SettingsPages != null)
-                    {
-                        var first = obj.Entry.SettingsPages.FirstOrDefault();
-                        if (first != null)
-                            return Result.Success(first);
-                    }
-                    return Result.Fail($"Data isn't available.", default(InstaWebSettingsPageResponse));
+                    return Result.Success(JsonConvert.DeserializeObject<InstaWebSettingsPageResponse>(html));
                 }
+
+                var json = html.GetJson();
+                if (json.IsEmpty())
+                {
+                    return Result.Fail("Json response isn't available.", default(InstaWebSettingsPageResponse));
+                }
+
+                var obj = JsonConvert.DeserializeObject<InstaWebContainerResponse>(json);
+
+                if (obj.Entry?.SettingsPages != null)
+                {
+                    var first = obj.Entry.SettingsPages.FirstOrDefault();
+                    if (first != null)
+                    {
+                        return Result.Success(first);
+                    }
+                }
+
+                return Result.Fail("Data isn't available.", default(InstaWebSettingsPageResponse));
             }
             catch (HttpRequestException httpException)
             {
@@ -328,7 +369,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail(exception, default(InstaWebSettingsPageResponse));
             }
         }
-        
+
         #endregion private part
     }
 }

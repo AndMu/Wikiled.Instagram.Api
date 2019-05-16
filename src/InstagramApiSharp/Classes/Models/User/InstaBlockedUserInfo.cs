@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace InstagramApiSharp.Classes.Models
+﻿namespace Wikiled.Instagram.Api.Classes.Models.User
 {
     public class InstaBlockedUserInfo
     {
-        public string UserName { get; set; }
-
-        public string ProfilePicture { get; set; }
+        public long BlockedAt { get; set; }
 
         public string FullName { get; set; }
 
@@ -16,6 +10,8 @@ namespace InstagramApiSharp.Classes.Models
 
         public long Pk { get; set; }
 
-        public long BlockedAt { get; set; }
+        public string ProfilePicture { get; set; }
+
+        public string UserName { get; set; }
     }
 }

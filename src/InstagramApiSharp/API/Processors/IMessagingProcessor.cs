@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using InstagramApiSharp.Classes;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Enums;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.Models.Direct;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Enums;
 
-namespace InstagramApiSharp.API.Processors
+namespace Wikiled.Instagram.Api.API.Processors
 {
     /// <summary>
     ///     Messaging (direct) api functions.
@@ -17,6 +19,7 @@ namespace InstagramApiSharp.API.Processors
         /// <param name="threadId">Thread id</param>
         /// <param name="userIds">User ids (pk)</param>
         Task<IResult<InstaDirectInboxThread>> AddUserToGroupThreadAsync(string threadId, params long[] userIds);
+
         /// <summary>
         ///     Approve direct pending request
         /// </summary>
@@ -54,6 +57,7 @@ namespace InstagramApiSharp.API.Processors
         ///     <see cref="T:InstagramApiSharp.Classes.Models.InstaDirectInboxContainer" />
         /// </returns>
         Task<IResult<InstaDirectInboxContainer>> GetDirectInboxAsync(PaginationParameters paginationParameters);
+
         /// <summary>
         ///     Get direct inbox thread by its id asynchronously
         /// </summary>
@@ -63,6 +67,7 @@ namespace InstagramApiSharp.API.Processors
         ///     <see cref="InstaDirectInboxThread" />
         /// </returns>
         Task<IResult<InstaDirectInboxThread>> GetDirectInboxThreadAsync(string threadId, PaginationParameters paginationParameters);
+
         /// <summary>
         ///     Get direct pending inbox threads for current user asynchronously
         /// </summary>
@@ -136,8 +141,10 @@ namespace InstagramApiSharp.API.Processors
         /// <param name="image">Image to upload</param>
         /// <param name="viewMode">View mode</param>
         /// <param name="threadIds">Thread ids</param>
-        Task<IResult<bool>> SendDirectDisappearingPhotoAsync(InstaImage image,
-     InstaViewMode viewMode = InstaViewMode.Replayable, params string[] threadIds);
+        Task<IResult<bool>> SendDirectDisappearingPhotoAsync(
+            InstaImage image,
+            InstaViewMode viewMode = InstaViewMode.Replayable,
+            params string[] threadIds);
 
         /// <summary>
         ///     Send disappearing photo to direct thread (video will remove after user saw it) with progress
@@ -146,8 +153,11 @@ namespace InstagramApiSharp.API.Processors
         /// <param name="image">Image to upload</param>
         /// <param name="viewMode">View mode</param>
         /// <param name="threadIds">Thread ids</param>
-        Task<IResult<bool>> SendDirectDisappearingPhotoAsync(Action<InstaUploaderProgress> progress, InstaImage image,
-     InstaViewMode viewMode = InstaViewMode.Replayable, params string[] threadIds);
+        Task<IResult<bool>> SendDirectDisappearingPhotoAsync(
+            Action<InstaUploaderProgress> progress,
+            InstaImage image,
+            InstaViewMode viewMode = InstaViewMode.Replayable,
+            params string[] threadIds);
 
         /// <summary>
         ///     Send disappearing video to direct thread (video will remove after user saw it)
@@ -156,8 +166,10 @@ namespace InstagramApiSharp.API.Processors
         /// <param name="viewMode">View mode</param>
         /// <param name="threadIds">Thread ids</param>
         /// <returns></returns>
-        Task<IResult<bool>> SendDirectDisappearingVideoAsync(InstaVideoUpload video,
-       InstaViewMode viewMode = InstaViewMode.Replayable, params string[] threadIds);
+        Task<IResult<bool>> SendDirectDisappearingVideoAsync(
+            InstaVideoUpload video,
+            InstaViewMode viewMode = InstaViewMode.Replayable,
+            params string[] threadIds);
 
         /// <summary>
         ///     Send disappearing video to direct thread (video will remove after user saw it) with progress
@@ -167,8 +179,11 @@ namespace InstagramApiSharp.API.Processors
         /// <param name="viewMode">View mode</param>
         /// <param name="threadIds">Thread ids</param>
         /// <returns></returns>
-        Task<IResult<bool>> SendDirectDisappearingVideoAsync(Action<InstaUploaderProgress> progress, InstaVideoUpload video,
-       InstaViewMode viewMode = InstaViewMode.Replayable, params string[] threadIds);
+        Task<IResult<bool>> SendDirectDisappearingVideoAsync(
+            Action<InstaUploaderProgress> progress,
+            InstaVideoUpload video,
+            InstaViewMode viewMode = InstaViewMode.Replayable,
+            params string[] threadIds);
 
         /// <summary>
         ///     Send hashtag to direct thread
@@ -199,6 +214,12 @@ namespace InstagramApiSharp.API.Processors
         Task<IResult<bool>> SendDirectHashtagToRecipientsAsync(string text, string hashtag, params string[] recipients);
 
         /// <summary>
+        ///     Send a like to the conversation
+        /// </summary>
+        /// <param name="threadId">Thread id</param>
+        Task<IResult<bool>> SendDirectLikeAsync(string threadId);
+
+        /// <summary>
         ///     Send link address to direct thread
         /// </summary>
         /// <param name="text">Text to send</param>
@@ -206,7 +227,7 @@ namespace InstagramApiSharp.API.Processors
         /// <param name="threadIds">Thread ids</param>
         /// <returns>Returns True if link sent</returns>
         Task<IResult<bool>> SendDirectLinkAsync(string text, string link, params string[] threadIds);
-        
+
         /// <summary>
         ///     Send link address to direct thread
         /// </summary>
@@ -229,7 +250,7 @@ namespace InstagramApiSharp.API.Processors
         /// <summary>
         ///     Send location to direct thread
         /// </summary>
-        /// <param name="externalId">External id (get it from <seealso cref="LocationProcessor.SearchLocationAsync"/></param>
+        /// <param name="externalId">External id (get it from <seealso cref="LocationProcessor.SearchLocationAsync" /></param>
         /// <param name="threadIds">Thread ids</param>
         /// <returns>Returns True if location sent</returns>
         Task<IResult<bool>> SendDirectLocationAsync(string externalId, params string[] threadIds);
@@ -290,7 +311,9 @@ namespace InstagramApiSharp.API.Processors
         /// <param name="threadIds">Message thread ids</param>
         /// <param name="text">Message text</param>
         /// <returns>List of threads</returns>
-        Task<IResult<InstaDirectInboxThreadList>> SendDirectTextAsync(string recipients, string threadIds,
+        Task<IResult<InstaDirectInboxThreadList>> SendDirectTextAsync(
+            string recipients,
+            string threadIds,
             string text);
 
         /// <summary>
@@ -342,6 +365,7 @@ namespace InstagramApiSharp.API.Processors
         Task<IResult<bool>> ShareMediaToUserAsync(string mediaId, InstaMediaType mediaType, string text, params long[] userIds);
 
         [Obsolete("ShareUserAsync is deprecated. Use SendDirectProfileAsync instead.")]
+
         /// <summary>
         ///     Share an user
         /// </summary>
@@ -355,6 +379,7 @@ namespace InstagramApiSharp.API.Processors
         /// <param name="threadId">Thread id</param>
         /// <param name="itemId">Item id (message id)</param>
         Task<IResult<bool>> UnLikeThreadMessageAsync(string threadId, string itemId);
+
         /// <summary>
         ///     Unmute direct thread
         /// </summary>
@@ -367,11 +392,5 @@ namespace InstagramApiSharp.API.Processors
         /// <param name="threadId">Thread id</param>
         /// <param name="title">New title</param>
         Task<IResult<bool>> UpdateDirectThreadTitleAsync(string threadId, string title);
-        
-        /// <summary>
-        ///     Send a like to the conversation
-        /// </summary>
-        /// <param name="threadId">Thread id</param>
-        Task<IResult<bool>> SendDirectLikeAsync(string threadId);
     }
 }

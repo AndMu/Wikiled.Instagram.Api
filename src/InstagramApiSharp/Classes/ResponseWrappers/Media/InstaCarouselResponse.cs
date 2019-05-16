@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace InstagramApiSharp.Classes.ResponseWrappers
+namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Media
 {
     public class InstaCarouselResponse : List<InstaCarouselItemResponse>
     {

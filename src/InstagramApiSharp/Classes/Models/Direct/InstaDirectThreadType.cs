@@ -1,4 +1,4 @@
-﻿namespace InstagramApiSharp.Classes.Models
+﻿namespace Wikiled.Instagram.Api.Classes.Models.Direct
 {
     public enum InstaDirectThreadType
     {

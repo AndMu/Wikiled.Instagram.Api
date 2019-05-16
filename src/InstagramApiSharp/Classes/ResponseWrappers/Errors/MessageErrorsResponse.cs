@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace InstagramApiSharp.Classes.ResponseWrappers
+namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Errors
 {
     public class MessageErrorsResponse
     {

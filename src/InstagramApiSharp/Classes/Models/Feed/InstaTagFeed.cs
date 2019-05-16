@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace InstagramApiSharp.Classes.Models
+namespace Wikiled.Instagram.Api.Classes.Models.Feed
 {
     public class InstaTagFeed : InstaFeed
     {

@@ -1,4 +1,4 @@
-﻿namespace InstagramApiSharp.Classes.Models
+﻿namespace Wikiled.Instagram.Api.Classes.Models.Collection
 {
     public class InstaCollectionItem
     {
@@ -6,11 +6,11 @@
 
         public string CollectionName { get; set; }
 
+        public InstaCoverMedia CoverMedia { get; set; }
+
         public bool HasRelatedMedia { get; set; }
 
         public InstaMediaList Media { get; set; }
-
-        public InstaCoverMedia CoverMedia { get; set; }
 
         public string NextMaxId { get; set; }
     }

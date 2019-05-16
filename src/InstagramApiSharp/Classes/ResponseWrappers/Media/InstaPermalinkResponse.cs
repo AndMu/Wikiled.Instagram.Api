@@ -1,7 +1,6 @@
-﻿using InstagramApiSharp.Classes.ResponseWrappers.BaseResponse;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace InstagramApiSharp.Classes.ResponseWrappers
+namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Media
 {
     public class InstaPermalinkResponse : BaseStatusResponse
     {

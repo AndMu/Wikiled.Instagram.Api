@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using InstagramApiSharp.Classes;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Enums;
+﻿using System.Threading.Tasks;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.Models.Direct;
+using Wikiled.Instagram.Api.Classes.Models.Feed;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Enums;
 
-namespace InstagramApiSharp.API.Processors
+namespace Wikiled.Instagram.Api.API.Processors
 {
     /// <summary>
     ///     User api functions.
@@ -40,7 +43,7 @@ namespace InstagramApiSharp.API.Processors
         /// </summary>
         /// <param name="userId">User id (pk)</param>
         Task<IResult<bool>> FavoriteUserAsync(long userId);
-        
+
         /// <summary>
         ///     Favorite user stories (user must be in your following list)
         /// </summary>
@@ -111,6 +114,7 @@ namespace InstagramApiSharp.API.Processors
         ///     <see cref="InstaStoryFriendshipStatus" />
         /// </returns>
         Task<IResult<InstaStoryFriendshipStatus>> GetFriendshipStatusAsync(long userId);
+
         /// <summary>
         ///     Get friendship status for multiple user ids.
         /// </summary>
@@ -119,6 +123,7 @@ namespace InstagramApiSharp.API.Processors
         ///     <see cref="InstaFriendshipShortStatusList" />
         /// </returns>
         Task<IResult<InstaFriendshipShortStatusList>> GetFriendshipStatusesAsync(params long[] userIds);
+
         /// <summary>
         ///     Get full user info (user info, feeds, stories, broadcasts)
         /// </summary>
@@ -156,12 +161,6 @@ namespace InstagramApiSharp.API.Processors
         ///     <see cref="InstaUser" />
         /// </returns>
         Task<IResult<InstaUser>> GetUserAsync(string username);
-       
-        /// <summary>
-        ///     Get user from a nametag image
-        /// </summary>
-        /// <param name="nametagImage">Nametag image</param>
-        Task<IResult<InstaUser>> GetUserFromNametagAsync(InstaImage nametagImage);
 
         /// <summary>
         ///     Get followers list by username asynchronously
@@ -172,8 +171,11 @@ namespace InstagramApiSharp.API.Processors
         /// <returns>
         ///     <see cref="InstaUserShortList" />
         /// </returns>
-        Task<IResult<InstaUserShortList>> GetUserFollowersAsync(string username,
-            PaginationParameters paginationParameters, string searchQuery = "", bool mutualsfirst = false);
+        Task<IResult<InstaUserShortList>> GetUserFollowersAsync(
+            string username,
+            PaginationParameters paginationParameters,
+            string searchQuery = "",
+            bool mutualsfirst = false);
 
         /// <summary>
         ///     Get followers list by user id(pk) asynchronously
@@ -184,8 +186,11 @@ namespace InstagramApiSharp.API.Processors
         /// <returns>
         ///     <see cref="InstaUserShortList" />
         /// </returns>
-        Task<IResult<InstaUserShortList>> GetUserFollowersByIdAsync(long userId,
-            PaginationParameters paginationParameters, string searchQuery = "", bool mutualsfirst = false);
+        Task<IResult<InstaUserShortList>> GetUserFollowersByIdAsync(
+            long userId,
+            PaginationParameters paginationParameters,
+            string searchQuery = "",
+            bool mutualsfirst = false);
 
         /// <summary>
         ///     Get following list by username asynchronously
@@ -196,8 +201,10 @@ namespace InstagramApiSharp.API.Processors
         /// <returns>
         ///     <see cref="InstaUserShortList" />
         /// </returns>
-        Task<IResult<InstaUserShortList>> GetUserFollowingAsync(string username,
-            PaginationParameters paginationParameters, string searchQuery = "");
+        Task<IResult<InstaUserShortList>> GetUserFollowingAsync(
+            string username,
+            PaginationParameters paginationParameters,
+            string searchQuery = "");
 
         /// <summary>
         ///     Get following list by user id(pk) asynchronously
@@ -208,8 +215,16 @@ namespace InstagramApiSharp.API.Processors
         /// <returns>
         ///     <see cref="InstaUserShortList" />
         /// </returns>
-        Task<IResult<InstaUserShortList>> GetUserFollowingByIdAsync(long userId,
-            PaginationParameters paginationParameters, string searchQuery = "");
+        Task<IResult<InstaUserShortList>> GetUserFollowingByIdAsync(
+            long userId,
+            PaginationParameters paginationParameters,
+            string searchQuery = "");
+
+        /// <summary>
+        ///     Get user from a nametag image
+        /// </summary>
+        /// <param name="nametagImage">Nametag image</param>
+        Task<IResult<InstaUser>> GetUserFromNametagAsync(InstaImage nametagImage);
 
         /// <summary>
         ///     Gets the user extended information (followers count, following count, bio, etc) by user identifier.
@@ -265,6 +280,7 @@ namespace InstagramApiSharp.API.Processors
         ///     <see cref="InstaMediaList" />
         /// </returns>
         Task<IResult<InstaMediaList>> GetUserTagsAsync(string username, PaginationParameters paginationParameters);
+
         /// <summary>
         ///     Get user tags by username asynchronously
         ///     <remarks>Returns media list containing tags</remarks>
@@ -275,17 +291,18 @@ namespace InstagramApiSharp.API.Processors
         ///     <see cref="InstaMediaList" />
         /// </returns>
         Task<IResult<InstaMediaList>> GetUserTagsAsync(long userId, PaginationParameters paginationParameters);
-        /// <summary>
-        ///     Ignore user friendship requst.
-        /// </summary>
-        /// <param name="userId">User id (pk)</param>
-        Task<IResult<InstaFriendshipFullStatus>> IgnoreFriendshipRequestAsync(long userId);
 
         /// <summary>
         ///     Hide my story from specific user
         /// </summary>
         /// <param name="userId">User id</param>
         Task<IResult<InstaStoryFriendshipStatus>> HideMyStoryFromUserAsync(long userId);
+
+        /// <summary>
+        ///     Ignore user friendship requst.
+        /// </summary>
+        /// <param name="userId">User id (pk)</param>
+        Task<IResult<InstaFriendshipFullStatus>> IgnoreFriendshipRequestAsync(long userId);
 
         /// <summary>
         ///     Mark user as overage
@@ -307,10 +324,22 @@ namespace InstagramApiSharp.API.Processors
         Task<IResult<InstaStoryFriendshipStatus>> MuteUserMediaAsync(long userId, InstaMuteOption muteOption);
 
         /// <summary>
+        ///     Remove an follower from your followers
+        /// </summary>
+        /// <param name="userId">User id (pk)</param>
+        Task<IResult<InstaFriendshipStatus>> RemoveFollowerAsync(long userId);
+
+        /// <summary>
         ///     Report user
         /// </summary>
         /// <param name="userId">User id (pk)</param>
         Task<IResult<bool>> ReportUserAsync(long userId);
+
+        /// <summary>
+        ///     Translate biography of someone
+        /// </summary>
+        /// <param name="userId">User id (pk)</param>
+        Task<IResult<string>> TranslateBiographyAsync(long userId);
 
         /// <summary>
         ///     Stop block user
@@ -335,7 +364,7 @@ namespace InstagramApiSharp.API.Processors
         /// </summary>
         /// <param name="userId">User id</param>
         Task<IResult<InstaFriendshipFullStatus>> UnFollowUserAsync(long userId);
-        
+
         /// <summary>
         ///     Unhide my story from specific user
         /// </summary>
@@ -354,17 +383,5 @@ namespace InstagramApiSharp.API.Processors
         /// <param name="userId">User id (pk)</param>
         /// <param name="unmuteOption">Unmute option</param>
         Task<IResult<InstaStoryFriendshipStatus>> UnMuteUserMediaAsync(long userId, InstaMuteOption unmuteOption);
-
-        /// <summary>
-        ///     Remove an follower from your followers
-        /// </summary>
-        /// <param name="userId">User id (pk)</param>
-        Task<IResult<InstaFriendshipStatus>> RemoveFollowerAsync(long userId);
-
-        /// <summary>
-        ///     Translate biography of someone
-        /// </summary>
-        /// <param name="userId">User id (pk)</param>
-        Task<IResult<string>> TranslateBiographyAsync(long userId);
     }
 }

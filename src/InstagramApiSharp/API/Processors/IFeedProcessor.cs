@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
-using InstagramApiSharp.Classes;
-using InstagramApiSharp.Classes.Models;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.Models.Feed;
+using Wikiled.Instagram.Api.Classes.Models.Media;
 
-namespace InstagramApiSharp.API.Processors
+namespace Wikiled.Instagram.Api.API.Processors
 {
     /// <summary>
     ///     Feed api functions.
@@ -13,7 +14,9 @@ namespace InstagramApiSharp.API.Processors
         ///     Get user explore feed (Explore tab info) asynchronously
         /// </summary>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        /// <returns><see cref="InstaExploreFeed" /></returns>
+        /// <returns>
+        ///     <see cref="InstaExploreFeed" />
+        /// </returns>
         Task<IResult<InstaExploreFeed>> GetExploreFeedAsync(PaginationParameters paginationParameters);
 
         /// <summary>
@@ -61,6 +64,17 @@ namespace InstagramApiSharp.API.Processors
         ///     <see cref="InstaTagFeed" />
         /// </returns>
         Task<IResult<InstaTagFeed>> GetTagFeedAsync(string tag, PaginationParameters paginationParameters);
+
+        /// <summary>
+        ///     Get user topical explore feeds asynchronously
+        /// </summary>
+        /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
+        /// <param name="clusterId">Cluster id ( get it from <see cref="InstaTopicalExploreCluster.Id" /> )</param>
+        /// <returns>
+        ///     <see cref="InstaTopicalExploreFeed" />
+        /// </returns>
+        Task<IResult<InstaTopicalExploreFeed>> GetTopicalExploreFeedAsync(PaginationParameters paginationParameters, string clusterId = null);
+
         /// <summary>
         ///     Get user timeline feed (feed of recent posts from users you follow) asynchronously.
         /// </summary>
@@ -71,13 +85,5 @@ namespace InstagramApiSharp.API.Processors
         ///     <see cref="InstaFeed" />
         /// </returns>
         Task<IResult<InstaFeed>> GetUserTimelineFeedAsync(PaginationParameters paginationParameters, string[] seenMediaIds = null, bool refreshRequest = false);
-
-        /// <summary>
-        ///     Get user topical explore feeds asynchronously
-        /// </summary>
-        /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        /// <param name="clusterId">Cluster id ( get it from <see cref="InstaTopicalExploreCluster.Id"/> )</param>
-        /// <returns><see cref="InstaTopicalExploreFeed" /></returns>
-        Task<IResult<InstaTopicalExploreFeed>> GetTopicalExploreFeedAsync(PaginationParameters paginationParameters, string clusterId = null);
     }
 }

@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace InstagramApiSharp.Classes.Models
+namespace Wikiled.Instagram.Api.Classes.Models.User
 {
-
     public class InstaBlockedUsers : InstaDefault
     {
         public List<InstaBlockedUserInfo> BlockedList { get; set; } = new List<InstaBlockedUserInfo>();
-        
-        public int? PageSize { get; set; }
 
         public string MaxId { get; set; }
+
+        public int? PageSize { get; set; }
     }
 }

@@ -1,9 +1,19 @@
 ﻿using Newtonsoft.Json;
 
-namespace InstagramApiSharp.Classes
+namespace Wikiled.Instagram.Api.Classes.Models.Other
 {
     internal class InstaLoginBaseResponse
     {
+        #region Challenge
+
+        [JsonProperty("challenge")] public InstaChallengeLoginInfo Challenge { get; set; }
+
+        #endregion
+
+        [JsonProperty("checkpoint_url")] public string CheckpointUrl { get; set; }
+
+        [JsonProperty("lock")] public bool? Lock { get; set; }
+
         #region InvalidCredentials
 
         [JsonProperty("invalid_credentials")] public bool InvalidCredentials { get; set; }
@@ -13,6 +23,7 @@ namespace InstagramApiSharp.Classes
         [JsonProperty("message")] public string Message { get; set; }
 
         [JsonProperty("help_url")] public string HelpUrl { get; set; }
+
         #endregion
 
         #region 2 Factor Authentication
@@ -22,15 +33,5 @@ namespace InstagramApiSharp.Classes
         [JsonProperty("two_factor_info")] public InstaTwoFactorLoginInfo TwoFactorLoginInfo { get; set; }
 
         #endregion
-
-        #region Challenge
-
-        [JsonProperty("challenge")] public InstaChallengeLoginInfo Challenge { get; set; }
-        
-        #endregion
-
-        [JsonProperty("lock")] public bool? Lock { get; set; }
-
-        [JsonProperty("checkpoint_url")] public string CheckpointUrl { get; set; }
     }
 }

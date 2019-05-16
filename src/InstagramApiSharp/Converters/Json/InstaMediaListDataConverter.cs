@@ -1,9 +1,8 @@
 ﻿using System;
-using InstagramApiSharp.Classes.ResponseWrappers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace InstagramApiSharp.Converters.Json
+namespace Wikiled.Instagram.Api.Converters.Json
 {
     internal class InstaMediaListDataConverter : JsonConverter
     {
@@ -12,7 +11,8 @@ namespace InstagramApiSharp.Converters.Json
             return objectType == typeof(InstaMediaListResponse);
         }
 
-        public override object ReadJson(JsonReader reader,
+        public override object ReadJson(
+            JsonReader reader,
             Type objectType,
             object existingValue,
             JsonSerializer serializer)
@@ -27,17 +27,29 @@ namespace InstagramApiSharp.Converters.Json
             {
                 var mediaToken = item?.SelectToken("media");
                 var media = mediaToken != null
-                    ? mediaToken.ToObject<InstaMediaItemResponse>()
-                    : item?.ToObject<InstaMediaItemResponse>();
-                if (string.IsNullOrEmpty(media?.Pk)) continue;
+                                ? mediaToken.ToObject<InstaMediaItemResponse>()
+                                : item?.ToObject<InstaMediaItemResponse>();
+                if (string.IsNullOrEmpty(media?.Pk))
+                {
+                    continue;
+                }
+
                 feed.Medias.Add(media);
             }
 
-            if (storiesTray == null) return feed;
+            if (storiesTray == null)
+            {
+                return feed;
+            }
+
             foreach (var storyItem in storiesTray)
             {
                 var story = storyItem.ToObject<InstaStoryResponse>();
-                if (story == null) continue;
+                if (story == null)
+                {
+                    continue;
+                }
+
                 feed.Stories.Add(story);
             }
 

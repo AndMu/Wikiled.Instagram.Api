@@ -1,19 +1,22 @@
 ﻿using System;
-using System.Net;
-using InstagramApiSharp.Classes.Android.DeviceInfo;
 using System.Collections.Generic;
-using InstagramApiSharp.Enums;
+using System.Net;
 
-namespace InstagramApiSharp.Classes
+namespace Wikiled.Instagram.Api.Classes
 {
     [Serializable]
     public class StateData
     {
-        public AndroidDevice DeviceInfo { get; set; }
-        public UserSessionData UserSession { get; set; }
-        public bool IsAuthenticated { get; set; }
         public CookieContainer Cookies { get; set; }
-        public List<Cookie> RawCookies { get; set; }
+
+        public AndroidDevice DeviceInfo { get; set; }
+
         public InstaApiVersionType? InstaApiVersion { get; set; }
+
+        public bool IsAuthenticated { get; set; }
+
+        public List<Cookie> RawCookies { get; set; }
+
+        public UserSessionData UserSession { get; set; }
     }
 }

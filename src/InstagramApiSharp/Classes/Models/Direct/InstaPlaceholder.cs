@@ -1,8 +1,9 @@
-﻿namespace InstagramApiSharp.Classes.Models
+﻿namespace Wikiled.Instagram.Api.Classes.Models.Direct
 {
     public class InstaPlaceholder
     {
         public bool IsLinked { get; set; }
+
         public string Message { get; set; }
     }
 }

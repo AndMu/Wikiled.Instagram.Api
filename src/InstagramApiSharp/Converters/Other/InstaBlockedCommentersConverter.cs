@@ -1,18 +1,6 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System;
 
-using System;
-using System.Linq;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Other
 {
     internal class InstaBlockedCommentersConverter : IObjectConverter<InstaUserShortList, InstaBlockedCommentersResponse>
     {
@@ -20,14 +8,19 @@ namespace InstagramApiSharp.Converters
 
         public InstaUserShortList Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException("SourceObject");
+            if (SourceObject == null)
+            {
+                throw new ArgumentNullException("SourceObject");
+            }
 
             var users = new InstaUserShortList();
 
             if (SourceObject.BlockedCommenters?.Count > 0)
             {
                 foreach (var user in SourceObject.BlockedCommenters)
+                {
                     users.Add(ConvertersFabric.Instance.GetUserShortConverter(user).Convert());
+                }
             }
 
             return users;

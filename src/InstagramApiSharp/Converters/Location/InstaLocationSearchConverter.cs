@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Linq;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
 
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Location
 {
     internal class InstaLocationSearchConverter : IObjectConverter<InstaLocationShortList, InstaLocationSearchResponse>
     {
@@ -11,10 +8,16 @@ namespace InstagramApiSharp.Converters
 
         public InstaLocationShortList Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
+            if (SourceObject == null)
+            {
+                throw new ArgumentNullException("Source object");
+            }
+
             var locations = new InstaLocationShortList();
-            locations.AddRange(SourceObject.Locations.Select(location =>
-                ConvertersFabric.Instance.GetLocationShortConverter(location).Convert()));
+            locations.AddRange(
+                SourceObject.Locations.Select(
+                    location =>
+                        ConvertersFabric.Instance.GetLocationShortConverter(location).Convert()));
             return locations;
         }
     }

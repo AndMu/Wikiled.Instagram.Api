@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace InstagramApiSharp
+namespace Wikiled.Instagram.Api.Classes
 {
     /// <summary>
     ///     Pagination of everything! use NextMaxId instead of using old NextId
@@ -12,25 +11,32 @@ namespace InstagramApiSharp
         {
         }
 
-        public string RankToken { get; set; } = string.Empty;
+        public static PaginationParameters Empty => MaxPagesToLoad(int.MaxValue);
+
+        public List<long> ExcludeList { get; set; } = new List<long>();
+
+        public int MaximumPagesToLoad { get; private set; }
+
         public string NextMaxId { get; set; } = string.Empty;
+
+        /// <summary>
+        ///     Only for location and hashtag feeds
+        /// </summary>
+        public List<long> NextMediaIds { get; set; }
+
         /// <summary>
         ///     Only works for Comments!
         /// </summary>
         public string NextMinId { get; set; } = string.Empty;
-        public int MaximumPagesToLoad { get; private set; }
-        public int PagesLoaded { get; set; } = 1;
+
         /// <summary>
-        ///     Only for location and hashtag feeds 
+        ///     Only for location and hashtag feeds
         /// </summary>
         public int? NextPage { get; set; }
-        public List<long> ExcludeList { get; set; } = new List<long>();
-        /// <summary>
-        ///     Only for location and hashtag feeds 
-        /// </summary>
-        public List<long> NextMediaIds { get; set; }
 
-        public static PaginationParameters Empty => MaxPagesToLoad(int.MaxValue);
+        public int PagesLoaded { get; set; } = 1;
+
+        public string RankToken { get; set; } = string.Empty;
 
         public static PaginationParameters MaxPagesToLoad(int maxPagesToLoad)
         {

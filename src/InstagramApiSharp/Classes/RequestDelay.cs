@@ -1,15 +1,32 @@
 ﻿using System;
 
-namespace InstagramApiSharp.Classes
+namespace Wikiled.Instagram.Api.Classes
 {
     public class RequestDelay : IRequestDelay
     {
+        private readonly int _maxSeconds;
+
+        private readonly int _minSeconds;
+
+        private readonly Random _random;
+
+        private bool _isEnabled;
+
         private RequestDelay(int minSeconds, int maxSeconds)
         {
             _minSeconds = minSeconds;
             _maxSeconds = maxSeconds;
             _random = new Random(DateTime.Now.Millisecond);
             _isEnabled = true;
+        }
+
+        public bool Exist => _isEnabled && _minSeconds != 0 && _maxSeconds != 0;
+
+        public TimeSpan Value => Exist ? TimeSpan.FromSeconds(_random.Next(_minSeconds, _maxSeconds)) : TimeSpan.Zero;
+
+        public static IRequestDelay Empty()
+        {
+            return new RequestDelay(0, 0);
         }
 
         public static IRequestDelay FromSeconds(int min, int max)
@@ -27,28 +44,14 @@ namespace InstagramApiSharp.Classes
             return new RequestDelay(min, max);
         }
 
-        public static IRequestDelay Empty()
+        public void Disable()
         {
-            return new RequestDelay(0, 0);
+            _isEnabled = false;
         }
-
-        private readonly Random _random;
-        private readonly int _minSeconds;
-        private readonly int _maxSeconds;
-        private bool _isEnabled;
-
-        public TimeSpan Value => Exist ? TimeSpan.FromSeconds(_random.Next(_minSeconds, _maxSeconds)) : TimeSpan.Zero;
-
-        public bool Exist => _isEnabled && _minSeconds != 0 && _maxSeconds != 0;
 
         public void Enable()
         {
             _isEnabled = true;
-        }
-
-        public void Disable()
-        {
-            _isEnabled = false;
         }
     }
 }

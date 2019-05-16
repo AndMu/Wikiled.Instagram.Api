@@ -1,10 +1,6 @@
-﻿using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Stories
 {
     internal class InstaStorySliderStickerItemConverter : IObjectConverter<InstaStorySliderStickerItem, InstaStorySliderStickerItemResponse>
     {
@@ -12,17 +8,21 @@ namespace InstagramApiSharp.Converters
 
         public InstaStorySliderStickerItem Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
-            var slider = new InstaStorySliderStickerItem
+            if (SourceObject == null)
             {
-                Emoji = SourceObject.Emoji,
-                Question = SourceObject.Question,
-                SliderId = SourceObject.SliderId,
-                SliderVoteAverage = SourceObject.SliderVoteAverage == null? 0 : SourceObject.SliderVoteAverage.Value,
-                SliderVoteCount = SourceObject.SliderVoteCount == null ? 0 : SourceObject.SliderVoteCount.Value,
-                TextColor = SourceObject.TextColor,
-                ViewerCanVote = SourceObject.ViewerCanVote
-            };
+                throw new ArgumentNullException("Source object");
+            }
+
+            var slider = new InstaStorySliderStickerItem
+                         {
+                             Emoji = SourceObject.Emoji,
+                             Question = SourceObject.Question,
+                             SliderId = SourceObject.SliderId,
+                             SliderVoteAverage = SourceObject.SliderVoteAverage == null ? 0 : SourceObject.SliderVoteAverage.Value,
+                             SliderVoteCount = SourceObject.SliderVoteCount == null ? 0 : SourceObject.SliderVoteCount.Value,
+                             TextColor = SourceObject.TextColor,
+                             ViewerCanVote = SourceObject.ViewerCanVote
+                         };
             return slider;
         }
     }

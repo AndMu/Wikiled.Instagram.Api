@@ -1,9 +1,8 @@
 ﻿using System;
-using InstagramApiSharp.Classes.ResponseWrappers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace InstagramApiSharp.Converters.Json
+namespace Wikiled.Instagram.Api.Converters.Json
 {
     internal class InstaMediaDataConverter : JsonConverter
     {
@@ -12,14 +11,19 @@ namespace InstagramApiSharp.Converters.Json
             return objectType == typeof(InstaMediaItemResponse);
         }
 
-        public override object ReadJson(JsonReader reader,
+        public override object ReadJson(
+            JsonReader reader,
             Type objectType,
             object existingValue,
             JsonSerializer serializer)
         {
             var root = JToken.Load(reader);
             var media = root.ToObject<InstaMediaItemResponse>();
-            if (media?.Pk != null) return media;
+            if (media?.Pk != null)
+            {
+                return media;
+            }
+
             var mediaToken = root.SelectToken("media");
             return mediaToken?.ToObject<InstaMediaItemResponse>();
         }

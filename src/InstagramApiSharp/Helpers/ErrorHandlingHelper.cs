@@ -1,8 +1,7 @@
 ﻿using System;
-using InstagramApiSharp.Classes.ResponseWrappers;
 using Newtonsoft.Json;
 
-namespace InstagramApiSharp.Helpers
+namespace Wikiled.Instagram.Api.Helpers
 {
     internal static class ErrorHandlingHelper
     {
@@ -12,8 +11,13 @@ namespace InstagramApiSharp.Helpers
             try
             {
                 if (json == "Oops, an error occurred\n")
+                {
                     badStatus.Message = json;
-                else badStatus = JsonConvert.DeserializeObject<BadStatusResponse>(json);
+                }
+                else
+                {
+                    badStatus = JsonConvert.DeserializeObject<BadStatusResponse>(json);
+                }
             }
             catch (Exception ex)
             {

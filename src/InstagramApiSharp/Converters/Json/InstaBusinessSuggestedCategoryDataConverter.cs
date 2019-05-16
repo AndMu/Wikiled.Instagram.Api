@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using InstagramApiSharp.Classes.Models.Business;
-using InstagramApiSharp.Classes.ResponseWrappers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Linq;
-namespace InstagramApiSharp.Converters.Json
+
+namespace Wikiled.Instagram.Api.Converters.Json
 {
     internal class InstaBusinessSuggestedCategoryDataConverter : JsonConverter
     {
@@ -14,7 +11,8 @@ namespace InstagramApiSharp.Converters.Json
             return objectType == typeof(InstaBusinessSuggestedCategoryList);
         }
 
-        public override object ReadJson(JsonReader reader,
+        public override object ReadJson(
+            JsonReader reader,
             Type objectType,
             object existingValue,
             JsonSerializer serializer)

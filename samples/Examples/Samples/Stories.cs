@@ -3,6 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using InstagramApiSharp.API;
 using InstagramApiSharp.Classes.Models;
+using Wikiled.Instagram.Api.API;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+
 /////////////////////////////////////////////////////////////////////
 ////////////////////// IMPORTANT NOTE ///////////////////////////////
 // Please check wiki pages for more information:

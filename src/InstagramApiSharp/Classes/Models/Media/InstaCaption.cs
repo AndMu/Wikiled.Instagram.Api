@@ -1,20 +1,21 @@
 ﻿using System;
 
-namespace InstagramApiSharp.Classes.Models
+namespace Wikiled.Instagram.Api.Classes.Models.Media
 {
     public class InstaCaption
     {
-        public long UserId { get; set; }
-        public DateTime CreatedAtUtc { get; set; }
-
         public DateTime CreatedAt { get; set; }
 
-        public InstaUserShort User { get; set; }
-
-        public string Text { get; set; }
+        public DateTime CreatedAtUtc { get; set; }
 
         public string MediaId { get; set; }
 
         public string Pk { get; set; }
+
+        public string Text { get; set; }
+
+        public InstaUserShort User { get; set; }
+
+        public long UserId { get; set; }
     }
 }

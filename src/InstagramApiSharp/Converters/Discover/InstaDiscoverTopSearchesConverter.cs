@@ -1,11 +1,6 @@
-﻿using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Discover
 {
     internal class InstaDiscoverTopSearchesConverter : IObjectConverter<InstaDiscoverTopSearches, InstaDiscoverTopSearchesResponse>
     {
@@ -13,7 +8,11 @@ namespace InstagramApiSharp.Converters
 
         public InstaDiscoverTopSearches Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
+            if (SourceObject == null)
+            {
+                throw new ArgumentNullException("Source object");
+            }
+
             var recents = new InstaDiscoverTopSearches();
             if (SourceObject.TopResults != null && SourceObject.TopResults.Any())
             {
@@ -23,9 +22,12 @@ namespace InstagramApiSharp.Converters
                     {
                         recents.TopResults.Add(ConvertersFabric.Instance.GetDiscoverSearchesConverter(search).Convert());
                     }
-                    catch { }
+                    catch
+                    {
+                    }
                 }
             }
+
             return recents;
         }
     }

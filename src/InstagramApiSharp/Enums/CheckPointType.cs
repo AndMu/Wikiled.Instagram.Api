@@ -1,4 +1,4 @@
-﻿namespace InstagramApiSharp.Classes.Models
+﻿namespace Wikiled.Instagram.Api.Enums
 {
     public enum CheckPointType
     {

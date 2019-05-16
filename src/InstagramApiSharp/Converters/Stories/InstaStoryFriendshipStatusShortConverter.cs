@@ -1,16 +1,4 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
-
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-
-namespace InstagramApiSharp.Converters
+﻿namespace Wikiled.Instagram.Api.Converters.Stories
 {
     internal class InstaStoryFriendshipStatusShortConverter : IObjectConverter<InstaStoryFriendshipStatusShort, InstaStoryFriendshipStatusShortResponse>
     {
@@ -19,12 +7,12 @@ namespace InstagramApiSharp.Converters
         public InstaStoryFriendshipStatusShort Convert()
         {
             var storyFriendshipStatusShort = new InstaStoryFriendshipStatusShort
-            {
-                Following = SourceObject.Following,
-                OutgoingRequest = SourceObject.OutgoingRequest ?? false,
-                Muting = SourceObject.Muting ?? false,
-                IsMutingReel = SourceObject.IsMutingReel ?? false
-            };
+                                             {
+                                                 Following = SourceObject.Following,
+                                                 OutgoingRequest = SourceObject.OutgoingRequest ?? false,
+                                                 Muting = SourceObject.Muting ?? false,
+                                                 IsMutingReel = SourceObject.IsMutingReel ?? false
+                                             };
             return storyFriendshipStatusShort;
         }
     }

@@ -1,15 +1,11 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace InstagramApiSharp.Classes.Models
+namespace Wikiled.Instagram.Api.Classes.Models.Business
 {
     public class InstaBusinessValidateUrl
     {
-        [JsonProperty("error_msg")]
-        public string ErrorMessage { get; set; }
-        [JsonProperty("is_valid")]
-        public bool IsValid { get; set; }
+        [JsonProperty("error_msg")] public string ErrorMessage { get; set; }
+
+        [JsonProperty("is_valid")] public bool IsValid { get; set; }
     }
 }

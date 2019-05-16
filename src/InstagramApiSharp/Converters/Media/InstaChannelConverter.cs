@@ -1,8 +1,6 @@
 ﻿using System;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
 
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Media
 {
     internal class InstaChannelConverter : IObjectConverter<InstaChannel, InstaChannelResponse>
     {
@@ -10,17 +8,24 @@ namespace InstagramApiSharp.Converters
 
         public InstaChannel Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
-            var channel = new InstaChannel
+            if (SourceObject == null)
             {
-                ChannelId = SourceObject.ChannelId,
-                ChannelType = SourceObject.ChannelType,
-                Context = SourceObject.Context,
-                Header = SourceObject.Header,
-                Title = SourceObject.Title
-            };
+                throw new ArgumentNullException("Source object");
+            }
+
+            var channel = new InstaChannel
+                          {
+                              ChannelId = SourceObject.ChannelId,
+                              ChannelType = SourceObject.ChannelType,
+                              Context = SourceObject.Context,
+                              Header = SourceObject.Header,
+                              Title = SourceObject.Title
+                          };
             if (SourceObject.Media != null)
+            {
                 channel.Media = ConvertersFabric.Instance.GetSingleMediaConverter(SourceObject.Media).Convert();
+            }
+
             return channel;
         }
     }

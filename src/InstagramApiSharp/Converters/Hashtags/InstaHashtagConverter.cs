@@ -1,8 +1,6 @@
 ﻿using System;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
 
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Hashtags
 {
     internal class InstaHashtagConverter : IObjectConverter<InstaHashtag, InstaHashtagResponse>
     {
@@ -10,14 +8,18 @@ namespace InstagramApiSharp.Converters
 
         public InstaHashtag Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
-            var hashtag = new InstaHashtag
+            if (SourceObject == null)
             {
-                Id = SourceObject.Id,
-                Name = SourceObject.Name,
-                MediaCount = SourceObject.MediaCount,
-                ProfilePicUrl = SourceObject.ProfilePicUrl
-            };
+                throw new ArgumentNullException("Source object");
+            }
+
+            var hashtag = new InstaHashtag
+                          {
+                              Id = SourceObject.Id,
+                              Name = SourceObject.Name,
+                              MediaCount = SourceObject.MediaCount,
+                              ProfilePicUrl = SourceObject.ProfilePicUrl
+                          };
             return hashtag;
         }
     }

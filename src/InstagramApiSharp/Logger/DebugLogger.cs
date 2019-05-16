@@ -7,7 +7,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace InstagramApiSharp.Logger
+namespace Wikiled.Instagram.Api.Logger
 {
     public class DebugLogger : IInstaLogger
     {
@@ -18,12 +18,34 @@ namespace InstagramApiSharp.Logger
             _logLevel = loglevel;
         }
 
+        public void LogException(Exception ex)
+        {
+            if (_logLevel < LogLevel.Exceptions)
+            {
+                return;
+            }
+
+            Console.WriteLine($"Exception: {ex}");
+            Console.WriteLine($"Stacktrace: {ex.StackTrace}");
+        }
+
+        public void LogInfo(string info)
+        {
+            if (_logLevel < LogLevel.Info)
+            {
+                return;
+            }
+
+            Write($"Info:{Environment.NewLine}{info}");
+        }
+
         public void LogRequest(HttpRequestMessage request)
         {
             if (_logLevel < LogLevel.Request)
             {
                 return;
             }
+
             WriteSeprator();
             Write($"Request: {request.Method} {request.RequestUri}");
             WriteHeaders(request.Headers);
@@ -52,28 +74,36 @@ namespace InstagramApiSharp.Logger
             }
 
             Write($"Response: {response.RequestMessage.Method} {response.RequestMessage.RequestUri} [{response.StatusCode}]");
-            WriteContent(response.Content, Formatting.None, 0);
+            WriteContent(response.Content, Formatting.None);
         }
 
-        public void LogException(Exception ex)
+        private string FormatJson(string json)
         {
-            if (_logLevel < LogLevel.Exceptions)
-            {
-                return;
-            }
-
-            Console.WriteLine($"Exception: {ex}");
-            Console.WriteLine($"Stacktrace: {ex.StackTrace}");
+            var parsedJson = JsonConvert.DeserializeObject(json);
+            return JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
         }
 
-        public void LogInfo(string info)
+        private void Write(string message)
         {
-            if (_logLevel < LogLevel.Info)
+            Console.WriteLine($"{DateTime.Now.ToString()}:\t{message}");
+        }
+
+        private async void WriteContent(HttpContent content, Formatting formatting, int maxLength = 0)
+        {
+            Write("Content:");
+            var raw = await content.ReadAsStringAsync();
+            if (formatting == Formatting.Indented)
             {
-                return;
+                raw = FormatJson(raw);
             }
 
-            Write($"Info:{Environment.NewLine}{info}");
+            raw = raw.Contains("<!DOCTYPE html>") ? "got html content!" : raw;
+            if ((raw.Length > maxLength) & (maxLength != 0))
+            {
+                raw = raw.Substring(0, maxLength);
+            }
+
+            Write(raw);
         }
 
         private void WriteHeaders(HttpHeaders headers)
@@ -110,20 +140,7 @@ namespace InstagramApiSharp.Logger
             Write($"Properties:\n{JsonConvert.SerializeObject(properties, Formatting.Indented)}");
         }
 
-        private async void WriteContent(HttpContent content, Formatting formatting, int maxLength = 0)
-        {
-            Write("Content:");
-            var raw = await content.ReadAsStringAsync();
-            if (formatting == Formatting.Indented) raw = FormatJson(raw);
-            raw = raw.Contains("<!DOCTYPE html>") ? "got html content!" : raw;
-            if ((raw.Length > maxLength) & (maxLength != 0))
-            {
-                raw = raw.Substring(0, maxLength);
-            }
-
-            Write(raw);
-        }
-        private async void WriteRequestContent(HttpContent content,int maxLength = 0)
+        private async void WriteRequestContent(HttpContent content, int maxLength = 0)
         {
             Write("Content:");
             var raw = await content.ReadAsStringAsync();
@@ -138,19 +155,12 @@ namespace InstagramApiSharp.Logger
         private void WriteSeprator()
         {
             var sep = new StringBuilder();
-            for (var i = 0; i < 100; i++) sep.Append("-");
+            for (var i = 0; i < 100; i++)
+            {
+                sep.Append("-");
+            }
+
             Write(sep.ToString());
-        }
-
-        private string FormatJson(string json)
-        {
-            var parsedJson = JsonConvert.DeserializeObject(json);
-            return JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
-        }
-
-        private void Write(string message)
-        {
-            Console.WriteLine($"{DateTime.Now.ToString()}:\t{message}");
         }
     }
 }

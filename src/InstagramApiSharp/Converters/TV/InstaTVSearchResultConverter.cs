@@ -1,21 +1,6 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System;
 
-using System;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using InstagramApiSharp.Enums;
-using System.Linq;
-using InstagramApiSharp.Classes;
-using InstagramApiSharp.Classes.ResponseWrappers.Business;
-
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.TV
 {
     internal class InstaTVSearchResultConverter : IObjectConverter<InstaTVSearchResult, InstaTVSearchResultResponse>
     {
@@ -24,12 +9,14 @@ namespace InstagramApiSharp.Converters
         public InstaTVSearchResult Convert()
         {
             if (SourceObject == null)
+            {
                 throw new ArgumentNullException("SourceObject");
+            }
 
             var search = new InstaTVSearchResult
-            {
-                Type = SourceObject.Type
-            };
+                         {
+                             Type = SourceObject.Type
+                         };
 
             if (SourceObject.Channel != null)
             {
@@ -37,7 +24,9 @@ namespace InstagramApiSharp.Converters
                 {
                     search.Channel = ConvertersFabric.Instance.GetTVChannelConverter(SourceObject.Channel).Convert();
                 }
-                catch { }
+                catch
+                {
+                }
             }
 
             if (SourceObject.User != null)
@@ -46,7 +35,9 @@ namespace InstagramApiSharp.Converters
                 {
                     search.User = ConvertersFabric.Instance.GetUserShortFriendshipConverter(SourceObject.User).Convert();
                 }
-                catch { }
+                catch
+                {
+                }
             }
 
             return search;

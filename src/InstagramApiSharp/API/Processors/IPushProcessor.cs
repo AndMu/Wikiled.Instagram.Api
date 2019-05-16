@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-namespace InstagramApiSharp.API.Processors
+namespace Wikiled.Instagram.Api.API.Processors
 {
     public interface IPushProcessor
     {
         /// <summary>
-        /// Registers application for push notifications
+        ///     Registers application for push notifications
         /// </summary>
         /// <returns></returns>
         Task<bool> RegisterPush();

@@ -1,12 +1,15 @@
 ﻿using System;
 
-namespace InstagramApiSharp.Classes
+namespace Wikiled.Instagram.Api.Classes
 {
     public interface IRequestDelay
     {
-        TimeSpan Value { get; }
         bool Exist { get; }
-        void Enable();
+
+        TimeSpan Value { get; }
+
         void Disable();
+
+        void Enable();
     }
 }

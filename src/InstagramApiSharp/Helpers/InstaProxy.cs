@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Net;
 
-namespace InstagramApiSharp.Helpers
+namespace Wikiled.Instagram.Api.Helpers
 {
     public class InstaProxy : IWebProxy
     {
         private readonly string ipaddress;
+
         private readonly string port;
 
         public InstaProxy(string ipaddress, string port)
@@ -13,6 +14,8 @@ namespace InstagramApiSharp.Helpers
             this.ipaddress = ipaddress;
             this.port = port;
         }
+
+        public ICredentials Credentials { get; set; }
 
         public Uri GetProxy(Uri destination)
         {
@@ -23,7 +26,5 @@ namespace InstagramApiSharp.Helpers
         {
             return false;
         }
-
-        public ICredentials Credentials { get; set; }
     }
 }

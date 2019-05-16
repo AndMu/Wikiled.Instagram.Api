@@ -1,4 +1,4 @@
-﻿namespace InstagramApiSharp.Classes.Models
+﻿namespace Wikiled.Instagram.Api.Classes.Models.Media
 {
     public class InstaPosition
     {
@@ -9,6 +9,7 @@
         }
 
         public double X { get; set; }
+
         public double Y { get; set; }
     }
 }

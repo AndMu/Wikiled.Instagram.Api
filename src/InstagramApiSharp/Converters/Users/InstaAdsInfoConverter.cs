@@ -1,16 +1,4 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
-
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-
-namespace InstagramApiSharp.Converters
+﻿namespace Wikiled.Instagram.Api.Converters.Users
 {
     internal class InstaAdsInfoConverter : IObjectConverter<InstaAdsInfo, InstaAdsInfoResponse>
     {
@@ -18,11 +6,11 @@ namespace InstagramApiSharp.Converters
 
         public InstaAdsInfo Convert()
         {
-            return new InstaAdsInfo()
-            {
-                AdsUrl = SourceObject.AdsUrl,
-                HasAds = SourceObject.HasAds ?? false
-            };
+            return new InstaAdsInfo
+                   {
+                       AdsUrl = SourceObject.AdsUrl,
+                       HasAds = SourceObject.HasAds ?? false
+                   };
         }
     }
 }

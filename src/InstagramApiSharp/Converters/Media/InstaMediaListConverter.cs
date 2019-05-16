@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Linq;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
 
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Media
 {
     internal class InstaMediaListConverter : IObjectConverter<InstaMediaList, InstaMediaListResponse>
     {
@@ -11,11 +8,15 @@ namespace InstagramApiSharp.Converters
 
         public InstaMediaList Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
+            if (SourceObject == null)
+            {
+                throw new ArgumentNullException("Source object");
+            }
+
             var mediaList = new InstaMediaList();
             mediaList.AddRange(
                 SourceObject.Medias.Select(ConvertersFabric.Instance.GetSingleMediaConverter)
-                    .Select(converter => converter.Convert()));
+                            .Select(converter => converter.Convert()));
             mediaList.PageSize = SourceObject.ResultsCount;
             return mediaList;
         }

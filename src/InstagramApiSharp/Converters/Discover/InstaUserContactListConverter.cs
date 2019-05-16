@@ -1,18 +1,6 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System;
 
-using System;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-
-
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Discover
 {
     internal class InstaUserContactListConverter : IObjectConverter<InstaContactUserList, InstaContactUserListResponse>
     {
@@ -20,7 +8,11 @@ namespace InstagramApiSharp.Converters
 
         public InstaContactUserList Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
+            if (SourceObject == null)
+            {
+                throw new ArgumentNullException("Source object");
+            }
+
             var userList = new InstaContactUserList();
             try
             {
@@ -30,10 +22,15 @@ namespace InstagramApiSharp.Converters
                     {
                         userList.Add(ConvertersFabric.Instance.GetSingleUserContactConverter(item.User).Convert());
                     }
-                    catch { }
+                    catch
+                    {
+                    }
                 }
             }
-            catch { }
+            catch
+            {
+            }
+
             return userList;
         }
     }

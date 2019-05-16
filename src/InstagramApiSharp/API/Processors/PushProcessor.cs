@@ -1,16 +1,4 @@
-﻿using InstagramApiSharp.Classes;
-using InstagramApiSharp.Classes.Android.DeviceInfo;
-using InstagramApiSharp.Helpers;
-using InstagramApiSharp.Logger;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace InstagramApiSharp.API.Processors
+﻿namespace Wikiled.Instagram.Api.API.Processors
 {
     //internal class PushProcessor : IPushProcessor
     //{
@@ -64,7 +52,6 @@ namespace InstagramApiSharp.API.Processors
     //            //Reverse for Chat Order
     //            threadResponse.Items.Reverse();
     //            var converter = ConvertersFabric.Instance.GetDirectThreadConverter(threadResponse);
-
 
     //            return Result.Success(converter.Convert());
     //        }

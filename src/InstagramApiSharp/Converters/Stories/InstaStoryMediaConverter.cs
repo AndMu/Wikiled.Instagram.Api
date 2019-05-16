@@ -1,7 +1,4 @@
-﻿using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-
-namespace InstagramApiSharp.Converters
+﻿namespace Wikiled.Instagram.Api.Converters.Stories
 {
     internal class InstaStoryMediaConverter : IObjectConverter<InstaStoryMedia, InstaStoryMediaResponse>
     {
@@ -10,9 +7,9 @@ namespace InstagramApiSharp.Converters
         public InstaStoryMedia Convert()
         {
             var instaStoryMedia = new InstaStoryMedia
-            {
-                Media = ConvertersFabric.Instance.GetStoryItemConverter(SourceObject.Media).Convert()
-            };
+                                  {
+                                      Media = ConvertersFabric.Instance.GetStoryItemConverter(SourceObject.Media).Convert()
+                                  };
 
             return instaStoryMedia;
         }

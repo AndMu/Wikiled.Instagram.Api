@@ -1,19 +1,6 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System;
 
-using System;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using InstagramApiSharp.Helpers;
-using System.Linq;
-
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Discover
 {
     internal class InstaDiscoverRecentSearchesConverter : IObjectConverter<InstaDiscoverRecentSearches, InstaDiscoverRecentSearchesResponse>
     {
@@ -21,7 +8,11 @@ namespace InstagramApiSharp.Converters
 
         public InstaDiscoverRecentSearches Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
+            if (SourceObject == null)
+            {
+                throw new ArgumentNullException("Source object");
+            }
+
             var recents = new InstaDiscoverRecentSearches();
             if (SourceObject.Recent != null && SourceObject.Recent.Any())
             {
@@ -31,9 +22,12 @@ namespace InstagramApiSharp.Converters
                     {
                         recents.Recent.Add(ConvertersFabric.Instance.GetDiscoverSearchesConverter(search).Convert());
                     }
-                    catch { }
+                    catch
+                    {
+                    }
                 }
             }
+
             return recents;
         }
     }

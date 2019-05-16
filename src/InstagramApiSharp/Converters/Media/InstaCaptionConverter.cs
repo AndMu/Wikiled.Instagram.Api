@@ -1,8 +1,4 @@
-﻿using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using InstagramApiSharp.Helpers;
-
-namespace InstagramApiSharp.Converters
+﻿namespace Wikiled.Instagram.Api.Converters.Media
 {
     internal class InstaCaptionConverter : IObjectConverter<InstaCaption, InstaCaptionResponse>
     {
@@ -11,15 +7,15 @@ namespace InstagramApiSharp.Converters
         public InstaCaption Convert()
         {
             var caption = new InstaCaption
-            {
-                Pk = SourceObject.Pk,
-                CreatedAt = DateTimeHelper.UnixTimestampToDateTime(SourceObject.CreatedAtUnixLike),
-                CreatedAtUtc = DateTimeHelper.UnixTimestampToDateTime(SourceObject.CreatedAtUtcUnixLike),
-                MediaId = SourceObject.MediaId,
-                Text = SourceObject.Text,
-                User = ConvertersFabric.Instance.GetUserShortConverter(SourceObject.User).Convert(),
-                UserId = SourceObject.UserId
-            };
+                          {
+                              Pk = SourceObject.Pk,
+                              CreatedAt = DateTimeHelper.UnixTimestampToDateTime(SourceObject.CreatedAtUnixLike),
+                              CreatedAtUtc = DateTimeHelper.UnixTimestampToDateTime(SourceObject.CreatedAtUtcUnixLike),
+                              MediaId = SourceObject.MediaId,
+                              Text = SourceObject.Text,
+                              User = ConvertersFabric.Instance.GetUserShortConverter(SourceObject.User).Convert(),
+                              UserId = SourceObject.UserId
+                          };
             return caption;
         }
     }

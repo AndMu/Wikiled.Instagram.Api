@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace InstagramApiSharp.Classes.ResponseWrappers
+namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.User
 {
     public class FollowedByResponse
     {

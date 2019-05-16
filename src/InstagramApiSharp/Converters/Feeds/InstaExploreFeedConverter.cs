@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
 
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Feeds
 {
     internal class InstaExploreFeedConverter : IObjectConverter<InstaExploreFeed, InstaExploreFeedResponse>
     {
@@ -12,18 +10,27 @@ namespace InstagramApiSharp.Converters
         public InstaExploreFeed Convert()
         {
             if (SourceObject == null)
+            {
                 throw new ArgumentNullException("SourceObject");
+            }
 
             List<InstaMedia> ConvertMedia(List<InstaMediaItemResponse> mediasResponse)
             {
                 var medias = new List<InstaMedia>();
                 if (mediasResponse == null)
+                {
                     return medias;
+                }
+
                 foreach (var instaUserFeedItemResponse in mediasResponse)
                 {
-                    if (instaUserFeedItemResponse?.Type != 0) continue;
+                    if (instaUserFeedItemResponse?.Type != 0)
+                    {
+                        continue;
+                    }
+
                     var feedItem = ConvertersFabric.Instance.GetSingleMediaConverter(instaUserFeedItemResponse)
-                        .Convert();
+                                                   .Convert();
                     medias.Add(feedItem);
                 }
 
@@ -31,19 +38,24 @@ namespace InstagramApiSharp.Converters
             }
 
             var feed = new InstaExploreFeed
-            {
-                NextMaxId = SourceObject.NextMaxId,
-                AutoLoadMoreEnabled = SourceObject.AutoLoadMoreEnabled,
-                ResultsCount = SourceObject.ResultsCount,
-                MoreAvailable = SourceObject.MoreAvailable,
-                MaxId = SourceObject.MaxId,
-                RankToken = SourceObject.RankToken
-            };
+                       {
+                           NextMaxId = SourceObject.NextMaxId,
+                           AutoLoadMoreEnabled = SourceObject.AutoLoadMoreEnabled,
+                           ResultsCount = SourceObject.ResultsCount,
+                           MoreAvailable = SourceObject.MoreAvailable,
+                           MaxId = SourceObject.MaxId,
+                           RankToken = SourceObject.RankToken
+                       };
             if (SourceObject.Items?.StoryTray != null)
+            {
                 feed.StoryTray = ConvertersFabric.Instance.GetStoryTrayConverter(SourceObject.Items.StoryTray)
-                    .Convert();
+                                                 .Convert();
+            }
+
             if (SourceObject.Items?.Channel != null)
+            {
                 feed.Channel = ConvertersFabric.Instance.GetChannelConverter(SourceObject.Items.Channel).Convert();
+            }
 
             feed.Medias.AddRange(ConvertMedia(SourceObject.Items?.Medias));
             return feed;

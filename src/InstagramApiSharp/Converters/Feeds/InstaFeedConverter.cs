@@ -1,8 +1,6 @@
 ﻿using System;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
 
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Feeds
 {
     internal class InstaFeedConverter : IObjectConverter<InstaFeed, InstaFeedResponse>
     {
@@ -11,14 +9,22 @@ namespace InstagramApiSharp.Converters
         public InstaFeed Convert()
         {
             if (SourceObject?.Items == null)
+            {
                 throw new ArgumentNullException("InstaFeedResponse or its Items");
+            }
+
             var feed = new InstaFeed();
             foreach (var instaUserFeedItemResponse in SourceObject.Items)
             {
-                if (instaUserFeedItemResponse?.Type != 0) continue;
+                if (instaUserFeedItemResponse?.Type != 0)
+                {
+                    continue;
+                }
+
                 var feedItem = ConvertersFabric.Instance.GetSingleMediaConverter(instaUserFeedItemResponse).Convert();
                 feed.Medias.Add(feedItem);
             }
+
             foreach (var suggestedItemResponse in SourceObject.SuggestedUsers)
             {
                 try
@@ -26,7 +32,9 @@ namespace InstagramApiSharp.Converters
                     var suggestedItem = ConvertersFabric.Instance.GetSuggestionItemConverter(suggestedItemResponse).Convert();
                     feed.SuggestedUserItems.Add(suggestedItem);
                 }
-                catch { }
+                catch
+                {
+                }
             }
 
             feed.NextMaxId = SourceObject.NextMaxId;

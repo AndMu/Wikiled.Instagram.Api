@@ -1,46 +1,24 @@
-# InstagramApiSharp ![InstagramApiSharp](http://s8.picofile.com/file/8336601292/insta50x.png)
-A complete Private Instagram API for .NET (C#, VB.NET).
+# Wikiled.Instagram.Api ![Wikiled.Instagram.Api](http://s8.picofile.com/file/8336601292/insta50x.png)
+A complete Instagram API for .NET
 
 Supports almost every features that Instagram app has!
 
 -----
-# This project is not maintained anymore. [#233](https://github.com/ramtinak/InstagramApiSharp/issues/233)
+# This project is not maintained anymore. [#233](https://github.com/ramtinak/Wikiled.Instagram.Api/issues/233)
 -----
 | Target | Branch | Version | Download link | Total downloads |
 | ------ | ------ | ------ | ------ | ------ |
-| Nuget | master | v1.4.0.0 | [![NuGet](https://img.shields.io/nuget/v/InstagramApiSharp.svg)](https://www.nuget.org/packages/InstagramApiSharp) | [![NuGet downloads](https://img.shields.io/nuget/dt/InstagramApiSharp.svg)](https://www.nuget.org/packages/InstagramApiSharp) |
-| Release | master | v1.4.0.0 | [![Release](http://s9.picofile.com/file/8353468992/releases.PNG)](https://github.com/ramtinak/InstagramApiSharp/releases/latest) | |
+| Nuget | master | v1.4.0.0 | [![NuGet](https://img.shields.io/nuget/v/Wikiled.Instagram.Api.svg)](https://www.nuget.org/packages/Wikiled.Instagram.Api) | [![NuGet downloads](https://img.shields.io/nuget/dt/Wikiled.Instagram.Api.svg)](https://www.nuget.org/packages/Wikiled.Instagram.Api) |
 
-## IMPORTANT NOTE:
-`PaginationParameters` updated, you must use `NextMaxId` instead of using old `NextId`!!!!!
-
-## Note
-This library is based on [InstaSharper](https://github.com/a-legotin/InstaSharper) with more features and new cool things.
-
-## Install
-Use this library as dll (download from [release page](https://github.com/ramtinak/InstagramApiSharp/releases)) or reference it from [NuGet](https://www.nuget.org/packages/InstagramApiSharp/).
 
 Nuget package manager command:
 ```
-PM> Install-Package InstagramApiSharp
+PM> Install-Package Wikiled.Instagram.Api
 ```
 
-Note: this library uses [Json.NET v10.0.3 and above](https://www.nuget.org/packages/Newtonsoft.Json/) for serialize and deserialize json.
-
-## Cross Platform
-| Platform | Supported Version |
-| ------ | ------ |
-| .NET Framework | 4.5.2 |
-| .NET Standard | 1.3 |
-| .NET Standard | 2.0 |
-| .NET Core(UWP) | 10.0.10240 |
-
-## Donation
-Paypal: [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9FVAXHZH2MAKW&source=url)
-
 ## Overview
-There are a lot of features and bug fix me and [NGame1](https://github.com/NGame1) and [other contributors](https://github.com/ramtinak/InstagramApiSharp/graphs/contributors) added to this library.
-Check [sample projects](https://github.com/ramtinak/InstagramApiSharp/tree/master/samples) and [wiki pages](https://github.com/ramtinak/InstagramApiSharp/wiki) to see how it's works.
+There are a lot of features and bug fix me and [NGame1](https://github.com/NGame1) and [other contributors](https://github.com/ramtinak/Wikiled.Instagram.Api/graphs/contributors) added to this library.
+Check [sample projects](https://github.com/ramtinak/Wikiled.Instagram.Api/tree/master/samples) and [wiki pages](https://github.com/ramtinak/Wikiled.Instagram.Api/wiki) to see how it's works.
 
 ## Features
 Some of features:
@@ -81,112 +59,4 @@ var api = InstaApiBuilder.CreateBuilder()
 ```
 ##### Note: every API method has synchronous implementation as well.
 
-## Important note about me (@ramtinak)
-I don't use Instagram at all and I don't like it either, so when you across to an issue or wanna new feature, describe it as much as you can!
 
-## Contract, warning, note
-Every method returns object IS NOT COMPLETED YET!
-For example:
-```
-Task<IResult<object>>
-```
-
-## Wiki
-Check [Wiki pages](https://github.com/ramtinak/InstagramApiSharp/wiki) for documentation.
-
-## Version changes
-v1.4.0.0
-- [Add] GetTopicalExploreFeedAsync to FeedProcessor (new explore page)
-	Supports explore categories, ig tv videos
-
-v1.3.5.0
-- [Add] UserTag support in InstaVideoUpload (video upload with user tags)
-- [Add] video usertags support for uploading album
-
-v1.3.4.6
-- [Bugfix] for slider emoji in story upload
-- [Add] CropWidth and CropHeight as parameter for CreateHighlightFeedAsync (thx to [@szokeptr](https://github.com/szokeptr))
-- [Add] LastPermanentItem property to InstaDirectInboxThread by [@estgold](https://github.com/estgold)
-- [Add] RelatedHashtags to GetTopHashtagMediaListAsync 
-- [Update] GetTopHashtagMediaListAsync
-- [Update] GetRecentHashtagMediaListAsync
-- [Update] api version to 86.0.0.24.87 (it's default now)
-
-v1.3.4.5
-- [Add] GetLoggedInChallengeDataInfoAsync to IInstaApi
-- [Add] AcceptChallengeAsync to IInstaApi [THIS IS ME feature]  (check [#204](https://github.com/ramtinak/InstagramApiSharp/issues/#204))
-- [Bugfix] for highlights media converter
-- [Bugfix] for challenge response for logged in user
-
-v1.3.4.4
-- [Bugfix] for login with 2FA enabled (thx to [@vivan-snapretail](https://github.com/vivan-snapretail) for report)
-- [Add] Dashmanifest property for postlive
-- [Add] Support Uploading Story Countdown in InstaStoryUploadOptions
-- [Add] GetCountdownsStoriesAsync to StoryProcessor
-- [Add] FollowCountdownStoryAsync to StoryProcessor
-- [Add] UnFollowCountdownStoryAsync to StoryProcessor
-
-v1.3.4.3
-- [Bugfix] for BusinessProcessor.GetStatisticsAsync [ by [@estgold](https://github.com/estgold) ]
-- [Bugfix] for GetStoryMediaViewersAsync (thx to [@tommasoceschia](https://github.com/tommasoceschia) for report)
-- [Add] HttpRequestProcessor to IInstaApi
-- [Add] GetApiVersionInfo to IInstaApi
-- [Add] GetUserAgent to IInstaApi
-
-v1.3.4.2
-- [Bugfix] for InstaRecentActivityConverter timestamp for different cultures [ by [@estgold](https://github.com/estgold) ]
-- [Bugfix] for media products (thx to [@tommasoceschia](https://github.com/tommasoceschia) for report)
-
-v1.3.4.1
-- [Bugfix] for UploadStoryPhotoWithUrlAsync
-- [Bugfix] for ProductTags (thx to [@tommasoceschia](https://github.com/tommasoceschia) for report)
-- [Add] some new properties to InstaProduct class
-- [Add] support for Questions in InstaStoryUploadOptions
-- [Update] facebook login function
-- [Update] story slider
-
-[Version changes](https://github.com/ramtinak/InstagramApiSharp/wiki/Version-changes) page
-
-## Known Issues
-Nothing!!!!
-
-## [InstaPost](https://github.com/ramtinak/InstaPost/) app.
-You can download source code or app from [InstaPost](https://github.com/ramtinak/InstaPost/) github page.
-![InstaPost](http://s9.picofile.com/file/8335529176/sc1.PNG)
-![InstaPost](http://s8.picofile.com/file/8335529250/sc5.PNG)
-
-Note: [InstaPost](https://github.com/ramtinak/InstaPost/) app is just an old example that uses [InstagramApiSharp v1.1.5.2](https://www.nuget.org/packages/InstagramApiSharp/1.1.5.2) which is very old version!!! 
-Some of codes may not working well or even deprecated in new [InstagramApiSharp](https://github.com/ramtinak/InstagramApiSharp) versions.
-I suggest you to update library to the latest [nuget version](https://www.nuget.org/packages/InstagramApiSharp) or use latest [release package](https://github.com/ramtinak/InstagramApiSharp/releases) and update [InstaPost](https://github.com/ramtinak/InstaPost/) codes that is not working or deprecated
-
-## Language
-You can ask questions or report issues in Persian or English language.
-I can't answer to other languages, because I don't understand them.
-
-## License
-Do whatever you want to do! Except changing library name!!!!
-
-## Terms and conditions
-- Use this Api at your own risk.
-
-## Contribute
-Feel free to contribute and submit pull requests.
-
-## Thanks
-Special thanks to [all contributors](https://github.com/ramtinak/InstagramApiSharp/graphs/contributors).
-
-Special thanks to [mgp25](https://github.com/mgp25) and his [php wrapper](https://github.com/mgp25/Instagram-API/).
-
-## Legal
-This code is in no way affiliated with, authorized, maintained, sponsored or endorsed by Instagram or any of its affiliates or subsidiaries. This is an independent and unofficial API wrapper.
-
-## Developers
-
-| Name | Github | Email | Telegram | Instagram |
-| ------ | ------ | ------ | ------ | ------ |
-| Ramtin Jokar | [@Ramtinak](https://github.com/ramtinak) | [Ramtinak@live.com](mailto:ramtinak@live.com) | - | - |
-| Ali Noshahi | [@NGame1](https://github.com/NGame1) | [NGame1390@hotmail.com](mailto:ngame1390@hotmail.com) | https://t.me/NGameW | https://instagram.com/alingame |
-
-
-
-Iranian developers - (c) 2019 | Bahar 1398.

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using InstagramApiSharp.Classes.ResponseWrappers.BaseResponse;
 using Newtonsoft.Json;
 
-namespace InstagramApiSharp.Classes.ResponseWrappers
+namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Feed
 {
     public class InstaFeedResponse : BaseLoadableResponse
     {
@@ -12,7 +11,6 @@ namespace InstagramApiSharp.Classes.ResponseWrappers
         public List<InstaMediaItemResponse> Items { get; set; } = new List<InstaMediaItemResponse>();
 
         //[JsonProperty("suggested_users")]
-        [JsonIgnore]
-        public List<InstaSuggestionItemResponse> SuggestedUsers { get; set; } = new List<InstaSuggestionItemResponse>();
+        [JsonIgnore] public List<InstaSuggestionItemResponse> SuggestedUsers { get; set; } = new List<InstaSuggestionItemResponse>();
     }
 }

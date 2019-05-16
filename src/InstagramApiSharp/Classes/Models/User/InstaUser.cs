@@ -1,4 +1,4 @@
-﻿namespace InstagramApiSharp.Classes.Models
+﻿namespace Wikiled.Instagram.Api.Classes.Models.User
 {
     public class InstaUser : InstaUserShort
     {
@@ -13,13 +13,20 @@
             IsVerified = instaUserShort.IsVerified;
         }
 
-        public bool HasAnonymousProfilePicture { get; set; }
         public int FollowersCount { get; set; }
+
         public string FollowersCountByLine { get; set; }
-        public string SocialContext { get; set; }
-        public string SearchSocialContext { get; set; }
-        public int MutualFollowers { get; set; }
-        public int UnseenCount { get; set; }
+
         public InstaFriendshipShortStatus FriendshipStatus { get; set; }
+
+        public bool HasAnonymousProfilePicture { get; set; }
+
+        public int MutualFollowers { get; set; }
+
+        public string SearchSocialContext { get; set; }
+
+        public string SocialContext { get; set; }
+
+        public int UnseenCount { get; set; }
     }
 }

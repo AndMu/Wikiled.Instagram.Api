@@ -1,20 +1,15 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
-using InstagramApiSharp.Classes;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using InstagramApiSharp.Enums;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.Models.Account;
+using Wikiled.Instagram.Api.Classes.Models.Business;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.Other;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Login;
+using Wikiled.Instagram.Api.Enums;
 
-
-namespace InstagramApiSharp.API.Processors
+namespace Wikiled.Instagram.Api.API.Processors
 {
     /// <summary>
     ///     Account api functions.
@@ -23,6 +18,7 @@ namespace InstagramApiSharp.API.Processors
     public interface IAccountProcessor
     {
         #region Edit profile
+
         /// <summary>
         ///     Change password
         /// </summary>
@@ -37,12 +33,12 @@ namespace InstagramApiSharp.API.Processors
         /// <summary>
         ///     Change profile picture(only jpg and jpeg formats).
         /// </summary>
-        /// <param name="pictureBytes">Picture(JPG,JPEG) bytes</param>        
+        /// <param name="pictureBytes">Picture(JPG,JPEG) bytes</param>
         Task<IResult<InstaUserEdit>> ChangeProfilePictureAsync(byte[] pictureBytes);
 
         /// <summary>
         ///     Change profile picture(only jpg and jpeg formats).
-        /// </summary> 
+        /// </summary>
         /// <param name="progress">Progress action</param>
         /// <param name="pictureBytes">Picture(JPG,JPEG) bytes</param>
         Task<IResult<InstaUserEdit>> ChangeProfilePictureAsync(Action<InstaUploaderProgress> progress, byte[] pictureBytes);
@@ -73,34 +69,38 @@ namespace InstagramApiSharp.API.Processors
         Task<IResult<InstaRequestDownloadData>> GetRequestForDownloadAccountDataAsync(string email, string password);
 
         /// <summary>
-        /// Get request for edit profile.
-        /// </summary>        
+        ///     Get request for edit profile.
+        /// </summary>
         Task<IResult<InstaUserEdit>> GetRequestForEditProfileAsync();
 
         /// <summary>
         ///     Remove profile picture.
-        /// </summary>        
+        /// </summary>
         Task<IResult<InstaUserEdit>> RemoveProfilePictureAsync();
 
         /// <summary>
         ///     Set current account private
         /// </summary>
         Task<IResult<InstaUserShort>> SetAccountPrivateAsync();
+
         /// <summary>
         ///     Set current account public
         /// </summary>
         Task<IResult<InstaUserShort>> SetAccountPublicAsync();
+
         /// <summary>
         ///     Set biography (support hashtags and user mentions)
         /// </summary>
         /// <param name="bio">Biography text, hashtags or user mentions</param>
         Task<IResult<InstaBiography>> SetBiographyAsync(string bio);
+
         /// <summary>
         ///     Set name and phone number.
         /// </summary>
         /// <param name="name">Name</param>
-        /// <param name="phoneNumber">Phone number</param>        
+        /// <param name="phoneNumber">Phone number</param>
         Task<IResult<bool>> SetNameAndPhoneNumberAsync(string name, string phoneNumber = "");
+
         /// <summary>
         ///     Upload nametag image
         /// </summary>
@@ -110,52 +110,55 @@ namespace InstagramApiSharp.API.Processors
         #endregion Edit profile
 
         #region Story settings
+
         /// <summary>
         ///     Allow story message replies.
         /// </summary>
-        /// <param name="repliesType">Reply typo</param>        
+        /// <param name="repliesType">Reply typo</param>
         Task<IResult<bool>> AllowStoryMessageRepliesAsync(InstaMessageRepliesType repliesType);
 
         /// <summary>
         ///     Allow story sharing.
         /// </summary>
-        /// <param name="allow">Allow or disallow story sharing</param>        
+        /// <param name="allow">Allow or disallow story sharing</param>
         Task<IResult<bool>> AllowStorySharingAsync(bool allow = true);
 
         /// <summary>
         ///     Check username availablity.
         /// </summary>
-        /// <param name="desiredUsername">Desired username</param>        
+        /// <param name="desiredUsername">Desired username</param>
         Task<IResult<InstaAccountCheck>> CheckUsernameAsync(string desiredUsername);
 
         /// <summary>
         ///     Disable Save story to archive.
-        /// </summary>        
+        /// </summary>
         Task<IResult<bool>> DisableSaveStoryToArchiveAsync();
 
         /// <summary>
         ///     Disable Save story to gallery.
-        /// </summary>        
+        /// </summary>
         Task<IResult<bool>> DisableSaveStoryToGalleryAsync();
 
         /// <summary>
         ///     Enable Save story to archive.
-        /// </summary>        
+        /// </summary>
         Task<IResult<bool>> EnableSaveStoryToArchiveAsync();
 
         /// <summary>
         ///     Enable Save story to gallery.
-        /// </summary>        
+        /// </summary>
         Task<IResult<bool>> EnableSaveStoryToGalleryAsync();
 
         // Story settings
         /// <summary>
         ///     Get story settings.
-        /// </summary>        
+        /// </summary>
         Task<IResult<InstaStorySettings>> GetStorySettingsAsync();
+
         #endregion Story settings
 
         #region two factor authentication enable/disable
+
         /// <summary>
         ///     Disable two factor authentication.
         /// </summary>
@@ -166,6 +169,7 @@ namespace InstagramApiSharp.API.Processors
         ///     Get Security settings (two factor authentication and backup codes).
         /// </summary>
         Task<IResult<InstaAccountSecuritySettings>> GetSecuritySettingsInfoAsync();
+
         /// <summary>
         ///     Regenerate two factor backup codes
         /// </summary>
@@ -193,18 +197,21 @@ namespace InstagramApiSharp.API.Processors
         /// </summary>
         /// <param name="phoneNumber">Phone number</param>
         Task<IResult<InstaAccountTwoFactorSms>> SendTwoFactorEnableSmsAsync(string phoneNumber);
+
         /// <summary>
         ///     Verify enable two factor.
         /// </summary>
         /// <param name="phoneNumber">Phone number</param>
         /// <param name="verificationCode">Verification code</param>
         Task<IResult<InstaAccountTwoFactor>> TwoFactorEnableAsync(string phoneNumber, string verificationCode);
+
         /// <summary>
         ///     Verify sms code.
         /// </summary>
         /// <param name="phoneNumber">Phone number (ex: +9891234...)</param>
         /// <param name="verificationCode">Verification code</param>
         Task<IResult<InstaAccountVerifySms>> VerifySmsCodeAsync(string phoneNumber, string verificationCode);
+
         #endregion two factor authentication enable/disable
 
         #region Other functions
@@ -234,14 +241,15 @@ namespace InstagramApiSharp.API.Processors
         /// </summary>
         Task<IResult<InstaBusinessUser>> SwitchToBusinessAccountAsync();
 
-
         #endregion Other functions
 
         #region NOT COMPLETE FUNCTIONS
+
         /// <summary>
         ///     NOT COMPLETE dastrasi last activity
         /// </summary>
         //Task<IResult<object>> GetCommentFilterAsync();
+
         #endregion NOT COMPLETE FUNCTIONS
     }
 }

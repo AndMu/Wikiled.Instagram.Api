@@ -1,9 +1,4 @@
-﻿using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using Newtonsoft.Json;
-using System.Linq;
-
-namespace InstagramApiSharp.Converters
+﻿namespace Wikiled.Instagram.Api.Converters.Media
 {
     internal class InstaCommentListConverter : IObjectConverter<InstaCommentList, InstaCommentListResponse>
     {
@@ -12,24 +7,28 @@ namespace InstagramApiSharp.Converters
         public InstaCommentList Convert()
         {
             var commentList = new InstaCommentList
+                              {
+                                  Caption = SourceObject.Caption != null
+                                                ? ConvertersFabric.Instance.GetCaptionConverter(SourceObject.Caption).Convert()
+                                                : null,
+                                  CanViewMorePreviewComments = SourceObject.CanViewMorePreviewComments,
+                                  CaptionIsEdited = SourceObject.CaptionIsEdited,
+                                  CommentsCount = SourceObject.CommentsCount,
+                                  MoreCommentsAvailable = SourceObject.MoreCommentsAvailable,
+                                  InitiateAtTop = SourceObject.InitiateAtTop,
+                                  InsertNewCommentToTop = SourceObject.InsertNewCommentToTop,
+                                  MediaHeaderDisplay = SourceObject.MediaHeaderDisplay,
+                                  ThreadingEnabled = SourceObject.ThreadingEnabled,
+                                  LikesEnabled = SourceObject.LikesEnabled,
+                                  MoreHeadLoadAvailable = SourceObject.MoreHeadLoadAvailable,
+                                  NextMaxId = SourceObject.NextMaxId,
+                                  NextMinId = SourceObject.NextMinId
+                              };
+            if (SourceObject.Comments == null || !(SourceObject?.Comments?.Count > 0))
             {
-                Caption = SourceObject.Caption != null
-                    ? ConvertersFabric.Instance.GetCaptionConverter(SourceObject.Caption).Convert()
-                    : null,
-                CanViewMorePreviewComments = SourceObject.CanViewMorePreviewComments,
-                CaptionIsEdited = SourceObject.CaptionIsEdited,
-                CommentsCount = SourceObject.CommentsCount,
-                MoreCommentsAvailable = SourceObject.MoreCommentsAvailable,
-                InitiateAtTop = SourceObject.InitiateAtTop,
-                InsertNewCommentToTop = SourceObject.InsertNewCommentToTop,
-                MediaHeaderDisplay = SourceObject.MediaHeaderDisplay,
-                ThreadingEnabled = SourceObject.ThreadingEnabled,
-                LikesEnabled = SourceObject.LikesEnabled,
-                MoreHeadLoadAvailable = SourceObject.MoreHeadLoadAvailable, 
-                NextMaxId = SourceObject.NextMaxId,
-                NextMinId = SourceObject.NextMinId
-            };
-            if (SourceObject.Comments == null || !(SourceObject?.Comments?.Count > 0)) return commentList;
+                return commentList;
+            }
+
             foreach (var commentResponse in SourceObject.Comments)
             {
                 var converter = ConvertersFabric.Instance.GetCommentConverter(commentResponse);
@@ -44,9 +43,12 @@ namespace InstagramApiSharp.Converters
                     {
                         commentList.PreviewComments.Add(ConvertersFabric.Instance.GetCommentConverter(cmt).Convert());
                     }
-                    catch { }
+                    catch
+                    {
+                    }
                 }
             }
+
             return commentList;
         }
     }

@@ -1,9 +1,8 @@
 ﻿using System;
-using InstagramApiSharp.Classes.ResponseWrappers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace InstagramApiSharp.Converters.Json
+namespace Wikiled.Instagram.Api.Converters.Json
 {
     internal class InstaFriendShipDataConverter : JsonConverter
     {
@@ -12,7 +11,8 @@ namespace InstagramApiSharp.Converters.Json
             return objectType == typeof(InstaFriendshipStatusResponse);
         }
 
-        public override object ReadJson(JsonReader reader,
+        public override object ReadJson(
+            JsonReader reader,
             Type objectType,
             object existingValue,
             JsonSerializer serializer)
@@ -20,8 +20,8 @@ namespace InstagramApiSharp.Converters.Json
             var root = JToken.Load(reader);
             var statusSubContainer = root["friendship_status"];
             return statusSubContainer == null
-                ? root.ToObject<InstaFriendshipStatusResponse>()
-                : statusSubContainer.ToObject<InstaFriendshipStatusResponse>();
+                       ? root.ToObject<InstaFriendshipStatusResponse>()
+                       : statusSubContainer.ToObject<InstaFriendshipStatusResponse>();
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

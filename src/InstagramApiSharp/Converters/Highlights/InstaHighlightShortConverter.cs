@@ -1,19 +1,6 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System;
 
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using System.Collections.Generic;
-using InstagramApiSharp.Helpers;
-using System;
-
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Highlights
 {
     internal class InstaHighlightShortConverter : IObjectConverter<InstaHighlightShort, InstaHighlightShortResponse>
     {
@@ -21,16 +8,19 @@ namespace InstagramApiSharp.Converters
 
         public InstaHighlightShort Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
+            if (SourceObject == null)
+            {
+                throw new ArgumentNullException("Source object");
+            }
 
             var highlight = new InstaHighlightShort
-            {
-                Id = SourceObject.Id,
-                LatestReelMedia = SourceObject.LatestReelMedia,
-                MediaCount = SourceObject.MediaCount,
-                ReelType = SourceObject.ReelType,
-                Time = DateTimeHelper.FromUnixTimeSeconds(SourceObject.Timestamp ?? 0)
-            };
+                            {
+                                Id = SourceObject.Id,
+                                LatestReelMedia = SourceObject.LatestReelMedia,
+                                MediaCount = SourceObject.MediaCount,
+                                ReelType = SourceObject.ReelType,
+                                Time = DateTimeHelper.FromUnixTimeSeconds(SourceObject.Timestamp ?? 0)
+                            };
             return highlight;
         }
     }

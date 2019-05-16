@@ -1,14 +1,41 @@
 ﻿using System.Threading.Tasks;
-using InstagramApiSharp.Classes;
-using InstagramApiSharp.Classes.Models;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.Models.Hashtags;
+using Wikiled.Instagram.Api.Classes.Models.Location;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.Models.User;
 
-namespace InstagramApiSharp.API.Processors
+namespace Wikiled.Instagram.Api.API.Processors
 {
     /// <summary>
     ///     Location api functions.
     /// </summary>
     public interface ILocationProcessor
     {
+        /// <summary>
+        ///     Get location(place) information by external id or facebook places id
+        ///     <para>
+        ///         Get external id from this function:
+        ///         <see cref="ILocationProcessor.SearchLocationAsync(double, double, string)" />
+        ///     </para>
+        ///     <para>
+        ///         Get facebook places id from this function:
+        ///         <see cref="ILocationProcessor.SearchPlacesAsync(double, double, string)(double, double, string)" />
+        ///     </para>
+        /// </summary>
+        /// <param name="externalIdOrFacebookPlacesId">
+        ///     External id or facebook places id of an location/place
+        ///     <para>
+        ///         Get external id from this function:
+        ///         <see cref="ILocationProcessor.SearchLocationAsync(double, double, string)" />
+        ///     </para>
+        ///     <para>
+        ///         Get facebook places id from this function:
+        ///         <see cref="ILocationProcessor.SearchPlacesAsync(double, double, string)(double, double, string)" />
+        ///     </para>
+        /// </param>
+        Task<IResult<InstaPlaceShort>> GetLocationInfoAsync(string externalIdOrFacebookPlacesId);
+
         /// <summary>
         ///     Gets the stories of particular location.
         /// </summary>
@@ -17,18 +44,6 @@ namespace InstagramApiSharp.API.Processors
         ///     Location stories
         /// </returns>
         Task<IResult<InstaStory>> GetLocationStoriesAsync(long locationId);
-
-        /// <summary>
-        ///     Get location(place) information by external id or facebook places id
-        ///     <para>Get external id from this function: <see cref="ILocationProcessor.SearchLocationAsync(double, double, string)"/></para>
-        ///     <para>Get facebook places id from this function: <see cref="ILocationProcessor.SearchPlacesAsync(double, double, string)(double, double, string)"/></para>
-        /// </summary>
-        /// <param name="externalIdOrFacebookPlacesId">
-        ///     External id or facebook places id of an location/place
-        ///     <para>Get external id from this function: <see cref="ILocationProcessor.SearchLocationAsync(double, double, string)"/></para>
-        ///     <para>Get facebook places id from this function: <see cref="ILocationProcessor.SearchPlacesAsync(double, double, string)(double, double, string)"/></para>
-        /// </param>
-        Task<IResult<InstaPlaceShort>> GetLocationInfoAsync(string externalIdOrFacebookPlacesId);
 
         /// <summary>
         ///     Get recent location media feeds.
@@ -56,14 +71,7 @@ namespace InstagramApiSharp.API.Processors
         ///     List of locations (short format)
         /// </returns>
         Task<IResult<InstaLocationShortList>> SearchLocationAsync(double latitude, double longitude, string query);
-        /// <summary>
-        ///     Search user by location
-        /// </summary>
-        /// <param name="latitude">Latitude</param>
-        /// <param name="longitude">Longitude</param>
-        /// <param name="desireUsername">Desire username</param>
-        /// <param name="count">Maximum user count</param>
-        Task<IResult<InstaUserSearchLocation>> SearchUserByLocationAsync(double latitude, double longitude, string desireUsername, int count = 50);
+
         /// <summary>
         ///     Search places in facebook
         ///     <para>Note: This works for non-facebook accounts too!</para>
@@ -75,6 +83,7 @@ namespace InstagramApiSharp.API.Processors
         ///     <see cref="InstaPlaceList" />
         /// </returns>
         Task<IResult<InstaPlaceList>> SearchPlacesAsync(double latitude, double longitude, PaginationParameters paginationParameters);
+
         /// <summary>
         ///     Search places in facebook
         ///     <para>Note: This works for non-facebook accounts too!</para>
@@ -88,5 +97,13 @@ namespace InstagramApiSharp.API.Processors
         /// </returns>
         Task<IResult<InstaPlaceList>> SearchPlacesAsync(double latitude, double longitude, string query, PaginationParameters paginationParameters);
 
+        /// <summary>
+        ///     Search user by location
+        /// </summary>
+        /// <param name="latitude">Latitude</param>
+        /// <param name="longitude">Longitude</param>
+        /// <param name="desireUsername">Desire username</param>
+        /// <param name="count">Maximum user count</param>
+        Task<IResult<InstaUserSearchLocation>> SearchUserByLocationAsync(double latitude, double longitude, string desireUsername, int count = 50);
     }
 }

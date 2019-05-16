@@ -1,8 +1,6 @@
 using System;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
 
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Media
 {
     internal class InstaCarouselConverter : IObjectConverter<InstaCarousel, InstaCarouselResponse>
     {
@@ -11,7 +9,11 @@ namespace InstagramApiSharp.Converters
         public InstaCarousel Convert()
         {
             var carousel = new InstaCarousel();
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
+            if (SourceObject == null)
+            {
+                throw new ArgumentNullException("Source object");
+            }
+
             foreach (var item in SourceObject)
             {
                 var carouselItem = ConvertersFabric.Instance.GetCarouselItemConverter(item);

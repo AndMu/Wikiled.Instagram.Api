@@ -1,15 +1,14 @@
-﻿namespace InstagramApiSharp.Classes.Models
+﻿namespace Wikiled.Instagram.Api.Classes.Models.Story
 {
     public class InstaStoryQuestionStickerItem
     {
-
         public string BackgroundColor { get; set; }
 
         public string ProfilePicUrl { get; set; }
 
-        public long QuestionId { get; set; }
-
         public string Question { get; set; }
+
+        public long QuestionId { get; set; }
 
         public string QuestionType { get; set; }
 

@@ -1,9 +1,8 @@
 ﻿using System;
-using InstagramApiSharp.Classes.ResponseWrappers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace InstagramApiSharp.Converters.Json
+namespace Wikiled.Instagram.Api.Converters.Json
 {
     internal class InstaUserDataConverter : JsonConverter
     {
@@ -12,7 +11,8 @@ namespace InstagramApiSharp.Converters.Json
             return objectType == typeof(InstaUserResponse);
         }
 
-        public override object ReadJson(JsonReader reader,
+        public override object ReadJson(
+            JsonReader reader,
             Type objectType,
             object existingValue,
             JsonSerializer serializer)
@@ -20,8 +20,8 @@ namespace InstagramApiSharp.Converters.Json
             var token = JToken.Load(reader);
             var userToken = token?.SelectToken("user");
             var user = userToken != null
-                ? userToken.ToObject<InstaUserResponse>()
-                : token?.ToObject<InstaUserResponse>();
+                           ? userToken.ToObject<InstaUserResponse>()
+                           : token?.ToObject<InstaUserResponse>();
             return user;
         }
 

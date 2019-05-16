@@ -1,11 +1,7 @@
-﻿using InstagramApiSharp.API;
-using System;
-using System.Collections.Generic;
-using System.Text;
-#if WINDOWS_UWP
+﻿#if WINDOWS_UWP
 using Windows.Storage;
 #endif
-namespace InstagramApiSharp.Classes.SessionHandlers
+namespace Wikiled.Instagram.Api.Classes.SessionHandlers
 {
     public interface ISessionHandler
     {

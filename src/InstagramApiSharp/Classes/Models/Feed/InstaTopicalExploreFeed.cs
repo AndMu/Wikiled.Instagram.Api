@@ -1,39 +1,29 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System.Collections.Generic;
 
-
-using System.Collections.Generic;
-
-namespace InstagramApiSharp.Classes.Models
+namespace Wikiled.Instagram.Api.Classes.Models.Feed
 {
     public class InstaTopicalExploreFeed
     {
-        public List<InstaTopicalExploreCluster> Clusters { get; set; } = new List<InstaTopicalExploreCluster>();
-
-        public InstaMediaList Medias { get; set; } = new InstaMediaList();
-
-        public string NextMaxId { get; set; }
-
-        public List<InstaTVChannel> TVChannels { get; set; } = new List<InstaTVChannel>();
+        public bool AutoLoadMoreEnabled { get; set; }
 
         public InstaChannel Channel { get; set; } = new InstaChannel();
 
+        public List<InstaTopicalExploreCluster> Clusters { get; set; } = new List<InstaTopicalExploreCluster>();
+
+        public bool HasShoppingChannelContent { get; set; }
+
         public string MaxId { get; set; }
 
-        public string RankToken { get; set; }
+        public InstaMediaList Medias { get; set; } = new InstaMediaList();
 
         public bool MoreAvailable { get; set; }
 
+        public string NextMaxId { get; set; }
+
+        public string RankToken { get; set; }
+
         public int ResultsCount { get; set; }
 
-        public bool AutoLoadMoreEnabled { get; set; }
-
-        public bool HasShoppingChannelContent { get; set; }
+        public List<InstaTVChannel> TVChannels { get; set; } = new List<InstaTVChannel>();
     }
 }

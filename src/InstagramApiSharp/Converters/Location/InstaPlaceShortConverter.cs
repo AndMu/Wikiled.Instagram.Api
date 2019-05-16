@@ -1,17 +1,6 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System;
 
-using System;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Location
 {
     internal class InstaPlaceShortConverter : IObjectConverter<InstaPlaceShort, InstaPlaceShortResponse>
     {
@@ -19,20 +8,23 @@ namespace InstagramApiSharp.Converters
 
         public InstaPlaceShort Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
+            if (SourceObject == null)
+            {
+                throw new ArgumentNullException("Source object");
+            }
 
             var place = new InstaPlaceShort
-            {
-                Address = SourceObject.Address,
-                City = SourceObject.City,
-                ExternalSource = SourceObject.ExternalSource,
-                FacebookPlacesId = SourceObject.FacebookPlacesId,
-                Lat = SourceObject.Lat,
-                Lng = SourceObject.Lng,
-                Name = SourceObject.Name,
-                Pk = SourceObject.Pk,
-                ShortName = SourceObject.ShortName
-            };
+                        {
+                            Address = SourceObject.Address,
+                            City = SourceObject.City,
+                            ExternalSource = SourceObject.ExternalSource,
+                            FacebookPlacesId = SourceObject.FacebookPlacesId,
+                            Lat = SourceObject.Lat,
+                            Lng = SourceObject.Lng,
+                            Name = SourceObject.Name,
+                            Pk = SourceObject.Pk,
+                            ShortName = SourceObject.ShortName
+                        };
             return place;
         }
     }

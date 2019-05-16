@@ -1,24 +1,18 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
- 
-using System;
+﻿using System;
 
-namespace InstagramApiSharp.Helpers
+namespace Wikiled.Instagram.Api.Helpers
 {
     internal static class WebHelper
     {
-        const string StartTag = "type=\"text/javascript\">window._sharedData";
-        const string EndTag = ";</script>";
+        private const string EndTag = ";</script>";
+
+        private const string StartTag = "type=\"text/javascript\">window._sharedData";
+
         public static bool CanReadJson(this string html)
         {
             return html.Contains(StartTag);
         }
+
         public static string GetJson(this string html)
         {
             try
@@ -31,9 +25,12 @@ namespace InstagramApiSharp.Helpers
                     return json;
                 }
             }
-            catch (Exception ex) { $"WebHelper.GetJson ex: {ex.Message}\r\nSource: {ex.Source}\r\nTrace: {ex.StackTrace}".PrintInDebug(); }
+            catch (Exception ex)
+            {
+                $"WebHelper.GetJson ex: {ex.Message}\r\nSource: {ex.Source}\r\nTrace: {ex.StackTrace}".PrintInDebug();
+            }
+
             return null;
         }
-
     }
 }

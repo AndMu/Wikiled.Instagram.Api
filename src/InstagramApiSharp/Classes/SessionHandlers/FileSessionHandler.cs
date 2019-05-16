@@ -1,21 +1,15 @@
-﻿using InstagramApiSharp.API;
-using InstagramApiSharp.API.Builder;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 
-namespace InstagramApiSharp.Classes.SessionHandlers
+namespace Wikiled.Instagram.Api.Classes.SessionHandlers
 {
     public class FileSessionHandler : ISessionHandler
     {
-
-        public IInstaApi InstaApi { get; set; }
-
         /// <summary>
         ///     Path to file
         /// </summary>
         public string FilePath { get; set; }
+
+        public IInstaApi InstaApi { get; set; }
 
         /// <summary>
         ///     Load and Set StateData to InstaApi

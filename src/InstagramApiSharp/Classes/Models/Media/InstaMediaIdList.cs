@@ -1,13 +1,8 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
-using System.Collections.Generic;
-namespace InstagramApiSharp.Classes.Models
+﻿using System.Collections.Generic;
+
+namespace Wikiled.Instagram.Api.Classes.Models.Media
 {
-    public class InstaMediaIdList : List<string> { }
+    public class InstaMediaIdList : List<string>
+    {
+    }
 }

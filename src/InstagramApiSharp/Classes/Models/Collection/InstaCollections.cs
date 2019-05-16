@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 
-namespace InstagramApiSharp.Classes.Models
+namespace Wikiled.Instagram.Api.Classes.Models.Collection
 {
     public class InstaCollections
     {
-        public bool MoreCollectionsAvailable { get; set; }
-
-        public int Pages { get; set; } = 0;
-
         public List<InstaCollectionItem> Items { get; set; }
 
+        public bool MoreCollectionsAvailable { get; set; }
+
         public string NextMaxId { get; set; }
+
+        public int Pages { get; set; } = 0;
     }
 }

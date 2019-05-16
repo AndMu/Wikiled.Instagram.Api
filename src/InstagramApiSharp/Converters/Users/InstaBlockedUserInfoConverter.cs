@@ -1,10 +1,4 @@
-﻿using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace InstagramApiSharp.Converters
+﻿namespace Wikiled.Instagram.Api.Converters.Users
 {
     internal class InstaBlockedUserInfoConverter : IObjectConverter<InstaBlockedUserInfo, InstaBlockedUserInfoResponse>
     {
@@ -12,15 +6,15 @@ namespace InstagramApiSharp.Converters
 
         public InstaBlockedUserInfo Convert()
         {
-            return new InstaBlockedUserInfo()
-            {
-                BlockedAt = SourceObject.BlockedAt,
-                FullName = SourceObject.FullName,
-                IsPrivate = SourceObject.IsPrivate,
-                Pk = SourceObject.Pk,
-                ProfilePicture = SourceObject.ProfilePicture,
-                UserName = SourceObject.UserName
-            };
+            return new InstaBlockedUserInfo
+                   {
+                       BlockedAt = SourceObject.BlockedAt,
+                       FullName = SourceObject.FullName,
+                       IsPrivate = SourceObject.IsPrivate,
+                       Pk = SourceObject.Pk,
+                       ProfilePicture = SourceObject.ProfilePicture,
+                       UserName = SourceObject.UserName
+                   };
         }
     }
 }

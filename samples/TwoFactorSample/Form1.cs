@@ -23,6 +23,12 @@ using InstagramApiSharp.API.Builder;
 using InstagramApiSharp.Classes;
 using InstagramApiSharp.Classes.Models;
 using InstagramApiSharp.Logger;
+using Wikiled.Instagram.Api.API;
+using Wikiled.Instagram.Api.API.Builder;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Enums;
+using Wikiled.Instagram.Api.Logger;
+
 /////////////////////////////////////////////////////////////////////
 ////////////////////// IMPORTANT NOTE ///////////////////////////////
 // Please check wiki pages for more information:

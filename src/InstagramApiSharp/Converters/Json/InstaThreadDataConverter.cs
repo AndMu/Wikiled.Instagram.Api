@@ -1,9 +1,8 @@
 ﻿using System;
-using InstagramApiSharp.Classes.ResponseWrappers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace InstagramApiSharp.Converters.Json
+namespace Wikiled.Instagram.Api.Converters.Json
 {
     internal class InstaThreadDataConverter : JsonConverter
     {
@@ -12,7 +11,8 @@ namespace InstagramApiSharp.Converters.Json
             return objectType == typeof(InstaDirectInboxThreadResponse);
         }
 
-        public override object ReadJson(JsonReader reader,
+        public override object ReadJson(
+            JsonReader reader,
             Type objectType,
             object existingValue,
             JsonSerializer serializer)
@@ -20,7 +20,11 @@ namespace InstagramApiSharp.Converters.Json
             var token = JToken.Load(reader);
             var thread = token["thread"];
             var threadResponse = new InstaDirectInboxThreadResponse();
-            if (thread != null) threadResponse = thread.ToObject<InstaDirectInboxThreadResponse>();
+            if (thread != null)
+            {
+                threadResponse = thread.ToObject<InstaDirectInboxThreadResponse>();
+            }
+
             return threadResponse;
         }
 

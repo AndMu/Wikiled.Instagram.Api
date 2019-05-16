@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace InstagramApiSharp.Enums
+﻿namespace Wikiled.Instagram.Api.Enums
 {
     internal enum InstaInsightSurfaceType
     {
         Account,
+
         Post
     }
 }

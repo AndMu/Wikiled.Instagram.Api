@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using InstagramApiSharp.Classes.ResponseWrappers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace InstagramApiSharp.Converters.Json
+namespace Wikiled.Instagram.Api.Converters.Json
 {
     internal class InstaRecentActivityConverter : JsonConverter
     {
@@ -13,7 +12,8 @@ namespace InstagramApiSharp.Converters.Json
             return objectType == typeof(InstaRecentActivityResponse);
         }
 
-        public override object ReadJson(JsonReader reader,
+        public override object ReadJson(
+            JsonReader reader,
             Type objectType,
             object existingValue,
             JsonSerializer serializer)
@@ -32,11 +32,13 @@ namespace InstagramApiSharp.Converters.Json
                     var newStories = token.SelectToken("new_stories")?.ToObject<List<InstaRecentActivityFeedResponse>>();
                     recentActivity.Stories.AddRange(newStories ?? throw new InvalidOperationException());
                 }
+
                 if (token.SelectToken("old_stories") != null)
                 {
                     var oldStories = token.SelectToken("old_stories")?.ToObject<List<InstaRecentActivityFeedResponse>>();
                     recentActivity.Stories.AddRange(oldStories ?? throw new InvalidOperationException());
                 }
+
                 recentActivity.IsOwnActivity = true;
             }
 

@@ -1,18 +1,6 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System;
 
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using InstagramApiSharp.Helpers;
-using System;
-
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Users
 {
     internal class InstaAccountDetailsConverter : IObjectConverter<InstaAccountDetails, InstaAccountDetailsResponse>
     {
@@ -20,16 +8,24 @@ namespace InstagramApiSharp.Converters
 
         public InstaAccountDetails Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
-            var details = new InstaAccountDetails()
+            if (SourceObject == null)
             {
-                DateJoined = DateTimeHelper.FromUnixTimeSeconds(SourceObject.DateJoined ?? 0)
-            };
+                throw new ArgumentNullException("Source object");
+            }
+
+            var details = new InstaAccountDetails
+                          {
+                              DateJoined = DateTimeHelper.FromUnixTimeSeconds(SourceObject.DateJoined ?? 0)
+                          };
             if (SourceObject.FormerUsernameInfo != null)
+            {
                 details.HasFormerUsernames = SourceObject.FormerUsernameInfo.HasFormerUsernames ?? false;
+            }
 
             if (SourceObject.SharedFollowerAccountsInfo != null)
+            {
                 details.HasSharedFollowerAccounts = SourceObject.SharedFollowerAccountsInfo.HasSharedFollowerAccounts ?? false;
+            }
 
             if (SourceObject.AdsInfo != null)
             {
@@ -37,7 +33,9 @@ namespace InstagramApiSharp.Converters
                 {
                     details.AdsInfo = ConvertersFabric.Instance.GetAdsInfoConverter(SourceObject.AdsInfo).Convert();
                 }
-                catch { }
+                catch
+                {
+                }
             }
 
             if (SourceObject.PrimaryCountryInfo != null)
@@ -46,8 +44,11 @@ namespace InstagramApiSharp.Converters
                 {
                     details.PrimaryCountryInfo = ConvertersFabric.Instance.GetPrimaryCountryInfoConverter(SourceObject.PrimaryCountryInfo).Convert();
                 }
-                catch { }
+                catch
+                {
+                }
             }
+
             return details;
         }
     }

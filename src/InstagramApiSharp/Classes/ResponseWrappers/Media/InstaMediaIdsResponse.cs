@@ -1,19 +1,12 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
-using InstagramApiSharp.Classes.Models;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.Other;
 
-namespace InstagramApiSharp.Classes.ResponseWrappers
+namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Media
 {
     public class InstaMediaIdsResponse : InstaDefault
     {
-        [JsonProperty("media_ids")] public InstaMediaIdList MediaIds = new InstaMediaIdList();        
+        [JsonProperty("media_ids")]
+        public InstaMediaIdList MediaIds = new InstaMediaIdList();
     }
 }

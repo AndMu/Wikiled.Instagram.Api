@@ -1,16 +1,4 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
-
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using System.Linq;
-namespace InstagramApiSharp.Converters
+﻿namespace Wikiled.Instagram.Api.Converters.Media
 {
     internal class InstaInlineCommentListConverter
         : IObjectConverter<InstaInlineCommentList, InstaInlineCommentListResponse>
@@ -20,25 +8,30 @@ namespace InstagramApiSharp.Converters
         public InstaInlineCommentList Convert()
         {
             if (SourceObject == null)
-                return null;
-            var inline = new InstaInlineCommentList
             {
-                ChildCommentCount = SourceObject.ChildCommentCount,
-                HasMoreHeadChildComments = SourceObject.HasMoreHeadChildComments,
-                HasMoreTailChildComments = SourceObject.HasMoreTailChildComments,
-                NumTailChildComments = SourceObject.NumTailChildComments,
-                NextMaxId = SourceObject.NextMaxId,
-                NextMinId = SourceObject.NextMinId
-            };
+                return null;
+            }
+
+            var inline = new InstaInlineCommentList
+                         {
+                             ChildCommentCount = SourceObject.ChildCommentCount,
+                             HasMoreHeadChildComments = SourceObject.HasMoreHeadChildComments,
+                             HasMoreTailChildComments = SourceObject.HasMoreTailChildComments,
+                             NumTailChildComments = SourceObject.NumTailChildComments,
+                             NextMaxId = SourceObject.NextMaxId,
+                             NextMinId = SourceObject.NextMinId
+                         };
             if (SourceObject.ParentComment != null)
             {
                 try
                 {
                     inline.ParentComment = ConvertersFabric.Instance.GetCommentConverter(SourceObject.ParentComment).Convert();
                 }
-                catch { }
-
+                catch
+                {
+                }
             }
+
             if (SourceObject.ChildComments != null && SourceObject.ChildComments.Any())
             {
                 foreach (var cmt in SourceObject.ChildComments)
@@ -47,9 +40,12 @@ namespace InstagramApiSharp.Converters
                     {
                         inline.ChildComments.Add(ConvertersFabric.Instance.GetCommentConverter(cmt).Convert());
                     }
-                    catch { }
+                    catch
+                    {
+                    }
                 }
             }
+
             //if (!string.IsNullOrEmpty(SourceObject.NextMinId))
             //{
             //    try

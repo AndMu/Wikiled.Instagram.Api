@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using InstagramApiSharp.Classes.ResponseWrappers.BaseResponse;
 using Newtonsoft.Json;
 
-namespace InstagramApiSharp.Classes.ResponseWrappers
+namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.User
 {
     public class InstaRecentActivityResponse : BaseLoadableResponse
     {

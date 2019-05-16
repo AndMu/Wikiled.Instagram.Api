@@ -1,17 +1,6 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System;
 
-using System;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Other
 {
     internal class InstaTranslateConverter : IObjectConverter<InstaTranslate, InstaTranslateResponse>
     {
@@ -19,13 +8,16 @@ namespace InstagramApiSharp.Converters
 
         public InstaTranslate Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException("SourceObject");
+            if (SourceObject == null)
+            {
+                throw new ArgumentNullException("SourceObject");
+            }
 
             var translate = new InstaTranslate
-            {
-                Id = SourceObject.Id,
-                Translation = SourceObject.Translation
-            };
+                            {
+                                Id = SourceObject.Id,
+                                Translation = SourceObject.Translation
+                            };
             return translate;
         }
     }

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using InstagramApiSharp.Classes.ResponseWrappers.BaseResponse;
 
-namespace InstagramApiSharp.Classes.ResponseWrappers
+namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Direct
 {
     public class InstaSendDirectMessageResponse : BaseStatusResponse
     {

@@ -5,19 +5,27 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using InstagramApiSharp.Classes;
-using InstagramApiSharp.Classes.Android.DeviceInfo;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using InstagramApiSharp.Converters;
-using InstagramApiSharp.Converters.Json;
-using InstagramApiSharp.Enums;
-using InstagramApiSharp.Helpers;
-using InstagramApiSharp.Logger;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.Android.DeviceInfo;
+using Wikiled.Instagram.Api.Classes.Models.Direct;
+using Wikiled.Instagram.Api.Classes.Models.Feed;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.Other;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Other;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
+using Wikiled.Instagram.Api.Converters;
+using Wikiled.Instagram.Api.Converters.Json;
+using Wikiled.Instagram.Api.Enums;
+using Wikiled.Instagram.Api.Helpers;
+using Wikiled.Instagram.Api.Logger;
 
-namespace InstagramApiSharp.API.Processors
+namespace Wikiled.Instagram.Api.API.Processors
 {
     /// <summary>
     ///     User api functions.
@@ -25,14 +33,26 @@ namespace InstagramApiSharp.API.Processors
     internal class UserProcessor : IUserProcessor
     {
         private readonly AndroidDevice _deviceInfo;
+
         private readonly HttpHelper _httpHelper;
+
         private readonly IHttpRequestProcessor _httpRequestProcessor;
+
         private readonly InstaApi _instaApi;
+
         private readonly IInstaLogger _logger;
+
         private readonly UserSessionData _user;
+
         private readonly UserAuthValidate _userAuthValidate;
-        public UserProcessor(AndroidDevice deviceInfo, UserSessionData user, IHttpRequestProcessor httpRequestProcessor,
-            IInstaLogger logger, UserAuthValidate userAuthValidate, InstaApi instaApi,
+
+        public UserProcessor(
+            AndroidDevice deviceInfo,
+            UserSessionData user,
+            IHttpRequestProcessor httpRequestProcessor,
+            IInstaLogger logger,
+            UserAuthValidate userAuthValidate,
+            InstaApi instaApi,
             HttpHelper httpHelper)
         {
             _deviceInfo = deviceInfo;
@@ -43,7 +63,9 @@ namespace InstagramApiSharp.API.Processors
             _instaApi = instaApi;
             _httpHelper = httpHelper;
         }
+
         #region public parts
+
         /// <summary>
         ///     Accept user friendship requst.
         /// </summary>
@@ -55,20 +77,24 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetAcceptFriendshipUri(userId);
                 var fields = new Dictionary<string, string>
-                {
-                    {"user_id", userId.ToString()},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_csrftoken", _user.CsrfToken},
-                };
+                             {
+                                 {"user_id", userId.ToString()},
+                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
+                                 {"_csrftoken", _user.CsrfToken}
+                             };
                 var request =
                     _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, fields);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaFriendshipStatus>(response, json);
-                var friendshipStatus = JsonConvert.DeserializeObject<InstaFriendshipStatusResponse>(json,
-                   new InstaFriendShipDataConverter());
+                }
+
+                var friendshipStatus = JsonConvert.DeserializeObject<InstaFriendshipStatusResponse>(
+                    json,
+                    new InstaFriendShipDataConverter());
                 var converter = ConvertersFabric.Instance.GetFriendShipStatusConverter(friendshipStatus);
                 return Result.Success(converter.Convert());
             }
@@ -91,7 +117,9 @@ namespace InstagramApiSharp.API.Processors
         {
             UserAuthValidator.Validate(_userAuthValidate);
             if (userIds?.Length == 0)
+            {
                 return Result.Fail<InstaFriendshipShortStatusList>("At least 1 user id is require");
+            }
 
             return await AddBestFriends(userIds, null);
         }
@@ -104,10 +132,13 @@ namespace InstagramApiSharp.API.Processors
         {
             UserAuthValidator.Validate(_userAuthValidate);
             if (userIds?.Length == 0)
+            {
                 return Result.Fail<InstaFriendshipShortStatusList>("At least 1 user id is require");
+            }
 
             return await AddBestFriends(null, userIds);
         }
+
         /// <summary>
         ///     Block user
         /// </summary>
@@ -183,29 +214,37 @@ namespace InstagramApiSharp.API.Processors
             try
             {
                 if (paginationParameters == null)
+                {
                     paginationParameters = PaginationParameters.MaxPagesToLoad(1);
+                }
 
                 InstaBlockedUsers Convert(InstaBlockedUsersResponse instaBlockedUsers)
                 {
                     return ConvertersFabric.Instance.GetBlockedUsersConverter(instaBlockedUsers).Convert();
                 }
+
                 var blockedUsersResponse = await GetBlockedUsers(paginationParameters?.NextMaxId);
                 if (!blockedUsersResponse.Succeeded)
                 {
                     if (blockedUsersResponse.Value != null)
+                    {
                         return Result.Fail(blockedUsersResponse.Info, Convert(blockedUsersResponse.Value));
-                    else
-                        return Result.Fail(blockedUsersResponse.Info, default(InstaBlockedUsers));
+                    }
+
+                    return Result.Fail(blockedUsersResponse.Info, default(InstaBlockedUsers));
                 }
+
                 paginationParameters.NextMaxId = blockedUsersResponse.Value.MaxId;
 
                 paginationParameters.PagesLoaded++;
                 while (!string.IsNullOrEmpty(paginationParameters.NextMaxId)
-                     && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
+                       && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var moreUsers = await GetBlockedUsers(paginationParameters.NextMaxId);
                     if (!moreUsers.Succeeded)
+                    {
                         return Result.Fail(moreUsers.Info, Convert(blockedUsersResponse.Value));
+                    }
 
                     blockedUsersResponse.Value.BlockedList.AddRange(moreUsers.Value.BlockedList);
                     blockedUsersResponse.Value.PageSize = moreUsers.Value.PageSize;
@@ -213,6 +252,7 @@ namespace InstagramApiSharp.API.Processors
                     blockedUsersResponse.Value.MaxId = paginationParameters.NextMaxId = moreUsers.Value.MaxId;
                     paginationParameters.PagesLoaded++;
                 }
+
                 return Result.Success(Convert(blockedUsersResponse.Value));
             }
             catch (HttpRequestException httpException)
@@ -240,22 +280,29 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetCurrentUserUri();
                 var fields = new Dictionary<string, string>
-                {
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_csrftoken", _user.CsrfToken}
-                };
+                             {
+                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
+                                 {"_csrftoken", _user.CsrfToken}
+                             };
                 var request = _httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, _deviceInfo);
                 request.Content = new FormUrlEncodedContent(fields);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaCurrentUser>(response, json);
-                var user = JsonConvert.DeserializeObject<InstaCurrentUserResponse>(json,
+                }
+
+                var user = JsonConvert.DeserializeObject<InstaCurrentUserResponse>(
+                    json,
                     new InstaCurrentUserDataConverter());
                 if (user.Pk < 1)
+                {
                     Result.Fail<InstaCurrentUser>("Pk is incorrect");
+                }
+
                 var converter = ConvertersFabric.Instance.GetCurrentUserConverter(user);
                 var userConverted = converter.Convert();
                 return Result.Success(userConverted);
@@ -309,7 +356,10 @@ namespace InstagramApiSharp.API.Processors
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaStoryFriendshipStatus>(response, json);
+                }
+
                 var friendshipStatusResponse = JsonConvert.DeserializeObject<InstaStoryFriendshipStatusResponse>(json);
                 var converter = ConvertersFabric.Instance.GetStoryFriendshipStatusConverter(friendshipStatusResponse);
                 return Result.Success(converter.Convert());
@@ -325,6 +375,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaStoryFriendshipStatus>(exception);
             }
         }
+
         /// <summary>
         ///     Get friendship status for multiple user ids.
         /// </summary>
@@ -338,24 +389,29 @@ namespace InstagramApiSharp.API.Processors
             try
             {
                 if (userIds == null || userIds != null && !userIds.Any())
+                {
                     throw new ArgumentException("At least one user id is require.");
+                }
 
                 var userUri = UriCreator.GetFriendshipShowManyUri();
 
                 var data = new Dictionary<string, string>
-                {
-                    {"_csrftoken", _user.CsrfToken},
-                    {"user_ids", string.Join(",", userIds)},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"user_ids", string.Join(",", userIds)},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()}
+                           };
                 var request = _httpHelper.GetDefaultRequest(HttpMethod.Post, userUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaFriendshipShortStatusList>(response, json);
+                }
 
-                var friendshipStatusesResponse = JsonConvert.DeserializeObject<InstaFriendshipShortStatusListResponse>(json,
+                var friendshipStatusesResponse = JsonConvert.DeserializeObject<InstaFriendshipShortStatusListResponse>(
+                    json,
                     new InstaFriendShipShortDataConverter());
                 var converter = ConvertersFabric.Instance.GetFriendshipShortStatusListConverter(friendshipStatusesResponse);
 
@@ -386,7 +442,10 @@ namespace InstagramApiSharp.API.Processors
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaFullUserInfo>(response, json);
+                }
+
                 var fullUserInfoResponse = JsonConvert.DeserializeObject<InstaFullUserInfoResponse>(json);
                 var converter = ConvertersFabric.Instance.GetFullUserInfoConverter(fullUserInfoResponse);
                 return Result.Success(converter.Convert());
@@ -412,8 +471,9 @@ namespace InstagramApiSharp.API.Processors
             try
             {
                 var cookies =
-                    _httpRequestProcessor.HttpHandler.CookieContainer.GetCookies(_httpRequestProcessor.Client
-                        .BaseAddress);
+                    _httpRequestProcessor.HttpHandler.CookieContainer.GetCookies(
+                        _httpRequestProcessor.Client
+                                             .BaseAddress);
                 var csrftoken = cookies[InstaApiConstants.CSRFTOKEN]?.Value ?? string.Empty;
                 _user.CsrfToken = csrftoken;
                 var instaUri = UriCreator.GetFriendshipPendingRequestsUri(_user.RankToken);
@@ -442,7 +502,7 @@ namespace InstagramApiSharp.API.Processors
         }
 
         public async Task<IResult<InstaActivityFeed>> GetRecentActivityFeedAsync(
-                    PaginationParameters paginationParameters)
+            PaginationParameters paginationParameters)
         {
             var uri = UriCreator.GetRecentActivityUri();
             return await GetRecentActivityInternalAsync(uri, paginationParameters);
@@ -458,7 +518,10 @@ namespace InstagramApiSharp.API.Processors
             try
             {
                 if (userIds == null || userIds != null && !userIds.Any())
+                {
                     throw new ArgumentException("At least one user id is require.");
+                }
+
                 var instaUri = UriCreator.GetDiscoverSuggestionDetailsUri(_user.LoggedInUser.Pk, userIds.ToList());
 
                 var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
@@ -466,9 +529,12 @@ namespace InstagramApiSharp.API.Processors
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaSuggestionItemList>(response, json);
+                }
 
-                var obj = JsonConvert.DeserializeObject<InstaSuggestionItemListResponse>(json,
+                var obj = JsonConvert.DeserializeObject<InstaSuggestionItemListResponse>(
+                    json,
                     new InstaSuggestionUserDetailDataConverter());
                 return Result.Success(ConvertersFabric.Instance.GetSuggestionItemListConverter(obj).Convert());
             }
@@ -494,30 +560,38 @@ namespace InstagramApiSharp.API.Processors
             try
             {
                 if (paginationParameters == null)
+                {
                     paginationParameters = PaginationParameters.MaxPagesToLoad(1);
+                }
 
                 InstaSuggestions Convert(InstaSuggestionUserContainerResponse suggestResponse)
                 {
                     return ConvertersFabric.Instance.GetSuggestionsConverter(suggestResponse).Convert();
                 }
+
                 var suggestionsResponse = await GetSuggestionUsers(paginationParameters);
                 if (!suggestionsResponse.Succeeded)
                 {
                     if (suggestionsResponse.Value != null)
+                    {
                         return Result.Fail(suggestionsResponse.Info, Convert(suggestionsResponse.Value));
-                    else
-                        return Result.Fail(suggestionsResponse.Info, default(InstaSuggestions));
+                    }
+
+                    return Result.Fail(suggestionsResponse.Info, default(InstaSuggestions));
                 }
+
                 paginationParameters.NextMaxId = suggestionsResponse.Value.MaxId;
 
                 paginationParameters.PagesLoaded++;
                 while (suggestionsResponse.Value.MoreAvailable
-                     && !string.IsNullOrEmpty(paginationParameters.NextMaxId)
-                     && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
+                       && !string.IsNullOrEmpty(paginationParameters.NextMaxId)
+                       && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var moreSuggestions = await GetSuggestionUsers(paginationParameters);
                     if (!moreSuggestions.Succeeded)
+                    {
                         return Result.Fail(moreSuggestions.Info, Convert(suggestionsResponse.Value));
+                    }
 
                     suggestionsResponse.Value.NewSuggestedUsers.Suggestions.AddRange(moreSuggestions.Value.NewSuggestedUsers.Suggestions);
                     suggestionsResponse.Value.SuggestedUsers.Suggestions.AddRange(moreSuggestions.Value.SuggestedUsers.Suggestions);
@@ -525,6 +599,7 @@ namespace InstagramApiSharp.API.Processors
                     suggestionsResponse.Value.MaxId = paginationParameters.NextMaxId = moreSuggestions.Value.MaxId;
                     paginationParameters.PagesLoaded++;
                 }
+
                 return Result.Success(Convert(suggestionsResponse.Value));
             }
             catch (HttpRequestException httpException)
@@ -553,8 +628,10 @@ namespace InstagramApiSharp.API.Processors
             {
                 var userUri = UriCreator.GetUserUri(username);
                 var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, userUri, _deviceInfo);
-                request.Properties.Add(new KeyValuePair<string, object>(InstaApiConstants.HEADER_TIMEZONE,
-                    InstaApiConstants.TIMEZONE_OFFSET.ToString()));
+                request.Properties.Add(
+                    new KeyValuePair<string, object>(
+                        InstaApiConstants.HEADER_TIMEZONE,
+                        InstaApiConstants.TIMEZONE_OFFSET.ToString()));
                 request.Properties.Add(new KeyValuePair<string, object>(InstaApiConstants.HEADER_COUNT, "1"));
                 request.Properties.Add(
                     new KeyValuePair<string, object>(InstaApiConstants.HEADER_RANK_TOKEN, _user.RankToken));
@@ -562,7 +639,10 @@ namespace InstagramApiSharp.API.Processors
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaUser>(response, json);
+                }
+
                 var userInfo = JsonConvert.DeserializeObject<InstaSearchUserResponse>(json);
                 var user = userInfo.Users?.FirstOrDefault(u => u.UserName.ToLower() == username.ToLower().Replace("@", ""));
                 if (user == null)
@@ -573,7 +653,10 @@ namespace InstagramApiSharp.API.Processors
                 }
 
                 if (user.Pk < 1)
+                {
                     Result.Fail<InstaUser>("Pk is incorrect");
+                }
+
                 var converter = ConvertersFabric.Instance.GetUserConverter(user);
                 return Result.Success(converter.Convert());
             }
@@ -601,25 +684,29 @@ namespace InstagramApiSharp.API.Processors
                 var instaUri = UriCreator.GetUsersNametagLookupUri();
                 var uploadId = ApiRequestMessage.GenerateUploadId();
                 var data = new JObject
-                {
-                    {"_csrftoken", _user.CsrfToken},
-                    {"gallery", "true"},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"waterfall_id", Guid.NewGuid().ToString()},
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"gallery", "true"},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"waterfall_id", Guid.NewGuid().ToString()}
+                           };
                 var signedBody = _httpHelper.GetSignature(data);
 
                 var requestContent = new MultipartFormDataContent(uploadId)
-                {
-                    {new StringContent(InstaApiConstants.IG_SIGNATURE_KEY_VERSION), InstaApiConstants.HEADER_IG_SIGNATURE_KEY_VERSION},
-                    {new StringContent(signedBody), "signed_body"},
-                };
+                                     {
+                                         {new StringContent(InstaApiConstants.IG_SIGNATURE_KEY_VERSION), InstaApiConstants.HEADER_IG_SIGNATURE_KEY_VERSION},
+                                         {new StringContent(signedBody), "signed_body"}
+                                     };
                 byte[] fileBytes;
                 if (nametagImage.ImageBytes == null)
+                {
                     fileBytes = File.ReadAllBytes(nametagImage.Uri);
+                }
                 else
+                {
                     fileBytes = nametagImage.ImageBytes;
+                }
 
                 var imageContent = new ByteArrayContent(fileBytes);
                 imageContent.Headers.Add("Content-Transfer-Encoding", "binary");
@@ -630,7 +717,10 @@ namespace InstagramApiSharp.API.Processors
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.Fail<InstaUser>("User not found.");
+                }
+
                 //{"message": "No user found for 3", "username": "3", "failure_code": 602, "failure_reason": "user_not_found_for_username", "status": "fail"}
                 //{"message": "Scan was below 95, got 90.0779664516449", "confidence": 90.0779664516449, "username": "9", "failure_code": 601, "failure_reason": "confidence_below_threshold", "status": "fail"}
 
@@ -650,6 +740,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaUser>(exception);
             }
         }
+
         /// <summary>
         ///     Get followers list by username asynchronously
         /// </summary>
@@ -659,8 +750,11 @@ namespace InstagramApiSharp.API.Processors
         /// <returns>
         ///     <see cref="InstaUserShortList" />
         /// </returns>
-        public async Task<IResult<InstaUserShortList>> GetUserFollowersAsync(string username,
-            PaginationParameters paginationParameters, string searchQuery, bool mutualsfirst = false)
+        public async Task<IResult<InstaUserShortList>> GetUserFollowersAsync(
+            string username,
+            PaginationParameters paginationParameters,
+            string searchQuery,
+            bool mutualsfirst = false)
         {
             try
             {
@@ -668,12 +762,14 @@ namespace InstagramApiSharp.API.Processors
                 if (user.Succeeded)
                 {
                     if (user.Value.FriendshipStatus.IsPrivate && user.Value.UserName != _user.LoggedInUser.UserName && !user.Value.FriendshipStatus.Following)
+                    {
                         return Result.Fail("You must be a follower of private accounts to be able to get user's followers", default(InstaUserShortList));
+                    }
 
                     return await GetUserFollowersByIdAsync(user.Value.Pk, paginationParameters, searchQuery, mutualsfirst);
                 }
-                else
-                    return Result.Fail(user.Info, default(InstaUserShortList));
+
+                return Result.Fail(user.Info, default(InstaUserShortList));
             }
             catch (HttpRequestException httpException)
             {
@@ -696,25 +792,37 @@ namespace InstagramApiSharp.API.Processors
         /// <returns>
         ///     <see cref="InstaUserShortList" />
         /// </returns>
-        public async Task<IResult<InstaUserShortList>> GetUserFollowersByIdAsync(long userId,
-            PaginationParameters paginationParameters, string searchQuery, bool mutualsfirst = false)
+        public async Task<IResult<InstaUserShortList>> GetUserFollowersByIdAsync(
+            long userId,
+            PaginationParameters paginationParameters,
+            string searchQuery,
+            bool mutualsfirst = false)
         {
             UserAuthValidator.Validate(_userAuthValidate);
             var followers = new InstaUserShortList();
             try
             {
                 if (paginationParameters == null)
+                {
                     paginationParameters = PaginationParameters.MaxPagesToLoad(1);
+                }
 
                 var userFollowersUri =
-                    UriCreator.GetUserFollowersUri(userId, _user.RankToken, searchQuery, mutualsfirst,
+                    UriCreator.GetUserFollowersUri(
+                        userId,
+                        _user.RankToken,
+                        searchQuery,
+                        mutualsfirst,
                         paginationParameters.NextMaxId);
                 var followersResponse = await GetUserListByUriAsync(userFollowersUri);
                 if (!followersResponse.Succeeded)
+                {
                     return Result.Fail(followersResponse.Info, (InstaUserShortList)null);
+                }
+
                 followers.AddRange(
                     followersResponse.Value.Items?.Select(ConvertersFabric.Instance.GetUserShortConverter)
-                        .Select(converter => converter.Convert()));
+                                     .Select(converter => converter.Convert()));
                 paginationParameters.NextMaxId = followers.NextMaxId = followersResponse.Value.NextMaxId;
 
                 var pagesLoaded = 1;
@@ -722,14 +830,21 @@ namespace InstagramApiSharp.API.Processors
                        && pagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var nextFollowersUri =
-                        UriCreator.GetUserFollowersUri(userId, _user.RankToken, searchQuery, mutualsfirst,
+                        UriCreator.GetUserFollowersUri(
+                            userId,
+                            _user.RankToken,
+                            searchQuery,
+                            mutualsfirst,
                             followersResponse.Value.NextMaxId);
                     followersResponse = await GetUserListByUriAsync(nextFollowersUri);
                     if (!followersResponse.Succeeded)
+                    {
                         return Result.Fail(followersResponse.Info, followers);
+                    }
+
                     followers.AddRange(
                         followersResponse.Value.Items?.Select(ConvertersFabric.Instance.GetUserShortConverter)
-                            .Select(converter => converter.Convert()));
+                                         .Select(converter => converter.Convert()));
                     pagesLoaded++;
                     paginationParameters.PagesLoaded = pagesLoaded;
                     paginationParameters.NextMaxId = followers.NextMaxId = followersResponse.Value.NextMaxId;
@@ -758,8 +873,10 @@ namespace InstagramApiSharp.API.Processors
         /// <returns>
         ///     <see cref="InstaUserShortList" />
         /// </returns>
-        public async Task<IResult<InstaUserShortList>> GetUserFollowingAsync(string username,
-            PaginationParameters paginationParameters, string searchQuery)
+        public async Task<IResult<InstaUserShortList>> GetUserFollowingAsync(
+            string username,
+            PaginationParameters paginationParameters,
+            string searchQuery)
         {
             try
             {
@@ -767,12 +884,14 @@ namespace InstagramApiSharp.API.Processors
                 if (user.Succeeded)
                 {
                     if (user.Value.FriendshipStatus.IsPrivate && user.Value.UserName != _user.LoggedInUser.UserName && !user.Value.FriendshipStatus.Following)
+                    {
                         return Result.Fail("You must be a follower of private accounts to be able to get user's followings", default(InstaUserShortList));
+                    }
 
                     return await GetUserFollowingByIdAsync(user.Value.Pk, paginationParameters, searchQuery);
                 }
-                else
-                    return Result.Fail(user.Info, default(InstaUserShortList));
+
+                return Result.Fail(user.Info, default(InstaUserShortList));
             }
             catch (HttpRequestException httpException)
             {
@@ -785,6 +904,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail(exception, default(InstaUserShortList));
             }
         }
+
         /// <summary>
         ///     Get following list by user id(pk) asynchronously
         /// </summary>
@@ -794,38 +914,54 @@ namespace InstagramApiSharp.API.Processors
         /// <returns>
         ///     <see cref="InstaUserShortList" />
         /// </returns>
-        public async Task<IResult<InstaUserShortList>> GetUserFollowingByIdAsync(long userId,
-            PaginationParameters paginationParameters, string searchQuery)
+        public async Task<IResult<InstaUserShortList>> GetUserFollowingByIdAsync(
+            long userId,
+            PaginationParameters paginationParameters,
+            string searchQuery)
         {
             UserAuthValidator.Validate(_userAuthValidate);
             var following = new InstaUserShortList();
             try
             {
                 if (paginationParameters == null)
+                {
                     paginationParameters = PaginationParameters.MaxPagesToLoad(1);
+                }
 
-                var uri = UriCreator.GetUserFollowingUri(userId, _user.RankToken, searchQuery,
+                var uri = UriCreator.GetUserFollowingUri(
+                    userId,
+                    _user.RankToken,
+                    searchQuery,
                     paginationParameters.NextMaxId);
                 var userListResponse = await GetUserListByUriAsync(uri);
                 if (!userListResponse.Succeeded)
+                {
                     return Result.Fail(userListResponse.Info, (InstaUserShortList)null);
+                }
+
                 following.AddRange(
                     userListResponse.Value.Items.Select(ConvertersFabric.Instance.GetUserShortConverter)
-                        .Select(converter => converter.Convert()));
+                                    .Select(converter => converter.Convert()));
                 paginationParameters.NextMaxId = following.NextMaxId = userListResponse.Value.NextMaxId;
                 var pages = 1;
                 while (!string.IsNullOrEmpty(following.NextMaxId)
                        && pages < paginationParameters.MaximumPagesToLoad)
                 {
                     var nextUri =
-                        UriCreator.GetUserFollowingUri(userId, _user.RankToken, searchQuery,
+                        UriCreator.GetUserFollowingUri(
+                            userId,
+                            _user.RankToken,
+                            searchQuery,
                             userListResponse.Value.NextMaxId);
                     userListResponse = await GetUserListByUriAsync(nextUri);
                     if (!userListResponse.Succeeded)
+                    {
                         return Result.Fail(userListResponse.Info, following);
+                    }
+
                     following.AddRange(
                         userListResponse.Value.Items.Select(ConvertersFabric.Instance.GetUserShortConverter)
-                            .Select(converter => converter.Convert()));
+                                        .Select(converter => converter.Convert()));
                     pages++;
                     paginationParameters.PagesLoaded = pages;
                     paginationParameters.NextMaxId = following.NextMaxId = userListResponse.Value.NextMaxId;
@@ -903,13 +1039,17 @@ namespace InstagramApiSharp.API.Processors
         /// <returns>
         ///     <see cref="InstaMediaList" />
         /// </returns>
-        public async Task<IResult<InstaMediaList>> GetUserMediaAsync(string username,
-             PaginationParameters paginationParameters)
+        public async Task<IResult<InstaMediaList>> GetUserMediaAsync(
+            string username,
+            PaginationParameters paginationParameters)
         {
             UserAuthValidator.Validate(_userAuthValidate);
             var user = await GetUserAsync(username);
             if (!user.Succeeded)
+            {
                 return Result.Fail<InstaMediaList>("Unable to get user to load media");
+            }
+
             return await GetUserMediaByIdAsync(user.Value.Pk, paginationParameters);
         }
 
@@ -921,14 +1061,17 @@ namespace InstagramApiSharp.API.Processors
         /// <returns>
         ///     <see cref="InstaMediaList" />
         /// </returns>
-        public async Task<IResult<InstaMediaList>> GetUserMediaByIdAsync(long userId,
-                                                    PaginationParameters paginationParameters)
+        public async Task<IResult<InstaMediaList>> GetUserMediaByIdAsync(
+            long userId,
+            PaginationParameters paginationParameters)
         {
             var mediaList = new InstaMediaList();
             try
             {
                 if (paginationParameters == null)
+                {
                     paginationParameters = PaginationParameters.MaxPagesToLoad(1);
+                }
 
                 InstaMediaList Convert(InstaMediaListResponse mediaListResponse)
                 {
@@ -939,10 +1082,13 @@ namespace InstagramApiSharp.API.Processors
                 if (!mediaResult.Succeeded)
                 {
                     if (mediaResult.Value != null)
+                    {
                         return Result.Fail(mediaResult.Info, Convert(mediaResult.Value));
-                    else
-                        return Result.Fail(mediaResult.Info, default(InstaMediaList));
+                    }
+
+                    return Result.Fail(mediaResult.Info, default(InstaMediaList));
                 }
+
                 var mediaResponse = mediaResult.Value;
 
                 mediaList = Convert(mediaResponse);
@@ -953,10 +1099,12 @@ namespace InstagramApiSharp.API.Processors
                        && !string.IsNullOrEmpty(paginationParameters.NextMaxId)
                        && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
-
                     var nextMedia = await GetUserMedia(userId, paginationParameters);
                     if (!nextMedia.Succeeded)
+                    {
                         return Result.Fail(nextMedia.Info, mediaList);
+                    }
+
                     mediaResponse.MoreAvailable = nextMedia.Value.MoreAvailable;
                     mediaResponse.ResultsCount += nextMedia.Value.ResultsCount;
                     mediaList.NextMaxId = mediaResponse.NextMaxId = paginationParameters.NextMaxId = nextMedia.Value.NextMaxId;
@@ -988,7 +1136,8 @@ namespace InstagramApiSharp.API.Processors
         /// <returns>
         ///     <see cref="InstaMediaList" />
         /// </returns>
-        public async Task<IResult<InstaMediaList>> GetUserShoppableMediaAsync(string username,
+        public async Task<IResult<InstaMediaList>> GetUserShoppableMediaAsync(
+            string username,
             PaginationParameters paginationParameters)
         {
             return await _instaApi.ShoppingProcessor.GetUserShoppableMediaAsync(username, paginationParameters);
@@ -1003,15 +1152,20 @@ namespace InstagramApiSharp.API.Processors
         /// <returns>
         ///     <see cref="InstaMediaList" />
         /// </returns>
-        public async Task<IResult<InstaMediaList>> GetUserTagsAsync(string username,
+        public async Task<IResult<InstaMediaList>> GetUserTagsAsync(
+            string username,
             PaginationParameters paginationParameters)
         {
             UserAuthValidator.Validate(_userAuthValidate);
             var user = await GetUserAsync(username);
             if (!user.Succeeded)
+            {
                 return Result.Fail($"Unable to get user {username} to get tags", (InstaMediaList)null);
+            }
+
             return await GetUserTagsAsync(user.Value.Pk, paginationParameters);
         }
+
         /// <summary>
         ///     Get user tags by username asynchronously
         ///     <remarks>Returns media list containing tags</remarks>
@@ -1021,7 +1175,8 @@ namespace InstagramApiSharp.API.Processors
         /// <returns>
         ///     <see cref="InstaMediaList" />
         /// </returns>
-        public async Task<IResult<InstaMediaList>> GetUserTagsAsync(long userId,
+        public async Task<IResult<InstaMediaList>> GetUserTagsAsync(
+            long userId,
             PaginationParameters paginationParameters)
         {
             UserAuthValidator.Validate(_userAuthValidate);
@@ -1029,13 +1184,16 @@ namespace InstagramApiSharp.API.Processors
             try
             {
                 if (paginationParameters == null)
+                {
                     paginationParameters = PaginationParameters.MaxPagesToLoad(1);
+                }
 
                 IEnumerable<InstaMedia> Convert(InstaMediaListResponse mediaListResponse)
                 {
                     return mediaListResponse.Medias.Select(ConvertersFabric.Instance.GetSingleMediaConverter)
-                        .Select(converter => converter.Convert());
+                                            .Select(converter => converter.Convert());
                 }
+
                 var mediaTags = await GetUserTags(userId, paginationParameters);
                 if (!mediaTags.Succeeded)
                 {
@@ -1044,9 +1202,10 @@ namespace InstagramApiSharp.API.Processors
                         userTags.AddRange(Convert(mediaTags.Value));
                         return Result.Fail(mediaTags.Info, userTags);
                     }
-                    else
-                        return Result.Fail(mediaTags.Info, default(InstaMediaList));
+
+                    return Result.Fail(mediaTags.Info, default(InstaMediaList));
                 }
+
                 var mediaResponse = mediaTags.Value;
                 userTags.AddRange(Convert(mediaResponse));
                 userTags.NextMaxId = paginationParameters.NextMaxId = mediaResponse.NextMaxId;
@@ -1058,7 +1217,9 @@ namespace InstagramApiSharp.API.Processors
                 {
                     var nextMedia = await GetUserTags(userId, paginationParameters);
                     if (!nextMedia.Succeeded)
+                    {
                         return Result.Fail(nextMedia.Info, userTags);
+                    }
 
                     userTags.AddRange(Convert(nextMedia.Value));
                     userTags.NextMaxId = paginationParameters.NextMaxId = mediaResponse.NextMaxId = nextMedia.Value.NextMaxId;
@@ -1068,6 +1229,7 @@ namespace InstagramApiSharp.API.Processors
                     mediaResponse.TotalCount += nextMedia.Value.TotalCount;
                     mediaResponse.ResultsCount += nextMedia.Value.ResultsCount;
                 }
+
                 userTags.PageSize = mediaResponse.ResultsCount;
                 userTags.Pages = paginationParameters.PagesLoaded;
                 return Result.Success(userTags);
@@ -1083,6 +1245,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail(exception, userTags);
             }
         }
+
         /// <summary>
         ///     Ignore user friendship requst.
         /// </summary>
@@ -1094,18 +1257,21 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetDenyFriendshipUri(userId);
                 var fields = new Dictionary<string, string>
-                {
-                    {"user_id", userId.ToString()},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_csrftoken", _user.CsrfToken},
-                };
+                             {
+                                 {"user_id", userId.ToString()},
+                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
+                                 {"_csrftoken", _user.CsrfToken}
+                             };
                 var request =
                     _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, fields);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaFriendshipFullStatus>(response, json);
+                }
+
                 var friendshipStatus = JsonConvert.DeserializeObject<InstaFriendshipFullStatusContainerResponse>(json);
                 var converter = ConvertersFabric.Instance.GetFriendshipFullStatusConverter(friendshipStatus.FriendshipStatus);
                 return Result.Success(converter.Convert());
@@ -1142,12 +1308,12 @@ namespace InstagramApiSharp.API.Processors
                 var instaUri = UriCreator.GetMarkUserOverageUri(userId);
 
                 var data = new JObject
-                {
-                    {"user_id", userId.ToString()},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_csrftoken", _user.CsrfToken},
-                };
+                           {
+                               {"user_id", userId.ToString()},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"_csrftoken", _user.CsrfToken}
+                           };
                 var request =
                     _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
@@ -1155,7 +1321,9 @@ namespace InstagramApiSharp.API.Processors
                 var obj = JsonConvert.DeserializeObject<InstaDefault>(json);
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<bool>(response, obj.Message, null);
+                }
 
                 return obj.Status.ToLower() == "ok" ? Result.Success(true) : Result.UnExpectedResponse<bool>(response, obj.Message, null);
             }
@@ -1188,6 +1356,7 @@ namespace InstagramApiSharp.API.Processors
         {
             return await MuteUnMuteUserMedia(UriCreator.GetMuteUserMediaStoryUri(userId), userId, unmuteOption);
         }
+
         /// <summary>
         ///     Report user
         /// </summary>
@@ -1199,22 +1368,22 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetReportUserUri(userId);
                 var fields = new Dictionary<string, string>
-                {
-                    {"user_id", userId.ToString()},
-                    {"source_name", "profile"},
-                    {"reason", "1"},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_csrftoken", _user.CsrfToken},
-                    {"is_spam", "true"}
-                };
+                             {
+                                 {"user_id", userId.ToString()},
+                                 {"source_name", "profile"},
+                                 {"reason", "1"},
+                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
+                                 {"_csrftoken", _user.CsrfToken},
+                                 {"is_spam", "true"}
+                             };
                 var request =
                     _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, fields);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 return response.StatusCode == HttpStatusCode.OK
-                    ? Result.Success(true)
-                    : Result.UnExpectedResponse<bool>(response, json);
+                           ? Result.Success(true)
+                           : Result.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
@@ -1305,21 +1474,25 @@ namespace InstagramApiSharp.API.Processors
                 var instaUri = UriCreator.GetRemoveFollowerUri(userId);
 
                 var data = new JObject
-                {
-                    {"_csrftoken", _user.CsrfToken},
-                    {"user_id", userId.ToString()},
-                    {"radio_type", "wifi-none"},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"user_id", userId.ToString()},
+                               {"radio_type", "wifi-none"},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()}
+                           };
 
                 var request =
                     _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK || string.IsNullOrEmpty(json))
+                {
                     return Result.UnExpectedResponse<InstaFriendshipStatus>(response, json);
-                var friendshipStatus = JsonConvert.DeserializeObject<InstaFriendshipStatusResponse>(json,
+                }
+
+                var friendshipStatus = JsonConvert.DeserializeObject<InstaFriendshipStatusResponse>(
+                    json,
                     new InstaFriendShipDataConverter());
                 var converter = ConvertersFabric.Instance.GetFriendShipStatusConverter(friendshipStatus);
                 return Result.Success(converter.Convert());
@@ -1351,7 +1524,10 @@ namespace InstagramApiSharp.API.Processors
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK || string.IsNullOrEmpty(json))
+                {
                     return Result.UnExpectedResponse<string>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaTranslateBioResponse>(json);
 
                 return obj.Status.ToLower() == "ok" ? Result.Success(obj.Translation) : Result.Fail<string>(obj.Message);
@@ -1367,6 +1543,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<string>(exception);
             }
         }
+
         #endregion public parts
 
         #region private parts
@@ -1379,39 +1556,43 @@ namespace InstagramApiSharp.API.Processors
                 var instaUri = UriCreator.GetSetBestFriendsUri();
 
                 var data = new JObject
-                {
-                    {"_csrftoken", _user.CsrfToken},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"module", "favorites_home_list"},
-                    {"source", "audience_manager"}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"module", "favorites_home_list"},
+                               {"source", "audience_manager"}
+                           };
                 if (userIdsToAdd?.Length > 0)
                 {
                     var jArr = new JArray
-                    {
-                        userIdsToAdd
-                    };
+                               {
+                                   userIdsToAdd
+                               };
                     data.Add("add", jArr);
                     data.Add("remove", new JArray());
                 }
                 else
                 {
                     var jArr = new JArray
-                    {
-                        userIdsToRemove
-                    };
+                               {
+                                   userIdsToRemove
+                               };
                     data.Add("add", new JArray());
                     data.Add("remove", jArr);
                 }
+
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaFriendshipShortStatusList>(response, json);
+                }
 
-                var friendshipStatusesResponse = JsonConvert.DeserializeObject<InstaFriendshipShortStatusListResponse>(json,
+                var friendshipStatusesResponse = JsonConvert.DeserializeObject<InstaFriendshipShortStatusListResponse>(
+                    json,
                     new InstaFriendShipShortDataConverter());
                 var converter = ConvertersFabric.Instance.GetFriendshipShortStatusListConverter(friendshipStatusesResponse);
 
@@ -1428,24 +1609,28 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaFriendshipShortStatusList>(exception);
             }
         }
+
         private async Task<IResult<InstaFriendshipFullStatus>> BlockUnblockUserInternal(long userId, Uri instaUri)
         {
             try
             {
                 var fields = new Dictionary<string, string>
-                {
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_csrftoken", _user.CsrfToken},
-                    {"user_id", userId.ToString()},
-                    {"radio_type", "wifi-none"}
-                };
+                             {
+                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
+                                 {"_csrftoken", _user.CsrfToken},
+                                 {"user_id", userId.ToString()},
+                                 {"radio_type", "wifi-none"}
+                             };
                 var request =
                     _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, fields);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK || string.IsNullOrEmpty(json))
+                {
                     return Result.UnExpectedResponse<InstaFriendshipFullStatus>(response, json);
+                }
+
                 var friendshipStatus = JsonConvert.DeserializeObject<InstaFriendshipFullStatusContainerResponse>(json);
                 var converter = ConvertersFabric.Instance.GetFriendshipFullStatusConverter(friendshipStatus.FriendshipStatus);
                 return Result.Success(converter.Convert());
@@ -1467,19 +1652,22 @@ namespace InstagramApiSharp.API.Processors
             try
             {
                 var fields = new Dictionary<string, string>
-                {
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_csrftoken", _user.CsrfToken},
-                    {"user_id", userId.ToString()},
-                    {"radio_type", "wifi-none"}
-                };
+                             {
+                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
+                                 {"_csrftoken", _user.CsrfToken},
+                                 {"user_id", userId.ToString()},
+                                 {"radio_type", "wifi-none"}
+                             };
                 var request =
                     _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, fields);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK || string.IsNullOrEmpty(json))
+                {
                     return Result.UnExpectedResponse<InstaFriendshipFullStatus>(response, json);
+                }
+
                 var friendshipStatus = JsonConvert.DeserializeObject<InstaFriendshipFullStatusContainerResponse>(json);
                 var converter = ConvertersFabric.Instance.GetFriendshipFullStatusConverter(friendshipStatus.FriendshipStatus);
                 return Result.Success(converter.Convert());
@@ -1505,8 +1693,12 @@ namespace InstagramApiSharp.API.Processors
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaRecentActivityResponse>(response, json);
-                var followingActivity = JsonConvert.DeserializeObject<InstaRecentActivityResponse>(json,
+                }
+
+                var followingActivity = JsonConvert.DeserializeObject<InstaRecentActivityResponse>(
+                    json,
                     new Converters.Json.InstaRecentActivityConverter());
                 return Result.Success(followingActivity);
             }
@@ -1522,7 +1714,8 @@ namespace InstagramApiSharp.API.Processors
             }
         }
 
-        private async Task<IResult<InstaActivityFeed>> GetRecentActivityInternalAsync(Uri uri,
+        private async Task<IResult<InstaActivityFeed>> GetRecentActivityInternalAsync(
+            Uri uri,
             PaginationParameters paginationParameters)
         {
             try
@@ -1533,14 +1726,18 @@ namespace InstagramApiSharp.API.Processors
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaActivityFeed>(response, json);
-                var feedPage = JsonConvert.DeserializeObject<InstaRecentActivityResponse>(json,
+                }
+
+                var feedPage = JsonConvert.DeserializeObject<InstaRecentActivityResponse>(
+                    json,
                     new Converters.Json.InstaRecentActivityConverter());
                 activityFeed.IsOwnActivity = feedPage.IsOwnActivity;
                 var nextId = feedPage.NextMaxId;
                 activityFeed.Items.AddRange(
                     feedPage.Stories.Select(ConvertersFabric.Instance.GetSingleRecentActivityConverter)
-                        .Select(converter => converter.Convert()));
+                            .Select(converter => converter.Convert()));
                 paginationParameters.PagesLoaded++;
                 activityFeed.NextMaxId = paginationParameters.NextMaxId = feedPage.NextMaxId;
                 while (!string.IsNullOrEmpty(nextId)
@@ -1548,11 +1745,14 @@ namespace InstagramApiSharp.API.Processors
                 {
                     var nextFollowingFeed = await GetFollowingActivityWithMaxIdAsync(nextId);
                     if (!nextFollowingFeed.Succeeded)
+                    {
                         return Result.Fail(nextFollowingFeed.Info, activityFeed);
+                    }
+
                     nextId = nextFollowingFeed.Value.NextMaxId;
                     activityFeed.Items.AddRange(
                         feedPage.Stories.Select(ConvertersFabric.Instance.GetSingleRecentActivityConverter)
-                            .Select(converter => converter.Convert()));
+                                .Select(converter => converter.Convert()));
                     paginationParameters.PagesLoaded++;
                     activityFeed.NextMaxId = paginationParameters.NextMaxId = nextId;
                 }
@@ -1581,7 +1781,9 @@ namespace InstagramApiSharp.API.Processors
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaBlockedUsersResponse>(response, json);
+                }
 
                 var obj = JsonConvert.DeserializeObject<InstaBlockedUsersResponse>(json);
                 return Result.Success(obj);
@@ -1605,16 +1807,18 @@ namespace InstagramApiSharp.API.Processors
                 var instaUri = UriCreator.GetDiscoverPeopleUri();
 
                 var data = new Dictionary<string, string>
-                {
-                    {"phone_id", _deviceInfo.PhoneGuid.ToString()},
-                    {"module", "discover_people"},
-                    {"_csrftoken", _user.CsrfToken},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"paginate", "true"},
-                };
+                           {
+                               {"phone_id", _deviceInfo.PhoneGuid.ToString()},
+                               {"module", "discover_people"},
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"paginate", "true"}
+                           };
 
                 if (paginationParameters != null && !string.IsNullOrEmpty(paginationParameters.NextMaxId))
+                {
                     data.Add("max_id", paginationParameters.NextMaxId);
+                }
 
                 var request =
                     _httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
@@ -1622,7 +1826,9 @@ namespace InstagramApiSharp.API.Processors
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaSuggestionUserContainerResponse>(response, json);
+                }
 
                 var obj = JsonConvert.DeserializeObject<InstaSuggestionUserContainerResponse>(json);
                 return Result.Success(obj);
@@ -1648,7 +1854,10 @@ namespace InstagramApiSharp.API.Processors
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaUserInfo>(response, json);
+                }
+
                 var userInfo = JsonConvert.DeserializeObject<InstaUserInfoContainerResponse>(json);
                 var converter = ConvertersFabric.Instance.GetUserInfoConverter(userInfo);
                 return Result.Success(converter.Convert());
@@ -1672,18 +1881,25 @@ namespace InstagramApiSharp.API.Processors
             try
             {
                 if (paginationParameters == null)
+                {
                     paginationParameters = PaginationParameters.MaxPagesToLoad(1);
+                }
 
                 Uri bestiesUri = UriCreator.GetBestFriendsUri(paginationParameters.NextMaxId);
-                if(suggested)
+                if (suggested)
+                {
                     bestiesUri = UriCreator.GetBestiesSuggestionUri(paginationParameters.NextMaxId);
+                }
 
                 var bestiesResponse = await GetUserListByUriAsync(bestiesUri);
                 if (!bestiesResponse.Succeeded)
+                {
                     return Result.Fail(bestiesResponse.Info, (InstaUserShortList)null);
+                }
+
                 besties.AddRange(
                     bestiesResponse.Value.Items?.Select(ConvertersFabric.Instance.GetUserShortConverter)
-                        .Select(converter => converter.Convert()));
+                                   .Select(converter => converter.Convert()));
                 paginationParameters.NextMaxId = besties.NextMaxId = bestiesResponse.Value.NextMaxId;
 
                 var pagesLoaded = 1;
@@ -1692,13 +1908,19 @@ namespace InstagramApiSharp.API.Processors
                 {
                     var nextBestiesUri = UriCreator.GetBestFriendsUri(bestiesResponse.Value.NextMaxId);
                     if (suggested)
+                    {
                         nextBestiesUri = UriCreator.GetBestiesSuggestionUri(bestiesResponse.Value.NextMaxId);
+                    }
+
                     bestiesResponse = await GetUserListByUriAsync(nextBestiesUri);
                     if (!bestiesResponse.Succeeded)
+                    {
                         return Result.Fail(bestiesResponse.Info, besties);
+                    }
+
                     besties.AddRange(
                         bestiesResponse.Value.Items?.Select(ConvertersFabric.Instance.GetUserShortConverter)
-                            .Select(converter => converter.Convert()));
+                                       .Select(converter => converter.Convert()));
                     pagesLoaded++;
                     paginationParameters.PagesLoaded = pagesLoaded;
                     paginationParameters.NextMaxId = besties.NextMaxId = bestiesResponse.Value.NextMaxId;
@@ -1727,10 +1949,16 @@ namespace InstagramApiSharp.API.Processors
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaUserListShortResponse>(response, json);
+                }
+
                 var instaUserListResponse = JsonConvert.DeserializeObject<InstaUserListShortResponse>(json);
                 if (instaUserListResponse.IsOk())
+                {
                     return Result.Success(instaUserListResponse);
+                }
+
                 return Result.UnExpectedResponse<InstaUserListShortResponse>(response, json);
             }
             catch (HttpRequestException httpException)
@@ -1745,8 +1973,9 @@ namespace InstagramApiSharp.API.Processors
             }
         }
 
-        private async Task<IResult<InstaMediaListResponse>> GetUserMedia(long userId,
-                                             PaginationParameters paginationParameters)
+        private async Task<IResult<InstaMediaListResponse>> GetUserMedia(
+            long userId,
+            PaginationParameters paginationParameters)
         {
             try
             {
@@ -1756,8 +1985,12 @@ namespace InstagramApiSharp.API.Processors
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaMediaListResponse>(response, json);
-                var mediaResponse = JsonConvert.DeserializeObject<InstaMediaListResponse>(json,
+                }
+
+                var mediaResponse = JsonConvert.DeserializeObject<InstaMediaListResponse>(
+                    json,
                     new InstaMediaListDataConverter());
 
                 return Result.Success(mediaResponse);
@@ -1773,18 +2006,19 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail(exception, default(InstaMediaListResponse));
             }
         }
+
         private async Task<IResult<bool>> FavoriteUnfavoriteUser(Uri instaUri, long userId)
         {
             UserAuthValidator.Validate(_userAuthValidate);
             try
             {
                 var data = new JObject
-                {
-                    {"user_id", userId.ToString()},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_csrftoken", _user.CsrfToken},
-                };
+                           {
+                               {"user_id", userId.ToString()},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"_csrftoken", _user.CsrfToken}
+                           };
                 var request =
                     _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
@@ -1792,7 +2026,9 @@ namespace InstagramApiSharp.API.Processors
                 var obj = JsonConvert.DeserializeObject<InstaDefault>(json);
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<bool>(response, obj.Message, null);
+                }
 
                 return obj.Status.ToLower() == "ok" ? Result.Success(true) : Result.UnExpectedResponse<bool>(response, obj.Message, null);
             }
@@ -1813,11 +2049,11 @@ namespace InstagramApiSharp.API.Processors
             try
             {
                 var data = new JObject
-                {
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_csrftoken", _user.CsrfToken},
-                };
+                           {
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"_csrftoken", _user.CsrfToken}
+                           };
                 switch (muteUnmuteOption)
                 {
                     case InstaMuteOption.All:
@@ -1831,6 +2067,7 @@ namespace InstagramApiSharp.API.Processors
                         data.Add("target_reel_author_id", userId.ToString());
                         break;
                 }
+
                 var request =
                     _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
@@ -1838,7 +2075,9 @@ namespace InstagramApiSharp.API.Processors
                 var obj = JsonConvert.DeserializeObject<InstaDefault>(json);
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaStoryFriendshipStatus>(response, obj.Message, null);
+                }
 
                 var friendshipStatus = JsonConvert.DeserializeObject<InstaStoryFriendshipStatusContainerResponse>(json);
                 var converter = ConvertersFabric.Instance.GetStoryFriendshipStatusConverter(friendshipStatus.FriendshipStatus);
@@ -1855,18 +2094,19 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaStoryFriendshipStatus>(ex);
             }
         }
+
         private async Task<IResult<InstaStoryFriendshipStatus>> HideUnhideMyStoryFromUser(Uri instaUri)
         {
             UserAuthValidator.Validate(_userAuthValidate);
             try
             {
                 var data = new JObject
-                {
-                    {"source", "profile"},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_csrftoken", _user.CsrfToken},
-                };
+                           {
+                               {"source", "profile"},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"_csrftoken", _user.CsrfToken}
+                           };
                 var request =
                     _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
@@ -1874,7 +2114,9 @@ namespace InstagramApiSharp.API.Processors
                 var obj = JsonConvert.DeserializeObject<InstaDefault>(json);
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaStoryFriendshipStatus>(response, obj.Message, null);
+                }
 
                 var friendshipStatus = JsonConvert.DeserializeObject<InstaStoryFriendshipStatusContainerResponse>(json);
                 var converter = ConvertersFabric.Instance.GetStoryFriendshipStatusConverter(friendshipStatus.FriendshipStatus);
@@ -1898,11 +2140,11 @@ namespace InstagramApiSharp.API.Processors
             try
             {
                 var data = new JObject
-                {
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_csrftoken", _user.CsrfToken},
-                };
+                           {
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"_csrftoken", _user.CsrfToken}
+                           };
                 var request =
                     _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
@@ -1910,7 +2152,9 @@ namespace InstagramApiSharp.API.Processors
                 var obj = JsonConvert.DeserializeObject<InstaDefault>(json);
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaStoryFriendshipStatus>(response, obj.Message, null);
+                }
 
                 var friendshipStatus = JsonConvert.DeserializeObject<InstaStoryFriendshipStatusContainerResponse>(json);
                 var converter = ConvertersFabric.Instance.GetStoryFriendshipStatusConverter(friendshipStatus.FriendshipStatus);
@@ -1928,7 +2172,8 @@ namespace InstagramApiSharp.API.Processors
             }
         }
 
-        private async Task<IResult<InstaMediaListResponse>> GetUserTags(long userId,
+        private async Task<IResult<InstaMediaListResponse>> GetUserTags(
+            long userId,
             PaginationParameters paginationParameters)
         {
             try
@@ -1937,8 +2182,13 @@ namespace InstagramApiSharp.API.Processors
                 var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, uri, _deviceInfo);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
-                if (response.StatusCode != HttpStatusCode.OK) return Result.UnExpectedResponse<InstaMediaListResponse>(response, json);
-                var mediaResponse = JsonConvert.DeserializeObject<InstaMediaListResponse>(json,
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    return Result.UnExpectedResponse<InstaMediaListResponse>(response, json);
+                }
+
+                var mediaResponse = JsonConvert.DeserializeObject<InstaMediaListResponse>(
+                    json,
                     new InstaMediaListDataConverter());
 
                 return Result.Success(mediaResponse);
@@ -1954,7 +2204,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail(exception, default(InstaMediaListResponse));
             }
         }
-        #endregion private parts
 
+        #endregion private parts
     }
 }

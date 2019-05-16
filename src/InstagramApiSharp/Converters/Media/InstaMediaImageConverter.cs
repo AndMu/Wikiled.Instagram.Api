@@ -1,8 +1,6 @@
 using System;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
 
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Media
 {
     internal class InstaMediaImageConverter : IObjectConverter<InstaImage, ImageResponse>
     {
@@ -10,7 +8,11 @@ namespace InstagramApiSharp.Converters
 
         public InstaImage Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
+            if (SourceObject == null)
+            {
+                throw new ArgumentNullException("Source object");
+            }
+
             var image = new InstaImage(SourceObject.Url, int.Parse(SourceObject.Width), int.Parse(SourceObject.Height));
             return image;
         }

@@ -1,21 +1,4 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
-
-using InstagramApiSharp.Classes;
-using InstagramApiSharp.Enums;
-using System;
-using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace InstagramApiSharp.Helpers
+﻿namespace Wikiled.Instagram.Api.Helpers
 {
     /*internal class ProgressableStreamContent : HttpContent
     {

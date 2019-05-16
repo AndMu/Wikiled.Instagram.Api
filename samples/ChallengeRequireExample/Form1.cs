@@ -28,6 +28,14 @@ using System.Net;
 using System.Net.Sockets;
 using InstagramApiSharp;
 using InstagramApiSharp.Classes.SessionHandlers;
+using Wikiled.Instagram.Api.API;
+using Wikiled.Instagram.Api.API.Builder;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.SessionHandlers;
+using Wikiled.Instagram.Api.Enums;
+using Wikiled.Instagram.Api.Logger;
+
 /////////////////////////////////////////////////////////////////////
 ////////////////////// IMPORTANT NOTE ///////////////////////////////
 // Please check wiki pages for more information:

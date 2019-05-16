@@ -1,12 +1,11 @@
-﻿using InstagramApiSharp.Classes.ResponseWrappers.BaseResponse;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace InstagramApiSharp.Classes.ResponseWrappers
+namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Feed
 {
     public class InstaExploreFeedResponse : BaseLoadableResponse
     {
         [JsonIgnore] public InstaExploreItemsResponse Items { get; set; } = new InstaExploreItemsResponse();
-        
+
         [JsonProperty("max_id")] public string MaxId { get; set; }
     }
 }

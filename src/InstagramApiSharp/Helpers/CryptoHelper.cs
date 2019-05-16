@@ -2,15 +2,15 @@
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using InstagramApiSharp.API;
 
-namespace InstagramApiSharp.Helpers
+namespace Wikiled.Instagram.Api.Helpers
 {
     internal class CryptoHelper
     {
-        public static string ByteToString(byte[] buff)
+        public static string Base64Decode(string base64EncodedData)
         {
-            return buff.Aggregate("", (current, item) => current + item.ToString("X2"));
+            var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
+            return Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
         public static string Base64Encode(string plainText)
@@ -19,22 +19,28 @@ namespace InstagramApiSharp.Helpers
             return Convert.ToBase64String(plainTextBytes);
         }
 
-        public static string Base64Decode(string base64EncodedData)
+        public static byte[] ByteConcat(byte[] left, byte[] right)
         {
-            var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
-            return Encoding.UTF8.GetString(base64EncodedBytes);
+            if (null == left)
+            {
+                return right;
+            }
+
+            if (null == right)
+            {
+                return left;
+            }
+
+            var newBytes = new byte[left.Length + right.Length];
+            left.CopyTo(newBytes, 0);
+            right.CopyTo(newBytes, left.Length);
+
+            return newBytes;
         }
 
-        public static string CalculateMd5(string message)
+        public static string ByteToString(byte[] buff)
         {
-            var encoding = Encoding.UTF8;
-
-            using (var md5 = MD5.Create())
-            {
-                var hashed = md5.ComputeHash(encoding.GetBytes(message));
-                var hash = BitConverter.ToString(hashed).Replace("-", "").ToLower();
-                return hash;
-            }
+            return buff.Aggregate("", (current, item) => current + item.ToString("X2"));
         }
 
         public static string CalculateHash(string key, string message)
@@ -49,8 +55,10 @@ namespace InstagramApiSharp.Helpers
             var opadKeySet = new byte[HashBlockSize];
             var ipadKeySet = new byte[HashBlockSize];
 
-
-            if (keyBytes.Length > HashBlockSize) keyBytes = GetHash(keyBytes);
+            if (keyBytes.Length > HashBlockSize)
+            {
+                keyBytes = GetHash(keyBytes);
+            }
 
             // This condition is independent of previous
             // condition. If previous was true
@@ -63,40 +71,32 @@ namespace InstagramApiSharp.Helpers
                 keyBytes = newKeyBytes;
             }
 
-
             for (var i = 0; i < keyBytes.Length; i++)
             {
-                opadKeySet[i] = (byte) (keyBytes[i] ^ 0x5C);
-                ipadKeySet[i] = (byte) (keyBytes[i] ^ 0x36);
+                opadKeySet[i] = (byte)(keyBytes[i] ^ 0x5C);
+                ipadKeySet[i] = (byte)(keyBytes[i] ^ 0x36);
             }
 
-            var hash = GetHash(ByteConcat(opadKeySet,
-                GetHash(ByteConcat(ipadKeySet, encoding.GetBytes(message)))));
+            var hash = GetHash(
+                ByteConcat(
+                    opadKeySet,
+                    GetHash(ByteConcat(ipadKeySet, encoding.GetBytes(message)))));
 
             // Convert to standard hex string 
             return hash.Select(a => a.ToString("x2"))
-                .Aggregate((a, b) => $"{a}{b}");
+                       .Aggregate((a, b) => $"{a}{b}");
         }
 
-        public static byte[] GetHash(byte[] bytes)
+        public static string CalculateMd5(string message)
         {
-            using (var hash = SHA256.Create())
+            var encoding = Encoding.UTF8;
+
+            using (var md5 = MD5.Create())
             {
-                return hash.ComputeHash(bytes);
+                var hashed = md5.ComputeHash(encoding.GetBytes(message));
+                var hash = BitConverter.ToString(hashed).Replace("-", "").ToLower();
+                return hash;
             }
-        }
-
-        public static byte[] ByteConcat(byte[] left, byte[] right)
-        {
-            if (null == left) return right;
-
-            if (null == right) return left;
-
-            var newBytes = new byte[left.Length + right.Length];
-            left.CopyTo(newBytes, 0);
-            right.CopyTo(newBytes, left.Length);
-
-            return newBytes;
         }
 
         public static string GetCommentBreadCrumbEncoded(string text)
@@ -107,8 +107,12 @@ namespace InstagramApiSharp.Helpers
             var rnd = new Random(DateTime.Now.Millisecond);
             var msgSize = text.Length;
             var term = rnd.Next(2, 3) * 1000 + msgSize * rnd.Next(15, 20) * 100;
-            var textChangeDeviceEventCount = Math.Round((decimal) msgSize / rnd.Next(2, 3), 0);
-            if (textChangeDeviceEventCount == 0) textChangeDeviceEventCount = 1;
+            var textChangeDeviceEventCount = Math.Round((decimal)msgSize / rnd.Next(2, 3), 0);
+            if (textChangeDeviceEventCount == 0)
+            {
+                textChangeDeviceEventCount = 1;
+            }
+
             var data = $"{msgSize} {term} {textChangeDeviceEventCount} {date}";
 
             var keyByte = Encoding.UTF8.GetBytes(key);
@@ -119,6 +123,14 @@ namespace InstagramApiSharp.Helpers
             }
 
             return $"{Base64Encode(dataEncoded)}\n{Base64Encode(data)}\n";
+        }
+
+        public static byte[] GetHash(byte[] bytes)
+        {
+            using (var hash = SHA256.Create())
+            {
+                return hash.ComputeHash(bytes);
+            }
         }
     }
 }

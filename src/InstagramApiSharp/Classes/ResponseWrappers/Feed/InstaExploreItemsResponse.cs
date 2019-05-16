@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
-using InstagramApiSharp.Classes.ResponseWrappers.BaseResponse;
 using Newtonsoft.Json;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.BaseResponse;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
 
-namespace InstagramApiSharp.Classes.ResponseWrappers
+namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Feed
 {
     public class InstaExploreItemsResponse : BaseLoadableResponse
     {
-        [JsonIgnore] public InstaStoryTrayResponse StoryTray { get; set; } = new InstaStoryTrayResponse();
+        [JsonIgnore] public InstaChannelResponse Channel { get; set; }
 
         [JsonIgnore] public List<InstaMediaItemResponse> Medias { get; set; } = new List<InstaMediaItemResponse>();
 
-        [JsonIgnore] public InstaChannelResponse Channel { get; set; }
+        [JsonIgnore] public InstaStoryTrayResponse StoryTray { get; set; } = new InstaStoryTrayResponse();
     }
 }

@@ -1,17 +1,6 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System;
 
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using System;
-
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Broadcast
 {
     internal class InstaBroadcastCommentListConverter : IObjectConverter<InstaBroadcastCommentList, InstaBroadcastCommentListResponse>
     {
@@ -19,36 +8,53 @@ namespace InstagramApiSharp.Converters
 
         public InstaBroadcastCommentList Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
-            var broadcastCommentList = new InstaBroadcastCommentList
+            if (SourceObject == null)
             {
-                CaptionIsEdited = SourceObject.CaptionIsEdited ?? false,
-                CommentCount = SourceObject.CommentCount ?? 0,
-                CommentLikesEnabled = SourceObject.CommentLikesEnabled ?? false,
-                CommentMuted = SourceObject.CommentMuted ?? 0,
-                HasMoreComments = SourceObject.HasMoreComments ?? false,
-                HasMoreHeadloadComments = SourceObject.HasMoreHeadloadComments ?? false,
-                IsFirstFetch = SourceObject.IsFirstFetch,
-                LiveSecondsPerComment = SourceObject.LiveSecondsPerComment ?? 0,
-                MediaHeaderDisplay = SourceObject.MediaHeaderDisplay,
-                SystemComments = SourceObject.SystemComments
-            };
+                throw new ArgumentNullException("Source object");
+            }
+
+            var broadcastCommentList = new InstaBroadcastCommentList
+                                       {
+                                           CaptionIsEdited = SourceObject.CaptionIsEdited ?? false,
+                                           CommentCount = SourceObject.CommentCount ?? 0,
+                                           CommentLikesEnabled = SourceObject.CommentLikesEnabled ?? false,
+                                           CommentMuted = SourceObject.CommentMuted ?? 0,
+                                           HasMoreComments = SourceObject.HasMoreComments ?? false,
+                                           HasMoreHeadloadComments = SourceObject.HasMoreHeadloadComments ?? false,
+                                           IsFirstFetch = SourceObject.IsFirstFetch,
+                                           LiveSecondsPerComment = SourceObject.LiveSecondsPerComment ?? 0,
+                                           MediaHeaderDisplay = SourceObject.MediaHeaderDisplay,
+                                           SystemComments = SourceObject.SystemComments
+                                       };
 
             if (SourceObject.Caption != null)
+            {
                 broadcastCommentList.Caption = ConvertersFabric.Instance
-                    .GetCaptionConverter(SourceObject.Caption).Convert();
+                                                               .GetCaptionConverter(SourceObject.Caption).Convert();
+            }
 
             if (SourceObject.PinnedComment != null)
+            {
                 broadcastCommentList.PinnedComment = ConvertersFabric.Instance
-                    .GetBroadcastCommentConverter(SourceObject.PinnedComment).Convert();
+                                                                     .GetBroadcastCommentConverter(SourceObject.PinnedComment).Convert();
+            }
+
             try
             {
                 if (SourceObject.Comments?.Count > 0)
+                {
                     foreach (var comment in SourceObject.Comments)
-                        broadcastCommentList.Comments.Add(ConvertersFabric.Instance
-                            .GetBroadcastCommentConverter(comment).Convert());
+                    {
+                        broadcastCommentList.Comments.Add(
+                            ConvertersFabric.Instance
+                                            .GetBroadcastCommentConverter(comment).Convert());
+                    }
+                }
             }
-            catch { }
+            catch
+            {
+            }
+
             return broadcastCommentList;
         }
     }

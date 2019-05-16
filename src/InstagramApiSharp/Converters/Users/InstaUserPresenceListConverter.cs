@@ -1,19 +1,6 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System;
 
-using System;
-using System.Linq;
-using InstagramApiSharp.Helpers;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Users
 {
     internal class InstaUserPresenceListConverter : IObjectConverter<InstaUserPresenceList, InstaUserPresenceContainerResponse>
     {
@@ -21,7 +8,11 @@ namespace InstagramApiSharp.Converters
 
         public InstaUserPresenceList Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
+            if (SourceObject == null)
+            {
+                throw new ArgumentNullException("Source object");
+            }
+
             var list = new InstaUserPresenceList();
             if (SourceObject.Items != null && SourceObject.Items.Any())
             {
@@ -31,9 +22,12 @@ namespace InstagramApiSharp.Converters
                     {
                         list.Add(ConvertersFabric.Instance.GetSingleUserPresenceConverter(item).Convert());
                     }
-                    catch { }
+                    catch
+                    {
+                    }
                 }
             }
+
             return list;
         }
     }

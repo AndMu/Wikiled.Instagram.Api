@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace InstagramApiSharp.Classes.Models
+﻿namespace Wikiled.Instagram.Api.Classes.Models.Media
 {
     /// <summary>
     ///     Only one of these property property!
@@ -10,18 +6,19 @@ namespace InstagramApiSharp.Classes.Models
     public class InstaAlbumUpload
     {
         /// <summary>
-        ///     If you set <see cref="ImageToUpload"/>, don't set <see cref="VideoToUpload"/>
+        ///     If you set <see cref="ImageToUpload" />, don't set <see cref="VideoToUpload" />
         /// </summary>
         public InstaImageUpload ImageToUpload { get; set; }
+
         /// <summary>
-        ///     If you set <see cref="VideoToUpload"/>, don't set <see cref="ImageToUpload"/>
+        ///     If you set <see cref="VideoToUpload" />, don't set <see cref="ImageToUpload" />
         /// </summary>
         public InstaVideoUpload VideoToUpload { get; set; }
+
+        internal bool IsBoth => ImageToUpload != null && VideoToUpload != null;
 
         internal bool IsImage => ImageToUpload != null;
 
         internal bool IsVideo => VideoToUpload != null;
-
-        internal bool IsBoth => ImageToUpload != null && VideoToUpload != null;
     }
 }

@@ -1,25 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace InstagramApiSharp.Classes.Models
+namespace Wikiled.Instagram.Api.Classes.Models.Story
 {
     public class InstaReelFeed
     {
-        public long HasBestiesMedia { get; set; }
-
-        public long PrefetchCount { get; set; }
+        public bool CanReply { get; set; }
 
         public bool? CanReshare { get; set; }
 
-        public bool CanReply { get; set; }
-
         public DateTime ExpiringAt { get; set; }
 
-        public List<InstaStoryItem> Items { get; set; } = new List<InstaStoryItem>();
+        public long HasBestiesMedia { get; set; }
 
         public string Id { get; set; }
 
+        public List<InstaStoryItem> Items { get; set; } = new List<InstaStoryItem>();
+
         public long LatestReelMedia { get; set; }
+
+        public long PrefetchCount { get; set; }
 
         public long Seen { get; set; }
 

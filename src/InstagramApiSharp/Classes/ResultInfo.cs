@@ -1,8 +1,7 @@
-using InstagramApiSharp.Classes.ResponseWrappers;
 using System;
 using System.Text.RegularExpressions;
 
-namespace InstagramApiSharp.Classes
+namespace Wikiled.Instagram.Api.Classes
 {
     public class ResultInfo
     {
@@ -14,7 +13,7 @@ namespace InstagramApiSharp.Classes
 
         public ResultInfo(Exception exception)
         {
-            Exception = exception;
+            System.Exception = exception;
             Message = exception?.Message;
             ResponseType = ResponseType.InternalException;
             HandleMessages(Message);
@@ -22,7 +21,7 @@ namespace InstagramApiSharp.Classes
 
         public ResultInfo(Exception exception, ResponseType responseType)
         {
-            Exception = exception;
+            System.Exception = exception;
             Message = exception?.Message;
             ResponseType = responseType;
             HandleMessages(Message);
@@ -34,6 +33,7 @@ namespace InstagramApiSharp.Classes
             Message = errorMessage;
             HandleMessages(errorMessage);
         }
+
         public ResultInfo(ResponseType responseType, BadStatusResponse status)
         {
             Message = status?.Message;
@@ -44,7 +44,7 @@ namespace InstagramApiSharp.Classes
             {
                 case ResponseType.ActionBlocked:
                 case ResponseType.Spam:
-                    if (status != null && (!string.IsNullOrEmpty(status.FeedbackMessage) && (status.FeedbackMessage.ToLower().Contains("this block will expire on"))))
+                    if (status != null && !string.IsNullOrEmpty(status.FeedbackMessage) && status.FeedbackMessage.ToLower().Contains("this block will expire on"))
                     {
                         var dateRegex = new Regex(@"(\d+)[-.\/](\d+)[-.\/](\d+)");
                         var dateMatch = dateRegex.Match(status.FeedbackMessage);
@@ -64,31 +64,37 @@ namespace InstagramApiSharp.Classes
                     break;
             }
         }
-        public void HandleMessages(string errorMessage)
-        {
-            if (errorMessage.Contains("task was canceled"))
-                Timeout = true;
-            if (errorMessage.ToLower().Contains("challenge"))
-                NeedsChallenge = true;
-        }
-
-        public Exception Exception { get; }
-
-        public string Message { get; }
-
-        public ResponseType ResponseType { get; }
-
-        public bool Timeout { get; internal set; }
-
-        public bool NeedsChallenge { get; internal set; }
 
         public DateTime? ActionBlockEnd { get; internal set; }
 
         public InstaChallengeLoginInfo Challenge { get; internal set; }
 
+        public Exception Exception { get; }
+
+        public string Message { get; }
+
+        public bool NeedsChallenge { get; internal set; }
+
+        public ResponseType ResponseType { get; }
+
+        public bool Timeout { get; internal set; }
+
         public override string ToString()
         {
             return $"{ResponseType.ToString()}: {Message}.";
+        }
+
+        public void HandleMessages(string errorMessage)
+        {
+            if (errorMessage.Contains("task was canceled"))
+            {
+                Timeout = true;
+            }
+
+            if (errorMessage.ToLower().Contains("challenge"))
+            {
+                NeedsChallenge = true;
+            }
         }
     }
 }

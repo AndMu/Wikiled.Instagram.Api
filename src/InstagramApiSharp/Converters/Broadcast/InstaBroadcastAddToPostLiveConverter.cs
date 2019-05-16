@@ -1,17 +1,6 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System;
 
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using System;
-
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Broadcast
 {
     internal class InstaBroadcastAddToPostLiveConverter : IObjectConverter<InstaBroadcastAddToPostLive, InstaBroadcastAddToPostLiveResponse>
     {
@@ -19,20 +8,28 @@ namespace InstagramApiSharp.Converters
 
         public InstaBroadcastAddToPostLive Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
-            var postlive = new InstaBroadcastAddToPostLive
+            if (SourceObject == null)
             {
-                CanReply = SourceObject.CanReply,
-                LastSeenBroadcastTs = SourceObject.LastSeenBroadcastTs ?? 0,
-                Pk = SourceObject.Pk
-            };
+                throw new ArgumentNullException("Source object");
+            }
+
+            var postlive = new InstaBroadcastAddToPostLive
+                           {
+                               CanReply = SourceObject.CanReply,
+                               LastSeenBroadcastTs = SourceObject.LastSeenBroadcastTs ?? 0,
+                               Pk = SourceObject.Pk
+                           };
 
             if (SourceObject.User != null)
+            {
                 postlive.User = ConvertersFabric.Instance.GetUserShortFriendshipFullConverter(SourceObject.User).Convert();
+            }
 
             if (SourceObject.Broadcasts?.Count > 0)
+            {
                 postlive.Broadcasts = ConvertersFabric.Instance.GetBroadcastListConverter(SourceObject.Broadcasts).Convert();
-            
+            }
+
             return postlive;
         }
     }

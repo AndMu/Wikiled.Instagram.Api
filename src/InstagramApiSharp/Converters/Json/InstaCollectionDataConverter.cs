@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using InstagramApiSharp.Classes.ResponseWrappers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace InstagramApiSharp.Converters.Json
+namespace Wikiled.Instagram.Api.Converters.Json
 {
     internal class InstaCollectionDataConverter : JsonConverter
     {
@@ -13,7 +12,10 @@ namespace InstagramApiSharp.Converters.Json
             return objectType == typeof(InstaMediaListResponse);
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+        public override object ReadJson(
+            JsonReader reader,
+            Type objectType,
+            object existingValue,
             JsonSerializer serializer)
         {
             var root = JToken.Load(reader);

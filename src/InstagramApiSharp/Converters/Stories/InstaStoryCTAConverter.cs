@@ -1,17 +1,6 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System;
 
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using System;
-
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Stories
 {
     internal class InstaStoryCTAConverter : IObjectConverter<InstaStoryCTA, InstaStoryCTAResponse>
     {
@@ -19,20 +8,23 @@ namespace InstagramApiSharp.Converters
 
         public InstaStoryCTA Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
+            if (SourceObject == null)
+            {
+                throw new ArgumentNullException("Source object");
+            }
 
             var storyCta = new InstaStoryCTA
-            {
-                AndroidClass = SourceObject.AndroidClass,
-                CallToActionTitle = SourceObject.CallToActionTitle,
-                DeeplinkUri = SourceObject.DeeplinkUri,
-                IgUserId = SourceObject.IgUserId,
-                LeadGenFormId = SourceObject.LeadGenFormId,
-                LinkType = SourceObject.LinkType,
-                Package = SourceObject.Package,
-                RedirectUri = SourceObject.RedirectUri,
-                WebUri = SourceObject.WebUri
-            };
+                           {
+                               AndroidClass = SourceObject.AndroidClass,
+                               CallToActionTitle = SourceObject.CallToActionTitle,
+                               DeeplinkUri = SourceObject.DeeplinkUri,
+                               IgUserId = SourceObject.IgUserId,
+                               LeadGenFormId = SourceObject.LeadGenFormId,
+                               LinkType = SourceObject.LinkType,
+                               Package = SourceObject.Package,
+                               RedirectUri = SourceObject.RedirectUri,
+                               WebUri = SourceObject.WebUri
+                           };
 
             return storyCta;
         }

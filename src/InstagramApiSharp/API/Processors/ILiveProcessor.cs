@@ -1,16 +1,11 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
-using InstagramApiSharp.Classes;
-using InstagramApiSharp.Classes.Models;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.Models.Broadcast;
+using Wikiled.Instagram.Api.Classes.Models.Comment;
+using Wikiled.Instagram.Api.Classes.Models.Discover;
+using Wikiled.Instagram.Api.Classes.Models.User;
 
-namespace InstagramApiSharp.API.Processors
+namespace Wikiled.Instagram.Api.API.Processors
 {
     /// <summary>
     ///     Live api functions.
@@ -89,7 +84,7 @@ namespace InstagramApiSharp.API.Processors
         /// </summary>
         /// <param name="broadcastId">Broadcast id</param>
         Task<IResult<InstaBroadcastLiveHeartBeatViewerCount>> GetHeartBeatAndViewerCountAsync(string broadcastId);
-        
+
         /// <summary>
         ///     Get broadcast information.
         /// </summary>
@@ -120,16 +115,19 @@ namespace InstagramApiSharp.API.Processors
         ///     Get suggested broadcasts
         /// </summary>
         Task<IResult<InstaBroadcastList>> GetSuggestedBroadcastsAsync();
+
         /// <summary>
         ///     Get top live status.
         /// </summary>
         /// <param name="broadcastIds">Broadcast ids</param>
         Task<IResult<InstaBroadcastTopLiveStatusList>> GetTopLiveStatusAsync(params string[] broadcastIds);
+
         /// <summary>
         ///     Get broadcast viewer list.
         /// </summary>
         /// <param name="broadcastId">Broadcast id</param>
         Task<IResult<InstaUserShortList>> GetViewerListAsync(string broadcastId);
+
         /// <summary>
         ///     Like broadcast.
         /// </summary>
@@ -143,19 +141,21 @@ namespace InstagramApiSharp.API.Processors
         /// <param name="broadcastId"></param>
         /// <param name="commentId"></param>
         /// <returns></returns>
-        Task<IResult<InstaBroadcastPinUnpin>> PinCommentAsync(string broadcastId,string commentId);
+        Task<IResult<InstaBroadcastPinUnpin>> PinCommentAsync(string broadcastId, string commentId);
+
         /// <summary>
-        ///     Start live broadcast. NOTE: YOU MUST CREATE AN BROADCAST FIRST(CreateAsync) AND THEN CALL THIS METHOD. 
+        ///     Share an live broadcast to direct recipients
         /// </summary>
-        /// <param name="broadcastId">Broadcast id</param>
-        /// <param name="sendNotifications">Send notifications</param>
-        Task<IResult<InstaBroadcastStart>> StartAsync(string broadcastId, bool sendNotifications);
+        /// <param name="text">Text to send</param>
+        /// <param name="broadcastId">Broadcast id to send ( <see cref="InstaBroadcast.Id" /> )</param>
+        /// <param name="recipients">Recipients ids</param>
+        Task<IResult<bool>> ShareLiveToDirectRecipientAsync(string text, string broadcastId, params string[] recipients);
 
         /// <summary>
         ///     Share an live broadcast to direct thread
         /// </summary>
         /// <param name="text">Text to send</param>
-        /// <param name="broadcastId">Broadcast id to send ( <see cref="InstaBroadcast.Id"/> )</param>
+        /// <param name="broadcastId">Broadcast id to send ( <see cref="InstaBroadcast.Id" /> )</param>
         /// <param name="threadIds">Thread ids</param>
         Task<IResult<bool>> ShareLiveToDirectThreadAsync(string text, string broadcastId, params string[] threadIds);
 
@@ -163,18 +163,17 @@ namespace InstagramApiSharp.API.Processors
         ///     Share an live broadcast to direct thread
         /// </summary>
         /// <param name="text">Text to send</param>
-        /// <param name="broadcastId">Broadcast id to send ( <see cref="InstaBroadcast.Id"/> )</param>
+        /// <param name="broadcastId">Broadcast id to send ( <see cref="InstaBroadcast.Id" /> )</param>
         /// <param name="threadIds">Thread ids</param>
         /// <param name="recipients">Recipients ids</param>
         Task<IResult<bool>> ShareLiveToDirectThreadAsync(string text, string broadcastId, string[] threadIds, string[] recipients);
 
         /// <summary>
-        ///     Share an live broadcast to direct recipients
+        ///     Start live broadcast. NOTE: YOU MUST CREATE AN BROADCAST FIRST(CreateAsync) AND THEN CALL THIS METHOD.
         /// </summary>
-        /// <param name="text">Text to send</param>
-        /// <param name="broadcastId">Broadcast id to send ( <see cref="InstaBroadcast.Id"/> )</param>
-        /// <param name="recipients">Recipients ids</param>
-        Task<IResult<bool>> ShareLiveToDirectRecipientAsync(string text, string broadcastId, params string[] recipients);
+        /// <param name="broadcastId">Broadcast id</param>
+        /// <param name="sendNotifications">Send notifications</param>
+        Task<IResult<InstaBroadcastStart>> StartAsync(string broadcastId, bool sendNotifications);
 
         /// <summary>
         ///     Unpin comment from broadcast.
@@ -182,6 +181,7 @@ namespace InstagramApiSharp.API.Processors
         /// <param name="broadcastId"></param>
         /// <param name="commentId"></param>
         Task<IResult<InstaBroadcastPinUnpin>> UnPinCommentAsync(string broadcastId, string commentId);
+
         /*
         /// <summary>
         /// NOT COMPLETE

@@ -1,18 +1,6 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System;
 
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using System;
-
-
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Stories
 {
     internal class InstaStoryFeedMediaConverter : IObjectConverter<InstaStoryFeedMedia, InstaStoryFeedMediaResponse>
     {
@@ -20,19 +8,23 @@ namespace InstagramApiSharp.Converters
 
         public InstaStoryFeedMedia Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
-            var storyFeed = new InstaStoryFeedMedia
+            if (SourceObject == null)
             {
-                Height = SourceObject.Height,
-                IsPinned = SourceObject.IsPinned,
-                MediaId = SourceObject.MediaId,
-                ProductType = SourceObject.ProductType,
-                Rotation = SourceObject.Rotation,
-                Width = SourceObject.Width,
-                X = SourceObject.X,
-                Y = SourceObject.Y,
-                Z = SourceObject.Z
-            };
+                throw new ArgumentNullException("Source object");
+            }
+
+            var storyFeed = new InstaStoryFeedMedia
+                            {
+                                Height = SourceObject.Height,
+                                IsPinned = SourceObject.IsPinned,
+                                MediaId = SourceObject.MediaId,
+                                ProductType = SourceObject.ProductType,
+                                Rotation = SourceObject.Rotation,
+                                Width = SourceObject.Width,
+                                X = SourceObject.X,
+                                Y = SourceObject.Y,
+                                Z = SourceObject.Z
+                            };
             return storyFeed;
         }
     }

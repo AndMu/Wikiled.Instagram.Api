@@ -1,21 +1,8 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
-
-using System;
-using System.Collections.Generic;
-using InstagramApiSharp.Classes.Models.Business;
-using InstagramApiSharp.Classes.ResponseWrappers;
+﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Linq;
 
-namespace InstagramApiSharp.Converters.Json
+namespace Wikiled.Instagram.Api.Converters.Json
 {
     internal class InstaHighlightReelDataConverter : JsonConverter
     {
@@ -24,7 +11,8 @@ namespace InstagramApiSharp.Converters.Json
             return objectType == typeof(InstaHighlightReelResponse);
         }
 
-        public override object ReadJson(JsonReader reader,
+        public override object ReadJson(
+            JsonReader reader,
             Type objectType,
             object existingValue,
             JsonSerializer serializer)

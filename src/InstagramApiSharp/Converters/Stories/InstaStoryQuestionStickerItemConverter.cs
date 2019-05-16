@@ -1,8 +1,6 @@
-﻿using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using System;
+﻿using System;
 
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Stories
 {
     internal class InstaStoryQuestionStickerItemConverter : IObjectConverter<InstaStoryQuestionStickerItem, InstaStoryQuestionStickerItemResponse>
     {
@@ -10,18 +8,21 @@ namespace InstagramApiSharp.Converters
 
         public InstaStoryQuestionStickerItem Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
-            return new InstaStoryQuestionStickerItem
+            if (SourceObject == null)
             {
-                BackgroundColor = SourceObject.BackgroundColor,
-                ProfilePicUrl = SourceObject.ProfilePicUrl,
-                Question = SourceObject.Question,
-                QuestionId = SourceObject.QuestionId,
-                QuestionType = SourceObject.QuestionType,
-                TextColor = SourceObject.TextColor,
-                ViewerCanInteract = SourceObject.ViewerCanInteract
-            };
+                throw new ArgumentNullException("Source object");
+            }
 
+            return new InstaStoryQuestionStickerItem
+                   {
+                       BackgroundColor = SourceObject.BackgroundColor,
+                       ProfilePicUrl = SourceObject.ProfilePicUrl,
+                       Question = SourceObject.Question,
+                       QuestionId = SourceObject.QuestionId,
+                       QuestionType = SourceObject.QuestionType,
+                       TextColor = SourceObject.TextColor,
+                       ViewerCanInteract = SourceObject.ViewerCanInteract
+                   };
         }
     }
 }

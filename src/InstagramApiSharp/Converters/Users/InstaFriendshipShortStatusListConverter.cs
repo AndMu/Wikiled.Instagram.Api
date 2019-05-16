@@ -1,27 +1,18 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System;
 
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using System;
-using System.Linq;
-
-namespace InstagramApiSharp.Converters.Users
+namespace Wikiled.Instagram.Api.Converters.Users
 {
-    internal class InstaFriendshipShortStatusListConverter :
-        IObjectConverter<InstaFriendshipShortStatusList, InstaFriendshipShortStatusListResponse>
+    internal class InstaFriendshipShortStatusListConverter : IObjectConverter<InstaFriendshipShortStatusList, InstaFriendshipShortStatusListResponse>
     {
         public InstaFriendshipShortStatusListResponse SourceObject { get; set; }
 
         public InstaFriendshipShortStatusList Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
+            if (SourceObject == null)
+            {
+                throw new ArgumentNullException("Source object");
+            }
+
             var friendships = new InstaFriendshipShortStatusList();
             if (SourceObject != null && SourceObject.Any())
             {
@@ -33,9 +24,12 @@ namespace InstagramApiSharp.Converters.Users
                         friend.Pk = item.Pk;
                         friendships.Add(friend);
                     }
-                    catch { }
+                    catch
+                    {
+                    }
                 }
             }
+
             return friendships;
         }
     }

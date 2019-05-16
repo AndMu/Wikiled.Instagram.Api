@@ -1,31 +1,30 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
-using InstagramApiSharp.Classes;
-using InstagramApiSharp.Classes.Android.DeviceInfo;
-using InstagramApiSharp.Logger;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using System.Threading.Tasks;
 using System.Diagnostics;
-using InstagramApiSharp.Helpers;
-using System.Net.Http;
-using Newtonsoft.Json.Linq;
-using InstagramApiSharp.Converters;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using InstagramApiSharp.Classes.Models;
 using System.Net;
-using InstagramApiSharp.Converters.Json;
-using InstagramApiSharp.Enums;
-using InstagramApiSharp.Classes.ResponseWrappers.Business;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.Android.DeviceInfo;
+using Wikiled.Instagram.Api.Classes.Models.Account;
+using Wikiled.Instagram.Api.Classes.Models.Business;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.Other;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Business;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Errors;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Login;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Other;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
+using Wikiled.Instagram.Api.Converters;
+using Wikiled.Instagram.Api.Converters.Json;
+using Wikiled.Instagram.Api.Enums;
+using Wikiled.Instagram.Api.Helpers;
+using Wikiled.Instagram.Api.Logger;
 
-namespace InstagramApiSharp.API.Processors
+namespace Wikiled.Instagram.Api.API.Processors
 {
     /// <summary>
     ///     Account api functions.
@@ -33,17 +32,67 @@ namespace InstagramApiSharp.API.Processors
     /// </summary>
     internal class AccountProcessor : IAccountProcessor
     {
+        #region NOT COMPLETE FUNCTIONS
+
+        //NOT COMPLETE
+        private async Task<IResult<object>> GetCommentFilterAsync()
+        {
+            UserAuthValidator.Validate(_userAuthValidate);
+            try
+            {
+                var instaUri = new Uri(InstaApiConstants.BASE_INSTAGRAM_API_URL + "accounts/get_comment_filter/");
+                Debug.WriteLine(instaUri.ToString());
+
+                var request = _httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, _deviceInfo);
+                var response = await _httpRequestProcessor.SendAsync(request);
+
+                var json = await response.Content.ReadAsStringAsync();
+                Debug.WriteLine(response.StatusCode);
+                Debug.WriteLine(json);
+
+                //if (response.StatusCode != HttpStatusCode.OK)
+                //    return Result.UnExpectedResponse<object>(response, json);
+                //{"config_value": 0, "status": "ok"}
+                return null;
+            }
+            catch (HttpRequestException httpException)
+            {
+                _logger?.LogException(httpException);
+                return Result.Fail(httpException, default(object), ResponseType.NetworkProblem);
+            }
+            catch (Exception exception)
+            {
+                _logger?.LogException(exception);
+                return Result.Fail<object>(exception);
+            }
+        }
+
+        #endregion NOT COMPLETE FUNCTIONS
+
         #region Properties and constructor
+
         private readonly AndroidDevice _deviceInfo;
+
         private readonly IHttpRequestProcessor _httpRequestProcessor;
+
         private readonly IInstaLogger _logger;
+
         private readonly UserSessionData _user;
+
         private readonly UserAuthValidate _userAuthValidate;
+
         private readonly InstaApi _instaApi;
+
         private readonly HttpHelper _httpHelper;
-        public AccountProcessor(AndroidDevice deviceInfo, UserSessionData user,
-            IHttpRequestProcessor httpRequestProcessor, IInstaLogger logger,
-            UserAuthValidate userAuthValidate, InstaApi instaApi, HttpHelper httpHelper)
+
+        public AccountProcessor(
+            AndroidDevice deviceInfo,
+            UserSessionData user,
+            IHttpRequestProcessor httpRequestProcessor,
+            IInstaLogger logger,
+            UserAuthValidate userAuthValidate,
+            InstaApi instaApi,
+            HttpHelper httpHelper)
         {
             _deviceInfo = deviceInfo;
             _user = user;
@@ -53,9 +102,11 @@ namespace InstagramApiSharp.API.Processors
             _instaApi = instaApi;
             _httpHelper = httpHelper;
         }
+
         #endregion Properties and constructor
 
         #region Profile edit
+
         /// <summary>
         ///     Set current account private
         /// </summary>
@@ -66,28 +117,36 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetUriSetAccountPrivate();
                 var fields = new Dictionary<string, string>
-                {
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_csrftoken", _user.CsrfToken}
-                };
-                var hash = CryptoHelper.CalculateHash(_httpHelper._apiVersion.SignatureKey,
+                             {
+                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
+                                 {"_csrftoken", _user.CsrfToken}
+                             };
+                var hash = CryptoHelper.CalculateHash(
+                    _httpHelper._apiVersion.SignatureKey,
                     JsonConvert.SerializeObject(fields));
                 var payload = JsonConvert.SerializeObject(fields);
                 var signature = $"{hash}.{Uri.EscapeDataString(payload)}";
                 var request = _httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, _deviceInfo);
                 request.Content = new FormUrlEncodedContent(fields);
                 request.Properties.Add(InstaApiConstants.HEADER_IG_SIGNATURE, signature);
-                request.Properties.Add(InstaApiConstants.HEADER_IG_SIGNATURE_KEY_VERSION,
+                request.Properties.Add(
+                    InstaApiConstants.HEADER_IG_SIGNATURE_KEY_VERSION,
                     InstaApiConstants.IG_SIGNATURE_KEY_VERSION);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaUserShort>(response, json);
+                }
+
                 var userInfoUpdated =
                     JsonConvert.DeserializeObject<InstaUserShortResponse>(json, new InstaUserShortDataConverter());
                 if (userInfoUpdated.Pk < 1)
+                {
                     return Result.Fail<InstaUserShort>("Pk is null or empty");
+                }
+
                 var converter = ConvertersFabric.Instance.GetUserShortConverter(userInfoUpdated);
                 return Result.Success(converter.Convert());
             }
@@ -102,6 +161,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaUserShort>(exception);
             }
         }
+
         /// <summary>
         ///     Set current account public
         /// </summary>
@@ -112,19 +172,21 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetUriSetAccountPublic();
                 var fields = new Dictionary<string, string>
-                {
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_csrftoken", _user.CsrfToken}
-                };
-                var hash = CryptoHelper.CalculateHash(_httpHelper._apiVersion.SignatureKey,
+                             {
+                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
+                                 {"_csrftoken", _user.CsrfToken}
+                             };
+                var hash = CryptoHelper.CalculateHash(
+                    _httpHelper._apiVersion.SignatureKey,
                     JsonConvert.SerializeObject(fields));
                 var payload = JsonConvert.SerializeObject(fields);
                 var signature = $"{hash}.{Uri.EscapeDataString(payload)}";
                 var request = _httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, _deviceInfo);
                 request.Content = new FormUrlEncodedContent(fields);
                 request.Properties.Add(InstaApiConstants.HEADER_IG_SIGNATURE, signature);
-                request.Properties.Add(InstaApiConstants.HEADER_IG_SIGNATURE_KEY_VERSION,
+                request.Properties.Add(
+                    InstaApiConstants.HEADER_IG_SIGNATURE_KEY_VERSION,
                     InstaApiConstants.IG_SIGNATURE_KEY_VERSION);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
@@ -133,7 +195,10 @@ namespace InstagramApiSharp.API.Processors
                     var userInfoUpdated =
                         JsonConvert.DeserializeObject<InstaUserShortResponse>(json, new InstaUserShortDataConverter());
                     if (userInfoUpdated.Pk < 1)
+                    {
                         return Result.Fail<InstaUserShort>("Pk is incorrect");
+                    }
+
                     var converter = ConvertersFabric.Instance.GetUserShortConverter(userInfoUpdated);
                     return Result.Success(converter.Convert());
                 }
@@ -151,6 +216,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaUserShort>(exception);
             }
         }
+
         /// <summary>
         ///     Change password
         /// </summary>
@@ -164,27 +230,32 @@ namespace InstagramApiSharp.API.Processors
         {
             UserAuthValidator.Validate(_userAuthValidate);
             if (oldPassword == newPassword)
+            {
                 return Result.Fail("The old password should not the same of the new password", false);
+            }
 
             try
             {
                 var changePasswordUri = UriCreator.GetChangePasswordUri();
 
                 var data = new JObject
-                {
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk},
-                    {"_csrftoken", _user.CsrfToken},
-                    {"old_password", oldPassword},
-                    {"new_password1", newPassword},
-                    {"new_password2", newPassword}
-                };
+                           {
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk},
+                               {"_csrftoken", _user.CsrfToken},
+                               {"old_password", oldPassword},
+                               {"new_password1", newPassword},
+                               {"new_password2", newPassword}
+                           };
 
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Get, changePasswordUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == HttpStatusCode.OK)
+                {
                     return Result.Success(true);
+                }
+
                 var error = JsonConvert.DeserializeObject<BadStatusErrorsResponse>(json);
                 var errors = "";
                 error.Message.Errors.ForEach(errorContent => errors += errorContent + "\n");
@@ -200,6 +271,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail(exception, false);
             }
         }
+
         /// <summary>
         ///     Edit profile
         /// </summary>
@@ -216,52 +288,72 @@ namespace InstagramApiSharp.API.Processors
             try
             {
                 var editRequest = await GetRequestForEditProfileAsync();
-                if(!editRequest.Succeeded)
+                if (!editRequest.Succeeded)
+                {
                     return Result.Fail("Edit request returns badrequest", (InstaUserEdit)null);
+                }
+
                 var user = editRequest.Value.Username;
 
                 if (string.IsNullOrEmpty(newUsername))
+                {
                     newUsername = user;
+                }
 
                 if (name == null)
+                {
                     name = editRequest.Value.FullName;
+                }
 
                 if (biography == null)
+                {
                     biography = editRequest.Value.Biography;
+                }
 
                 if (url == null)
+                {
                     url = editRequest.Value.ExternalUrl;
+                }
 
                 if (email == null)
+                {
                     email = editRequest.Value.Email;
+                }
 
                 if (phone == null)
+                {
                     phone = editRequest.Value.PhoneNumber;
+                }
 
                 if (gender == null)
+                {
                     gender = editRequest.Value.Gender;
+                }
 
                 var instaUri = UriCreator.GetEditProfileUri();
 
                 var data = new JObject
-                {
-                    {"external_url", url},
-                    {"gender", ((int)gender).ToString()},
-                    {"phone_number", phone},
-                    {"_csrftoken", _user.CsrfToken},
-                    {"username", newUsername},
-                    {"first_name", name},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"biography", biography},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"email", email},
-                };
+                           {
+                               {"external_url", url},
+                               {"gender", ((int)gender).ToString()},
+                               {"phone_number", phone},
+                               {"_csrftoken", _user.CsrfToken},
+                               {"username", newUsername},
+                               {"first_name", name},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"biography", biography},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"email", email}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 request.Headers.Add("Host", "i.instagram.com");
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaUserEdit>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaUserEditContainer>(json);
 
                 return Result.Success(obj.User);
@@ -277,6 +369,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaUserEdit>(exception);
             }
         }
+
         /// <summary>
         ///     Set biography (support hashtags and user mentions)
         /// </summary>
@@ -288,21 +381,25 @@ namespace InstagramApiSharp.API.Processors
             {
                 var editRequest = await GetRequestForEditProfileAsync();
                 if (!editRequest.Succeeded)
+                {
                     return Result.Fail("Edit request returns badrequest.\r\nPlease try again.", (InstaBiography)null);
+                }
 
                 var instaUri = UriCreator.GetSetBiographyUri();
                 var data = new JObject
-                {
-                    { "_csrftoken", _user.CsrfToken},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    { "raw_text", bio}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"raw_text", bio}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaBiography>(response, json);
+                }
 
                 var obj = JsonConvert.DeserializeObject<InstaBiography>(json);
                 return Result.Success(obj);
@@ -319,6 +416,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaBiography>(exception);
             }
         }
+
         /// <summary>
         ///     Get request for edit profile.
         /// </summary>
@@ -332,7 +430,10 @@ namespace InstagramApiSharp.API.Processors
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaUserEdit>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaUserEditContainer>(json);
                 return Result.Success(obj.User);
             }
@@ -347,6 +448,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaUserEdit>(exception);
             }
         }
+
         /// <summary>
         ///     Set name and phone number.
         /// </summary>
@@ -359,21 +461,27 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetProfileSetPhoneAndNameUri();
                 var data = new JObject
-                {
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    { "_csrftoken", _user.CsrfToken},
-                    {"first_name", name},
-                    {"phone_number", phoneNumber}
-                };
+                           {
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"_csrftoken", _user.CsrfToken},
+                               {"first_name", name},
+                               {"phone_number", phoneNumber}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<bool>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaDefaultResponse>(json);
                 if (obj.Status.ToLower() == "ok")
+                {
                     return Result.Success(true);
+                }
+
                 return Result.Success(false);
             }
             catch (HttpRequestException httpException)
@@ -388,6 +496,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<bool>(exception);
             }
         }
+
         /// <summary>
         ///     Remove profile picture.
         /// </summary>
@@ -398,17 +507,20 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetRemoveProfilePictureUri();
                 var data = new JObject
-                {
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    { "_csrftoken", _user.CsrfToken}
-                };
+                           {
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"_csrftoken", _user.CsrfToken}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 request.Headers.Add("Host", "i.instagram.com");
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaUserEdit>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaUserEditContainer>(json);
 
                 return Result.Success(obj.User);
@@ -425,6 +537,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaUserEdit>(exception);
             }
         }
+
         /// <summary>
         ///     Change profile picture(only jpg and jpeg formats).
         /// </summary>
@@ -433,19 +546,20 @@ namespace InstagramApiSharp.API.Processors
         {
             return await ChangeProfilePictureAsync(null, pictureBytes);
         }
+
         /// <summary>
         ///     Change profile picture(only jpg and jpeg formats).
-        /// </summary> 
+        /// </summary>
         /// <param name="progress">Progress action</param>
         /// <param name="pictureBytes">Picture(JPG,JPEG) bytes</param>
         public async Task<IResult<InstaUserEdit>> ChangeProfilePictureAsync(Action<InstaUploaderProgress> progress, byte[] pictureBytes)
         {
             UserAuthValidator.Validate(_userAuthValidate);
             var upProgress = new InstaUploaderProgress
-            {
-                Caption = string.Empty,
-                UploadState = InstaUploadState.Preparing
-            };
+                             {
+                                 Caption = string.Empty,
+                                 UploadState = InstaUploadState.Preparing
+                             };
             try
             {
                 var instaUri = UriCreator.GetChangeProfilePictureUri();
@@ -453,13 +567,14 @@ namespace InstagramApiSharp.API.Processors
                 upProgress.UploadId = uploadId;
                 progress?.Invoke(upProgress);
                 var requestContent = new MultipartFormDataContent(uploadId)
-                {
-                    {new StringContent(_deviceInfo.DeviceGuid.ToString()), "\"_uuid\""},
-                    {new StringContent(_user.LoggedInUser.Pk.ToString()), "\"_uid\""},
-                    {new StringContent(_user.CsrfToken), "\"_csrftoken\""}
-                };
+                                     {
+                                         {new StringContent(_deviceInfo.DeviceGuid.ToString()), "\"_uuid\""},
+                                         {new StringContent(_user.LoggedInUser.Pk.ToString()), "\"_uid\""},
+                                         {new StringContent(_user.CsrfToken), "\"_csrftoken\""}
+                                     };
                 var imageContent = new ByteArrayContent(pictureBytes);
                 requestContent.Add(imageContent, "profile_pic", $"r{ApiRequestMessage.GenerateUploadId()}.jpg");
+
                 //var progressContent = new ProgressableStreamContent(requestContent, 4096, progress)
                 //{
                 //    UploaderProgress = upProgress
@@ -470,7 +585,7 @@ namespace InstagramApiSharp.API.Processors
                 progress?.Invoke(upProgress);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
-            
+
                 //if (progressContent.UploaderProgress != null)
                 //    upProgress = progressContent.UploaderProgress;
                 if (response.StatusCode != HttpStatusCode.OK)
@@ -479,6 +594,7 @@ namespace InstagramApiSharp.API.Processors
                     progress?.Invoke(upProgress);
                     return Result.UnExpectedResponse<InstaUserEdit>(response, json);
                 }
+
                 upProgress.UploadState = InstaUploadState.Uploaded;
                 progress?.Invoke(upProgress);
 
@@ -500,6 +616,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaUserEdit>(exception);
             }
         }
+
         /// <summary>
         ///     Get request for download backup account data.
         /// </summary>
@@ -508,6 +625,7 @@ namespace InstagramApiSharp.API.Processors
         {
             return await GetRequestForDownloadAccountDataAsync(email, null);
         }
+
         /// <summary>
         ///     Get request for download backup account data.
         /// </summary>
@@ -519,17 +637,19 @@ namespace InstagramApiSharp.API.Processors
             try
             {
                 if (string.IsNullOrEmpty(password))
+                {
                     password = _user.Password;
+                }
 
                 var instaUri = UriCreator.GetRequestForDownloadDataUri();
                 var data = new JObject
-                {
-                    {"_csrftoken", _user.CsrfToken},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"email", email},
-                    {"password", password}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"email", email},
+                               {"password", password}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
@@ -548,6 +668,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaRequestDownloadData>(exception);
             }
         }
+
         /// <summary>
         ///     Upload nametag image
         /// </summary>
@@ -557,9 +678,11 @@ namespace InstagramApiSharp.API.Processors
             UserAuthValidator.Validate(_userAuthValidate);
             return await _instaApi.HelperProcessor.SendMediaPhotoAsync(null, nametagImage.ConvertToImageUpload(), null, null, true);
         }
+
         #endregion Profile edit
 
         #region Story settings
+
         // Story settings
         /// <summary>
         ///     Get story settings.
@@ -574,7 +697,10 @@ namespace InstagramApiSharp.API.Processors
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaStorySettings>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaStorySettings>(json);
                 return Result.Success(obj);
             }
@@ -589,6 +715,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaStorySettings>(exception);
             }
         }
+
         /// <summary>
         ///     Enable Save story to gallery.
         /// </summary>
@@ -596,23 +723,29 @@ namespace InstagramApiSharp.API.Processors
         {
             UserAuthValidator.Validate(_userAuthValidate);
             try
-            {            
+            {
                 var instaUri = UriCreator.GetSetReelSettingsUri();
                 var data = new JObject
-                {
-                    { "_csrftoken", _user.CsrfToken},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"save_to_camera_roll", 1.ToString()}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"save_to_camera_roll", 1.ToString()}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<bool>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaDefault>(json);
                 if (obj.Status.ToLower() == "ok")
+                {
                     return Result.Success(true);
+                }
+
                 return Result.Success(false);
             }
             catch (HttpRequestException httpException)
@@ -626,6 +759,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<bool>(exception);
             }
         }
+
         /// <summary>
         ///     Disable Save story to gallery.
         /// </summary>
@@ -636,20 +770,26 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetSetReelSettingsUri();
                 var data = new JObject
-                {
-                    { "_csrftoken", _user.CsrfToken},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"save_to_camera_roll", 0.ToString()}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"save_to_camera_roll", 0.ToString()}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<bool>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaDefault>(json);
                 if (obj.Status.ToLower() == "ok")
+                {
                     return Result.Success(true);
+                }
+
                 return Result.Success(false);
             }
             catch (HttpRequestException httpException)
@@ -663,6 +803,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<bool>(exception);
             }
         }
+
         /// <summary>
         ///     Enable Save story to archive.
         /// </summary>
@@ -674,23 +815,27 @@ namespace InstagramApiSharp.API.Processors
                 var instaUri = UriCreator.GetSetReelSettingsUri();
 
                 var data = new JObject
-                {
-                    { "_csrftoken", _user.CsrfToken},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"reel_auto_archive", "on"}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"reel_auto_archive", "on"}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<bool>(response, json);
+                }
 
                 var obj = JsonConvert.DeserializeObject<InstaAccountArchiveStory>(json);
                 if (obj.ReelAutoArchive.ToLower() == "on")
+                {
                     return Result.Success(true);
-                return Result.Success(false);
+                }
 
+                return Result.Success(false);
             }
             catch (HttpRequestException httpException)
             {
@@ -703,6 +848,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<bool>(exception);
             }
         }
+
         /// <summary>
         ///     Disable Save story to archive.
         /// </summary>
@@ -713,21 +859,27 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetSetReelSettingsUri();
                 var data = new JObject
-                {
-                    { "_csrftoken", _user.CsrfToken},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"check_pending_archive", "1"},
-                    {"reel_auto_archive", "off"}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"check_pending_archive", "1"},
+                               {"reel_auto_archive", "off"}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<bool>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaAccountArchiveStory>(json);
-                if(obj.ReelAutoArchive.ToLower() == "off")
+                if (obj.ReelAutoArchive.ToLower() == "off")
+                {
                     return Result.Success(true);
+                }
+
                 return Result.Success(false);
             }
             catch (HttpRequestException httpException)
@@ -741,6 +893,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<bool>(exception);
             }
         }
+
         /// <summary>
         ///     Allow story sharing.
         /// </summary>
@@ -752,23 +905,34 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetSetReelSettingsUri();
                 var data = new JObject
-                {
-                    { "_csrftoken", _user.CsrfToken},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()}
+                           };
                 if (allow)
+                {
                     data.Add("allow_story_reshare", "1");
+                }
                 else
+                {
                     data.Add("allow_story_reshare", "0");
+                }
+
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<bool>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaAccountArchiveStory>(json);
                 if (obj.Status.ToLower() == "off")
+                {
                     return Result.Success(true);
+                }
+
                 return Result.Success(false);
             }
             catch (HttpRequestException httpException)
@@ -782,6 +946,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<bool>(exception);
             }
         }
+
         /// <summary>
         ///     Allow story message replies.
         /// </summary>
@@ -793,26 +958,37 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetSetReelSettingsUri();
                 var data = new JObject
-                {
-                    { "_csrftoken", _user.CsrfToken},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"message_prefs", repliesType.ToString().ToLower()}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"message_prefs", repliesType.ToString().ToLower()}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<bool>(response, json);
+                }
 
                 var obj = JsonConvert.DeserializeObject<InstaAccountArchiveStory>(json);
                 if (obj.MessagePrefs.ToLower() == "anyone" && repliesType == InstaMessageRepliesType.Everyone)
+                {
                     return Result.Success(true);
+                }
+
                 if (obj.MessagePrefs.ToLower() == "following" && repliesType == InstaMessageRepliesType.Following)
+                {
                     return Result.Success(true);
+                }
+
                 if (obj.MessagePrefs.ToLower() == "off" && repliesType == InstaMessageRepliesType.Off)
+                {
                     return Result.Success(true);
+                }
+
                 return Result.Success(false);
             }
             catch (HttpRequestException httpException)
@@ -826,6 +1002,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<bool>(exception);
             }
         }
+
         /// <summary>
         ///     Check username availablity. (for logged in user)
         /// </summary>
@@ -836,17 +1013,20 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetCheckUsernameUri();
                 var data = new JObject
-                {
-                    { "_csrftoken", _user.CsrfToken},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"username", desiredUsername}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"username", desiredUsername}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaAccountCheck>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaAccountCheck>(json);
                 return Result.Success(obj);
             }
@@ -861,10 +1041,11 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaAccountCheck>(exception);
             }
         }
+
         #endregion Story settings
 
         #region two factor authentication enable/disable
-        
+
         /// <summary>
         ///     Get Security settings (two factor authentication and backup codes).
         /// </summary>
@@ -875,16 +1056,19 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetAccountSecurityInfoUri();
                 var data = new JObject
-                {
-                    { "_csrftoken", _user.CsrfToken},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaAccountSecuritySettings>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaAccountSecuritySettings>(json);
                 return Result.Success(obj);
             }
@@ -899,9 +1083,10 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaAccountSecuritySettings>(exception);
             }
         }
+
         /// <summary>
         ///     Disable two factor authentication.
-        /// </summary>        
+        /// </summary>
         public async Task<IResult<bool>> DisableTwoFactorAuthenticationAsync()
         {
             UserAuthValidator.Validate(_userAuthValidate);
@@ -909,19 +1094,25 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetDisableSmsTwoFactorUri();
                 var data = new JObject
-                {
-                    { "_csrftoken", _user.CsrfToken},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<bool>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaDefault>(json);
                 if (obj.Status.ToLower() == "ok")
+                {
                     return Result.Success(true);
+                }
+
                 return Result.Success(false);
             }
             catch (HttpRequestException httpException)
@@ -935,6 +1126,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<bool>(exception);
             }
         }
+
         /// <summary>
         ///     Send two factor enable sms.
         /// </summary>
@@ -946,18 +1138,21 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetSendTwoFactorEnableSmsUri();
                 var data = new JObject
-                {
-                    { "_csrftoken", _user.CsrfToken},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    { "device_id", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    { "phone_number", phoneNumber}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"device_id", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"phone_number", phoneNumber}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaAccountTwoFactorSms>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaAccountTwoFactorSms>(json);
                 return Result.Success(obj);
             }
@@ -972,6 +1167,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaAccountTwoFactorSms>(exception);
             }
         }
+
         /// <summary>
         ///     Verify enable two factor.
         /// </summary>
@@ -984,19 +1180,22 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetEnableSmsTwoFactorUri();
                 var data = new JObject
-                {
-                    { "_csrftoken", _user.CsrfToken},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    { "device_id", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    { "phone_number", phoneNumber},
-                    { "verification_code", verificationCode}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"device_id", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"phone_number", phoneNumber},
+                               {"verification_code", verificationCode}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaAccountTwoFactor>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaAccountTwoFactor>(json);
                 return Result.Success(obj);
             }
@@ -1011,6 +1210,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaAccountTwoFactor>(exception);
             }
         }
+
         /// <summary>
         ///     Send confirm email.
         /// </summary>
@@ -1021,17 +1221,20 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetAccountSendConfirmEmailUri();
                 var data = new JObject
-                {
-                    { "_csrftoken", _user.CsrfToken},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"send_source", "edit_profile"}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"send_source", "edit_profile"}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaAccountConfirmEmail>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaAccountConfirmEmail>(json);
                 return Result.Success(obj);
             }
@@ -1046,6 +1249,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaAccountConfirmEmail>(exception);
             }
         }
+
         /// <summary>
         ///     Send sms code.
         /// </summary>
@@ -1057,18 +1261,21 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetAccountSendSmsCodeUri();
                 var data = new JObject
-                {
-                    { "_csrftoken", _user.CsrfToken},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    { "device_id", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    { "phone_number", phoneNumber}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"device_id", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"phone_number", phoneNumber}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaAccountSendSms>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaAccountSendSms>(json);
                 return Result.Success(obj);
             }
@@ -1083,6 +1290,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaAccountSendSms>(exception);
             }
         }
+
         /// <summary>
         ///     Verify email by verification url
         /// </summary>
@@ -1092,15 +1300,18 @@ namespace InstagramApiSharp.API.Processors
             UserAuthValidator.Validate(_userAuthValidate);
             try
             {
-                if (verificationUri == null) throw new ArgumentNullException("Verification uri cannot be null");
+                if (verificationUri == null)
+                {
+                    throw new ArgumentNullException("Verification uri cannot be null");
+                }
 
                 var instaUri = UriCreator.GetVerifyEmailUri(verificationUri);
                 var data = new JObject
-                {
-                    { "_csrftoken", _user.CsrfToken},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
@@ -1108,7 +1319,9 @@ namespace InstagramApiSharp.API.Processors
                 var obj = JsonConvert.DeserializeObject<InstaAccountConfirmEmail>(json);
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<bool>(response, obj.Body, null);
+                }
 
                 return obj.Title.ToLower() == "thanks" ? Result.Success(true) : Result.Fail(obj.Body, false);
             }
@@ -1136,19 +1349,22 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetAccountVerifySmsCodeUri();
                 var data = new JObject
-                {
-                    { "_csrftoken", _user.CsrfToken},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    { "device_id", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    { "phone_number", phoneNumber},
-                    { "verification_code", verificationCode}
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"device_id", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"phone_number", phoneNumber},
+                               {"verification_code", verificationCode}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaAccountVerifySms>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaAccountVerifySms>(json);
                 return Result.Success(obj);
             }
@@ -1163,6 +1379,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaAccountVerifySms>(exception);
             }
         }
+
         /// <summary>
         ///     Regenerate two factor backup codes
         /// </summary>
@@ -1172,18 +1389,20 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetRegenerateTwoFactorBackUpCodeUri();
                 var data = new JObject
-                {
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    { "_csrftoken", _user.CsrfToken}
-                };
+                           {
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"_csrftoken", _user.CsrfToken}
+                           };
 
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<TwoFactorRegenBackupCodes>(response, json);
+                }
 
                 var obj = JsonConvert.DeserializeObject<TwoFactorRegenBackupCodes>(json);
                 return obj.Status.ToLower() == "ok" ? Result.Success(obj) : Result.UnExpectedResponse<TwoFactorRegenBackupCodes>(response, json);
@@ -1200,6 +1419,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<TwoFactorRegenBackupCodes>(exception);
             }
         }
+
         #endregion two factor authentication enable/disable
 
         #region Other functions
@@ -1229,12 +1449,15 @@ namespace InstagramApiSharp.API.Processors
             try
             {
                 var instaUri = UriCreator.GetPresenceUri(_httpHelper._apiVersion.SignatureKey);
-                
+
                 var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaPresence>(response, json);
+                }
+
                 var obj = JsonConvert.DeserializeObject<InstaPresenceResponse>(json);
 
                 return Result.Success(ConvertersFabric.Instance.GetPresenceConverter(obj).Convert());
@@ -1261,16 +1484,18 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetConvertToPersonalAccountUri();
                 var data = new JObject
-                {
-                    { "_csrftoken", _user.CsrfToken},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                };
+                           {
+                               {"_csrftoken", _user.CsrfToken},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaUser>(response, json);
+                }
 
                 var obj = JsonConvert.DeserializeObject<InstaUserContainerResponse>(json);
                 return Result.Success(ConvertersFabric.Instance.GetUserConverter(obj.User).Convert());
@@ -1287,7 +1512,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaUser>(exception);
             }
         }
-        
+
         /// <summary>
         ///     Switch to business account
         /// </summary>
@@ -1301,7 +1526,9 @@ namespace InstagramApiSharp.API.Processors
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaBusinessUser>(response, json);
+                }
 
                 var obj = JsonConvert.DeserializeObject<InstaBusinessUserContainerResponse>(json);
                 return Result.Success(ConvertersFabric.Instance.GetBusinessUserConverter(obj).Convert());
@@ -1318,10 +1545,11 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<InstaBusinessUser>(exception);
             }
         }
+
         /// <summary>
-        ///    [NOT WORKING] Set contact information for business account
+        ///     [NOT WORKING] Set contact information for business account
         /// </summary>
-        /// <param name="categoryId">Category id (Use <see cref="IBusinessProcessor.GetCategoriesAsync"/> to get category id)</param>
+        /// <param name="categoryId">Category id (Use <see cref="IBusinessProcessor.GetCategoriesAsync" /> to get category id)</param>
         /// <param name="phoneNumber">Phone number</param>
         /// <param name="email">Email address</param>
         public async Task<IResult<InstaBusinessUser>> SetBusinessInfoAsync(string categoryId, string phoneNumber, string email)
@@ -1331,13 +1559,14 @@ namespace InstagramApiSharp.API.Processors
             {
                 //[NOT WORKING]
                 var instaUri = UriCreator.GetCreateBusinessInfoUri();
-                
+
                 var publicPhoneContact = new JObject
-                {
-                    {"public_phone_number", phoneNumber},
-                    {"business_contact_method", "CALL"},
-                };
+                                         {
+                                             {"public_phone_number", phoneNumber},
+                                             {"business_contact_method", "CALL"}
+                                         };
                 var edit = await GetRequestForEditProfileAsync();
+
                 //{
                 //  "set_public": "false",
                 //  "entry_point": "setting",
@@ -1349,24 +1578,27 @@ namespace InstagramApiSharp.API.Processors
                 //  "category_id": "2700"
                 //}
                 var pub = edit.Value.IsPrivate;
-                
+
                 var data = new JObject
-                {
-                    {"set_public", pub.ToString().ToLower()},
-                    {"entry_point", "setting"},
-                    {"_csrftoken", _user.CsrfToken},
-                    {"public_phone_contact", publicPhoneContact.ToString(Formatting.None)},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"public_email", email ?? string.Empty},
-                    {"category_id", categoryId},
-                };
+                           {
+                               {"set_public", pub.ToString().ToLower()},
+                               {"entry_point", "setting"},
+                               {"_csrftoken", _user.CsrfToken},
+                               {"public_phone_contact", publicPhoneContact.ToString(Formatting.None)},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"public_email", email ?? string.Empty},
+                               {"category_id", categoryId}
+                           };
                 var request =
                     _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<InstaBusinessUser>(response, json);
+                }
+
                 //{"message": "Business details are malformed", "error_identifier": "BUSINESS_ID", "status": "fail"}
                 //{"message": "Can not convert to business, Try again later", "error_identifier": "CANNOT_CONVERT", "status": "fail"}
                 var obj = JsonConvert.DeserializeObject<InstaBusinessUserContainerResponse>(json);
@@ -1385,7 +1617,6 @@ namespace InstagramApiSharp.API.Processors
             }
         }
 
-
         private async Task<IResult<bool>> EnableDisablePresenceAsync(bool enable)
         {
             UserAuthValidator.Validate(_userAuthValidate);
@@ -1393,17 +1624,19 @@ namespace InstagramApiSharp.API.Processors
             {
                 var instaUri = UriCreator.GetAccountSetPresenseDisabledUri();
                 var data = new JObject
-                {
-                    {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                    {"_uid", _user.LoggedInUser.Pk.ToString()},
-                    {"disabled", enable ? "0" : "1"},
-                    { "_csrftoken", _user.CsrfToken}
-                };
+                           {
+                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
+                               {"_uid", _user.LoggedInUser.Pk.ToString()},
+                               {"disabled", enable ? "0" : "1"},
+                               {"_csrftoken", _user.CsrfToken}
+                           };
                 var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
                 var response = await _httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return Result.UnExpectedResponse<bool>(response, json);
+                }
 
                 var obj = JsonConvert.DeserializeObject<InstaDefault>(json);
                 return obj.Status.ToLower() == "ok" ? Result.Success(true) : Result.UnExpectedResponse<bool>(response, json);
@@ -1419,44 +1652,7 @@ namespace InstagramApiSharp.API.Processors
                 return Result.Fail<bool>(exception);
             }
         }
+
         #endregion Other functions
-
-        #region NOT COMPLETE FUNCTIONS
-
-
-        //NOT COMPLETE
-        private async Task<IResult<object>> GetCommentFilterAsync()
-        {
-            UserAuthValidator.Validate(_userAuthValidate);
-            try
-            {
-                var instaUri = new Uri(InstaApiConstants.BASE_INSTAGRAM_API_URL + $"accounts/get_comment_filter/");
-                Debug.WriteLine(instaUri.ToString());
-
-             
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
-
-                var json = await response.Content.ReadAsStringAsync();
-                Debug.WriteLine(response.StatusCode);
-                Debug.WriteLine(json);
-                //if (response.StatusCode != HttpStatusCode.OK)
-                //    return Result.UnExpectedResponse<object>(response, json);
-                //{"config_value": 0, "status": "ok"}
-                return null;
-            }
-            catch (HttpRequestException httpException)
-            {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(object), ResponseType.NetworkProblem);
-            }
-            catch (Exception exception)
-            {
-                _logger?.LogException(exception);
-                return Result.Fail<object>(exception);
-            }
-        }
-        #endregion NOT COMPLETE FUNCTIONS
-
     }
 }

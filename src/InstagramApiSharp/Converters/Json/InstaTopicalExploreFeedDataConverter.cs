@@ -1,19 +1,9 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
-
-using System;
-using InstagramApiSharp.Classes.ResponseWrappers;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 
-namespace InstagramApiSharp.Converters.Json
+namespace Wikiled.Instagram.Api.Converters.Json
 {
     internal class InstaTopicalExploreFeedDataConverter : JsonConverter
     {
@@ -22,7 +12,8 @@ namespace InstagramApiSharp.Converters.Json
             return objectType == typeof(InstaTopicalExploreFeedResponse);
         }
 
-        public override object ReadJson(JsonReader reader,
+        public override object ReadJson(
+            JsonReader reader,
             Type objectType,
             object existingValue,
             JsonSerializer serializer)
@@ -51,6 +42,7 @@ namespace InstagramApiSharp.Converters.Json
                             }
                         }
                     }
+
                     if (fillItems != null)
                     {
                         foreach (var med in fillItems)
@@ -63,12 +55,15 @@ namespace InstagramApiSharp.Converters.Json
                             }
                         }
                     }
+
                     if (twoByTwoItem != null)
                     {
                         var channel = twoByTwoItem["channel"];
                         var igtv = twoByTwoItem["igtv"];
                         if (channel != null)
+                        {
                             feed.Channel = GetChannel(channel);
+                        }
 
                         if (igtv != null)
                         {
@@ -80,35 +75,40 @@ namespace InstagramApiSharp.Converters.Json
                                 {
                                     var channels = GetTVs(channelsToken);
                                     if (channels?.Count > 0)
+                                    {
                                         feed.TVChannels.AddRange(channels);
+                                    }
                                 }
                             }
                         }
-
                     }
-
                 }
+
                 var channelToken = item["channel"];
                 var mediaToken = item["media"];
             }
 
             return feed;
         }
-        List<InstaTVChannelResponse> GetTVs(JToken token)
-        {
-            return token.ToObject<List<InstaTVChannelResponse>>();
-        }
-        InstaChannelResponse GetChannel(JToken token)
-        {
-            return token.ToObject<InstaChannelResponse>();
-        }
-        InstaMediaItemResponse GetMedia(JToken token)
-        {
-            return token.ToObject<InstaMediaItemResponse>();
-        }
+
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             serializer.Serialize(writer, value);
+        }
+
+        private InstaChannelResponse GetChannel(JToken token)
+        {
+            return token.ToObject<InstaChannelResponse>();
+        }
+
+        private InstaMediaItemResponse GetMedia(JToken token)
+        {
+            return token.ToObject<InstaMediaItemResponse>();
+        }
+
+        private List<InstaTVChannelResponse> GetTVs(JToken token)
+        {
+            return token.ToObject<List<InstaTVChannelResponse>>();
         }
     }
 }

@@ -1,17 +1,6 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
+﻿using System;
 
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.ResponseWrappers;
-using System;
-
-namespace InstagramApiSharp.Converters
+namespace Wikiled.Instagram.Api.Converters.Broadcast
 {
     internal class InstaBroadcastPostLiveConverter : IObjectConverter<InstaBroadcastPostLive, InstaBroadcastPostLiveResponse>
     {
@@ -19,23 +8,37 @@ namespace InstagramApiSharp.Converters
 
         public InstaBroadcastPostLive Convert()
         {
-            if (SourceObject == null) throw new ArgumentNullException($"Source object");
-            var postLive = new InstaBroadcastPostLive
+            if (SourceObject == null)
             {
-                PeakViewerCount = SourceObject.PeakViewerCount,
-                Pk = SourceObject.Pk
-            };
+                throw new ArgumentNullException("Source object");
+            }
+
+            var postLive = new InstaBroadcastPostLive
+                           {
+                               PeakViewerCount = SourceObject.PeakViewerCount,
+                               Pk = SourceObject.Pk
+                           };
 
             if (SourceObject.User != null)
+            {
                 postLive.User = ConvertersFabric.Instance
-                    .GetUserShortFriendshipFullConverter(SourceObject.User).Convert();
+                                                .GetUserShortFriendshipFullConverter(SourceObject.User).Convert();
+            }
+
             try
             {
                 if (SourceObject.Broadcasts?.Count > 0)
+                {
                     foreach (var broadcastInfo in SourceObject.Broadcasts)
+                    {
                         postLive.Broadcasts.Add(ConvertersFabric.Instance.GetBroadcastInfoConverter(broadcastInfo).Convert());
+                    }
+                }
             }
-            catch { }
+            catch
+            {
+            }
+
             return postLive;
         }
     }
