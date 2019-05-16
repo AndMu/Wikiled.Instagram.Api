@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Wikiled.Console.Arguments;
+using Wikiled.Instagram.Api.Modules;
 
 namespace Wikiled.Instagram.App.Commands.Config
 {
@@ -7,6 +8,7 @@ namespace Wikiled.Instagram.App.Commands.Config
     {
         public void Build(ContainerBuilder builder)
         {
+            builder.RegisterModule<InstagramModule>();
         }
     }
 }
