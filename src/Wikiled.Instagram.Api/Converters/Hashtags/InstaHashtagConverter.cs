@@ -22,6 +22,7 @@ namespace Wikiled.Instagram.Api.Converters.Hashtags
                 MediaCount = SourceObject.MediaCount,
                 ProfilePicUrl = SourceObject.ProfilePicUrl
             };
+
             return hashtag;
         }
     }
