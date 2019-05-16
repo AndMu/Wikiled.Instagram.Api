@@ -6,11 +6,11 @@
     //    private readonly HttpHelper _httpHelper;
     //    private readonly IHttpRequestProcessor _httpRequestProcessor;
     //    private readonly InstaApi _instaApi;
-    //    private readonly IInstaLogger _logger;
+    //    private readonly ILogger _logger;
     //    private readonly UserSessionData _user;
     //    private readonly UserAuthValidate _userAuthValidate;
     //    public PushProcessor(AndroidDevice deviceInfo, UserSessionData user,
-    //        IHttpRequestProcessor httpRequestProcessor, IInstaLogger logger,
+    //        IHttpRequestProcessor httpRequestProcessor, ILogger logger,
     //        UserAuthValidate userAuthValidate, InstaApi instaApi, HttpHelper httpHelper)
     //    {
     //        _deviceInfo = deviceInfo;
@@ -57,7 +57,7 @@
     //        }
     //        catch (Exception exception)
     //        {
-    //            _logger?.LogException(exception);
+    //            _logger?.LogError(exception, "Error");
     //            return Result.Fail<InstaDirectInboxThread>(exception);
     //        }
     //    }

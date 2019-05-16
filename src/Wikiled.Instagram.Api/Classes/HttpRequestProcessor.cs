@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Wikiled.Instagram.Api.Classes.Android.DeviceInfo;
 using Wikiled.Instagram.Api.Logger;
 
@@ -8,14 +9,14 @@ namespace Wikiled.Instagram.Api.Classes
 {
     internal class InstaHttpRequestProcessor : IHttpRequestProcessor
     {
-        private readonly IInstaLogger logger;
+        private readonly ILogger logger;
 
         public InstaHttpRequestProcessor(
             IRequestDelay delay,
             HttpClient httpClient,
             HttpClientHandler httpHandler,
             InstaApiRequestMessage requestMessage,
-            IInstaLogger logger)
+            ILogger logger)
         {
             Delay = delay;
             Client = httpClient;
@@ -37,12 +38,12 @@ namespace Wikiled.Instagram.Api.Classes
             logger?.LogRequest(requestUri);
             if (Delay.Exist)
             {
-                await Task.Delay(Delay.Value);
+                await Task.Delay(Delay.Value).ConfigureAwait(false);
             }
 
-            var response = await Client.GetAsync(requestUri);
+            var response = await Client.GetAsync(requestUri).ConfigureAwait(false);
             LogHttpResponse(response);
-            return await response.Content.ReadAsStringAsync();
+            return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         }
 
         public async Task<HttpResponseMessage> GetAsync(Uri requestUri)
@@ -50,10 +51,10 @@ namespace Wikiled.Instagram.Api.Classes
             logger?.LogRequest(requestUri);
             if (Delay.Exist)
             {
-                await Task.Delay(Delay.Value);
+                await Task.Delay(Delay.Value).ConfigureAwait(false);
             }
 
-            var response = await Client.GetAsync(requestUri);
+            var response = await Client.GetAsync(requestUri).ConfigureAwait(false);
             LogHttpResponse(response);
             return response;
         }
@@ -65,12 +66,12 @@ namespace Wikiled.Instagram.Api.Classes
             LogHttpRequest(requestMessage);
             if (Delay.Exist)
             {
-                await Task.Delay(Delay.Value);
+                await Task.Delay(Delay.Value).ConfigureAwait(false);
             }
 
-            var response = await Client.SendAsync(requestMessage, completionOption);
+            var response = await Client.SendAsync(requestMessage, completionOption).ConfigureAwait(false);
             LogHttpResponse(response);
-            return await response.Content.ReadAsStringAsync();
+            return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         }
 
         public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage requestMessage)
@@ -78,10 +79,10 @@ namespace Wikiled.Instagram.Api.Classes
             LogHttpRequest(requestMessage);
             if (Delay.Exist)
             {
-                await Task.Delay(Delay.Value);
+                await Task.Delay(Delay.Value).ConfigureAwait(false);
             }
 
-            var response = await Client.SendAsync(requestMessage);
+            var response = await Client.SendAsync(requestMessage).ConfigureAwait(false);
             LogHttpResponse(response);
             return response;
         }
@@ -93,10 +94,10 @@ namespace Wikiled.Instagram.Api.Classes
             LogHttpRequest(requestMessage);
             if (Delay.Exist)
             {
-                await Task.Delay(Delay.Value);
+                await Task.Delay(Delay.Value).ConfigureAwait(false);
             }
 
-            var response = await Client.SendAsync(requestMessage, completionOption);
+            var response = await Client.SendAsync(requestMessage, completionOption).ConfigureAwait(false);
             LogHttpResponse(response);
             return response;
         }

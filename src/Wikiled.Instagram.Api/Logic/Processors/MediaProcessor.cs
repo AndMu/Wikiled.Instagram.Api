@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Wikiled.Instagram.Api.Classes;
@@ -35,7 +36,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
 
         private readonly InstaApi instaApi;
 
-        private readonly IInstaLogger logger;
+        private readonly ILogger logger;
 
         private readonly UserSessionData user;
 
@@ -45,7 +46,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             InstaAndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
-            IInstaLogger logger,
+            ILogger logger,
             InstaUserAuthValidate userAuthValidate,
             InstaApi instaApi,
             InstaHttpHelper httpHelper)
@@ -66,7 +67,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>Return true if the media is archived</returns>
         public async Task<IResult<bool>> ArchiveMediaAsync(string mediaId)
         {
-            return await LikeUnlikeArchiveUnArchiveMediaInternal(mediaId, InstaUriCreator.GetArchiveMediaUri(mediaId));
+            return await LikeUnlikeArchiveUnArchiveMediaInternal(mediaId, InstaUriCreator.GetArchiveMediaUri(mediaId)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -92,8 +93,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
 
                 var request =
                     httpHelper.GetSignedRequest(HttpMethod.Get, deleteMediaUri, deviceInfo, data);
-                var response = await httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -105,12 +106,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail<bool>(exception);
             }
         }
@@ -135,7 +136,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             {
                 var editMediaUri = InstaUriCreator.GetEditMediaUri(mediaId);
 
-                var currentMedia = await GetMediaByIdAsync(mediaId);
+                var currentMedia = await GetMediaByIdAsync(mediaId).ConfigureAwait(false);
 
                 var data = new JObject
                 {
@@ -174,7 +175,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                         {
                             var tried = false;
                             TryLabel:
-                            var u = await instaApi.UserProcessor.GetUserAsync(tag.Username);
+                            var u = await instaApi.UserProcessor.GetUserAsync(tag.Username).ConfigureAwait(false);
                             if (!u.Succeeded)
                             {
                                 if (!tried)
@@ -214,8 +215,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 }
 
                 var request = httpHelper.GetSignedRequest(HttpMethod.Post, editMediaUri, deviceInfo, data);
-                var response = await httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     var mediaResponse = JsonConvert.DeserializeObject<InstaMediaItemResponse>(
@@ -230,12 +231,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(InstaMedia), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail<InstaMedia>(exception);
             }
         }
@@ -255,7 +256,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     return InstaConvertersFabric.Instance.GetMediaListConverter(instaMediaListResponse).Convert();
                 }
 
-                var archivedPostsResult = await GetArchivedMedia(paginationParameters?.NextMaxId);
+                var archivedPostsResult = await GetArchivedMedia(paginationParameters?.NextMaxId).ConfigureAwait(false);
                 if (!archivedPostsResult.Succeeded)
                 {
                     return InstaResult.Fail(archivedPostsResult.Info, mediaList);
@@ -272,7 +273,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     paginationParameters.PagesLoaded++;
-                    var nextMedia = await GetArchivedMedia(paginationParameters.NextMaxId);
+                    var nextMedia = await GetArchivedMedia(paginationParameters.NextMaxId).ConfigureAwait(false);
                     if (!nextMedia.Succeeded)
                     {
                         return InstaResult.Fail(nextMedia.Info, mediaList);
@@ -291,12 +292,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, mediaList, InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail(exception, mediaList);
             }
         }
@@ -313,8 +314,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             {
                 var mediaUri = InstaUriCreator.GetBlockedMediaUri();
                 var request = httpHelper.GetDefaultRequest(HttpMethod.Get, mediaUri, deviceInfo);
-                var response = await httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -327,12 +328,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, mediaIds, InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail(exception, mediaIds);
             }
         }
@@ -351,8 +352,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             {
                 var mediaUri = InstaUriCreator.GetMediaUri(mediaId);
                 var request = httpHelper.GetDefaultRequest(HttpMethod.Get, mediaUri, deviceInfo);
-                var response = await httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     return InstaResult.UnExpectedResponse<InstaMedia>(response, json);
@@ -364,7 +365,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 if (mediaResponse.Medias?.Count > 1)
                 {
                     var errorMessage = $"Got wrong media count for request with media id={mediaId}";
-                    logger?.LogInfo(errorMessage);
+                    logger?.LogInformation(errorMessage);
                     return InstaResult.Fail<InstaMedia>(errorMessage);
                 }
 
@@ -374,12 +375,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(InstaMedia), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail<InstaMedia>(exception);
             }
         }
@@ -407,8 +408,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                                                                  deviceInfo.DeviceGuid.ToString(),
                                                                  user.CsrfToken);
                 var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
-                var response = await httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -424,12 +425,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, mediaList, InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail(exception, mediaList);
             }
         }
@@ -445,8 +446,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             {
                 var collectionUri = InstaUriCreator.GetMediaIdFromUrlUri(uri);
                 var request = httpHelper.GetDefaultRequest(HttpMethod.Get, collectionUri, deviceInfo);
-                var response = await httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -458,12 +459,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(string), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail<string>(exception);
             }
         }
@@ -480,8 +481,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 var likers = new InstaLikersList();
                 var likersUri = InstaUriCreator.GetMediaLikersUri(mediaId);
                 var request = httpHelper.GetDefaultRequest(HttpMethod.Get, likersUri, deviceInfo);
-                var response = await httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     return InstaResult.UnExpectedResponse<InstaLikersList>(response, json);
@@ -501,12 +502,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(InstaLikersList), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail<InstaLikersList>(exception);
             }
         }
@@ -523,8 +524,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             {
                 var collectionUri = InstaUriCreator.GetShareLinkFromMediaId(mediaId);
                 var request = httpHelper.GetDefaultRequest(HttpMethod.Get, collectionUri, deviceInfo);
-                var response = await httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -536,12 +537,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(Uri), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail<Uri>(exception);
             }
         }
@@ -552,7 +553,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="mediaId">Media id</param>
         public async Task<IResult<bool>> LikeMediaAsync(string mediaId)
         {
-            return await LikeUnlikeArchiveUnArchiveMediaInternal(mediaId, InstaUriCreator.GetLikeMediaUri(mediaId));
+            return await LikeUnlikeArchiveUnArchiveMediaInternal(mediaId, InstaUriCreator.GetLikeMediaUri(mediaId)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -576,20 +577,20 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 };
                 var request =
                     httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, fields);
-                var response = await httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 return response.StatusCode == HttpStatusCode.OK
                     ? InstaResult.Success(true)
                     : InstaResult.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail(exception, false);
             }
         }
@@ -611,20 +612,20 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     { "_csrftoken", user.CsrfToken }
                 };
                 var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, fields);
-                var response = await httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 return response.StatusCode == HttpStatusCode.OK
                     ? InstaResult.Success(true)
                     : InstaResult.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail(exception, false);
             }
         }
@@ -636,7 +637,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>Return true if the media is unarchived</returns>
         public async Task<IResult<bool>> UnArchiveMediaAsync(string mediaId)
         {
-            return await LikeUnlikeArchiveUnArchiveMediaInternal(mediaId, InstaUriCreator.GetUnArchiveMediaUri(mediaId));
+            return await LikeUnlikeArchiveUnArchiveMediaInternal(mediaId, InstaUriCreator.GetUnArchiveMediaUri(mediaId)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -645,7 +646,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="mediaId">Media id</param>
         public async Task<IResult<bool>> UnLikeMediaAsync(string mediaId)
         {
-            return await LikeUnlikeArchiveUnArchiveMediaInternal(mediaId, InstaUriCreator.GetUnLikeMediaUri(mediaId));
+            return await LikeUnlikeArchiveUnArchiveMediaInternal(mediaId, InstaUriCreator.GetUnLikeMediaUri(mediaId)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -665,20 +666,20 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     { "_csrftoken", user.CsrfToken }
                 };
                 var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, fields);
-                var response = await httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 return response.StatusCode == HttpStatusCode.OK
                     ? InstaResult.Success(true)
                     : InstaResult.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail(exception, false);
             }
         }
@@ -697,7 +698,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                                                                 string caption,
                                                                 InstaLocationShort location = null)
         {
-            return await UploadAlbumAsync(null, images, videos, caption, location);
+            return await UploadAlbumAsync(null, images, videos, caption, location).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -742,7 +743,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                                 {
                                     var tried = false;
                                     TryLabel:
-                                    var u = await instaApi.UserProcessor.GetUserAsync(t.Username);
+                                    var u = await instaApi.UserProcessor.GetUserAsync(t.Username).ConfigureAwait(false);
                                     if (!u.Succeeded)
                                     {
                                         if (!tried)
@@ -772,7 +773,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                         progress?.Invoke(upProgress);
                         upProgress.UploadState = InstaUploadState.Uploading;
                         progress?.Invoke(upProgress);
-                        var uploadId = await UploadSinglePhoto(progress, image, upProgress);
+                        var uploadId = await UploadSinglePhoto(progress, image, upProgress).ConfigureAwait(false);
                         if (uploadId.Succeeded)
                         {
                             upProgress.UploadState = InstaUploadState.Uploaded;
@@ -804,7 +805,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                                 {
                                     var tried = false;
                                     TryLabel:
-                                    var u = await instaApi.UserProcessor.GetUserAsync(t.Username);
+                                    var u = await instaApi.UserProcessor.GetUserAsync(t.Username).ConfigureAwait(false);
                                     if (!u.Succeeded)
                                     {
                                         if (!tried)
@@ -832,11 +833,11 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                         upProgress.Name = $"[Album] Video uploading {vidIndex}/{videos.Length}";
                         upProgress.UploadState = InstaUploadState.Uploading;
                         progress?.Invoke(upProgress);
-                        var uploadId = await UploadSingleVideo(progress, video, upProgress);
+                        var uploadId = await UploadSingleVideo(progress, video, upProgress).ConfigureAwait(false);
                         var thumb = await UploadSinglePhoto(progress,
                                                             video.VideoThumbnail.ConvertToImageUpload(),
                                                             upProgress,
-                                                            uploadId.Value);
+                                                            uploadId.Value).ConfigureAwait(false);
                         videosDic.Add(uploadId.Value, video);
 
                         upProgress.UploadState = InstaUploadState.Uploaded;
@@ -846,19 +847,19 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 }
 
                 var config =
-                    await ConfigureAlbumAsync(progress, upProgress, imagesUploadIds, videosDic, caption, location);
+                    await ConfigureAlbumAsync(progress, upProgress, imagesUploadIds, videosDic, caption, location).ConfigureAwait(false);
                 return config;
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(InstaMedia), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 upProgress.UploadState = InstaUploadState.Error;
                 progress?.Invoke(upProgress);
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail<InstaMedia>(exception);
             }
         }
@@ -875,7 +876,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                                                                 string caption,
                                                                 InstaLocationShort location = null)
         {
-            return await UploadAlbumAsync(null, album, caption, location);
+            return await UploadAlbumAsync(null, album, caption, location).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -921,7 +922,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                                     {
                                         var tried = false;
                                         TryLabel:
-                                        var u = await instaApi.UserProcessor.GetUserAsync(t.Username);
+                                        var u = await instaApi.UserProcessor.GetUserAsync(t.Username).ConfigureAwait(false);
                                         if (!u.Succeeded)
                                         {
                                             if (!tried)
@@ -959,7 +960,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                                     {
                                         var tried = false;
                                         TryLabel:
-                                        var u = await instaApi.UserProcessor.GetUserAsync(t.Username);
+                                        var u = await instaApi.UserProcessor.GetUserAsync(t.Username).ConfigureAwait(false);
                                         if (!u.Succeeded)
                                         {
                                             if (!tried)
@@ -991,7 +992,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                         upProgress.Name = $"[Album] uploading {index}/{album.Length}";
                         upProgress.UploadState = InstaUploadState.Uploading;
                         progress?.Invoke(upProgress);
-                        var image = await UploadSinglePhoto(progress, al.ImageToUpload, upProgress);
+                        var image = await UploadSinglePhoto(progress, al.ImageToUpload, upProgress).ConfigureAwait(false);
                         if (image.Succeeded)
                         {
                             uploadIds.Add(image.Value, al);
@@ -1002,13 +1003,13 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                         upProgress.Name = $"[Album] uploading {index}/{album.Length}";
                         upProgress.UploadState = InstaUploadState.Uploading;
                         progress?.Invoke(upProgress);
-                        var video = await UploadSingleVideo(progress, al.VideoToUpload, upProgress);
+                        var video = await UploadSingleVideo(progress, al.VideoToUpload, upProgress).ConfigureAwait(false);
                         if (video.Succeeded)
                         {
                             var image = await UploadSinglePhoto(progress,
                                                                 al.VideoToUpload.VideoThumbnail.ConvertToImageUpload(),
                                                                 upProgress,
-                                                                video.Value);
+                                                                video.Value).ConfigureAwait(false);
                             uploadIds.Add(video.Value, al);
                         }
                     }
@@ -1016,19 +1017,19 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     index++;
                 }
 
-                var config = await ConfigureAlbumAsync(progress, upProgress, uploadIds, caption, location);
+                var config = await ConfigureAlbumAsync(progress, upProgress, uploadIds, caption, location).ConfigureAwait(false);
                 return config;
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(InstaMedia), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 upProgress.UploadState = InstaUploadState.Error;
                 progress?.Invoke(upProgress);
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail<InstaMedia>(exception);
             }
         }
@@ -1045,7 +1046,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                                                                 string caption,
                                                                 InstaLocationShort location = null)
         {
-            return await UploadPhotoAsync(null, image, caption, location);
+            return await UploadPhotoAsync(null, image, caption, location).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1064,7 +1065,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             InstaLocationShort location = null)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
-            return await instaApi.HelperProcessor.SendMediaPhotoAsync(progress, image, caption, location);
+            return await instaApi.HelperProcessor.SendMediaPhotoAsync(progress, image, caption, location).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1079,7 +1080,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                                                                 string caption,
                                                                 InstaLocationShort location = null)
         {
-            return await UploadVideoAsync(null, video, caption, location);
+            return await UploadVideoAsync(null, video, caption, location).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1114,7 +1115,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                             {
                                 var tried = false;
                                 TryLabel:
-                                var u = await instaApi.UserProcessor.GetUserAsync(t.Username);
+                                var u = await instaApi.UserProcessor.GetUserAsync(t.Username).ConfigureAwait(false);
                                 if (!u.Succeeded)
                                 {
                                     if (!tried)
@@ -1139,7 +1140,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
 
                 upProgress.UploadState = InstaUploadState.Uploading;
                 progress?.Invoke(upProgress);
-                var uploadVideo = await UploadSingleVideo(progress, video, upProgress, false);
+                var uploadVideo = await UploadSingleVideo(progress, video, upProgress, false).ConfigureAwait(false);
 
                 if (!uploadVideo.Succeeded)
                 {
@@ -1158,14 +1159,14 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                                                           video.VideoThumbnail.ConvertToImageUpload(),
                                                           upProgress,
                                                           uploadVideo.Value,
-                                                          false);
+                                                          false).ConfigureAwait(false);
 
                 if (uploadPhoto.Succeeded)
                 {
                     //upProgress = progressContent?.UploaderProgress;
                     upProgress.UploadState = InstaUploadState.ThumbnailUploaded;
                     progress?.Invoke(upProgress);
-                    return await ConfigureVideoAsync(progress, upProgress, video, uploadVideo.Value, caption, location);
+                    return await ConfigureVideoAsync(progress, upProgress, video, uploadVideo.Value, caption, location).ConfigureAwait(false);
                 }
 
                 upProgress.UploadState = InstaUploadState.Error;
@@ -1174,14 +1175,14 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(InstaMedia), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 upProgress.UploadState = InstaUploadState.Error;
                 progress?.Invoke(upProgress);
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail<InstaMedia>(exception);
             }
         }
@@ -1245,8 +1246,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 }
 
                 var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
-                var response = await httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -1261,7 +1262,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 if (obj.Caption == null && !string.IsNullOrEmpty(caption))
                 {
                     var editedMedia =
-                        await instaApi.MediaProcessor.EditMediaAsync(obj.Identifier, caption, location);
+                        await instaApi.MediaProcessor.EditMediaAsync(obj.Identifier, caption, location).ConfigureAwait(false);
                     if (editedMedia.Succeeded)
                     {
                         upProgress.UploadState = InstaUploadState.Configured;
@@ -1280,14 +1281,14 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(InstaMedia), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 upProgress.UploadState = InstaUploadState.Error;
                 progress?.Invoke(upProgress);
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail<InstaMedia>(exception);
             }
         }
@@ -1351,8 +1352,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 }
 
                 var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
-                var response = await httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -1367,7 +1368,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 if (obj.Caption == null && !string.IsNullOrEmpty(caption))
                 {
                     var editedMedia =
-                        await instaApi.MediaProcessor.EditMediaAsync(obj.Identifier, caption, location);
+                        await instaApi.MediaProcessor.EditMediaAsync(obj.Identifier, caption, location).ConfigureAwait(false);
                     if (editedMedia.Succeeded)
                     {
                         upProgress.UploadState = InstaUploadState.Configured;
@@ -1386,14 +1387,14 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(InstaMedia), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 upProgress.UploadState = InstaUploadState.Error;
                 progress?.Invoke(upProgress);
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail<InstaMedia>(exception);
             }
         }
@@ -1471,13 +1472,13 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                                                  deviceInfo,
                                                  data);
                 request.Headers.Host = "i.instagram.com";
-                var response = await httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
                 request.Headers.Host = "i.instagram.com";
-                response = await httpRequestProcessor.SendAsync(request);
-                json = await response.Content.ReadAsStringAsync();
+                response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (!response.IsSuccessStatusCode)
                 {
                     upProgress.UploadState = InstaUploadState.Error;
@@ -1496,7 +1497,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 if (obj.Caption == null && !string.IsNullOrEmpty(caption))
                 {
                     var editedMedia =
-                        await instaApi.MediaProcessor.EditMediaAsync(obj.Identifier, caption, location);
+                        await instaApi.MediaProcessor.EditMediaAsync(obj.Identifier, caption, location).ConfigureAwait(false);
                     if (editedMedia.Succeeded)
                     {
                         return InstaResult.Success(editedMedia.Value);
@@ -1507,14 +1508,14 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(InstaMedia), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 upProgress.UploadState = InstaUploadState.Error;
                 progress?.Invoke(upProgress);
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail<InstaMedia>(exception);
             }
         }
@@ -1526,8 +1527,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             {
                 var instaUri = InstaUriCreator.GetArchivedMediaFeedsListUri(nextMaxId);
                 var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
-                var response = await httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -1539,7 +1540,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(InstaMediaListResponse), InstaResponseType.NetworkProblem);
             }
             catch (Exception ex)
@@ -1659,15 +1660,15 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 };
                 var request =
                     httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, fields);
-                var response = await httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 return response.StatusCode == HttpStatusCode.OK
                     ? InstaResult.Success(true)
                     : InstaResult.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
@@ -1719,8 +1720,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             request.Headers.Add("X-Entity-Name", photoEntityName);
             request.Headers.Add("X-Entity-Length", imageBytes.Length.ToString());
             request.Headers.Add("X_FB_PHOTO_WATERFALL_ID", Guid.NewGuid().ToString());
-            var response = await httpRequestProcessor.SendAsync(request);
-            var json = await response.Content.ReadAsStringAsync();
+            var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+            var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode)
             {
@@ -1771,8 +1772,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             request = httpHelper.GetDefaultRequest(HttpMethod.Get, videoUri, deviceInfo);
             request.Headers.Add("X_FB_VIDEO_WATERFALL_ID", waterfallId);
             request.Headers.Add("X-Instagram-Rupload-Params", videoUploadParams);
-            response = await httpRequestProcessor.SendAsync(request);
-            json = await response.Content.ReadAsStringAsync();
+            response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+            json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
@@ -1810,8 +1811,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             request.Headers.Add("X-Entity-Name", videoEntityName);
             request.Headers.Add("X-Entity-Length", videoBytes.Length.ToString());
             request.Headers.Add("X_FB_VIDEO_WATERFALL_ID", waterfallId);
-            response = await httpRequestProcessor.SendAsync(request);
-            json = await response.Content.ReadAsStringAsync();
+            response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+            json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
@@ -1859,8 +1860,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 requestContent.Add(imageContent, "photo", $"pending_media_{uploadId}.jpg");
                 var request = httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, deviceInfo);
                 request.Content = requestContent;
-                var response = await httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var imgResp = JsonConvert.DeserializeObject<InstaImageThumbnailResponse>(json);
                 if (imgResp.Status.ToLower() == "ok")
                 {
@@ -1875,14 +1876,14 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
             catch (HttpRequestException httpException)
             {
-                logger?.LogException(httpException);
+                logger?.LogError(httpException, "Error");
                 return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 upProgress.UploadState = InstaUploadState.Error;
                 progress?.Invoke(upProgress);
-                logger?.LogException(exception);
+                logger?.LogError(exception, "Error");
                 return InstaResult.Fail<bool>(exception);
             }
         }

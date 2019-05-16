@@ -1,10 +1,10 @@
+using Microsoft.Extensions.Logging;
 using System;
 using System.Net.Http;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.Android.DeviceInfo;
 using Wikiled.Instagram.Api.Classes.SessionHandlers;
 using Wikiled.Instagram.Api.Enums;
-using Wikiled.Instagram.Api.Logger;
 
 namespace Wikiled.Instagram.Api.Logic.Builder
 {
@@ -85,8 +85,8 @@ namespace Wikiled.Instagram.Api.Logic.Builder
         /// <summary>
         ///     Use custom logger
         /// </summary>
-        /// <param name="logger">IInstaLogger implementation</param>
+        /// <param name="logger">ILogger implementation</param>
         /// <returns>API Builder</returns>
-        IInstaApiBuilder UseLogger(IInstaLogger logger);
+        IInstaApiBuilder UseLogger(ILoggerFactory logger);
     }
 }

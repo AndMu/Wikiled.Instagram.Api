@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Net.Http;
+using Microsoft.Extensions.Logging;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.Android.DeviceInfo;
 using Wikiled.Instagram.Api.Classes.SessionHandlers;
 using Wikiled.Instagram.Api.Enums;
-using Wikiled.Instagram.Api.Logger;
 
 namespace Wikiled.Instagram.Api.Logic.Builder
 {
     public class InstaApiBuilder : IInstaApiBuilder
     {
         private InstaApiVersionType? apiVersionType;
+
+        private ILoggerFactory loggerFactory;
 
         private IRequestDelay delay = RequestDelay.Empty();
 
@@ -21,8 +23,6 @@ namespace Wikiled.Instagram.Api.Logic.Builder
         private HttpClientHandler httpHandler = new HttpClientHandler();
 
         private IHttpRequestProcessor httpRequestProcessor;
-
-        private IInstaLogger logger;
 
         private InstaApiRequestMessage requestMessage;
 
@@ -96,8 +96,7 @@ namespace Wikiled.Instagram.Api.Logic.Builder
 
             if (httpRequestProcessor == null)
             {
-                httpRequestProcessor =
-                    new InstaHttpRequestProcessor(delay, httpClient, httpHandler, requestMessage, logger);
+                httpRequestProcessor = new InstaHttpRequestProcessor(delay, httpClient, httpHandler, requestMessage, loggerFactory?.CreateLogger<InstaHttpRequestProcessor>());
             }
 
             if (apiVersionType == null)
@@ -105,7 +104,7 @@ namespace Wikiled.Instagram.Api.Logic.Builder
                 apiVersionType = InstaApiVersionType.Version86;
             }
 
-            var instaApi = new InstaApi(user, logger, device, httpRequestProcessor, apiVersionType.Value);
+            var instaApi = new InstaApi(user, loggerFactory?.CreateLogger<InstaApi>(), device, httpRequestProcessor, apiVersionType.Value);
             if (sessionHandler != null)
             {
                 sessionHandler.Api = instaApi;
@@ -241,16 +240,9 @@ namespace Wikiled.Instagram.Api.Logic.Builder
             return this;
         }
 
-        /// <summary>
-        ///     Use custom logger
-        /// </summary>
-        /// <param name="logger">IInstaLogger implementation</param>
-        /// <returns>
-        ///     API Builder
-        /// </returns>
-        public IInstaApiBuilder UseLogger(IInstaLogger logger)
+        public IInstaApiBuilder UseLogger(ILoggerFactory logger)
         {
-            this.logger = logger;
+            loggerFactory = logger;
             return this;
         }
 

@@ -3,17 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Examples.Samples;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Logger;
 using Wikiled.Instagram.Api.Logic;
 using Wikiled.Instagram.Api.Logic.Builder;
 
-/////////////////////////////////////////////////////////////////////
-////////////////////// IMPORTANT NOTE ///////////////////////////////
-// Please check wiki pages for more information:
-// https://github.com/ramtinak/InstagramApiSharp/wiki
-////////////////////// IMPORTANT NOTE ///////////////////////////////
-/////////////////////////////////////////////////////////////////////
 namespace Examples
 {
     internal class InstaProgram
@@ -23,8 +19,13 @@ namespace Examples
         /// </summary>
         private static IInstaApi api;
 
+        private static LoggerFactory loggerFactory;
+
         private static void Main(string[] args)
         {
+            NLog.LogManager.LoadConfiguration("nlog.config");
+            loggerFactory = new LoggerFactory();
+            loggerFactory.AddNLog();
             var result = Task.Run(MainAsync).GetAwaiter().GetResult();
             if (result)
             {
@@ -40,7 +41,7 @@ namespace Examples
             {
                 Console.WriteLine("Starting demo of InstagramApiSharp project");
                 // create user session data and provide login details
-                var userSession = new UserSessionData { UserName = "Username", Password = "Password" };
+                var userSession = new UserSessionData { UserName = "XXXX", Password = "XXXX" };
                 // if you want to set custom device (user-agent) please check this:
                 // https://github.com/ramtinak/InstagramApiSharp/wiki/Set-custom-device(user-agent)
 
@@ -48,7 +49,7 @@ namespace Examples
                 // create new InstaApi instance using Builder
                 api = InstaApiBuilder.CreateBuilder()
                     .SetUser(userSession)
-                    .UseLogger(new DebugLogger(LogLevel.All)) // use logger for requests and debug messages
+                    .UseLogger(loggerFactory) // use logger for requests and debug messages
                     .SetRequestDelay(delay)
                     .Build();
                 // create account
@@ -80,7 +81,7 @@ namespace Examples
                     // login
                     Console.WriteLine($"Logging in as {userSession.UserName}");
                     delay.Disable();
-                    var logInResult = await api.LoginAsync();
+                    var logInResult = await api.LoginAsync().ConfigureAwait(false);
                     delay.Enable();
                     if (!logInResult.Succeeded)
                     {
@@ -126,7 +127,7 @@ namespace Examples
                 Console.WriteLine(Environment.NewLine);
                 if (samplesMap.ContainsKey(key.Key))
                 {
-                    await samplesMap[key.Key].DoShow();
+                    await samplesMap[key.Key].DoShow().ConfigureAwait(false);
                 }
 
                 Console.WriteLine("Done. Press esc key to exit...");
