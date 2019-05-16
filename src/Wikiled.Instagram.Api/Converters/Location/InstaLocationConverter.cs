@@ -32,6 +32,7 @@ namespace Wikiled.Instagram.Api.Converters.Location
                 X = SourceObject.X,
                 Y = SourceObject.Y
             };
+
             return location;
         }
     }
