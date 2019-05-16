@@ -4,16 +4,16 @@ namespace Wikiled.Instagram.Api.Classes.Models.Direct
 {
     public class InstaAudio
     {
-        private double _duration;
+        private double duration;
 
         public string AudioSource { get; set; }
 
         public double Duration
         {
-            get => _duration;
+            get => duration;
             set
             {
-                _duration = value;
+                duration = value;
                 DurationTs = TimeSpan.FromMilliseconds(value);
             }
         }

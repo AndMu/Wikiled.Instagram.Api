@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Direct;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Direct;
 
 namespace Wikiled.Instagram.Api.Converters.Directs
 {
@@ -14,16 +16,18 @@ namespace Wikiled.Instagram.Api.Converters.Directs
             }
 
             var voice = new InstaVoice
-                        {
-                            Audio = ConvertersFabric.Instance.GetAudioConverter(SourceObject.Audio).Convert(),
-                            Id = SourceObject.Id,
-                            MediaType = SourceObject.MediaType,
-                            OrganicTrackingToken = SourceObject.OrganicTrackingToken,
-                            ProductType = SourceObject.ProductType
-                        };
+            {
+                Audio = InstaConvertersFabric.Instance.GetAudioConverter(SourceObject.Audio).Convert(),
+                Id = SourceObject.Id,
+                MediaType = SourceObject.MediaType,
+                OrganicTrackingToken = SourceObject.OrganicTrackingToken,
+                ProductType = SourceObject.ProductType
+            };
             if (SourceObject.User != null)
             {
-                voice.FriendshipStatus = ConvertersFabric.Instance.GetFriendShipStatusConverter(SourceObject.User.FriendshipStatus).Convert();
+                voice.FriendshipStatus = InstaConvertersFabric.Instance
+                    .GetFriendShipStatusConverter(SourceObject.User.FriendshipStatus)
+                    .Convert();
             }
 
             return voice;

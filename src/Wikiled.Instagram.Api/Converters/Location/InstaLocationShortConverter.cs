@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Location;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Location;
 
 namespace Wikiled.Instagram.Api.Converters.Location
 {
@@ -14,14 +16,14 @@ namespace Wikiled.Instagram.Api.Converters.Location
             }
 
             var location = new InstaLocationShort
-                           {
-                               Name = SourceObject.Name,
-                               Address = SourceObject.Address,
-                               ExternalSource = SourceObject.ExternalIdSource,
-                               ExternalId = SourceObject.ExternalId,
-                               Lat = SourceObject.Lat,
-                               Lng = SourceObject.Lng
-                           };
+            {
+                Name = SourceObject.Name,
+                Address = SourceObject.Address,
+                ExternalSource = SourceObject.ExternalIdSource,
+                ExternalId = SourceObject.ExternalId,
+                Lat = SourceObject.Lat,
+                Lng = SourceObject.Lng
+            };
             return location;
         }
     }

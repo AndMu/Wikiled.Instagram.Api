@@ -1,4 +1,6 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.Highlight
+﻿using Wikiled.Instagram.Api.Classes.Models.Media;
+
+namespace Wikiled.Instagram.Api.Classes.Models.Highlight
 {
     public class InstaHighlightCoverMedia
     {

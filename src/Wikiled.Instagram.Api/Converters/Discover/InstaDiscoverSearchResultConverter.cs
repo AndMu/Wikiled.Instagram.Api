@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.Discover;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Discover;
 
 namespace Wikiled.Instagram.Api.Converters.Discover
 {
-    internal class InstaDiscoverSearchResultConverter : IObjectConverter<InstaDiscoverSearchResult, InstaDiscoverSearchResultResponse>
+    internal class
+        InstaDiscoverSearchResultConverter : IObjectConverter<InstaDiscoverSearchResult,
+            InstaDiscoverSearchResultResponse>
     {
         public InstaDiscoverSearchResultResponse SourceObject { get; set; }
 
@@ -14,18 +19,18 @@ namespace Wikiled.Instagram.Api.Converters.Discover
             }
 
             var result = new InstaDiscoverSearchResult
-                         {
-                             HasMoreAvailable = SourceObject.HasMore ?? false,
-                             RankToken = SourceObject.RankToken,
-                             NumResults = SourceObject.NumResults ?? 0
-                         };
+            {
+                HasMoreAvailable = SourceObject.HasMore ?? false,
+                RankToken = SourceObject.RankToken,
+                NumResults = SourceObject.NumResults ?? 0
+            };
             if (SourceObject.Users != null && SourceObject.Users.Any())
             {
                 foreach (var user in SourceObject.Users)
                 {
                     try
                     {
-                        result.Users.Add(ConvertersFabric.Instance.GetUserConverter(user).Convert());
+                        result.Users.Add(InstaConvertersFabric.Instance.GetUserConverter(user).Convert());
                     }
                     catch
                     {

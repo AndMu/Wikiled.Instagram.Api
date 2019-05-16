@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Wikiled.Instagram.Api.Classes.Models.Location;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Location;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
 
 namespace Wikiled.Instagram.Api.Converters.Location
 {
@@ -29,8 +33,8 @@ namespace Wikiled.Instagram.Api.Converters.Location
                         continue;
                     }
 
-                    var feedItem = ConvertersFabric.Instance.GetSingleMediaConverter(instaUserFeedItemResponse)
-                                                   .Convert();
+                    var feedItem = InstaConvertersFabric.Instance.GetSingleMediaConverter(instaUserFeedItemResponse)
+                        .Convert();
                     medias.Add(feedItem);
                 }
 
@@ -38,14 +42,14 @@ namespace Wikiled.Instagram.Api.Converters.Location
             }
 
             var feed = new InstaLocationFeed
-                       {
-                           MediaCount = SourceObject.MediaCount,
-                           NextMaxId = SourceObject.NextMaxId,
-                           Medias = ConvertMedia(SourceObject.Items),
-                           RankedMedias = ConvertMedia(SourceObject.RankedItems),
-                           Location = ConvertersFabric.Instance.GetLocationConverter(SourceObject.Location).Convert(),
-                           Story = ConvertersFabric.Instance.GetStoryConverter(SourceObject.Story).Convert()
-                       };
+            {
+                MediaCount = SourceObject.MediaCount,
+                NextMaxId = SourceObject.NextMaxId,
+                Medias = ConvertMedia(SourceObject.Items),
+                RankedMedias = ConvertMedia(SourceObject.RankedItems),
+                Location = InstaConvertersFabric.Instance.GetLocationConverter(SourceObject.Location).Convert(),
+                Story = InstaConvertersFabric.Instance.GetStoryConverter(SourceObject.Story).Convert()
+            };
             return feed;
         }
     }

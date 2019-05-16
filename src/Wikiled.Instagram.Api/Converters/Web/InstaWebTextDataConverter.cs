@@ -1,4 +1,7 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Web;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Web;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Web
 {

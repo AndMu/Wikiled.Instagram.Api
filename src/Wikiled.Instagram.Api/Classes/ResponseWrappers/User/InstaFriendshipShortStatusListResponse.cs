@@ -5,6 +5,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.User
 {
     public class InstaFriendshipShortStatusListResponse : List<InstaFriendshipShortStatusResponse>
     {
-        [JsonProperty("status")] public string Status { get; set; }
+        [JsonProperty("status")]
+        public string Status { get; set; }
     }
 }

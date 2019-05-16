@@ -1,4 +1,6 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.Business
+﻿using Wikiled.Instagram.Api.Enums;
+
+namespace Wikiled.Instagram.Api.Classes.Models.Business
 {
     public class InstaInsightsDataNode
     {

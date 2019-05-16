@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Discover;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
 
 namespace Wikiled.Instagram.Api.Converters.Discover
 {
@@ -20,7 +22,7 @@ namespace Wikiled.Instagram.Api.Converters.Discover
                 {
                     try
                     {
-                        userList.Add(ConvertersFabric.Instance.GetSingleUserContactConverter(item.User).Convert());
+                        userList.Add(InstaConvertersFabric.Instance.GetSingleUserContactConverter(item.User).Convert());
                     }
                     catch
                     {

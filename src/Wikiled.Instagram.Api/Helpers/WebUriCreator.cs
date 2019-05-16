@@ -1,13 +1,13 @@
 ﻿using System;
-using Wikiled.Instagram.Api.API;
+using Wikiled.Instagram.Api.Logic;
 
 namespace Wikiled.Instagram.Api.Helpers
 {
-    internal class WebUriCreator
+    internal class InstaWebUriCreator
     {
         public static Uri GetAccountsDataUri()
         {
-            if (!Uri.TryCreate(InstaApiConstants.InstagramWebUri, InstaApiConstants.WEB_ACCOUNT_DATA, out var instaUri))
+            if (!Uri.TryCreate(InstaApiConstants.InstagramWebUri, InstaApiConstants.WebAccountData, out var instaUri))
             {
                 throw new Exception("Cant create URI for accounts data page");
             }
@@ -17,114 +17,128 @@ namespace Wikiled.Instagram.Api.Helpers
 
         public static Uri GetCurrentFollowRequestsUri(string cursor = null)
         {
-            if (!Uri.TryCreate(InstaApiConstants.InstagramWebUri, InstaApiConstants.WEB_CURRENT_FOLLOW_REQUESTS, out var instaUri))
+            if (!Uri.TryCreate(InstaApiConstants.InstagramWebUri,
+                               InstaApiConstants.WebCurrentFollowRequests,
+                               out var instaUri))
             {
                 throw new Exception("Cant create URI for current follow requests");
             }
 
-            string query = string.Empty;
+            var query = string.Empty;
             if (cursor.IsNotEmpty())
             {
-                query = string.Format(InstaApiConstants.WEB_CURSOR, Uri.EscapeUriString(cursor));
+                query = string.Format(InstaApiConstants.WebCursor, Uri.EscapeUriString(cursor));
             }
 
-            return new UriBuilder(instaUri) {Query = query}.Uri;
+            return new UriBuilder(instaUri) { Query = query }.Uri;
         }
 
         public static Uri GetFormerBiographyLinksUri(string cursor = null)
         {
-            if (!Uri.TryCreate(InstaApiConstants.InstagramWebUri, InstaApiConstants.WEB_FORMER_BIO_LINKS, out var instaUri))
+            if (!Uri.TryCreate(InstaApiConstants.InstagramWebUri,
+                               InstaApiConstants.WebFormerBioLinks,
+                               out var instaUri))
             {
                 throw new Exception("Cant create URI for former biography links");
             }
 
-            string query = string.Empty;
+            var query = string.Empty;
             if (cursor.IsNotEmpty())
             {
-                query = string.Format(InstaApiConstants.WEB_CURSOR, Uri.EscapeUriString(cursor));
+                query = string.Format(InstaApiConstants.WebCursor, Uri.EscapeUriString(cursor));
             }
 
-            return new UriBuilder(instaUri) {Query = query}.Uri;
+            return new UriBuilder(instaUri) { Query = query }.Uri;
         }
 
         public static Uri GetFormerBiographyTextsUri(string cursor = null)
         {
-            if (!Uri.TryCreate(InstaApiConstants.InstagramWebUri, InstaApiConstants.WEB_FORMER_BIO_TEXTS, out var instaUri))
+            if (!Uri.TryCreate(InstaApiConstants.InstagramWebUri,
+                               InstaApiConstants.WebFormerBioTexts,
+                               out var instaUri))
             {
                 throw new Exception("Cant create URI for former biography texts");
             }
 
-            string query = string.Empty;
+            var query = string.Empty;
             if (cursor.IsNotEmpty())
             {
-                query = string.Format(InstaApiConstants.WEB_CURSOR, Uri.EscapeUriString(cursor));
+                query = string.Format(InstaApiConstants.WebCursor, Uri.EscapeUriString(cursor));
             }
 
-            return new UriBuilder(instaUri) {Query = query}.Uri;
+            return new UriBuilder(instaUri) { Query = query }.Uri;
         }
 
         public static Uri GetFormerEmailsUri(string cursor = null)
         {
-            if (!Uri.TryCreate(InstaApiConstants.InstagramWebUri, InstaApiConstants.WEB_FORMER_EMAILS, out var instaUri))
+            if (!Uri.TryCreate(InstaApiConstants.InstagramWebUri,
+                               InstaApiConstants.WebFormerEmails,
+                               out var instaUri))
             {
                 throw new Exception("Cant create URI for former emails");
             }
 
-            string query = string.Empty;
+            var query = string.Empty;
             if (cursor.IsNotEmpty())
             {
-                query = string.Format(InstaApiConstants.WEB_CURSOR, Uri.EscapeUriString(cursor));
+                query = string.Format(InstaApiConstants.WebCursor, Uri.EscapeUriString(cursor));
             }
 
-            return new UriBuilder(instaUri) {Query = query}.Uri;
+            return new UriBuilder(instaUri) { Query = query }.Uri;
         }
 
         public static Uri GetFormerFullNamesUri(string cursor = null)
         {
-            if (!Uri.TryCreate(InstaApiConstants.InstagramWebUri, InstaApiConstants.WEB_FORMER_FULL_NAMES, out var instaUri))
+            if (!Uri.TryCreate(InstaApiConstants.InstagramWebUri,
+                               InstaApiConstants.WebFormerFullNames,
+                               out var instaUri))
             {
                 throw new Exception("Cant create URI for former full names");
             }
 
-            string query = string.Empty;
+            var query = string.Empty;
             if (cursor.IsNotEmpty())
             {
-                query = string.Format(InstaApiConstants.WEB_CURSOR, Uri.EscapeUriString(cursor));
+                query = string.Format(InstaApiConstants.WebCursor, Uri.EscapeUriString(cursor));
             }
 
-            return new UriBuilder(instaUri) {Query = query}.Uri;
+            return new UriBuilder(instaUri) { Query = query }.Uri;
         }
 
         public static Uri GetFormerPhoneNumbersUri(string cursor = null)
         {
-            if (!Uri.TryCreate(InstaApiConstants.InstagramWebUri, InstaApiConstants.WEB_FORMER_PHONES, out var instaUri))
+            if (!Uri.TryCreate(InstaApiConstants.InstagramWebUri,
+                               InstaApiConstants.WebFormerPhones,
+                               out var instaUri))
             {
                 throw new Exception("Cant create URI for former phone numbers");
             }
 
-            string query = string.Empty;
+            var query = string.Empty;
             if (cursor.IsNotEmpty())
             {
-                query = string.Format(InstaApiConstants.WEB_CURSOR, Uri.EscapeUriString(cursor));
+                query = string.Format(InstaApiConstants.WebCursor, Uri.EscapeUriString(cursor));
             }
 
-            return new UriBuilder(instaUri) {Query = query}.Uri;
+            return new UriBuilder(instaUri) { Query = query }.Uri;
         }
 
         public static Uri GetFormerUsernamesUri(string cursor = null)
         {
-            if (!Uri.TryCreate(InstaApiConstants.InstagramWebUri, InstaApiConstants.WEB_FORMER_USERNAMES, out var instaUri))
+            if (!Uri.TryCreate(InstaApiConstants.InstagramWebUri,
+                               InstaApiConstants.WebFormerUsernames,
+                               out var instaUri))
             {
                 throw new Exception("Cant create URI for former usernames");
             }
 
-            string query = string.Empty;
+            var query = string.Empty;
             if (cursor.IsNotEmpty())
             {
-                query = string.Format(InstaApiConstants.WEB_CURSOR, Uri.EscapeUriString(cursor));
+                query = string.Format(InstaApiConstants.WebCursor, Uri.EscapeUriString(cursor));
             }
 
-            return new UriBuilder(instaUri) {Query = query}.Uri;
+            return new UriBuilder(instaUri) { Query = query }.Uri;
         }
     }
 }

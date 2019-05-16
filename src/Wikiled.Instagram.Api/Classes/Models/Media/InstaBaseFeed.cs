@@ -1,4 +1,6 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.Media
+﻿using Wikiled.Instagram.Api.Classes.Models.Other;
+
+namespace Wikiled.Instagram.Api.Classes.Models.Media
 {
     public class InstaBaseFeed : IInstaBaseList
     {

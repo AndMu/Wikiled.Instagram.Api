@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Wikiled.Instagram.Api.Classes.Models.Other;
+using Wikiled.Instagram.Api.Classes.Models.User;
 
 namespace Wikiled.Instagram.Api.Classes.Models.Feed
 {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
 
 namespace Wikiled.Instagram.Api.Converters.Json
 {
@@ -34,7 +35,8 @@ namespace Wikiled.Instagram.Api.Converters.Json
 
         private class InstaCollectionItemsToMedia
         {
-            [JsonProperty("media")] public InstaMediaItemResponse Media { get; set; }
+            [JsonProperty("media")]
+            public InstaMediaItemResponse Media { get; set; }
         }
     }
 }

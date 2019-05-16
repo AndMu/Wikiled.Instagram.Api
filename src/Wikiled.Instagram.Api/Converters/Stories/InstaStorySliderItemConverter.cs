@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
 
 namespace Wikiled.Instagram.Api.Converters.Stories
 {
@@ -13,23 +15,25 @@ namespace Wikiled.Instagram.Api.Converters.Stories
                 throw new ArgumentNullException("Source object");
             }
 
-            var Slider = new InstaStorySliderItem
-                         {
-                             Height = SourceObject.Height,
-                             IsHidden = SourceObject.IsHidden,
-                             IsPinned = SourceObject.IsPinned,
-                             Rotation = SourceObject.Rotation,
-                             Width = SourceObject.Width,
-                             X = SourceObject.X,
-                             Y = SourceObject.Y,
-                             Z = SourceObject.Z
-                         };
+            var slider = new InstaStorySliderItem
+            {
+                Height = SourceObject.Height,
+                IsHidden = SourceObject.IsHidden,
+                IsPinned = SourceObject.IsPinned,
+                Rotation = SourceObject.Rotation,
+                Width = SourceObject.Width,
+                X = SourceObject.X,
+                Y = SourceObject.Y,
+                Z = SourceObject.Z
+            };
             if (SourceObject.SliderSticker != null)
             {
-                Slider.SliderSticker = ConvertersFabric.Instance.GetStorySliderStickerItemConverter(SourceObject.SliderSticker).Convert();
+                slider.SliderSticker = InstaConvertersFabric.Instance
+                    .GetStorySliderStickerItemConverter(SourceObject.SliderSticker)
+                    .Convert();
             }
 
-            return Slider;
+            return slider;
         }
     }
 }

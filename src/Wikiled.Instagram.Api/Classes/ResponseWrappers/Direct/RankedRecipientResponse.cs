@@ -1,11 +1,14 @@
 ﻿using Newtonsoft.Json;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Direct
 {
-    public class RankedRecipientResponse
+    public class InstaRankedRecipientResponse
     {
-        [JsonProperty("thread")] public RankedRecipientThreadResponse Thread { get; set; }
+        [JsonProperty("thread")]
+        public InstaRankedRecipientThreadResponse Thread { get; set; }
 
-        [JsonProperty("user")] public InstaUserShortResponse User { get; set; }
+        [JsonProperty("user")]
+        public InstaUserShortResponse User { get; set; }
     }
 }

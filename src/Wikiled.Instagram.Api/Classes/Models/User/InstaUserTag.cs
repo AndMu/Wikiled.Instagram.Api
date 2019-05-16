@@ -1,4 +1,6 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.User
+﻿using Wikiled.Instagram.Api.Classes.Models.Media;
+
+namespace Wikiled.Instagram.Api.Classes.Models.User
 {
     public class InstaUserTag
     {

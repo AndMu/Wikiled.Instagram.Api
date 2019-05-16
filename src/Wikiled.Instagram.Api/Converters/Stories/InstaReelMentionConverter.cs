@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
 
 namespace Wikiled.Instagram.Api.Converters.Stories
 {
@@ -14,24 +16,24 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             }
 
             var mention = new InstaReelMention
-                          {
-                              Height = SourceObject.Height,
-                              IsPinned = System.Convert.ToBoolean(SourceObject.IsPinned),
-                              IsHidden = System.Convert.ToBoolean(SourceObject.IsHidden),
-                              Rotation = SourceObject.Rotation,
-                              Width = SourceObject.Width,
-                              X = SourceObject.X,
-                              Y = SourceObject.Y,
-                              Z = SourceObject.Z
-                          };
+            {
+                Height = SourceObject.Height,
+                IsPinned = System.Convert.ToBoolean(SourceObject.IsPinned),
+                IsHidden = System.Convert.ToBoolean(SourceObject.IsHidden),
+                Rotation = SourceObject.Rotation,
+                Width = SourceObject.Width,
+                X = SourceObject.X,
+                Y = SourceObject.Y,
+                Z = SourceObject.Z
+            };
             if (SourceObject.Hashtag != null)
             {
-                mention.Hashtag = ConvertersFabric.Instance.GetHashTagConverter(SourceObject.Hashtag).Convert();
+                mention.Hashtag = InstaConvertersFabric.Instance.GetHashTagConverter(SourceObject.Hashtag).Convert();
             }
 
             if (SourceObject.User != null)
             {
-                mention.User = ConvertersFabric.Instance.GetUserShortConverter(SourceObject.User).Convert();
+                mention.User = InstaConvertersFabric.Instance.GetUserShortConverter(SourceObject.User).Convert();
             }
 
             return mention;

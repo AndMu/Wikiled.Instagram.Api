@@ -8,7 +8,7 @@ using Wikiled.Instagram.Api.Classes.Models.Story;
 using Wikiled.Instagram.Api.Classes.Models.User;
 using Wikiled.Instagram.Api.Enums;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Story api functions.
@@ -36,7 +36,10 @@ namespace Wikiled.Instagram.Api.API.Processors
         ///     Crop height It depends on the aspect ratio/size of device display and the aspect ratio of
         ///     story uploaded. must be in a range of 0-1, i.e: 0.8037307
         /// </param>
-        Task<IResult<InstaHighlightFeed>> CreateHighlightFeedAsync(string mediaId, string title, float cropWidth, float cropHeight);
+        Task<IResult<InstaHighlightFeed>> CreateHighlightFeedAsync(string mediaId,
+                                                                   string title,
+                                                                   float cropWidth,
+                                                                   float cropHeight);
 
         /// <summary>
         ///     Delete highlight feed
@@ -51,7 +54,8 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="mediaId">Story media id</param>
         /// <param name="sharingType">The type of the media</param>
         /// <returns>Return true if the story media is deleted</returns>
-        Task<IResult<bool>> DeleteStoryAsync(string storyMediaId, InstaSharingType sharingType = InstaSharingType.Video);
+        Task<IResult<bool>> DeleteStoryAsync(string storyMediaId,
+                                             InstaSharingType sharingType = InstaSharingType.Video);
 
         /// <summary>
         ///     Follow countdown story
@@ -108,7 +112,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         /// <param name="storyMediaId">Story media id</param>
         /// <param name="paginationParameters">Pagination parameters</param>
-        Task<IResult<InstaReelStoryMediaViewers>> GetStoryMediaViewersAsync(string storyMediaId, PaginationParameters paginationParameters);
+        Task<IResult<InstaReelStoryMediaViewers>> GetStoryMediaViewersAsync(
+            string storyMediaId,
+            PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Get story poll voters
@@ -116,7 +122,10 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="storyMediaId">Story media id</param>
         /// <param name="pollId">Story poll id</param>
         /// <param name="paginationParameters">Pagination parameters</param>
-        Task<IResult<InstaStoryPollVotersList>> GetStoryPollVotersAsync(string storyMediaId, string pollId, PaginationParameters paginationParameters);
+        Task<IResult<InstaStoryPollVotersList>> GetStoryPollVotersAsync(
+            string storyMediaId,
+            string pollId,
+            PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Get the story by userId
@@ -148,9 +157,9 @@ namespace Wikiled.Instagram.Api.API.Processors
 
         /// <summary>
         ///     Reply to story
-        ///     <para>Note: Get story media id from <see cref="InstaMedia.InstaIdentifier" /></para>
+        ///     <para>Note: Get story media id from <see cref="InstaMedia.Identifier" /></para>
         /// </summary>
-        /// <param name="storyMediaId">Media id (get it from <see cref="InstaMedia.InstaIdentifier" />)</param>
+        /// <param name="storyMediaId">Media id (get it from <see cref="InstaMedia.Identifier" />)</param>
         /// <param name="userId">Story owner user pk (get it from <see cref="InstaMedia.User.Pk" />)</param>
         /// <param name="text">Text to send</param>
         Task<IResult<bool>> ReplyToStoryAsync(string storyMediaId, long userId, string text);
@@ -212,7 +221,11 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="storyMediaId">Story media id</param>
         /// <param name="threadId">Thread id</param>
         /// <param name="sharingType">Sharing type</param>
-        Task<IResult<InstaSharing>> ShareStoryAsync(string reelId, string storyMediaId, string threadId, string text, InstaSharingType sharingType = InstaSharingType.Video);
+        Task<IResult<InstaSharing>> ShareStoryAsync(string reelId,
+                                                    string storyMediaId,
+                                                    string threadId,
+                                                    string text,
+                                                    InstaSharingType sharingType = InstaSharingType.Video);
 
         /// <summary>
         ///     UnFollow countdown story
@@ -226,7 +239,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="image">Photo to upload</param>
         /// <param name="caption">Caption</param>
         /// <param name="uploadOptions">Upload options => Optional</param>
-        Task<IResult<InstaStoryMedia>> UploadStoryPhotoAsync(InstaImage image, string caption, InstaStoryUploadOptions uploadOptions = null);
+        Task<IResult<InstaStoryMedia>> UploadStoryPhotoAsync(InstaImage image,
+                                                             string caption,
+                                                             InstaStoryUploadOptions uploadOptions = null);
 
         /// <summary>
         ///     Upload story photo with progress
@@ -276,7 +291,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         /// <param name="video">Video to upload</param>
         /// <param name="caption">Caption</param>
-        Task<IResult<InstaStoryMedia>> UploadStoryVideoAsync(InstaVideoUpload video, string caption, InstaStoryUploadOptions uploadOptions = null);
+        Task<IResult<InstaStoryMedia>> UploadStoryVideoAsync(InstaVideoUpload video,
+                                                             string caption,
+                                                             InstaStoryUploadOptions uploadOptions = null);
 
         /// <summary>
         ///     Upload story video (to self story) with progress
@@ -284,7 +301,10 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="progress">Progress action</param>
         /// <param name="video">Video to upload</param>
         /// <param name="caption">Caption</param>
-        Task<IResult<InstaStoryMedia>> UploadStoryVideoAsync(Action<InstaUploaderProgress> progress, InstaVideoUpload video, string caption, InstaStoryUploadOptions uploadOptions = null);
+        Task<IResult<InstaStoryMedia>> UploadStoryVideoAsync(Action<InstaUploaderProgress> progress,
+                                                             InstaVideoUpload video,
+                                                             string caption,
+                                                             InstaStoryUploadOptions uploadOptions = null);
 
         /// <summary>
         ///     Upload story video [to self story, to direct threads or both(self and direct)]
@@ -320,7 +340,10 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="video">Video to upload</param>
         /// <param name="caption">Caption</param>
         /// <param name="uri">Uri to add</param>
-        Task<IResult<InstaStoryMedia>> UploadStoryVideoWithUrlAsync(InstaVideoUpload video, string caption, Uri uri, InstaStoryUploadOptions uploadOptions = null);
+        Task<IResult<InstaStoryMedia>> UploadStoryVideoWithUrlAsync(InstaVideoUpload video,
+                                                                    string caption,
+                                                                    Uri uri,
+                                                                    InstaStoryUploadOptions uploadOptions = null);
 
         /// <summary>
         ///     Upload story video (to self story) with adding link address (with progress)
@@ -374,7 +397,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="storyMediaId">Story media id</param>
         /// <param name="pollId">Story poll id</param>
         /// <param name="pollVote">Your poll vote</param>
-        Task<IResult<InstaStoryItem>> VoteStoryPollAsync(string storyMediaId, string pollId, InstaStoryPollVoteType pollVote);
+        Task<IResult<InstaStoryItem>> VoteStoryPollAsync(string storyMediaId,
+                                                         string pollId,
+                                                         InstaStoryPollVoteType pollVote);
 
         /// <summary>
         ///     Vote to an story slider

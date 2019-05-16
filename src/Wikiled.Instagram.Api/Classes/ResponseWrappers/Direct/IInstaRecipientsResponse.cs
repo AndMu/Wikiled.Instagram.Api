@@ -6,7 +6,7 @@
 
         bool Filtered { get; set; }
 
-        RankedRecipientResponse[] RankedRecipients { get; set; }
+        InstaRankedRecipientResponse[] RankedRecipients { get; set; }
 
         string RankToken { get; set; }
 

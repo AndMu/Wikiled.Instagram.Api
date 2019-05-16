@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Wikiled.Instagram.Api.Logic;
 
 namespace Wikiled.Instagram.Api.Helpers
 {
@@ -14,7 +15,7 @@ namespace Wikiled.Instagram.Api.Helpers
         /// <summary>
         ///     Clear datas and cached from this address
         /// </summary>
-        public static readonly Uri FacebookAddressWithWWWAddress = new Uri("https://www.facebook.com/");
+        public static readonly Uri FacebookAddressWithWwwAddress = new Uri("https://www.facebook.com/");
 
         /// <summary>
         ///     Clear datas and cached from this address
@@ -54,16 +55,13 @@ namespace Wikiled.Instagram.Api.Helpers
         {
             try
             {
-                var init = new JObject
-                           {
-                               {"init", DateTime.UtcNow.ToUnixTimeMiliSeconds()}
-                           };
+                var init = new JObject { { "init", DateTime.UtcNow.ToUnixTimeMiliSeconds() } };
                 if (Uri.TryCreate(
                     string.Format(
-                        InstaApiConstants.FACEBOOK_LOGIN_URI,
+                        InstaApiConstants.FacebookLoginUri,
                         init.ToString(Formatting.None)),
                     UriKind.RelativeOrAbsolute,
-                    out Uri fbUri))
+                    out var fbUri))
                 {
                     return fbUri;
                 }
@@ -80,13 +78,14 @@ namespace Wikiled.Instagram.Api.Helpers
         /// </summary>
         public static string GetFacebookUserAgent()
         {
-            return /*ExtensionHelper.GenerateFacebookUserAgent()*/ InstaApiConstants.FACEBOOK_USER_AGENT_DEFAULT;
+            return /*ExtensionHelper.GenerateFacebookUserAgent()*/ InstaApiConstants.FacebookUserAgentDefault;
         }
 
         public static bool IsLoggedIn(string html)
         {
             //https://m.facebook.com/v2.3/dialog/oauth/confirm
-            return html.Contains("window.location.href=\"fbconnect://success#") || html.Contains("window.location.href=\"fbconnect:\\/\\/success");
+            return html.Contains("window.location.href=\"fbconnect://success#") ||
+                html.Contains("window.location.href=\"fbconnect:\\/\\/success");
         }
     }
 }

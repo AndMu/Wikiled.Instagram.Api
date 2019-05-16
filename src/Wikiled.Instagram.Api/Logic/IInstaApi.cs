@@ -4,8 +4,6 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Wikiled.Instagram.Api.API.Processors;
-using Wikiled.Instagram.Api.API.Versions;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.Android.DeviceInfo;
 using Wikiled.Instagram.Api.Classes.Models.Account;
@@ -16,16 +14,16 @@ using Wikiled.Instagram.Api.Classes.ResponseWrappers.Login;
 using Wikiled.Instagram.Api.Classes.ResponseWrappers.Other;
 using Wikiled.Instagram.Api.Classes.SessionHandlers;
 using Wikiled.Instagram.Api.Enums;
+using Wikiled.Instagram.Api.Logic.Processors;
+using Wikiled.Instagram.Api.Logic.Versions;
 
-namespace Wikiled.Instagram.Api.API
+namespace Wikiled.Instagram.Api.Logic
 {
     /// <summary>
     ///     Base of everything that you want.
     /// </summary>
     public interface IInstaApi
     {
-        #region Properties
-
         /// <summary>
         ///     Current <see cref="IHttpRequestProcessor" />
         /// </summary>
@@ -104,7 +102,7 @@ namespace Wikiled.Instagram.Api.API
         /// <summary>
         ///     Instagram TV api functions.
         /// </summary>
-        ITVProcessor TVProcessor { get; }
+        ITvProcessor TvProcessor { get; }
 
         /// <summary>
         ///     Business api functions
@@ -127,10 +125,6 @@ namespace Wikiled.Instagram.Api.API
         ///     Session handler
         /// </summary>
         ISessionHandler SessionHandler { get; set; }
-
-        #endregion
-
-        #region State data
 
         /// <summary>
         ///     Get current state info as Memory stream
@@ -156,7 +150,7 @@ namespace Wikiled.Instagram.Api.API
         /// <returns>
         ///     State data object
         /// </returns>
-        StateData GetStateDataAsObject();
+        InstaStateData GetStateDataAsObject();
 
         Task<string> GetStateDataAsStringAsync();
 
@@ -182,7 +176,7 @@ namespace Wikiled.Instagram.Api.API
         /// <summary>
         ///     Set state data from object
         /// </summary>
-        void LoadStateDataFromObject(StateData stateData);
+        void LoadStateDataFromObject(InstaStateData stateData);
 
         Task LoadStateDataFromStreamAsync(Stream stream);
 
@@ -190,10 +184,6 @@ namespace Wikiled.Instagram.Api.API
         ///     Set state data from provided json string asynchronously
         /// </summary>
         Task LoadStateDataFromStringAsync(string json);
-
-        #endregion State data
-
-        #region Other public functions
 
         /// <summary>
         ///     Get current API version info (signature key, api version info, app id)
@@ -233,7 +223,7 @@ namespace Wikiled.Instagram.Api.API
         /// <summary>
         ///     Gets current device
         /// </summary>
-        AndroidDevice GetCurrentDevice();
+        InstaAndroidDevice GetCurrentDevice();
 
         /// <summary>
         ///     Gets logged in user
@@ -284,7 +274,7 @@ namespace Wikiled.Instagram.Api.API
         ///     </para>
         /// </summary>
         /// <param name="device">Android device</param>
-        void SetDevice(AndroidDevice device);
+        void SetDevice(InstaAndroidDevice device);
 
         /// <summary>
         ///     Set Accept Language
@@ -343,12 +333,6 @@ namespace Wikiled.Instagram.Api.API
         /// <param name="data">Data to post</param>
         Task<IResult<string>> SendPostRequestAsync(Uri uri, Dictionary<string, string> data);
 
-        #endregion Other public functions
-
-        #region Authentication, challenge functions
-
-        #region Challenge part
-
         //////////////////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////// Challenge for logged in user /////////////////////////////////
 
@@ -362,7 +346,7 @@ namespace Wikiled.Instagram.Api.API
         ///     Accept challlenge, it is THIS IS ME feature!!!!
         ///     <para>
         ///         You must call <see cref="GetLoggedInChallengeDataInfoAsync" /> first,
-        ///         if you across to <see cref="ResultInfo.ResponseType" /> equals to <see cref="ResponseType.ChallengeRequired" />
+        ///         if you across to <see cref="InstaResultInfo.ResponseType" /> equals to <see cref="InstaResponseType.ChallengeRequired" />
         ///         while you logged in!
         ///     </para>
         /// </summary>
@@ -385,7 +369,8 @@ namespace Wikiled.Instagram.Api.API
         ///     Request verification code sms for challenge require (checkpoint required)
         /// </summary>
         /// <param name="replayChallenge">true if Instagram should resend verification code to you</param>
-        Task<IResult<InstaChallengeRequireSMSVerify>> RequestVerifyCodeToSMSForChallengeRequireAsync(bool replayChallenge = false);
+        Task<IResult<InstaChallengeRequireSmsVerify>> RequestVerifyCodeToSmsForChallengeRequireAsync(
+            bool replayChallenge = false);
 
         /// <summary>
         ///     Submit phone number for challenge require (checkpoint required)
@@ -396,21 +381,22 @@ namespace Wikiled.Instagram.Api.API
         ///     </para>
         /// </summary>
         /// <param name="phoneNumber">Phone number</param>
-        Task<IResult<InstaChallengeRequireSMSVerify>> SubmitPhoneNumberForChallengeRequireAsync(string phoneNumber, bool replayChallenge = false);
+        Task<IResult<InstaChallengeRequireSmsVerify>> SubmitPhoneNumberForChallengeRequireAsync(
+            string phoneNumber,
+            bool replayChallenge = false);
 
         /// <summary>
         ///     Request verification code email for challenge require (checkpoint required)
         /// </summary>
         /// <param name="replayChallenge">true if Instagram should resend verification code to you</param>
-        Task<IResult<InstaChallengeRequireEmailVerify>> RequestVerifyCodeToEmailForChallengeRequireAsync(bool replayChallenge = false);
+        Task<IResult<InstaChallengeRequireEmailVerify>> RequestVerifyCodeToEmailForChallengeRequireAsync(
+            bool replayChallenge = false);
 
         /// <summary>
         ///     Verify verification code for challenge require (checkpoint required)
         /// </summary>
         /// <param name="verifyCode">Verification code</param>
         Task<IResult<InstaLoginResult>> VerifyCodeForChallengeRequireAsync(string verifyCode);
-
-        #endregion Challenge part
 
         /// <summary>
         ///     Check email availability
@@ -441,7 +427,9 @@ namespace Wikiled.Instagram.Api.API
         /// </summary>
         /// <param name="phoneNumber">Phone number</param>
         /// <param name="verificationCode">Verification code</param>
-        Task<IResult<InstaPhoneNumberRegistration>> VerifySignUpSmsCodeAsync(string phoneNumber, string verificationCode);
+        Task<IResult<InstaPhoneNumberRegistration>> VerifySignUpSmsCodeAsync(
+            string phoneNumber,
+            string verificationCode);
 
         /// <summary>
         ///     Get username suggestions
@@ -457,7 +445,12 @@ namespace Wikiled.Instagram.Api.API
         /// <param name="username">Username to set</param>
         /// <param name="password">Password to set</param>
         /// <param name="firstName">First name to set</param>
-        Task<IResult<InstaAccountCreation>> ValidateNewAccountWithPhoneNumberAsync(string phoneNumber, string verificationCode, string username, string password, string firstName);
+        Task<IResult<InstaAccountCreation>> ValidateNewAccountWithPhoneNumberAsync(
+            string phoneNumber,
+            string verificationCode,
+            string username,
+            string password,
+            string firstName);
 
         /// <summary>
         ///     Create a new instagram account
@@ -467,7 +460,10 @@ namespace Wikiled.Instagram.Api.API
         /// <param name="email">Email</param>
         /// <param name="firstName">First name (optional)</param>
         /// <param name="delay">Delay between requests. null = 2.5 seconds</param>
-        Task<IResult<InstaAccountCreation>> CreateNewAccountAsync(string username, string password, string email, string firstName = "" /*, TimeSpan? delay = null*/);
+        Task<IResult<InstaAccountCreation>> CreateNewAccountAsync(string username,
+                                                                  string password,
+                                                                  string email,
+                                                                  string firstName = "" /*, TimeSpan? delay = null*/);
 
         /// <summary>
         ///     Login using given credentials asynchronously
@@ -558,7 +554,7 @@ namespace Wikiled.Instagram.Api.API
         /// <summary>
         ///     Send Two Factor Login SMS Again
         /// </summary>
-        Task<IResult<TwoFactorLoginSMS>> SendTwoFactorLoginSMSAsync();
+        Task<IResult<InstaTwoFactorLoginSms>> SendTwoFactorLoginSmsAsync();
 
         /// <summary>
         ///     Logout from instagram asynchronously
@@ -573,7 +569,5 @@ namespace Wikiled.Instagram.Api.API
         ///     <see cref="InstaCurrentUser" />
         /// </returns>
         Task<IResult<InstaCurrentUser>> GetCurrentUserAsync();
-
-        #endregion Authentication, challenge functions
     }
 }

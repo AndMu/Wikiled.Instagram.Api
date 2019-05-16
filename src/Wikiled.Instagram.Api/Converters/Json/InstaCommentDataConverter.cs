@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Comment;
 
 namespace Wikiled.Instagram.Api.Converters.Json
 {
@@ -20,8 +21,8 @@ namespace Wikiled.Instagram.Api.Converters.Json
             var root = JToken.Load(reader);
             var commentContainer = root["comment"];
             return commentContainer == null
-                       ? root.ToObject<InstaCommentResponse>()
-                       : commentContainer.ToObject<InstaCommentResponse>();
+                ? root.ToObject<InstaCommentResponse>()
+                : commentContainer.ToObject<InstaCommentResponse>();
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

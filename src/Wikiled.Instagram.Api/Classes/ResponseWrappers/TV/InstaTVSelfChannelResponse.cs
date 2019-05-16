@@ -1,9 +1,11 @@
 ﻿using Newtonsoft.Json;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.TV
 {
-    public class InstaTVSelfChannelResponse : InstaTVChannelResponse
+    public class InstaTvSelfChannelResponse : InstaTvChannelResponse
     {
-        [JsonProperty("user_dict")] public InstaTVUserResponse User { get; set; }
+        [JsonProperty("user_dict")]
+        public InstaTvUserResponse User { get; set; }
     }
 }

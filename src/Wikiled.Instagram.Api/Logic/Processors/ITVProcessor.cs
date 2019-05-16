@@ -5,42 +5,43 @@ using Wikiled.Instagram.Api.Classes.Models.Media;
 using Wikiled.Instagram.Api.Classes.Models.TV;
 using Wikiled.Instagram.Api.Enums;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Instagram TV api functions.
     /// </summary>
-    public interface ITVProcessor
+    public interface ITvProcessor
     {
         /// <summary>
         ///     Get channel by user id (pk) => channel owner
         /// </summary>
         /// <param name="userId">User id (pk) => channel owner</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        Task<IResult<InstaTVChannel>> GetChannelByIdAsync(long userId, PaginationParameters paginationParameters);
+        Task<IResult<InstaTvChannel>> GetChannelByIdAsync(long userId, PaginationParameters paginationParameters);
 
         /// <summary>
-        ///     Get channel by <seealso cref="InstaTVChannelType" />
+        ///     Get channel by <seealso cref="InstaTvChannelType" />
         /// </summary>
         /// <param name="channelType">Channel type</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        Task<IResult<InstaTVChannel>> GetChannelByTypeAsync(InstaTVChannelType channelType, PaginationParameters paginationParameters);
+        Task<IResult<InstaTvChannel>> GetChannelByTypeAsync(InstaTvChannelType channelType,
+                                                            PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Get suggested searches
         /// </summary>
-        Task<IResult<InstaTVSearch>> GetSuggestedSearchesAsync();
+        Task<IResult<InstaTvSearch>> GetSuggestedSearchesAsync();
 
         /// <summary>
         ///     Get TV Guide (gets popular and suggested channels)
         /// </summary>
-        Task<IResult<InstaTV>> GetTVGuideAsync();
+        Task<IResult<InstaTv>> GetTvGuideAsync();
 
         /// <summary>
         ///     Search channels
         /// </summary>
         /// <param name="query">Channel or username</param>
-        Task<IResult<InstaTVSearch>> SearchAsync(string query);
+        Task<IResult<InstaTvSearch>> SearchAsync(string query);
 
         /// <summary>
         ///     Upload video to Instagram TV
@@ -63,6 +64,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </param>
         /// <param name="title">Title</param>
         /// <param name="caption">Caption</param>
-        Task<IResult<InstaMedia>> UploadVideoAsync(Action<InstaUploaderProgress> progress, InstaVideoUpload video, string title, string caption);
+        Task<IResult<InstaMedia>> UploadVideoAsync(Action<InstaUploaderProgress> progress,
+                                                   InstaVideoUpload video,
+                                                   string title,
+                                                   string caption);
     }
 }

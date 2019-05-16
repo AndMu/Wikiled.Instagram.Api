@@ -4,7 +4,7 @@ using Wikiled.Instagram.Api.Classes.Models.Discover;
 using Wikiled.Instagram.Api.Classes.Models.User;
 using Wikiled.Instagram.Api.Enums;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Discover api functions.
@@ -39,12 +39,15 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         /// <param name="querry">querry string of the search</param>
         /// <param name="searchType">Search type(only blended and users works)</param>
-        /// <param name="timezone_offset">
+        /// <param name="timezoneOffset">
         ///     Timezone offset of the search region (GMT Offset * 60 * 60 - Like Tehran GMT +3:30 = 3.5*
         ///     60*60 = 12600)
         /// </param>
         /// <returns></returns>
-        Task<IResult<InstaDiscoverTopSearches>> GetTopSearchesAsync(string querry = "", InstaDiscoverSearchType searchType = InstaDiscoverSearchType.Users, int timezone_offset = 12600);
+        Task<IResult<InstaDiscoverTopSearches>> GetTopSearchesAsync(string querry = "",
+                                                                    InstaDiscoverSearchType searchType =
+                                                                        InstaDiscoverSearchType.Users,
+                                                                    int timezoneOffset = 12600);
 
         /// <summary>
         ///     Search user people
@@ -52,8 +55,6 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="query">Query to search</param>
         /// <param name="count">Count</param>
         Task<IResult<InstaDiscoverSearchResult>> SearchPeopleAsync(string query, int count = 50);
-
-        #region Other functions
 
         /// <summary>
         ///     Sync your phone contact list to instagram
@@ -68,8 +69,6 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         /// <param name="instaContacts">Contact list</param>
         Task<IResult<InstaContactUserList>> SyncContactsAsync(InstaContactList instaContacts);
-
-        #endregion Other functions
 
         ///// <summary>
         ///// NOT COMPLETE

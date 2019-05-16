@@ -1,27 +1,28 @@
 ﻿using System;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.TV;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.TV;
 
 namespace Wikiled.Instagram.Api.Converters.TV
 {
-    internal class InstaTVConverter : IObjectConverter<InstaTV, InstaTVResponse>
+    internal class InstaTvConverter : IObjectConverter<InstaTv, InstaTvResponse>
     {
-        public InstaTVResponse SourceObject { get; set; }
+        public InstaTvResponse SourceObject { get; set; }
 
-        public InstaTV Convert()
+        public InstaTv Convert()
         {
             if (SourceObject == null)
             {
                 throw new ArgumentNullException("SourceObject");
             }
 
-            var tv = new InstaTV
-                     {
-                         Status = SourceObject.Status
-                     };
+            var tv = new InstaTv { Status = SourceObject.Status };
             if (SourceObject.MyChannel != null)
             {
                 try
                 {
-                    tv.MyChannel = ConvertersFabric.Instance.GetTVSelfChannelConverter(SourceObject.MyChannel).Convert();
+                    tv.MyChannel = InstaConvertersFabric.Instance.GetTvSelfChannelConverter(SourceObject.MyChannel)
+                        .Convert();
                 }
                 catch
                 {
@@ -34,7 +35,7 @@ namespace Wikiled.Instagram.Api.Converters.TV
                 {
                     try
                     {
-                        tv.Channels.Add(ConvertersFabric.Instance.GetTVChannelConverter(channel).Convert());
+                        tv.Channels.Add(InstaConvertersFabric.Instance.GetTvChannelConverter(channel).Convert());
                     }
                     catch
                     {

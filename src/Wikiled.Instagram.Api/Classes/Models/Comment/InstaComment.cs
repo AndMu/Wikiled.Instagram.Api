@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Enums;
 
 namespace Wikiled.Instagram.Api.Classes.Models.Comment
 {
     public class InstaComment : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private bool _haslikedcm;
+        private bool haslikedcm;
 
         public int BitFlags { get; set; }
 
@@ -24,10 +24,10 @@ namespace Wikiled.Instagram.Api.Classes.Models.Comment
 
         public bool HasLikedComment
         {
-            get => _haslikedcm;
+            get => haslikedcm;
             set
             {
-                _haslikedcm = value;
+                haslikedcm = value;
                 Update("HasLikedComment");
             }
         }
@@ -56,6 +56,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Comment
         public InstaUserShort User { get; set; }
 
         public long UserId { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public override bool Equals(object obj)
         {
@@ -72,9 +73,9 @@ namespace Wikiled.Instagram.Api.Classes.Models.Comment
             return Pk == comment?.Pk;
         }
 
-        private void Update(string PName)
+        private void Update(string pName)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(pName));
         }
     }
 }

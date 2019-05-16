@@ -1,4 +1,7 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.Story
+﻿using Wikiled.Instagram.Api.Classes.Models.Hashtags;
+using Wikiled.Instagram.Api.Classes.Models.User;
+
+namespace Wikiled.Instagram.Api.Classes.Models.Story
 {
     public class InstaReelMention
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
 
 namespace Wikiled.Instagram.Api.Converters.Json
 {
@@ -20,8 +21,8 @@ namespace Wikiled.Instagram.Api.Converters.Json
             var root = JToken.Load(reader);
             var statusSubContainer = root["friendship_status"];
             return statusSubContainer == null
-                       ? root.ToObject<InstaFriendshipStatusResponse>()
-                       : statusSubContainer.ToObject<InstaFriendshipStatusResponse>();
+                ? root.ToObject<InstaFriendshipStatusResponse>()
+                : statusSubContainer.ToObject<InstaFriendshipStatusResponse>();
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

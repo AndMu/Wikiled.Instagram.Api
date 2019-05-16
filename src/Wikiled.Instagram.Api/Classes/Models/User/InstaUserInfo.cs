@@ -146,7 +146,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.User
 
         public bool IsEligibleForSchool { get; set; }
 
-        public bool IsEligibleToShowFBCrossSharingNux { get; set; }
+        public bool IsEligibleToShowFbCrossSharingNux { get; set; }
 
         public bool IsFavorite { get; set; }
 
@@ -253,7 +253,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.User
 
         public int TotalArEffects { get; set; }
 
-        public int TotalIGTVVideos { get; set; }
+        public int TotalIgtvVideos { get; set; }
 
         public string Username { get; set; }
 

@@ -1,21 +1,9 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using InstagramApiSharp;
-using InstagramApiSharp.API;
-using InstagramApiSharp.API.Processors;
-using InstagramApiSharp.Classes;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Logic;
+
 /////////////////////////////////////////////////////////////////////
 ////////////////////// IMPORTANT NOTE ///////////////////////////////
 // Please check wiki pages for more information:
@@ -24,19 +12,19 @@ using InstagramApiSharp.Classes;
 /////////////////////////////////////////////////////////////////////
 namespace Examples.Samples
 {
-    internal class Live : IDemoSample
+    internal class InstaLive : IDemoSample
     {
-        private readonly IInstaApi InstaApi;
+        private readonly IInstaApi api;
 
-        public Live(IInstaApi instaApi)
+        public InstaLive(IInstaApi instaApi)
         {
-            InstaApi = instaApi;
+            api = instaApi;
         }
 
         public async Task DoShow()
         {
             // get currently logged in user
-            var currentUser = await InstaApi.GetCurrentUserAsync();
+            var currentUser = await api.GetCurrentUserAsync();
             Console.WriteLine(
                 $"Logged in: username - {currentUser.Value.UserName}, full name - {currentUser.Value.FullName}");
 
@@ -67,46 +55,61 @@ EndAsync");
 
         public async void SuggestedBroadcasts()
         {
-            var result = await InstaApi.LiveProcessor.GetSuggestedBroadcastsAsync();
+            var result = await api.LiveProcessor.GetSuggestedBroadcastsAsync();
             if (result.Succeeded)
             {
                 Console.WriteLine("Suggested broadcast count: " + result.Value?.Count);
                 if (result.Value?.Count > 0)
-                    Console.WriteLine("First suggested broadcast message: " + result.Value?.FirstOrDefault()?.BroadcastMessage);
+                {
+                    Console.WriteLine("First suggested broadcast message: " +
+                                      result.Value?.FirstOrDefault()?.BroadcastMessage);
+                }
             }
             else
+            {
                 Console.WriteLine("Error while suggested broadcasts: " + result.Info.Message);
+            }
         }
 
         public async void DiscoverTopLive()
         {
-            var result = await InstaApi.LiveProcessor.GetDiscoverTopLiveAsync(PaginationParameters.MaxPagesToLoad(1));
+            var result = await api.LiveProcessor.GetDiscoverTopLiveAsync(PaginationParameters.MaxPagesToLoad(1));
             if (result.Succeeded)
             {
                 Console.WriteLine("Discover top lives count: " + result.Value.Broadcasts?.Count);
                 if (result.Value.Broadcasts?.Count > 0)
-                    Console.WriteLine("First discover top live broadcast message: " + result.Value.Broadcasts?.FirstOrDefault()?.BroadcastMessage);
+                {
+                    Console.WriteLine("First discover top live broadcast message: " +
+                                      result.Value.Broadcasts?.FirstOrDefault()?.BroadcastMessage);
+                }
             }
             else
+            {
                 Console.WriteLine("Error while discover top lives: " + result.Info.Message);
+            }
         }
 
         public async void TopLiveStatus()
         {
-            var result = await InstaApi.LiveProcessor.GetTopLiveStatusAsync("broadcastsID1", "broadcastID2");
+            var result = await api.LiveProcessor.GetTopLiveStatusAsync("broadcastsID1", "broadcastID2");
             if (result.Succeeded)
             {
                 Console.WriteLine("Discover top lives count: " + result.Value?.Count);
                 if (result.Value?.Count > 0)
-                    Console.WriteLine("First top live broadcast status: " + result.Value?.FirstOrDefault()?.BroadcastStatus);
+                {
+                    Console.WriteLine("First top live broadcast status: " +
+                                      result.Value?.FirstOrDefault()?.BroadcastStatus);
+                }
             }
             else
+            {
                 Console.WriteLine("Error while top live status: " + result.Info.Message);
+            }
         }
 
         public async void BroadcastInfo()
         {
-            var result = await InstaApi.LiveProcessor.GetInfoAsync("broadcastID");
+            var result = await api.LiveProcessor.GetInfoAsync("broadcastID");
             if (result.Succeeded)
             {
                 Console.WriteLine($"Broadcast info for {result.Value.Id}");
@@ -117,35 +120,41 @@ EndAsync");
                 Console.WriteLine("CoverFrameUrl: " + result.Value.CoverFrameUrl);
             }
             else
+            {
                 Console.WriteLine("Error while Broadcast info: " + result.Info.Message);
+            }
         }
 
         public async void CommentBroadcast()
         {
             var commentText = "Ramtin your good! keep it up!";
-            var result = await InstaApi.LiveProcessor.CommentAsync("broadcastID", commentText);
+            var result = await api.LiveProcessor.CommentAsync("broadcastID", commentText);
             if (result.Succeeded)
             {
-                Console.WriteLine($"Send new comment to broadcast");
+                Console.WriteLine("Send new comment to broadcast");
                 Console.WriteLine("CommentStatus: " + result.Value.Status);
                 Console.WriteLine("CommentText: " + result.Value.Text);
                 Console.WriteLine("CommentUser: " + result.Value.User.UserName);
             }
             else
+            {
                 Console.WriteLine("Error while send new comment to broadcast: " + result.Info.Message);
+            }
         }
 
         public async void LikeBroadcast()
         {
             var likeCount = 6; // from 1 to 6
-            var result = await InstaApi.LiveProcessor.LikeAsync("broadcastID", likeCount);
+            var result = await api.LiveProcessor.LikeAsync("broadcastID", likeCount);
             if (result.Succeeded)
             {
-                Console.WriteLine($"Like broadcast");
+                Console.WriteLine("Like broadcast");
                 Console.WriteLine("Likes: " + result.Value.Likes);
             }
             else
+            {
                 Console.WriteLine("Error while like broadcast: " + result.Info.Message);
+            }
         }
 
         public async void StartLiveBroadcastAndOtherFunctions()
@@ -153,12 +162,12 @@ EndAsync");
             Console.WriteLine("Be aware some of this methods only works on your own broadcasts!!!!");
             // live broadcast
             // first you need to call CreateAsync
-            var result = await InstaApi.LiveProcessor.CreateAsync(720, 1184, "My new live broadcast");
+            var result = await api.LiveProcessor.CreateAsync(720, 1184, "My new live broadcast");
             if (result.Succeeded)
             {
                 var broadcastId = result.Value.BroadcastId.ToString();
                 // second you need to call StartAsync to instagram know you start filming!
-                await InstaApi.LiveProcessor.StartAsync(broadcastId, true);
+                await api.LiveProcessor.StartAsync(broadcastId, true);
                 Console.WriteLine("Broadcast " + result.Value.BroadcastId + " started");
                 // use uploadurl to stream your video to instagram
                 // note: I really don't know how RTMP server works, so there is no
@@ -169,54 +178,53 @@ EndAsync");
 
 
                 // get heart beat and viewer count (works if you are broadcast owner)
-                await InstaApi.LiveProcessor.GetHeartBeatAndViewerCountAsync(broadcastId);
+                await api.LiveProcessor.GetHeartBeatAndViewerCountAsync(broadcastId);
 
 
                 // get viewer list
-                await InstaApi.LiveProcessor.GetViewerListAsync(broadcastId);
+                await api.LiveProcessor.GetViewerListAsync(broadcastId);
 
 
                 // get post live viewer list
-                await InstaApi.LiveProcessor.GetPostLiveViewerListAsync(broadcastId, 10);
+                await api.LiveProcessor.GetPostLiveViewerListAsync(broadcastId, 10);
 
 
                 // Pin comment from broadcast
-                await InstaApi.LiveProcessor.PinCommentAsync(broadcastId, "commentID"); 
+                await api.LiveProcessor.PinCommentAsync(broadcastId, "commentID");
                 // UnPin comment from broadcast
-                await InstaApi.LiveProcessor.UnPinCommentAsync(broadcastId, "commentID");
+                await api.LiveProcessor.UnPinCommentAsync(broadcastId, "commentID");
 
 
                 // get broadcast comments
-                await InstaApi.LiveProcessor.GetCommentsAsync(broadcastId);
+                await api.LiveProcessor.GetCommentsAsync(broadcastId);
 
 
                 // enable broadcast comments
-                await InstaApi.LiveProcessor.EnableCommentsAsync(broadcastId);
+                await api.LiveProcessor.EnableCommentsAsync(broadcastId);
                 // disable broadcast comments
-                await InstaApi.LiveProcessor.DisableCommentsAsync(broadcastId);
+                await api.LiveProcessor.DisableCommentsAsync(broadcastId);
 
 
                 // get broadcast likes count
-                await InstaApi.LiveProcessor.GetLikeCountAsync(broadcastId, 0);
+                await api.LiveProcessor.GetLikeCountAsync(broadcastId);
 
 
                 // add broadcast to post live
-                await InstaApi.LiveProcessor.AddToPostLiveAsync(broadcastId);
+                await api.LiveProcessor.AddToPostLiveAsync(broadcastId);
                 // delete broadcast from post live
-                await InstaApi.LiveProcessor.DeletePostLiveAsync(broadcastId);
-
-
+                await api.LiveProcessor.DeletePostLiveAsync(broadcastId);
 
 
                 // end live broadcast
-                await InstaApi.LiveProcessor.EndAsync(broadcastId);
+                await api.LiveProcessor.EndAsync(broadcastId);
 
                 // after you ended your live broadcast, you should call this
-                await InstaApi.LiveProcessor.GetFinalViewerListAsync(broadcastId);
-
+                await api.LiveProcessor.GetFinalViewerListAsync(broadcastId);
             }
             else
+            {
                 Console.WriteLine("Error while creating live broadcast: " + result.Info.Message);
+            }
         }
     }
 }

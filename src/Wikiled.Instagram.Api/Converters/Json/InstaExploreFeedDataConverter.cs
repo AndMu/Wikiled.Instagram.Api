@@ -1,6 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Feed;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
 
 namespace Wikiled.Instagram.Api.Converters.Json
 {

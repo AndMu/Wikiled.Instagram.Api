@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.TV;
 
 namespace Wikiled.Instagram.Api.Classes.Models.Feed
 {
@@ -24,6 +26,6 @@ namespace Wikiled.Instagram.Api.Classes.Models.Feed
 
         public int ResultsCount { get; set; }
 
-        public List<InstaTVChannel> TVChannels { get; set; } = new List<InstaTVChannel>();
+        public List<InstaTvChannel> TvChannels { get; set; } = new List<InstaTvChannel>();
     }
 }

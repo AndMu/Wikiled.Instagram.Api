@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.Shopping;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Shopping;
 
 namespace Wikiled.Instagram.Api.Converters.Shopping
 {
@@ -14,21 +17,23 @@ namespace Wikiled.Instagram.Api.Converters.Shopping
             }
 
             var productInfo = new InstaProductInfo
-                              {
-                                  Product = ConvertersFabric.Instance.GetProductConverter(SourceObject.Product).Convert(),
-                                  User = ConvertersFabric.Instance.GetUserShortConverter(SourceObject.User).Convert()
-                              };
+            {
+                Product = InstaConvertersFabric.Instance.GetProductConverter(SourceObject.Product).Convert(),
+                User = InstaConvertersFabric.Instance.GetUserShortConverter(SourceObject.User).Convert()
+            };
             if (SourceObject.OtherProductItems != null && SourceObject.OtherProductItems.Any())
             {
                 foreach (var product in SourceObject.OtherProductItems)
                 {
-                    productInfo.OtherProducts.Add(ConvertersFabric.Instance.GetProductConverter(product).Convert());
+                    productInfo.OtherProducts.Add(InstaConvertersFabric.Instance.GetProductConverter(product).Convert());
                 }
             }
 
             if (SourceObject.MoreFromBusiness != null)
             {
-                productInfo.MoreFromBusiness = ConvertersFabric.Instance.GetProductMediaListConverter(SourceObject.MoreFromBusiness).Convert();
+                productInfo.MoreFromBusiness = InstaConvertersFabric.Instance
+                    .GetProductMediaListConverter(SourceObject.MoreFromBusiness)
+                    .Convert();
             }
 
             return productInfo;

@@ -1,4 +1,7 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Stories
 {
@@ -14,11 +17,11 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             }
 
             var voterItem = new InstaStoryVoterItem
-                            {
-                                Vote = SourceObject.Vote ?? 0,
-                                Time = DateTimeHelper.FromUnixTimeSeconds(SourceObject.Ts),
-                                User = ConvertersFabric.Instance.GetUserShortFriendshipConverter(SourceObject.User).Convert()
-                            };
+            {
+                Vote = SourceObject.Vote ?? 0,
+                Time = SourceObject.Ts.FromUnixTimeSeconds(),
+                User = InstaConvertersFabric.Instance.GetUserShortFriendshipConverter(SourceObject.User).Convert()
+            };
 
             return voterItem;
         }

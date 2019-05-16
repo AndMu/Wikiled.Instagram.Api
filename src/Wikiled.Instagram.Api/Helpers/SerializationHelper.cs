@@ -2,11 +2,12 @@
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
+
 #if NET45 || NET451 || NET452 || NET46 || NET461 || NET462 || NET47 || NET471 || NET472 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6 || NETSTANDARD2_0 || NETSTANDARD2_1 || NETSTANDARD2_2 || NETSTANDARD2_3
 #endif
 namespace Wikiled.Instagram.Api.Helpers
 {
-    internal class SerializationHelper
+    internal class InstaSerializationHelper
     {
         public static T DeserializeFromStream<T>(Stream stream)
         {

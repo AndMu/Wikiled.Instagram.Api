@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Wikiled.Instagram.Api.Classes.Models.Feed;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Feed;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
 
 namespace Wikiled.Instagram.Api.Converters.Feeds
 {
@@ -29,8 +33,8 @@ namespace Wikiled.Instagram.Api.Converters.Feeds
                         continue;
                     }
 
-                    var feedItem = ConvertersFabric.Instance.GetSingleMediaConverter(instaUserFeedItemResponse)
-                                                   .Convert();
+                    var feedItem = InstaConvertersFabric.Instance.GetSingleMediaConverter(instaUserFeedItemResponse)
+                        .Convert();
                     medias.Add(feedItem);
                 }
 
@@ -38,23 +42,23 @@ namespace Wikiled.Instagram.Api.Converters.Feeds
             }
 
             var feed = new InstaExploreFeed
-                       {
-                           NextMaxId = SourceObject.NextMaxId,
-                           AutoLoadMoreEnabled = SourceObject.AutoLoadMoreEnabled,
-                           ResultsCount = SourceObject.ResultsCount,
-                           MoreAvailable = SourceObject.MoreAvailable,
-                           MaxId = SourceObject.MaxId,
-                           RankToken = SourceObject.RankToken
-                       };
+            {
+                NextMaxId = SourceObject.NextMaxId,
+                AutoLoadMoreEnabled = SourceObject.AutoLoadMoreEnabled,
+                ResultsCount = SourceObject.ResultsCount,
+                MoreAvailable = SourceObject.MoreAvailable,
+                MaxId = SourceObject.MaxId,
+                RankToken = SourceObject.RankToken
+            };
             if (SourceObject.Items?.StoryTray != null)
             {
-                feed.StoryTray = ConvertersFabric.Instance.GetStoryTrayConverter(SourceObject.Items.StoryTray)
-                                                 .Convert();
+                feed.StoryTray = InstaConvertersFabric.Instance.GetStoryTrayConverter(SourceObject.Items.StoryTray)
+                    .Convert();
             }
 
             if (SourceObject.Items?.Channel != null)
             {
-                feed.Channel = ConvertersFabric.Instance.GetChannelConverter(SourceObject.Items.Channel).Convert();
+                feed.Channel = InstaConvertersFabric.Instance.GetChannelConverter(SourceObject.Items.Channel).Convert();
             }
 
             feed.Medias.AddRange(ConvertMedia(SourceObject.Items?.Medias));

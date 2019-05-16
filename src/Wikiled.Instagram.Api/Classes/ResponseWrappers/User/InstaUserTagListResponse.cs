@@ -5,6 +5,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.User
 {
     public class InstaUserTagListResponse
     {
-        [JsonProperty("in")] public List<InstaUserTagResponse> In { get; set; } = new List<InstaUserTagResponse>();
+        [JsonProperty("in")]
+        public List<InstaUserTagResponse> In { get; set; } = new List<InstaUserTagResponse>();
     }
 }

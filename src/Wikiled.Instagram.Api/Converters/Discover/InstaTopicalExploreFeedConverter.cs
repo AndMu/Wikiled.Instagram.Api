@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using Wikiled.Instagram.Api.Classes.Models.Feed;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Feed;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
 
 namespace Wikiled.Instagram.Api.Converters.Discover
 {
-    internal class InstaTopicalExploreFeedConverter : IObjectConverter<InstaTopicalExploreFeed, InstaTopicalExploreFeedResponse>
+    internal class
+        InstaTopicalExploreFeedConverter : IObjectConverter<InstaTopicalExploreFeed, InstaTopicalExploreFeedResponse>
     {
         public InstaTopicalExploreFeedResponse SourceObject { get; set; }
 
@@ -29,8 +34,8 @@ namespace Wikiled.Instagram.Api.Converters.Discover
                         continue;
                     }
 
-                    var feedItem = ConvertersFabric.Instance.GetSingleMediaConverter(instaUserFeedItemResponse)
-                                                   .Convert();
+                    var feedItem = InstaConvertersFabric.Instance.GetSingleMediaConverter(instaUserFeedItemResponse)
+                        .Convert();
                     medias.Add(feedItem);
                 }
 
@@ -38,22 +43,22 @@ namespace Wikiled.Instagram.Api.Converters.Discover
             }
 
             var feed = new InstaTopicalExploreFeed
-                       {
-                           NextMaxId = SourceObject.NextMaxId,
-                           AutoLoadMoreEnabled = SourceObject.AutoLoadMoreEnabled,
-                           ResultsCount = SourceObject.ResultsCount,
-                           MoreAvailable = SourceObject.MoreAvailable,
-                           MaxId = SourceObject.MaxId,
-                           RankToken = SourceObject.RankToken,
-                           HasShoppingChannelContent = SourceObject.HasShoppingChannelContent ?? false
-                       };
-            if (SourceObject.TVChannels?.Count > 0)
             {
-                foreach (var channel in SourceObject.TVChannels)
+                NextMaxId = SourceObject.NextMaxId,
+                AutoLoadMoreEnabled = SourceObject.AutoLoadMoreEnabled,
+                ResultsCount = SourceObject.ResultsCount,
+                MoreAvailable = SourceObject.MoreAvailable,
+                MaxId = SourceObject.MaxId,
+                RankToken = SourceObject.RankToken,
+                HasShoppingChannelContent = SourceObject.HasShoppingChannelContent ?? false
+            };
+            if (SourceObject.TvChannels?.Count > 0)
+            {
+                foreach (var channel in SourceObject.TvChannels)
                 {
                     try
                     {
-                        feed.TVChannels.Add(ConvertersFabric.Instance.GetTVChannelConverter(channel).Convert());
+                        feed.TvChannels.Add(InstaConvertersFabric.Instance.GetTvChannelConverter(channel).Convert());
                     }
                     catch
                     {
@@ -67,7 +72,7 @@ namespace Wikiled.Instagram.Api.Converters.Discover
                 {
                     try
                     {
-                        feed.Clusters.Add(ConvertersFabric.Instance.GetExploreClusterConverter(cluster).Convert());
+                        feed.Clusters.Add(InstaConvertersFabric.Instance.GetExploreClusterConverter(cluster).Convert());
                     }
                     catch
                     {
@@ -77,7 +82,7 @@ namespace Wikiled.Instagram.Api.Converters.Discover
 
             if (SourceObject.Channel != null)
             {
-                feed.Channel = ConvertersFabric.Instance.GetChannelConverter(SourceObject.Channel).Convert();
+                feed.Channel = InstaConvertersFabric.Instance.GetChannelConverter(SourceObject.Channel).Convert();
             }
 
             feed.Medias.AddRange(ConvertMedia(SourceObject.Medias));

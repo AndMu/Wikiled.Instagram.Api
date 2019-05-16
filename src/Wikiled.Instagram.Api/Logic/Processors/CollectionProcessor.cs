@@ -14,43 +14,43 @@ using Wikiled.Instagram.Api.Converters.Json;
 using Wikiled.Instagram.Api.Helpers;
 using Wikiled.Instagram.Api.Logger;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Collection api functions.
     /// </summary>
-    internal class CollectionProcessor : ICollectionProcessor
+    internal class InstaCollectionProcessor : ICollectionProcessor
     {
-        private readonly AndroidDevice _deviceInfo;
+        private readonly InstaAndroidDevice deviceInfo;
 
-        private readonly HttpHelper _httpHelper;
+        private readonly InstaHttpHelper httpHelper;
 
-        private readonly IHttpRequestProcessor _httpRequestProcessor;
+        private readonly IHttpRequestProcessor httpRequestProcessor;
 
-        private readonly InstaApi _instaApi;
+        private readonly InstaApi instaApi;
 
-        private readonly IInstaLogger _logger;
+        private readonly IInstaLogger logger;
 
-        private readonly UserSessionData _user;
+        private readonly UserSessionData user;
 
-        private readonly UserAuthValidate _userAuthValidate;
+        private readonly InstaUserAuthValidate userAuthValidate;
 
-        public CollectionProcessor(
-            AndroidDevice deviceInfo,
+        public InstaCollectionProcessor(
+            InstaAndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             IInstaLogger logger,
-            UserAuthValidate userAuthValidate,
+            InstaUserAuthValidate userAuthValidate,
             InstaApi instaApi,
-            HttpHelper httpHelper)
+            InstaHttpHelper httpHelper)
         {
-            _deviceInfo = deviceInfo;
-            _user = user;
-            _httpRequestProcessor = httpRequestProcessor;
-            _logger = logger;
-            _userAuthValidate = userAuthValidate;
-            _instaApi = instaApi;
-            _httpHelper = httpHelper;
+            this.deviceInfo = deviceInfo;
+            this.user = user;
+            this.httpRequestProcessor = httpRequestProcessor;
+            this.logger = logger;
+            this.userAuthValidate = userAuthValidate;
+            this.instaApi = instaApi;
+            this.httpHelper = httpHelper;
         }
 
         /// <summary>
@@ -62,48 +62,48 @@ namespace Wikiled.Instagram.Api.API.Processors
             long collectionId,
             params string[] mediaIds)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 if (mediaIds?.Length < 1)
                 {
-                    return Result.Fail<InstaCollectionItem>("Provide at least one media id to add to collection");
+                    return InstaResult.Fail<InstaCollectionItem>("Provide at least one media id to add to collection");
                 }
 
-                var editCollectionUri = UriCreator.GetEditCollectionUri(collectionId);
+                var editCollectionUri = InstaUriCreator.GetEditCollectionUri(collectionId);
 
                 var data = new JObject
-                           {
-                               {"module_name", InstaApiConstants.FEED_SAVED_ADD_TO_COLLECTION_MODULE},
-                               {"added_media_ids", JsonConvert.SerializeObject(mediaIds)},
-                               {"radio_type", "wifi-none"},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk},
-                               {"_csrftoken", _user.CsrfToken}
-                           };
+                {
+                    { "module_name", InstaApiConstants.FeedSavedAddToCollectionModule },
+                    { "added_media_ids", JsonConvert.SerializeObject(mediaIds) },
+                    { "radio_type", "wifi-none" },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk },
+                    { "_csrftoken", user.CsrfToken }
+                };
 
                 var request =
-                    _httpHelper.GetSignedRequest(HttpMethod.Get, editCollectionUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetSignedRequest(HttpMethod.Get, editCollectionUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaCollectionItem>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaCollectionItem>(response, json);
                 }
 
                 var newCollectionResponse = JsonConvert.DeserializeObject<InstaCollectionItemResponse>(json);
-                var converter = ConvertersFabric.Instance.GetCollectionConverter(newCollectionResponse);
-                return Result.Success(converter.Convert());
+                var converter = InstaConvertersFabric.Instance.GetCollectionConverter(newCollectionResponse);
+                return InstaResult.Success(converter.Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaCollectionItem), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaCollectionItem), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaCollectionItem>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaCollectionItem>(exception);
             }
         }
 
@@ -116,41 +116,41 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </returns>
         public async Task<IResult<InstaCollectionItem>> CreateCollectionAsync(string collectionName)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var createCollectionUri = UriCreator.GetCreateCollectionUri();
+                var createCollectionUri = InstaUriCreator.GetCreateCollectionUri();
 
                 var data = new JObject
-                           {
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk},
-                               {"_csrftoken", _user.CsrfToken},
-                               {"name", collectionName},
-                               {"module_name", InstaApiConstants.COLLECTION_CREATE_MODULE}
-                           };
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk },
+                    { "_csrftoken", user.CsrfToken },
+                    { "name", collectionName },
+                    { "module_name", InstaApiConstants.CollectionCreateModule }
+                };
 
                 var request =
-                    _httpHelper.GetSignedRequest(HttpMethod.Get, createCollectionUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetSignedRequest(HttpMethod.Get, createCollectionUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 var newCollectionResponse = JsonConvert.DeserializeObject<InstaCollectionItemResponse>(json);
-                var converter = ConvertersFabric.Instance.GetCollectionConverter(newCollectionResponse);
+                var converter = InstaConvertersFabric.Instance.GetCollectionConverter(newCollectionResponse);
 
                 return response.StatusCode != HttpStatusCode.OK
-                           ? Result.UnExpectedResponse<InstaCollectionItem>(response, json)
-                           : Result.Success(converter.Convert());
+                    ? InstaResult.UnExpectedResponse<InstaCollectionItem>(response, json)
+                    : InstaResult.Success(converter.Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaCollectionItem), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaCollectionItem), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaCollectionItem>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaCollectionItem>(exception);
             }
         }
 
@@ -161,39 +161,39 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <returns>true if succeed</returns>
         public async Task<IResult<bool>> DeleteCollectionAsync(long collectionId)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var createCollectionUri = UriCreator.GetDeleteCollectionUri(collectionId);
+                var createCollectionUri = InstaUriCreator.GetDeleteCollectionUri(collectionId);
 
                 var data = new JObject
-                           {
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk},
-                               {"_csrftoken", _user.CsrfToken},
-                               {"module_name", "collection_editor"}
-                           };
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk },
+                    { "_csrftoken", user.CsrfToken },
+                    { "module_name", "collection_editor" }
+                };
 
                 var request =
-                    _httpHelper.GetSignedRequest(HttpMethod.Get, createCollectionUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetSignedRequest(HttpMethod.Get, createCollectionUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    return Result.Success(true);
+                    return InstaResult.Success(true);
                 }
 
-                return Result.UnExpectedResponse<bool>(response, json);
+                return InstaResult.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception.Message, false);
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception.Message, false);
             }
         }
 
@@ -203,12 +203,15 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="collectionId">Collection ID to edit</param>
         /// <param name="name">New name for giving collection (set null if you don't want to change it)</param>
         /// <param name="photoCoverMediaId">
-        ///     New photo cover media Id (get it from <see cref="InstaMedia.InstaIdentifier" />) => Optional
+        ///     New photo cover media Id (get it from <see cref="InstaMedia.Identifier" />) => Optional
         ///     <para>Important note: media id must be exists in giving collection!</para>
         /// </param>
-        public async Task<IResult<InstaCollectionItem>> EditCollectionAsync(long collectionId, string name, string photoCoverMediaId = null)
+        public async Task<IResult<InstaCollectionItem>> EditCollectionAsync(
+            long collectionId,
+            string name,
+            string photoCoverMediaId = null)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 var collection = await GetSingleCollection(collectionId, PaginationParameters.MaxPagesToLoad(1));
@@ -217,42 +220,42 @@ namespace Wikiled.Instagram.Api.API.Processors
                     name = collection.Value.CollectionName;
                 }
 
-                var editCollectionUri = UriCreator.GetEditCollectionUri(collectionId);
+                var editCollectionUri = InstaUriCreator.GetEditCollectionUri(collectionId);
 
                 var data = new JObject
-                           {
-                               {"name", name ?? string.Empty},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk},
-                               {"_csrftoken", _user.CsrfToken}
-                           };
+                {
+                    { "name", name ?? string.Empty },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk },
+                    { "_csrftoken", user.CsrfToken }
+                };
                 if (!string.IsNullOrEmpty(photoCoverMediaId))
                 {
                     data.Add("cover_media_id", photoCoverMediaId);
                 }
 
                 var request =
-                    _httpHelper.GetSignedRequest(HttpMethod.Get, editCollectionUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetSignedRequest(HttpMethod.Get, editCollectionUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaCollectionItem>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaCollectionItem>(response, json);
                 }
 
                 var newCollectionResponse = JsonConvert.DeserializeObject<InstaCollectionItemResponse>(json);
-                var converter = ConvertersFabric.Instance.GetCollectionConverter(newCollectionResponse);
-                return Result.Success(converter.Convert());
+                var converter = InstaConvertersFabric.Instance.GetCollectionConverter(newCollectionResponse);
+                return InstaResult.Success(converter.Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaCollectionItem), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaCollectionItem), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaCollectionItem>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaCollectionItem>(exception);
             }
         }
 
@@ -265,7 +268,7 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </returns>
         public async Task<IResult<InstaCollections>> GetCollectionsAsync(PaginationParameters paginationParameters)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 if (paginationParameters == null)
@@ -275,29 +278,29 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 InstaCollections Convert(InstaCollectionsResponse instaCollectionsResponse)
                 {
-                    return ConvertersFabric.Instance.GetCollectionsConverter(instaCollectionsResponse).Convert();
+                    return InstaConvertersFabric.Instance.GetCollectionsConverter(instaCollectionsResponse).Convert();
                 }
 
                 var collections = await GetCollections(paginationParameters);
 
                 if (!collections.Succeeded)
                 {
-                    return Result.Fail(collections.Info, default(InstaCollections));
+                    return InstaResult.Fail(collections.Info, default(InstaCollections));
                 }
 
                 var collectionsResponse = collections.Value;
                 paginationParameters.NextMaxId = collectionsResponse.NextMaxId;
                 var pagesLoaded = 1;
 
-                while (collectionsResponse.MoreAvailable
-                       && !string.IsNullOrEmpty(collectionsResponse.NextMaxId)
-                       && pagesLoaded < paginationParameters.MaximumPagesToLoad)
+                while (collectionsResponse.MoreAvailable &&
+                    !string.IsNullOrEmpty(collectionsResponse.NextMaxId) &&
+                    pagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var nextCollection = await GetCollections(paginationParameters);
 
                     if (!nextCollection.Succeeded)
                     {
-                        return Result.Fail(nextCollection.Info, Convert(nextCollection.Value));
+                        return InstaResult.Fail(nextCollection.Info, Convert(nextCollection.Value));
                     }
 
                     collectionsResponse.NextMaxId = paginationParameters.NextMaxId = nextCollection.Value.NextMaxId;
@@ -308,19 +311,19 @@ namespace Wikiled.Instagram.Api.API.Processors
                     pagesLoaded++;
                 }
 
-                var converter = ConvertersFabric.Instance.GetCollectionsConverter(collectionsResponse);
+                var converter = InstaConvertersFabric.Instance.GetCollectionsConverter(collectionsResponse);
 
-                return Result.Success(converter.Convert());
+                return InstaResult.Success(converter.Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaCollections), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaCollections), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaCollections>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaCollections>(exception);
             }
         }
 
@@ -336,7 +339,7 @@ namespace Wikiled.Instagram.Api.API.Processors
             long collectionId,
             PaginationParameters paginationParameters)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 if (paginationParameters == null)
@@ -346,31 +349,32 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 InstaCollectionItem Convert(InstaCollectionItemResponse instaCollectionItemResponse)
                 {
-                    return ConvertersFabric.Instance.GetCollectionConverter(instaCollectionItemResponse).Convert();
+                    return InstaConvertersFabric.Instance.GetCollectionConverter(instaCollectionItemResponse).Convert();
                 }
 
                 var collectionList = await GetSingleCollection(collectionId, paginationParameters);
                 if (!collectionList.Succeeded)
                 {
-                    return Result.Fail(collectionList.Info, default(InstaCollectionItem));
+                    return InstaResult.Fail(collectionList.Info, default(InstaCollectionItem));
                 }
 
                 var collectionsListResponse = collectionList.Value;
                 paginationParameters.NextMaxId = collectionsListResponse.NextMaxId;
                 var pagesLoaded = 1;
 
-                while (collectionsListResponse.MoreAvailable
-                       && !string.IsNullOrEmpty(collectionsListResponse.NextMaxId)
-                       && pagesLoaded < paginationParameters.MaximumPagesToLoad)
+                while (collectionsListResponse.MoreAvailable &&
+                    !string.IsNullOrEmpty(collectionsListResponse.NextMaxId) &&
+                    pagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var nextCollectionList = await GetSingleCollection(collectionId, paginationParameters);
 
                     if (!nextCollectionList.Succeeded)
                     {
-                        return Result.Fail(nextCollectionList.Info, Convert(nextCollectionList.Value));
+                        return InstaResult.Fail(nextCollectionList.Info, Convert(nextCollectionList.Value));
                     }
 
-                    collectionsListResponse.NextMaxId = paginationParameters.NextMaxId = nextCollectionList.Value.NextMaxId;
+                    collectionsListResponse.NextMaxId =
+                        paginationParameters.NextMaxId = nextCollectionList.Value.NextMaxId;
                     collectionsListResponse.MoreAvailable = nextCollectionList.Value.MoreAvailable;
                     collectionsListResponse.AutoLoadMoreEnabled = nextCollectionList.Value.AutoLoadMoreEnabled;
                     collectionsListResponse.Status = nextCollectionList.Value.Status;
@@ -378,18 +382,18 @@ namespace Wikiled.Instagram.Api.API.Processors
                     pagesLoaded++;
                 }
 
-                var converter = ConvertersFabric.Instance.GetCollectionConverter(collectionsListResponse);
-                return Result.Success(converter.Convert());
+                var converter = InstaConvertersFabric.Instance.GetCollectionConverter(collectionsListResponse);
+                return InstaResult.Success(converter.Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaCollectionItem), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaCollectionItem), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaCollectionItem>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaCollectionItem>(exception);
             }
         }
 
@@ -397,28 +401,28 @@ namespace Wikiled.Instagram.Api.API.Processors
         {
             try
             {
-                var collectionUri = UriCreator.GetCollectionsUri(paginationParameters?.NextMaxId);
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, collectionUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var collectionUri = InstaUriCreator.GetCollectionsUri(paginationParameters?.NextMaxId);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, collectionUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaCollectionsResponse>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaCollectionsResponse>(response, json);
                 }
 
                 var collectionsResponse = JsonConvert.DeserializeObject<InstaCollectionsResponse>(json);
-                return Result.Success(collectionsResponse);
+                return InstaResult.Success(collectionsResponse);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaCollectionsResponse), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaCollectionsResponse), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaCollectionsResponse>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaCollectionsResponse>(exception);
             }
         }
 
@@ -426,33 +430,33 @@ namespace Wikiled.Instagram.Api.API.Processors
             long collectionId,
             PaginationParameters paginationParameters)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var collectionUri = UriCreator.GetCollectionUri(collectionId, paginationParameters?.NextMaxId);
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, collectionUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var collectionUri = InstaUriCreator.GetCollectionUri(collectionId, paginationParameters?.NextMaxId);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, collectionUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaCollectionItemResponse>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaCollectionItemResponse>(response, json);
                 }
 
                 var collectionsListResponse =
                     JsonConvert.DeserializeObject<InstaCollectionItemResponse>(
                         json,
                         new InstaCollectionDataConverter());
-                return Result.Success(collectionsListResponse);
+                return InstaResult.Success(collectionsListResponse);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaCollectionItemResponse), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaCollectionItemResponse), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaCollectionItemResponse>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaCollectionItemResponse>(exception);
             }
         }
     }

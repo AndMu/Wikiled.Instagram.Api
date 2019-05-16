@@ -24,141 +24,98 @@ using Wikiled.Instagram.Api.Enums;
 using Wikiled.Instagram.Api.Helpers;
 using Wikiled.Instagram.Api.Logger;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Account api functions.
     ///     <para>Note: this is for self account.</para>
     /// </summary>
-    internal class AccountProcessor : IAccountProcessor
+    internal class InstaAccountProcessor : IAccountProcessor
     {
-        #region NOT COMPLETE FUNCTIONS
+        private readonly InstaAndroidDevice deviceInfo;
 
-        //NOT COMPLETE
-        private async Task<IResult<object>> GetCommentFilterAsync()
-        {
-            UserAuthValidator.Validate(_userAuthValidate);
-            try
-            {
-                var instaUri = new Uri(InstaApiConstants.BASE_INSTAGRAM_API_URL + "accounts/get_comment_filter/");
-                Debug.WriteLine(instaUri.ToString());
+        private readonly InstaHttpHelper httpHelper;
 
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+        private readonly IHttpRequestProcessor httpRequestProcessor;
 
-                var json = await response.Content.ReadAsStringAsync();
-                Debug.WriteLine(response.StatusCode);
-                Debug.WriteLine(json);
+        private readonly InstaApi instaApi;
 
-                //if (response.StatusCode != HttpStatusCode.OK)
-                //    return Result.UnExpectedResponse<object>(response, json);
-                //{"config_value": 0, "status": "ok"}
-                return null;
-            }
-            catch (HttpRequestException httpException)
-            {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(object), ResponseType.NetworkProblem);
-            }
-            catch (Exception exception)
-            {
-                _logger?.LogException(exception);
-                return Result.Fail<object>(exception);
-            }
-        }
+        private readonly IInstaLogger logger;
 
-        #endregion NOT COMPLETE FUNCTIONS
+        private readonly UserSessionData user;
 
-        #region Properties and constructor
+        private readonly InstaUserAuthValidate userAuthValidate;
 
-        private readonly AndroidDevice _deviceInfo;
-
-        private readonly IHttpRequestProcessor _httpRequestProcessor;
-
-        private readonly IInstaLogger _logger;
-
-        private readonly UserSessionData _user;
-
-        private readonly UserAuthValidate _userAuthValidate;
-
-        private readonly InstaApi _instaApi;
-
-        private readonly HttpHelper _httpHelper;
-
-        public AccountProcessor(
-            AndroidDevice deviceInfo,
+        public InstaAccountProcessor(
+            InstaAndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             IInstaLogger logger,
-            UserAuthValidate userAuthValidate,
+            InstaUserAuthValidate userAuthValidate,
             InstaApi instaApi,
-            HttpHelper httpHelper)
+            InstaHttpHelper httpHelper)
         {
-            _deviceInfo = deviceInfo;
-            _user = user;
-            _httpRequestProcessor = httpRequestProcessor;
-            _logger = logger;
-            _userAuthValidate = userAuthValidate;
-            _instaApi = instaApi;
-            _httpHelper = httpHelper;
+            this.deviceInfo = deviceInfo;
+            this.user = user;
+            this.httpRequestProcessor = httpRequestProcessor;
+            this.logger = logger;
+            this.userAuthValidate = userAuthValidate;
+            this.instaApi = instaApi;
+            this.httpHelper = httpHelper;
         }
-
-        #endregion Properties and constructor
-
-        #region Profile edit
 
         /// <summary>
         ///     Set current account private
         /// </summary>
         public async Task<IResult<InstaUserShort>> SetAccountPrivateAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetUriSetAccountPrivate();
+                var instaUri = InstaUriCreator.GetUriSetAccountPrivate();
                 var fields = new Dictionary<string, string>
-                             {
-                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
-                                 {"_csrftoken", _user.CsrfToken}
-                             };
-                var hash = CryptoHelper.CalculateHash(
-                    _httpHelper._apiVersion.SignatureKey,
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_csrftoken", user.CsrfToken }
+                };
+                var hash = InstaCryptoHelper.CalculateHash(
+                    httpHelper.ApiVersion.SignatureKey,
                     JsonConvert.SerializeObject(fields));
                 var payload = JsonConvert.SerializeObject(fields);
                 var signature = $"{hash}.{Uri.EscapeDataString(payload)}";
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, _deviceInfo);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, deviceInfo);
                 request.Content = new FormUrlEncodedContent(fields);
-                request.Properties.Add(InstaApiConstants.HEADER_IG_SIGNATURE, signature);
+                request.Properties.Add(InstaApiConstants.HeaderIgSignature, signature);
                 request.Properties.Add(
-                    InstaApiConstants.HEADER_IG_SIGNATURE_KEY_VERSION,
-                    InstaApiConstants.IG_SIGNATURE_KEY_VERSION);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    InstaApiConstants.HeaderIgSignatureKeyVersion,
+                    InstaApiConstants.IgSignatureKeyVersion);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaUserShort>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaUserShort>(response, json);
                 }
 
                 var userInfoUpdated =
                     JsonConvert.DeserializeObject<InstaUserShortResponse>(json, new InstaUserShortDataConverter());
                 if (userInfoUpdated.Pk < 1)
                 {
-                    return Result.Fail<InstaUserShort>("Pk is null or empty");
+                    return InstaResult.Fail<InstaUserShort>("Pk is null or empty");
                 }
 
-                var converter = ConvertersFabric.Instance.GetUserShortConverter(userInfoUpdated);
-                return Result.Success(converter.Convert());
+                var converter = InstaConvertersFabric.Instance.GetUserShortConverter(userInfoUpdated);
+                return InstaResult.Success(converter.Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaUserShort), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaUserShort), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaUserShort>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaUserShort>(exception);
             }
         }
 
@@ -167,28 +124,28 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         public async Task<IResult<InstaUserShort>> SetAccountPublicAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetUriSetAccountPublic();
+                var instaUri = InstaUriCreator.GetUriSetAccountPublic();
                 var fields = new Dictionary<string, string>
-                             {
-                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
-                                 {"_csrftoken", _user.CsrfToken}
-                             };
-                var hash = CryptoHelper.CalculateHash(
-                    _httpHelper._apiVersion.SignatureKey,
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_csrftoken", user.CsrfToken }
+                };
+                var hash = InstaCryptoHelper.CalculateHash(
+                    httpHelper.ApiVersion.SignatureKey,
                     JsonConvert.SerializeObject(fields));
                 var payload = JsonConvert.SerializeObject(fields);
                 var signature = $"{hash}.{Uri.EscapeDataString(payload)}";
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, _deviceInfo);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, deviceInfo);
                 request.Content = new FormUrlEncodedContent(fields);
-                request.Properties.Add(InstaApiConstants.HEADER_IG_SIGNATURE, signature);
+                request.Properties.Add(InstaApiConstants.HeaderIgSignature, signature);
                 request.Properties.Add(
-                    InstaApiConstants.HEADER_IG_SIGNATURE_KEY_VERSION,
-                    InstaApiConstants.IG_SIGNATURE_KEY_VERSION);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    InstaApiConstants.HeaderIgSignatureKeyVersion,
+                    InstaApiConstants.IgSignatureKeyVersion);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -196,24 +153,24 @@ namespace Wikiled.Instagram.Api.API.Processors
                         JsonConvert.DeserializeObject<InstaUserShortResponse>(json, new InstaUserShortDataConverter());
                     if (userInfoUpdated.Pk < 1)
                     {
-                        return Result.Fail<InstaUserShort>("Pk is incorrect");
+                        return InstaResult.Fail<InstaUserShort>("Pk is incorrect");
                     }
 
-                    var converter = ConvertersFabric.Instance.GetUserShortConverter(userInfoUpdated);
-                    return Result.Success(converter.Convert());
+                    var converter = InstaConvertersFabric.Instance.GetUserShortConverter(userInfoUpdated);
+                    return InstaResult.Success(converter.Convert());
                 }
 
-                return Result.UnExpectedResponse<InstaUserShort>(response, json);
+                return InstaResult.UnExpectedResponse<InstaUserShort>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaUserShort), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaUserShort), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaUserShort>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaUserShort>(exception);
             }
         }
 
@@ -228,47 +185,47 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <returns>Return true if the password is changed</returns>
         public async Task<IResult<bool>> ChangePasswordAsync(string oldPassword, string newPassword)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             if (oldPassword == newPassword)
             {
-                return Result.Fail("The old password should not the same of the new password", false);
+                return InstaResult.Fail("The old password should not the same of the new password", false);
             }
 
             try
             {
-                var changePasswordUri = UriCreator.GetChangePasswordUri();
+                var changePasswordUri = InstaUriCreator.GetChangePasswordUri();
 
                 var data = new JObject
-                           {
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk},
-                               {"_csrftoken", _user.CsrfToken},
-                               {"old_password", oldPassword},
-                               {"new_password1", newPassword},
-                               {"new_password2", newPassword}
-                           };
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk },
+                    { "_csrftoken", user.CsrfToken },
+                    { "old_password", oldPassword },
+                    { "new_password1", newPassword },
+                    { "new_password2", newPassword }
+                };
 
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Get, changePasswordUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var request = httpHelper.GetSignedRequest(HttpMethod.Get, changePasswordUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    return Result.Success(true);
+                    return InstaResult.Success(true);
                 }
 
-                var error = JsonConvert.DeserializeObject<BadStatusErrorsResponse>(json);
+                var error = JsonConvert.DeserializeObject<InstaBadStatusErrorsResponse>(json);
                 var errors = "";
                 error.Message.Errors.ForEach(errorContent => errors += errorContent + "\n");
-                return Result.Fail(errors, false);
+                return InstaResult.Fail(errors, false);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                return Result.Fail(exception, false);
+                return InstaResult.Fail(exception, false);
             }
         }
 
@@ -282,15 +239,21 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="phone">Phone number (leave null if you don't want to change it)</param>
         /// <param name="gender">Gender type (leave null if you don't want to change it)</param>
         /// <param name="newUsername">New username (optional) (leave null if you don't want to change it)</param>
-        public async Task<IResult<InstaUserEdit>> EditProfileAsync(string name, string biography, string url, string email, string phone, InstaGenderType? gender, string newUsername = null)
+        public async Task<IResult<InstaUserEdit>> EditProfileAsync(string name,
+                                                                   string biography,
+                                                                   string url,
+                                                                   string email,
+                                                                   string phone,
+                                                                   InstaGenderType? gender,
+                                                                   string newUsername = null)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 var editRequest = await GetRequestForEditProfileAsync();
                 if (!editRequest.Succeeded)
                 {
-                    return Result.Fail("Edit request returns badrequest", (InstaUserEdit)null);
+                    return InstaResult.Fail("Edit request returns badrequest", (InstaUserEdit)null);
                 }
 
                 var user = editRequest.Value.Username;
@@ -330,43 +293,43 @@ namespace Wikiled.Instagram.Api.API.Processors
                     gender = editRequest.Value.Gender;
                 }
 
-                var instaUri = UriCreator.GetEditProfileUri();
+                var instaUri = InstaUriCreator.GetEditProfileUri();
 
                 var data = new JObject
-                           {
-                               {"external_url", url},
-                               {"gender", ((int)gender).ToString()},
-                               {"phone_number", phone},
-                               {"_csrftoken", _user.CsrfToken},
-                               {"username", newUsername},
-                               {"first_name", name},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"biography", biography},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"email", email}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
+                {
+                    { "external_url", url },
+                    { "gender", ((int)gender).ToString() },
+                    { "phone_number", phone },
+                    { "_csrftoken", this.user.CsrfToken },
+                    { "username", newUsername },
+                    { "first_name", name },
+                    { "_uid", this.user.LoggedInUser.Pk.ToString() },
+                    { "biography", biography },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "email", email }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
                 request.Headers.Add("Host", "i.instagram.com");
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaUserEdit>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaUserEdit>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaUserEditContainer>(json);
 
-                return Result.Success(obj.User);
+                return InstaResult.Success(obj.User);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaUserEdit), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaUserEdit), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaUserEdit>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaUserEdit>(exception);
             }
         }
 
@@ -376,44 +339,44 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="bio">Biography text, hashtags or user mentions</param>
         public async Task<IResult<InstaBiography>> SetBiographyAsync(string bio)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 var editRequest = await GetRequestForEditProfileAsync();
                 if (!editRequest.Succeeded)
                 {
-                    return Result.Fail("Edit request returns badrequest.\r\nPlease try again.", (InstaBiography)null);
+                    return InstaResult.Fail("Edit request returns badrequest.\r\nPlease try again.", (InstaBiography)null);
                 }
 
-                var instaUri = UriCreator.GetSetBiographyUri();
+                var instaUri = InstaUriCreator.GetSetBiographyUri();
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"raw_text", bio}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "raw_text", bio }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaBiography>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaBiography>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaBiography>(json);
-                return Result.Success(obj);
+                return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaBiography), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaBiography), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 Debug.WriteLine(exception.Message);
-                _logger?.LogException(exception);
-                return Result.Fail<InstaBiography>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaBiography>(exception);
             }
         }
 
@@ -422,30 +385,30 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         public async Task<IResult<InstaUserEdit>> GetRequestForEditProfileAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetRequestForEditProfileUri();
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var instaUri = InstaUriCreator.GetRequestForEditProfileUri();
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaUserEdit>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaUserEdit>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaUserEditContainer>(json);
-                return Result.Success(obj.User);
+                return InstaResult.Success(obj.User);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaUserEdit), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaUserEdit), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaUserEdit>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaUserEdit>(exception);
             }
         }
 
@@ -456,44 +419,44 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="phoneNumber">Phone number</param>
         public async Task<IResult<bool>> SetNameAndPhoneNumberAsync(string name, string phoneNumber = "")
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetProfileSetPhoneAndNameUri();
+                var instaUri = InstaUriCreator.GetProfileSetPhoneAndNameUri();
                 var data = new JObject
-                           {
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"_csrftoken", _user.CsrfToken},
-                               {"first_name", name},
-                               {"phone_number", phoneNumber}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_csrftoken", user.CsrfToken },
+                    { "first_name", name },
+                    { "phone_number", phoneNumber }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<bool>(response, json);
+                    return InstaResult.UnExpectedResponse<bool>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaDefaultResponse>(json);
                 if (obj.Status.ToLower() == "ok")
                 {
-                    return Result.Success(true);
+                    return InstaResult.Success(true);
                 }
 
-                return Result.Success(false);
+                return InstaResult.Success(false);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 Debug.WriteLine(exception.Message);
-                _logger?.LogException(exception);
-                return Result.Fail<bool>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<bool>(exception);
             }
         }
 
@@ -502,39 +465,39 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         public async Task<IResult<InstaUserEdit>> RemoveProfilePictureAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetRemoveProfilePictureUri();
+                var instaUri = InstaUriCreator.GetRemoveProfilePictureUri();
                 var data = new JObject
-                           {
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"_csrftoken", _user.CsrfToken}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_csrftoken", user.CsrfToken }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
                 request.Headers.Add("Host", "i.instagram.com");
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaUserEdit>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaUserEdit>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaUserEditContainer>(json);
 
-                return Result.Success(obj.User);
+                return InstaResult.Success(obj.User);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaUserEdit), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaUserEdit), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 Debug.WriteLine(exception.Message);
-                _logger?.LogException(exception);
-                return Result.Fail<InstaUserEdit>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaUserEdit>(exception);
             }
         }
 
@@ -552,38 +515,39 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         /// <param name="progress">Progress action</param>
         /// <param name="pictureBytes">Picture(JPG,JPEG) bytes</param>
-        public async Task<IResult<InstaUserEdit>> ChangeProfilePictureAsync(Action<InstaUploaderProgress> progress, byte[] pictureBytes)
+        public async Task<IResult<InstaUserEdit>> ChangeProfilePictureAsync(
+            Action<InstaUploaderProgress> progress,
+            byte[] pictureBytes)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             var upProgress = new InstaUploaderProgress
-                             {
-                                 Caption = string.Empty,
-                                 UploadState = InstaUploadState.Preparing
-                             };
+            {
+                Caption = string.Empty, UploadState = InstaUploadState.Preparing
+            };
             try
             {
-                var instaUri = UriCreator.GetChangeProfilePictureUri();
-                var uploadId = ApiRequestMessage.GenerateUploadId();
+                var instaUri = InstaUriCreator.GetChangeProfilePictureUri();
+                var uploadId = InstaApiRequestMessage.GenerateUploadId();
                 upProgress.UploadId = uploadId;
                 progress?.Invoke(upProgress);
                 var requestContent = new MultipartFormDataContent(uploadId)
-                                     {
-                                         {new StringContent(_deviceInfo.DeviceGuid.ToString()), "\"_uuid\""},
-                                         {new StringContent(_user.LoggedInUser.Pk.ToString()), "\"_uid\""},
-                                         {new StringContent(_user.CsrfToken), "\"_csrftoken\""}
-                                     };
+                {
+                    { new StringContent(deviceInfo.DeviceGuid.ToString()), "\"_uuid\"" },
+                    { new StringContent(user.LoggedInUser.Pk.ToString()), "\"_uid\"" },
+                    { new StringContent(user.CsrfToken), "\"_csrftoken\"" }
+                };
                 var imageContent = new ByteArrayContent(pictureBytes);
-                requestContent.Add(imageContent, "profile_pic", $"r{ApiRequestMessage.GenerateUploadId()}.jpg");
+                requestContent.Add(imageContent, "profile_pic", $"r{InstaApiRequestMessage.GenerateUploadId()}.jpg");
 
                 //var progressContent = new ProgressableStreamContent(requestContent, 4096, progress)
                 //{
                 //    UploaderProgress = upProgress
                 //};
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, _deviceInfo);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, deviceInfo);
                 request.Content = requestContent;
                 upProgress.UploadState = InstaUploadState.Uploading;
                 progress?.Invoke(upProgress);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 //if (progressContent.UploaderProgress != null)
@@ -592,7 +556,7 @@ namespace Wikiled.Instagram.Api.API.Processors
                 {
                     upProgress.UploadState = InstaUploadState.Error;
                     progress?.Invoke(upProgress);
-                    return Result.UnExpectedResponse<InstaUserEdit>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaUserEdit>(response, json);
                 }
 
                 upProgress.UploadState = InstaUploadState.Uploaded;
@@ -601,19 +565,19 @@ namespace Wikiled.Instagram.Api.API.Processors
                 var obj = JsonConvert.DeserializeObject<InstaUserEditContainer>(json);
                 upProgress.UploadState = InstaUploadState.Completed;
                 progress?.Invoke(upProgress);
-                return Result.Success(obj.User);
+                return InstaResult.Success(obj.User);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaUserEdit), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaUserEdit), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 upProgress.UploadState = InstaUploadState.Error;
                 progress?.Invoke(upProgress);
-                _logger?.LogException(exception);
-                return Result.Fail<InstaUserEdit>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaUserEdit>(exception);
             }
         }
 
@@ -631,41 +595,43 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         /// <param name="email">Email</param>
         /// <param name="password">Password (only for facebook logins)</param>
-        public async Task<IResult<InstaRequestDownloadData>> GetRequestForDownloadAccountDataAsync(string email, string password)
+        public async Task<IResult<InstaRequestDownloadData>> GetRequestForDownloadAccountDataAsync(
+            string email,
+            string password)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 if (string.IsNullOrEmpty(password))
                 {
-                    password = _user.Password;
+                    password = user.Password;
                 }
 
-                var instaUri = UriCreator.GetRequestForDownloadDataUri();
+                var instaUri = InstaUriCreator.GetRequestForDownloadDataUri();
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"email", email},
-                               {"password", password}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "email", email },
+                    { "password", password }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 var obj = JsonConvert.DeserializeObject<InstaRequestDownloadData>(json);
-                return Result.Success(obj);
+                return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaRequestDownloadData), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaRequestDownloadData), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 Debug.WriteLine(exception.Message);
-                _logger?.LogException(exception);
-                return Result.Fail<InstaRequestDownloadData>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaRequestDownloadData>(exception);
             }
         }
 
@@ -675,13 +641,13 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="nametagImage">Nametag image</param>
         public async Task<IResult<InstaMedia>> UploadNametagAsync(InstaImage nametagImage)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
-            return await _instaApi.HelperProcessor.SendMediaPhotoAsync(null, nametagImage.ConvertToImageUpload(), null, null, true);
+            InstaUserAuthValidator.Validate(userAuthValidate);
+            return await instaApi.HelperProcessor.SendMediaPhotoAsync(null,
+                                                                       nametagImage.ConvertToImageUpload(),
+                                                                       null,
+                                                                       null,
+                                                                       true);
         }
-
-        #endregion Profile edit
-
-        #region Story settings
 
         // Story settings
         /// <summary>
@@ -689,30 +655,30 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         public async Task<IResult<InstaStorySettings>> GetStorySettingsAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetStorySettingsUri();
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var instaUri = InstaUriCreator.GetStorySettingsUri();
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaStorySettings>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaStorySettings>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaStorySettings>(json);
-                return Result.Success(obj);
+                return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaStorySettings), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaStorySettings), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaStorySettings>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaStorySettings>(exception);
             }
         }
 
@@ -721,42 +687,42 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         public async Task<IResult<bool>> EnableSaveStoryToGalleryAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetSetReelSettingsUri();
+                var instaUri = InstaUriCreator.GetSetReelSettingsUri();
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"save_to_camera_roll", 1.ToString()}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "save_to_camera_roll", 1.ToString() }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<bool>(response, json);
+                    return InstaResult.UnExpectedResponse<bool>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaDefault>(json);
                 if (obj.Status.ToLower() == "ok")
                 {
-                    return Result.Success(true);
+                    return InstaResult.Success(true);
                 }
 
-                return Result.Success(false);
+                return InstaResult.Success(false);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<bool>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<bool>(exception);
             }
         }
 
@@ -765,42 +731,42 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         public async Task<IResult<bool>> DisableSaveStoryToGalleryAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetSetReelSettingsUri();
+                var instaUri = InstaUriCreator.GetSetReelSettingsUri();
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"save_to_camera_roll", 0.ToString()}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "save_to_camera_roll", 0.ToString() }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<bool>(response, json);
+                    return InstaResult.UnExpectedResponse<bool>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaDefault>(json);
                 if (obj.Status.ToLower() == "ok")
                 {
-                    return Result.Success(true);
+                    return InstaResult.Success(true);
                 }
 
-                return Result.Success(false);
+                return InstaResult.Success(false);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<bool>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<bool>(exception);
             }
         }
 
@@ -809,43 +775,43 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         public async Task<IResult<bool>> EnableSaveStoryToArchiveAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetSetReelSettingsUri();
+                var instaUri = InstaUriCreator.GetSetReelSettingsUri();
 
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"reel_auto_archive", "on"}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "reel_auto_archive", "on" }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<bool>(response, json);
+                    return InstaResult.UnExpectedResponse<bool>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaAccountArchiveStory>(json);
                 if (obj.ReelAutoArchive.ToLower() == "on")
                 {
-                    return Result.Success(true);
+                    return InstaResult.Success(true);
                 }
 
-                return Result.Success(false);
+                return InstaResult.Success(false);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<bool>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<bool>(exception);
             }
         }
 
@@ -854,43 +820,43 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         public async Task<IResult<bool>> DisableSaveStoryToArchiveAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetSetReelSettingsUri();
+                var instaUri = InstaUriCreator.GetSetReelSettingsUri();
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"check_pending_archive", "1"},
-                               {"reel_auto_archive", "off"}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "check_pending_archive", "1" },
+                    { "reel_auto_archive", "off" }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<bool>(response, json);
+                    return InstaResult.UnExpectedResponse<bool>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaAccountArchiveStory>(json);
                 if (obj.ReelAutoArchive.ToLower() == "off")
                 {
-                    return Result.Success(true);
+                    return InstaResult.Success(true);
                 }
 
-                return Result.Success(false);
+                return InstaResult.Success(false);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<bool>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<bool>(exception);
             }
         }
 
@@ -900,16 +866,16 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="allow">Allow or disallow story sharing</param>
         public async Task<IResult<bool>> AllowStorySharingAsync(bool allow = true)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetSetReelSettingsUri();
+                var instaUri = InstaUriCreator.GetSetReelSettingsUri();
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()}
-                           };
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() }
+                };
                 if (allow)
                 {
                     data.Add("allow_story_reshare", "1");
@@ -919,31 +885,31 @@ namespace Wikiled.Instagram.Api.API.Processors
                     data.Add("allow_story_reshare", "0");
                 }
 
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<bool>(response, json);
+                    return InstaResult.UnExpectedResponse<bool>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaAccountArchiveStory>(json);
                 if (obj.Status.ToLower() == "off")
                 {
-                    return Result.Success(true);
+                    return InstaResult.Success(true);
                 }
 
-                return Result.Success(false);
+                return InstaResult.Success(false);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<bool>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<bool>(exception);
             }
         }
 
@@ -953,53 +919,53 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="repliesType">Reply typo</param>
         public async Task<IResult<bool>> AllowStoryMessageRepliesAsync(InstaMessageRepliesType repliesType)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetSetReelSettingsUri();
+                var instaUri = InstaUriCreator.GetSetReelSettingsUri();
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"message_prefs", repliesType.ToString().ToLower()}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "message_prefs", repliesType.ToString().ToLower() }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<bool>(response, json);
+                    return InstaResult.UnExpectedResponse<bool>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaAccountArchiveStory>(json);
                 if (obj.MessagePrefs.ToLower() == "anyone" && repliesType == InstaMessageRepliesType.Everyone)
                 {
-                    return Result.Success(true);
+                    return InstaResult.Success(true);
                 }
 
                 if (obj.MessagePrefs.ToLower() == "following" && repliesType == InstaMessageRepliesType.Following)
                 {
-                    return Result.Success(true);
+                    return InstaResult.Success(true);
                 }
 
                 if (obj.MessagePrefs.ToLower() == "off" && repliesType == InstaMessageRepliesType.Off)
                 {
-                    return Result.Success(true);
+                    return InstaResult.Success(true);
                 }
 
-                return Result.Success(false);
+                return InstaResult.Success(false);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<bool>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<bool>(exception);
             }
         }
 
@@ -1011,76 +977,72 @@ namespace Wikiled.Instagram.Api.API.Processors
         {
             try
             {
-                var instaUri = UriCreator.GetCheckUsernameUri();
+                var instaUri = InstaUriCreator.GetCheckUsernameUri();
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"username", desiredUsername}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "username", desiredUsername }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaAccountCheck>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaAccountCheck>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaAccountCheck>(json);
-                return Result.Success(obj);
+                return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaAccountCheck), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaAccountCheck), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaAccountCheck>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaAccountCheck>(exception);
             }
         }
-
-        #endregion Story settings
-
-        #region two factor authentication enable/disable
 
         /// <summary>
         ///     Get Security settings (two factor authentication and backup codes).
         /// </summary>
         public async Task<IResult<InstaAccountSecuritySettings>> GetSecuritySettingsInfoAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetAccountSecurityInfoUri();
+                var instaUri = InstaUriCreator.GetAccountSecurityInfoUri();
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaAccountSecuritySettings>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaAccountSecuritySettings>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaAccountSecuritySettings>(json);
-                return Result.Success(obj);
+                return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaAccountSecuritySettings), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaAccountSecuritySettings), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaAccountSecuritySettings>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaAccountSecuritySettings>(exception);
             }
         }
 
@@ -1089,41 +1051,41 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         public async Task<IResult<bool>> DisableTwoFactorAuthenticationAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetDisableSmsTwoFactorUri();
+                var instaUri = InstaUriCreator.GetDisableSmsTwoFactorUri();
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<bool>(response, json);
+                    return InstaResult.UnExpectedResponse<bool>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaDefault>(json);
                 if (obj.Status.ToLower() == "ok")
                 {
-                    return Result.Success(true);
+                    return InstaResult.Success(true);
                 }
 
-                return Result.Success(false);
+                return InstaResult.Success(false);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<bool>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<bool>(exception);
             }
         }
 
@@ -1133,38 +1095,38 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="phoneNumber">Phone number</param>
         public async Task<IResult<InstaAccountTwoFactorSms>> SendTwoFactorEnableSmsAsync(string phoneNumber)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetSendTwoFactorEnableSmsUri();
+                var instaUri = InstaUriCreator.GetSendTwoFactorEnableSmsUri();
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"device_id", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"phone_number", phoneNumber}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "device_id", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "phone_number", phoneNumber }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaAccountTwoFactorSms>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaAccountTwoFactorSms>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaAccountTwoFactorSms>(json);
-                return Result.Success(obj);
+                return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaAccountTwoFactorSms), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaAccountTwoFactorSms), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaAccountTwoFactorSms>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaAccountTwoFactorSms>(exception);
             }
         }
 
@@ -1173,41 +1135,43 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         /// <param name="phoneNumber">Phone number</param>
         /// <param name="verificationCode">Verification code</param>
-        public async Task<IResult<InstaAccountTwoFactor>> TwoFactorEnableAsync(string phoneNumber, string verificationCode)
+        public async Task<IResult<InstaAccountTwoFactor>> TwoFactorEnableAsync(
+            string phoneNumber,
+            string verificationCode)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetEnableSmsTwoFactorUri();
+                var instaUri = InstaUriCreator.GetEnableSmsTwoFactorUri();
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"device_id", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"phone_number", phoneNumber},
-                               {"verification_code", verificationCode}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "device_id", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "phone_number", phoneNumber },
+                    { "verification_code", verificationCode }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaAccountTwoFactor>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaAccountTwoFactor>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaAccountTwoFactor>(json);
-                return Result.Success(obj);
+                return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaAccountTwoFactor), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaAccountTwoFactor), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaAccountTwoFactor>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaAccountTwoFactor>(exception);
             }
         }
 
@@ -1216,37 +1180,37 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         public async Task<IResult<InstaAccountConfirmEmail>> SendConfirmEmailAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetAccountSendConfirmEmailUri();
+                var instaUri = InstaUriCreator.GetAccountSendConfirmEmailUri();
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"send_source", "edit_profile"}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "send_source", "edit_profile" }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaAccountConfirmEmail>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaAccountConfirmEmail>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaAccountConfirmEmail>(json);
-                return Result.Success(obj);
+                return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaAccountConfirmEmail), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaAccountConfirmEmail), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaAccountConfirmEmail>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaAccountConfirmEmail>(exception);
             }
         }
 
@@ -1256,38 +1220,38 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="phoneNumber">Phone number</param>
         public async Task<IResult<InstaAccountSendSms>> SendSmsCodeAsync(string phoneNumber)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetAccountSendSmsCodeUri();
+                var instaUri = InstaUriCreator.GetAccountSendSmsCodeUri();
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"device_id", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"phone_number", phoneNumber}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "device_id", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "phone_number", phoneNumber }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaAccountSendSms>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaAccountSendSms>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaAccountSendSms>(json);
-                return Result.Success(obj);
+                return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaAccountSendSms), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaAccountSendSms), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaAccountSendSms>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaAccountSendSms>(exception);
             }
         }
 
@@ -1297,7 +1261,7 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="verificationUri">Verification url</param>
         public async Task<IResult<bool>> VerifyEmailByVerificationUriAsync(Uri verificationUri)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 if (verificationUri == null)
@@ -1305,35 +1269,35 @@ namespace Wikiled.Instagram.Api.API.Processors
                     throw new ArgumentNullException("Verification uri cannot be null");
                 }
 
-                var instaUri = UriCreator.GetVerifyEmailUri(verificationUri);
+                var instaUri = InstaUriCreator.GetVerifyEmailUri(verificationUri);
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 var obj = JsonConvert.DeserializeObject<InstaAccountConfirmEmail>(json);
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<bool>(response, obj.Body, null);
+                    return InstaResult.UnExpectedResponse<bool>(response, obj.Body, null);
                 }
 
-                return obj.Title.ToLower() == "thanks" ? Result.Success(true) : Result.Fail(obj.Body, false);
+                return obj.Title.ToLower() == "thanks" ? InstaResult.Success(true) : InstaResult.Fail(obj.Body, false);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<bool>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<bool>(exception);
             }
         }
 
@@ -1342,87 +1306,87 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         /// <param name="phoneNumber">Phone number (ex: +9891234...)</param>
         /// <param name="verificationCode">Verification code</param>
-        public async Task<IResult<InstaAccountVerifySms>> VerifySmsCodeAsync(string phoneNumber, string verificationCode)
+        public async Task<IResult<InstaAccountVerifySms>> VerifySmsCodeAsync(
+            string phoneNumber,
+            string verificationCode)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetAccountVerifySmsCodeUri();
+                var instaUri = InstaUriCreator.GetAccountVerifySmsCodeUri();
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"device_id", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"phone_number", phoneNumber},
-                               {"verification_code", verificationCode}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "device_id", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "phone_number", phoneNumber },
+                    { "verification_code", verificationCode }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaAccountVerifySms>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaAccountVerifySms>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaAccountVerifySms>(json);
-                return Result.Success(obj);
+                return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaAccountVerifySms), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaAccountVerifySms), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaAccountVerifySms>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaAccountVerifySms>(exception);
             }
         }
 
         /// <summary>
         ///     Regenerate two factor backup codes
         /// </summary>
-        public async Task<IResult<TwoFactorRegenBackupCodes>> RegenerateTwoFactorBackupCodesAsync()
+        public async Task<IResult<InstaTwoFactorRegenBackupCodes>> RegenerateTwoFactorBackupCodesAsync()
         {
             try
             {
-                var instaUri = UriCreator.GetRegenerateTwoFactorBackUpCodeUri();
+                var instaUri = InstaUriCreator.GetRegenerateTwoFactorBackUpCodeUri();
                 var data = new JObject
-                           {
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"_csrftoken", _user.CsrfToken}
-                           };
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_csrftoken", user.CsrfToken }
+                };
 
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<TwoFactorRegenBackupCodes>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaTwoFactorRegenBackupCodes>(response, json);
                 }
 
-                var obj = JsonConvert.DeserializeObject<TwoFactorRegenBackupCodes>(json);
-                return obj.Status.ToLower() == "ok" ? Result.Success(obj) : Result.UnExpectedResponse<TwoFactorRegenBackupCodes>(response, json);
+                var obj = JsonConvert.DeserializeObject<InstaTwoFactorRegenBackupCodes>(json);
+                return obj.Status.ToLower() == "ok"
+                    ? InstaResult.Success(obj)
+                    : InstaResult.UnExpectedResponse<InstaTwoFactorRegenBackupCodes>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(TwoFactorRegenBackupCodes), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaTwoFactorRegenBackupCodes), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 Debug.WriteLine(exception.Message);
-                _logger?.LogException(exception);
-                return Result.Fail<TwoFactorRegenBackupCodes>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaTwoFactorRegenBackupCodes>(exception);
             }
         }
-
-        #endregion two factor authentication enable/disable
-
-        #region Other functions
 
         /// <summary>
         ///     Enable presence (people can track your activities and you can see their activies too)
@@ -1445,32 +1409,32 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         public async Task<IResult<InstaPresence>> GetPresenceOptionsAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetPresenceUri(_httpHelper._apiVersion.SignatureKey);
+                var instaUri = InstaUriCreator.GetPresenceUri(httpHelper.ApiVersion.SignatureKey);
 
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaPresence>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaPresence>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaPresenceResponse>(json);
 
-                return Result.Success(ConvertersFabric.Instance.GetPresenceConverter(obj).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetPresenceConverter(obj).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaPresence), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaPresence), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaPresence>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaPresence>(exception);
             }
         }
 
@@ -1479,37 +1443,37 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         public async Task<IResult<InstaUser>> SwitchToPersonalAccountAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetConvertToPersonalAccountUri();
+                var instaUri = InstaUriCreator.GetConvertToPersonalAccountUri();
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaUser>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaUser>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaUserContainerResponse>(json);
-                return Result.Success(ConvertersFabric.Instance.GetUserConverter(obj.User).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetUserConverter(obj.User).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaUser), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaUser), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 Debug.WriteLine(exception.Message);
-                _logger?.LogException(exception);
-                return Result.Fail<InstaUser>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaUser>(exception);
             }
         }
 
@@ -1518,31 +1482,64 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         public async Task<IResult<InstaBusinessUser>> SwitchToBusinessAccountAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetConvertToBusinessAccountUri();
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var instaUri = InstaUriCreator.GetConvertToBusinessAccountUri();
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaBusinessUser>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaBusinessUser>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaBusinessUserContainerResponse>(json);
-                return Result.Success(ConvertersFabric.Instance.GetBusinessUserConverter(obj).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetBusinessUserConverter(obj).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaBusinessUser), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaBusinessUser), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 Debug.WriteLine(exception.Message);
-                _logger?.LogException(exception);
-                return Result.Fail<InstaBusinessUser>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaBusinessUser>(exception);
+            }
+        }
+
+        //NOT COMPLETE
+        private async Task<IResult<object>> GetCommentFilterAsync()
+        {
+            InstaUserAuthValidator.Validate(userAuthValidate);
+            try
+            {
+                var instaUri = new Uri(InstaApiConstants.BaseInstagramApiUrl + "accounts/get_comment_filter/");
+                Debug.WriteLine(instaUri.ToString());
+
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
+
+                var json = await response.Content.ReadAsStringAsync();
+                Debug.WriteLine(response.StatusCode);
+                Debug.WriteLine(json);
+
+                //if (response.StatusCode != HttpStatusCode.OK)
+                //    return Result.UnExpectedResponse<object>(response, json);
+                //{"config_value": 0, "status": "ok"}
+                return null;
+            }
+            catch (HttpRequestException httpException)
+            {
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(object), InstaResponseType.NetworkProblem);
+            }
+            catch (Exception exception)
+            {
+                logger?.LogException(exception);
+                return InstaResult.Fail<object>(exception);
             }
         }
 
@@ -1552,19 +1549,21 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="categoryId">Category id (Use <see cref="IBusinessProcessor.GetCategoriesAsync" /> to get category id)</param>
         /// <param name="phoneNumber">Phone number</param>
         /// <param name="email">Email address</param>
-        public async Task<IResult<InstaBusinessUser>> SetBusinessInfoAsync(string categoryId, string phoneNumber, string email)
+        public async Task<IResult<InstaBusinessUser>> SetBusinessInfoAsync(
+            string categoryId,
+            string phoneNumber,
+            string email)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 //[NOT WORKING]
-                var instaUri = UriCreator.GetCreateBusinessInfoUri();
+                var instaUri = InstaUriCreator.GetCreateBusinessInfoUri();
 
                 var publicPhoneContact = new JObject
-                                         {
-                                             {"public_phone_number", phoneNumber},
-                                             {"business_contact_method", "CALL"}
-                                         };
+                {
+                    { "public_phone_number", phoneNumber }, { "business_contact_method", "CALL" }
+                };
                 var edit = await GetRequestForEditProfileAsync();
 
                 //{
@@ -1580,79 +1579,79 @@ namespace Wikiled.Instagram.Api.API.Processors
                 var pub = edit.Value.IsPrivate;
 
                 var data = new JObject
-                           {
-                               {"set_public", pub.ToString().ToLower()},
-                               {"entry_point", "setting"},
-                               {"_csrftoken", _user.CsrfToken},
-                               {"public_phone_contact", publicPhoneContact.ToString(Formatting.None)},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"public_email", email ?? string.Empty},
-                               {"category_id", categoryId}
-                           };
+                {
+                    { "set_public", pub.ToString().ToLower() },
+                    { "entry_point", "setting" },
+                    { "_csrftoken", user.CsrfToken },
+                    { "public_phone_contact", publicPhoneContact.ToString(Formatting.None) },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "public_email", email ?? string.Empty },
+                    { "category_id", categoryId }
+                };
                 var request =
-                    _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaBusinessUser>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaBusinessUser>(response, json);
                 }
 
                 //{"message": "Business details are malformed", "error_identifier": "BUSINESS_ID", "status": "fail"}
                 //{"message": "Can not convert to business, Try again later", "error_identifier": "CANNOT_CONVERT", "status": "fail"}
                 var obj = JsonConvert.DeserializeObject<InstaBusinessUserContainerResponse>(json);
 
-                return Result.Success(ConvertersFabric.Instance.GetBusinessUserConverter(obj).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetBusinessUserConverter(obj).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaBusinessUser), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaBusinessUser), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaBusinessUser>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaBusinessUser>(exception);
             }
         }
 
         private async Task<IResult<bool>> EnableDisablePresenceAsync(bool enable)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetAccountSetPresenseDisabledUri();
+                var instaUri = InstaUriCreator.GetAccountSetPresenseDisabledUri();
                 var data = new JObject
-                           {
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"disabled", enable ? "0" : "1"},
-                               {"_csrftoken", _user.CsrfToken}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "disabled", enable ? "0" : "1" },
+                    { "_csrftoken", user.CsrfToken }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<bool>(response, json);
+                    return InstaResult.UnExpectedResponse<bool>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaDefault>(json);
-                return obj.Status.ToLower() == "ok" ? Result.Success(true) : Result.UnExpectedResponse<bool>(response, json);
+                return obj.Status.ToLower() == "ok"
+                    ? InstaResult.Success(true)
+                    : InstaResult.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<bool>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<bool>(exception);
             }
         }
-
-        #endregion Other functions
     }
 }

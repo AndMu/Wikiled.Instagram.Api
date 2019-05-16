@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Enums;
 
 namespace Wikiled.Instagram.Api.Classes.Models.Media
 {
@@ -10,7 +12,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Media
 
         public List<InstaImage> Images { get; set; } = new List<InstaImage>();
 
-        public string InstaIdentifier { get; set; }
+        public string Identifier { get; set; }
 
         public InstaMediaType MediaType { get; set; }
 

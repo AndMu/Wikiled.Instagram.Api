@@ -2,9 +2,10 @@
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.BaseResponse
 {
-    public class BaseStatusResponse
+    public class InstaBaseStatusResponse
     {
-        [JsonProperty("status")] public string Status { get; set; }
+        [JsonProperty("status")]
+        public string Status { get; set; }
 
         public bool IsFail()
         {

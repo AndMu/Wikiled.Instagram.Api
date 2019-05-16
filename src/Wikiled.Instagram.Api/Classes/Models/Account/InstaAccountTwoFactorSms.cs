@@ -10,6 +10,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Account
         [JsonProperty("phone_verification_settings")]
         public InstaAccountPhoneVerificationSettings PhoneVerificationSettings { get; set; }
 
-        [JsonProperty("status")] internal string Status { get; set; }
+        [JsonProperty("status")]
+        internal string Status { get; set; }
     }
 }

@@ -1,8 +1,12 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Broadcast;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Broadcast;
 
 namespace Wikiled.Instagram.Api.Converters.Broadcast
 {
-    internal class InstaBroadcastNotifyFriendsConverter : IObjectConverter<InstaBroadcastNotifyFriends, InstaBroadcastNotifyFriendsResponse>
+    internal class
+        InstaBroadcastNotifyFriendsConverter : IObjectConverter<InstaBroadcastNotifyFriends,
+            InstaBroadcastNotifyFriendsResponse>
     {
         public InstaBroadcastNotifyFriendsResponse SourceObject { get; set; }
 
@@ -14,10 +18,9 @@ namespace Wikiled.Instagram.Api.Converters.Broadcast
             }
 
             var broadcastNotifyFriends = new InstaBroadcastNotifyFriends
-                                         {
-                                             OnlineFriendsCount = SourceObject.OnlineFriendsCount ?? 0,
-                                             Text = SourceObject.Text
-                                         };
+            {
+                OnlineFriendsCount = SourceObject.OnlineFriendsCount ?? 0, Text = SourceObject.Text
+            };
 
             try
             {
@@ -26,8 +29,9 @@ namespace Wikiled.Instagram.Api.Converters.Broadcast
                     foreach (var friend in SourceObject.Friends)
                     {
                         broadcastNotifyFriends.Friends.Add(
-                            ConvertersFabric.Instance
-                                            .GetUserShortFriendshipFullConverter(friend).Convert());
+                            InstaConvertersFabric.Instance
+                                .GetUserShortFriendshipFullConverter(friend)
+                                .Convert());
                     }
                 }
             }

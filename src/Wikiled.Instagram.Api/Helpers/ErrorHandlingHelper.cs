@@ -1,13 +1,14 @@
 ﻿using System;
 using Newtonsoft.Json;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Errors;
 
 namespace Wikiled.Instagram.Api.Helpers
 {
-    internal static class ErrorHandlingHelper
+    internal static class InstaErrorHandlingHelper
     {
-        internal static BadStatusResponse GetBadStatusFromJsonString(string json)
+        internal static InstaBadStatusResponse GetBadStatusFromJsonString(string json)
         {
-            var badStatus = new BadStatusResponse();
+            var badStatus = new InstaBadStatusResponse();
             try
             {
                 if (json == "Oops, an error occurred\n")
@@ -16,7 +17,7 @@ namespace Wikiled.Instagram.Api.Helpers
                 }
                 else
                 {
-                    badStatus = JsonConvert.DeserializeObject<BadStatusResponse>(json);
+                    badStatus = JsonConvert.DeserializeObject<InstaBadStatusResponse>(json);
                 }
             }
             catch (Exception ex)

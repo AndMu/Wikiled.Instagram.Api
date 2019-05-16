@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.Discover;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Discover;
 
 namespace Wikiled.Instagram.Api.Converters.Discover
 {
-    internal class InstaDiscoverTopSearchesConverter : IObjectConverter<InstaDiscoverTopSearches, InstaDiscoverTopSearchesResponse>
+    internal class
+        InstaDiscoverTopSearchesConverter : IObjectConverter<InstaDiscoverTopSearches, InstaDiscoverTopSearchesResponse>
     {
         public InstaDiscoverTopSearchesResponse SourceObject { get; set; }
 
@@ -20,7 +24,8 @@ namespace Wikiled.Instagram.Api.Converters.Discover
                 {
                     try
                     {
-                        recents.TopResults.Add(ConvertersFabric.Instance.GetDiscoverSearchesConverter(search).Convert());
+                        recents.TopResults.Add(InstaConvertersFabric.Instance.GetDiscoverSearchesConverter(search)
+                                                   .Convert());
                     }
                     catch
                     {

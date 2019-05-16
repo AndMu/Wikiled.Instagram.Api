@@ -6,6 +6,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Business
 {
     internal class InstaBusinessCityLocationContainer
     {
-        [JsonExtensionData] internal IDictionary<string, JToken> Extras { get; set; }
+        [JsonExtensionData]
+        internal IDictionary<string, JToken> Extras { get; set; }
     }
 }

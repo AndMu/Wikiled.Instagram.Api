@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Broadcast;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Broadcast;
 
 namespace Wikiled.Instagram.Api.Converters.Discover
 {
@@ -13,10 +15,10 @@ namespace Wikiled.Instagram.Api.Converters.Discover
                 throw new ArgumentNullException("Source object");
             }
 
-            var storyTray = new InstaTopLive {RankedPosition = SourceObject.RankedPosition};
+            var storyTray = new InstaTopLive { RankedPosition = SourceObject.RankedPosition };
             foreach (var owner in SourceObject.BroadcastOwners)
             {
-                var userOwner = ConvertersFabric.Instance.GetUserShortFriendshipFullConverter(owner).Convert();
+                var userOwner = InstaConvertersFabric.Instance.GetUserShortFriendshipFullConverter(owner).Convert();
                 storyTray.BroadcastOwners.Add(userOwner);
             }
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Broadcast;
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Discover
 {
@@ -8,14 +9,19 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Discover
         [JsonProperty("auto_load_more_enabled")]
         public bool AutoLoadMoreEnabled { get; set; }
 
-        [JsonProperty("broadcasts")] public List<InstaBroadcastResponse> Broadcasts { get; set; }
+        [JsonProperty("broadcasts")]
+        public List<InstaBroadcastResponse> Broadcasts { get; set; }
 
-        [JsonProperty("more_available")] public bool MoreAvailable { get; set; }
+        [JsonProperty("more_available")]
+        public bool MoreAvailable { get; set; }
 
-        [JsonProperty("next_max_id")] public string NextMaxId { get; set; }
+        [JsonProperty("next_max_id")]
+        public string NextMaxId { get; set; }
 
-        [JsonProperty("post_live_broadcasts")] public List<InstaBroadcastPostLiveResponse> PostLiveBroadcasts { get; set; }
+        [JsonProperty("post_live_broadcasts")]
+        public List<InstaBroadcastPostLiveResponse> PostLiveBroadcasts { get; set; }
 
-        [JsonProperty("status")] public string Status { get; set; }
+        [JsonProperty("status")]
+        public string Status { get; set; }
     }
 }

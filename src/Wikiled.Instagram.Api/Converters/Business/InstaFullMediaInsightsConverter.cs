@@ -1,31 +1,38 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Business;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Business;
+using Wikiled.Instagram.Api.Enums;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Business
 {
-    internal class InstaFullMediaInsightsConverter : IObjectConverter<InstaFullMediaInsights, InstaFullMediaInsightsResponse>
+    internal class
+        InstaFullMediaInsightsConverter : IObjectConverter<InstaFullMediaInsights, InstaFullMediaInsightsResponse>
     {
         public InstaFullMediaInsightsResponse SourceObject { get; set; }
 
         public InstaFullMediaInsights Convert()
         {
             var fullMediaInsights = new InstaFullMediaInsights
-                                    {
-                                        CommentCount = SourceObject.CommentCount ?? 0,
-                                        DisplayUrl = SourceObject.DisplayUrl,
-                                        Id = SourceObject.Id,
-                                        LikeCount = SourceObject.LikeCount ?? 0,
-                                        SaveCount = SourceObject.SaveCount ?? 0
-                                    };
+            {
+                CommentCount = SourceObject.CommentCount ?? 0,
+                DisplayUrl = SourceObject.DisplayUrl,
+                Id = SourceObject.Id,
+                LikeCount = SourceObject.LikeCount ?? 0,
+                SaveCount = SourceObject.SaveCount ?? 0
+            };
             if (SourceObject.CreationTime != null)
             {
-                fullMediaInsights.CreationTime = DateTimeHelper.UnixTimestampToDateTime(SourceObject.CreationTime.ToString());
+                fullMediaInsights.CreationTime =
+                    InstaDateTimeHelper.UnixTimestampToDateTime(SourceObject.CreationTime.ToString());
             }
 
             if (SourceObject.InstagramMediaType != null)
             {
                 try
                 {
-                    fullMediaInsights.MediaType = (InstaMediaType)Enum.Parse(typeof(InstaMediaType), SourceObject.InstagramMediaType, true);
+                    fullMediaInsights.MediaType =
+                        (InstaMediaType)Enum.Parse(typeof(InstaMediaType), SourceObject.InstagramMediaType, true);
                 }
                 catch
                 {
@@ -36,10 +43,7 @@ namespace Wikiled.Instagram.Api.Converters.Business
 
             if (SourceObject.InlineInsightsNode != null)
             {
-                var node = new InstaFullMediaInsightsMetrics
-                           {
-                               State = inlineInsights.State
-                           };
+                var node = new InstaFullMediaInsightsMetrics { State = inlineInsights.State };
                 if (inlineInsights.Metrics != null)
                 {
                     node.ImpressionCount = inlineInsights.Metrics.ImpressionCount ?? 0;
@@ -52,12 +56,13 @@ namespace Wikiled.Instagram.Api.Converters.Business
                         try
                         {
                             var reach = new InstaFullMediaInsightsNodeItem
-                                        {
-                                            Value = inlineInsights.Metrics.Reach.Value ?? 0
-                                        };
+                            {
+                                Value = inlineInsights.Metrics.Reach.Value ?? 0
+                            };
                             foreach (var item in inlineInsights.Metrics.Reach.FollowStatus.Nodes)
                             {
-                                var convertedItem = ConvertersFabric.Instance.GetInsightsDataNodeConverter(item).Convert();
+                                var convertedItem = InstaConvertersFabric.Instance.GetInsightsDataNodeConverter(item)
+                                    .Convert();
                                 reach.Items.Add(convertedItem);
                             }
 
@@ -73,12 +78,13 @@ namespace Wikiled.Instagram.Api.Converters.Business
                         try
                         {
                             var impressions = new InstaFullMediaInsightsNodeItem
-                                              {
-                                                  Value = inlineInsights.Metrics.Impressions.Value ?? 0
-                                              };
+                            {
+                                Value = inlineInsights.Metrics.Impressions.Value ?? 0
+                            };
                             foreach (var item in inlineInsights.Metrics.Impressions.Surfaces.Nodes)
                             {
-                                var convertedItem = ConvertersFabric.Instance.GetInsightsDataNodeConverter(item).Convert();
+                                var convertedItem = InstaConvertersFabric.Instance.GetInsightsDataNodeConverter(item)
+                                    .Convert();
                                 impressions.Items.Add(convertedItem);
                             }
 
@@ -94,12 +100,13 @@ namespace Wikiled.Instagram.Api.Converters.Business
                         try
                         {
                             var profileActions = new InstaFullMediaInsightsNodeItem
-                                                 {
-                                                     Value = inlineInsights.Metrics.ProfileActions.Actions.Value ?? 0
-                                                 };
+                            {
+                                Value = inlineInsights.Metrics.ProfileActions.Actions.Value ?? 0
+                            };
                             foreach (var item in inlineInsights.Metrics.ProfileActions.Actions.Nodes)
                             {
-                                var convertedItem = ConvertersFabric.Instance.GetInsightsDataNodeConverter(item).Convert();
+                                var convertedItem = InstaConvertersFabric.Instance.GetInsightsDataNodeConverter(item)
+                                    .Convert();
                                 profileActions.Items.Add(convertedItem);
                             }
 

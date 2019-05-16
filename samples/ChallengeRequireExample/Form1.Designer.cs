@@ -1,6 +1,6 @@
 ﻿namespace ChallengeRequireExample
 {
-    partial class Form1
+    partial class InstaForm1
     {
         /// <summary>
         /// Required designer variable.
@@ -338,7 +338,7 @@
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.Name = "Form1";
+            this.Name = "InstaForm1";
             this.Text = "Challenge Required";
             this.SelectMethodGroupBox.ResumeLayout(false);
             this.SelectMethodGroupBox.PerformLayout();

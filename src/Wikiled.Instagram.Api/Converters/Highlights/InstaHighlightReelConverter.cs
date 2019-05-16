@@ -1,4 +1,8 @@
 ﻿using System.Collections.Generic;
+using Wikiled.Instagram.Api.Classes.Models.Highlight;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Highlight;
 
 namespace Wikiled.Instagram.Api.Converters.Highlights
 {
@@ -14,25 +18,24 @@ namespace Wikiled.Instagram.Api.Converters.Highlights
             }
 
             var hLight = new InstaHighlightSingleFeed
-                         {
-                             CanReply = SourceObject.Reel.CanReply,
-                             CanReshare = SourceObject.Reel.CanReshare,
-                             HighlightId = SourceObject.Reel.Id,
-                             LatestReelMedia = SourceObject.Reel.LatestReelMedia,
-                             MediaCount = SourceObject.Reel.MediaCount,
-                             PrefetchCount = SourceObject.Reel.PrefetchCount,
-                             RankedPosition = SourceObject.Reel.RankedPosition,
-                             ReelType = SourceObject.Reel.ReelType,
-                             Seen = SourceObject.Reel.Seen,
-                             SeenRankedPosition = SourceObject.Reel.SeenRankedPosition,
-                             Title = SourceObject.Reel.Title
-                         };
+            {
+                CanReply = SourceObject.Reel.CanReply,
+                CanReshare = SourceObject.Reel.CanReshare,
+                HighlightId = SourceObject.Reel.Id,
+                LatestReelMedia = SourceObject.Reel.LatestReelMedia,
+                MediaCount = SourceObject.Reel.MediaCount,
+                PrefetchCount = SourceObject.Reel.PrefetchCount,
+                RankedPosition = SourceObject.Reel.RankedPosition,
+                ReelType = SourceObject.Reel.ReelType,
+                Seen = SourceObject.Reel.Seen,
+                SeenRankedPosition = SourceObject.Reel.SeenRankedPosition,
+                Title = SourceObject.Reel.Title
+            };
 
             hLight.CoverMedia = new InstaHighlightCoverMedia
-                                {
-                                    CropRect = SourceObject.Reel.CoverMedia.CropRect,
-                                    MediaId = SourceObject.Reel.CoverMedia.MediaId
-                                };
+            {
+                CropRect = SourceObject.Reel.CoverMedia.CropRect, MediaId = SourceObject.Reel.CoverMedia.MediaId
+            };
 
             if (SourceObject.Reel.CoverMedia.CroppedImageVersion != null)
             {
@@ -50,7 +53,7 @@ namespace Wikiled.Instagram.Api.Converters.Highlights
                     int.Parse(SourceObject.Reel.CoverMedia.FullImageVersion.Height));
             }
 
-            var userConverter = ConvertersFabric.Instance.GetUserShortConverter(SourceObject.Reel.User);
+            var userConverter = InstaConvertersFabric.Instance.GetUserShortConverter(SourceObject.Reel.User);
             hLight.User = userConverter.Convert();
 
             hLight.Items = new List<InstaStoryItem>();
@@ -58,7 +61,7 @@ namespace Wikiled.Instagram.Api.Converters.Highlights
             {
                 foreach (var media in SourceObject.Reel.Items)
                 {
-                    hLight.Items.Add(ConvertersFabric.Instance.GetStoryItemConverter(media).Convert());
+                    hLight.Items.Add(InstaConvertersFabric.Instance.GetStoryItemConverter(media).Convert());
                 }
             }
 

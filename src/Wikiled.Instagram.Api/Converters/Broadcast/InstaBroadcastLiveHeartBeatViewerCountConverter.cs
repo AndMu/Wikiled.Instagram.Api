@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Broadcast;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Broadcast;
 
 namespace Wikiled.Instagram.Api.Converters.Broadcast
 {
@@ -15,14 +17,14 @@ namespace Wikiled.Instagram.Api.Converters.Broadcast
             }
 
             var heartbeat = new InstaBroadcastLiveHeartBeatViewerCount
-                            {
-                                BroadcastStatus = SourceObject.BroadcastStatus,
-                                CobroadcasterIds = SourceObject.CobroadcasterIds,
-                                IsTopLiveEligible = SourceObject.IsTopLiveEligible,
-                                OffsetToVideoStart = SourceObject.OffsetToVideoStart,
-                                TotalUniqueViewerCount = SourceObject.TotalUniqueViewerCount,
-                                ViewerCount = SourceObject.ViewerCount
-                            };
+            {
+                BroadcastStatus = SourceObject.BroadcastStatus,
+                CobroadcasterIds = SourceObject.CobroadcasterIds,
+                IsTopLiveEligible = SourceObject.IsTopLiveEligible,
+                OffsetToVideoStart = SourceObject.OffsetToVideoStart,
+                TotalUniqueViewerCount = SourceObject.TotalUniqueViewerCount,
+                ViewerCount = SourceObject.ViewerCount
+            };
             return heartbeat;
         }
     }

@@ -1,46 +1,55 @@
 ﻿using System;
 using Newtonsoft.Json;
+using Wikiled.Instagram.Api.Helpers;
+using Wikiled.Instagram.Api.Logic.Versions;
 
 namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
 {
-    public class ApiRequestMessage
+    public class InstaApiRequestMessage
     {
         private static readonly Random Rnd = new Random();
 
-        public static ApiRequestMessage CurrentDevice { get; private set; }
+        public static InstaApiRequestMessage CurrentDevice { get; private set; }
 
-        [JsonProperty("adid")] public string AdId { get; set; }
+        [JsonProperty("adid")]
+        public string AdId { get; set; }
 
-        [JsonProperty("device_id")] public string DeviceId { get; set; }
+        [JsonProperty("device_id")]
+        public string DeviceId { get; set; }
 
-        [JsonProperty("google_tokens")] public string GoogleTokens { get; set; } = "[]";
+        [JsonProperty("google_tokens")]
+        public string GoogleTokens { get; set; } = "[]";
 
-        [JsonProperty("guid")] public Guid Guid { get; set; }
+        [JsonProperty("guid")]
+        public Guid Guid { get; set; }
 
-        [JsonProperty("login_attempt_count")] public string LoginAttemptCount { get; set; } = "1";
+        [JsonProperty("login_attempt_count")]
+        public string LoginAttemptCount { get; set; } = "1";
 
-        [JsonProperty("password")] public string Password { get; set; }
+        [JsonProperty("password")]
+        public string Password { get; set; }
 
-        [JsonProperty("phone_id")] public string PhoneId { get; set; }
+        [JsonProperty("phone_id")]
+        public string PhoneId { get; set; }
 
-        [JsonProperty("username")] public string Username { get; set; }
+        [JsonProperty("username")]
+        public string Username { get; set; }
 
-        [JsonProperty("_uuid")] public string Uuid => System.Guid.ToString();
+        [JsonProperty("_uuid")]
+        public string Uuid => Guid.ToString();
 
-        public static ApiRequestMessage FromDevice(AndroidDevice device)
+        public static InstaApiRequestMessage FromDevice(InstaAndroidDevice device)
         {
-            var requestMessage = new ApiRequestMessage
-                                 {
-                                     PhoneId = device.PhoneGuid.ToString(),
-                                     Guid = device.DeviceGuid,
-                                     DeviceId = device.DeviceId
-                                 };
+            var requestMessage = new InstaApiRequestMessage
+            {
+                PhoneId = device.PhoneGuid.ToString(), Guid = device.DeviceGuid, DeviceId = device.DeviceId
+            };
             return requestMessage;
         }
 
         public static string GenerateDeviceIdFromGuid(Guid guid)
         {
-            var hashedGuid = CryptoHelper.CalculateMd5(guid.ToString());
+            var hashedGuid = InstaCryptoHelper.CalculateMd5(guid.ToString());
             return $"android-{hashedGuid.Substring(0, 16)}";
         }
 
@@ -67,25 +76,28 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             return uploadId.ToString();
         }
 
-        internal string GenerateChallengeSignature(InstaApiVersion apiVersion, string signatureKey, string csrfToken, out string deviceid)
+        internal string GenerateChallengeSignature(InstaApiVersion apiVersion,
+                                                   string signatureKey,
+                                                   string csrfToken,
+                                                   out string deviceid)
         {
             if (string.IsNullOrEmpty(signatureKey))
             {
                 signatureKey = apiVersion.SignatureKey;
             }
 
-            var api = new ApiRequestChallengeMessage
-                      {
-                          CsrtToken = csrfToken,
-                          DeviceId = DeviceId,
-                          Guid = System.Guid,
-                          LoginAttemptCount = "1",
-                          Password = Password,
-                          PhoneId = PhoneId,
-                          Username = Username,
-                          AdId = AdId
-                      };
-            var res = CryptoHelper.CalculateHash(
+            var api = new InstaApiRequestChallengeMessage
+            {
+                CsrtToken = csrfToken,
+                DeviceId = DeviceId,
+                Guid = Guid,
+                LoginAttemptCount = "1",
+                Password = Password,
+                PhoneId = PhoneId,
+                Username = Username,
+                AdId = AdId
+            };
+            var res = InstaCryptoHelper.CalculateHash(
                 signatureKey,
                 JsonConvert.SerializeObject(api));
             deviceid = DeviceId;
@@ -99,7 +111,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
                 signatureKey = apiVersion.SignatureKey;
             }
 
-            var res = CryptoHelper.CalculateHash(
+            var res = InstaCryptoHelper.CalculateHash(
                 signatureKey,
                 JsonConvert.SerializeObject(this));
             deviceid = DeviceId;
@@ -108,24 +120,30 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
 
         internal string GetChallengeMessageString(string csrfToken)
         {
-            var api = new ApiRequestChallengeMessage
-                      {
-                          CsrtToken = csrfToken,
-                          DeviceId = DeviceId,
-                          Guid = System.Guid,
-                          LoginAttemptCount = "1",
-                          Password = Password,
-                          PhoneId = PhoneId,
-                          Username = Username,
-                          AdId = AdId
-                      };
+            var api = new InstaApiRequestChallengeMessage
+            {
+                CsrtToken = csrfToken,
+                DeviceId = DeviceId,
+                Guid = Guid,
+                LoginAttemptCount = "1",
+                Password = Password,
+                PhoneId = PhoneId,
+                Username = Username,
+                AdId = AdId
+            };
             var json = JsonConvert.SerializeObject(api);
             return json;
         }
 
         internal string GetChallengeVerificationCodeSend(string verify)
         {
-            return JsonConvert.SerializeObject(new {security_code = verify, _csrftoken = "ReplaceCSRF", System.Guid, DeviceId});
+            return JsonConvert.SerializeObject(new
+            {
+                security_code = verify,
+                _csrftoken = "ReplaceCSRF",
+                Guid,
+                DeviceId
+            });
         }
 
         internal string GetMessageString()
@@ -134,9 +152,15 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             return json;
         }
 
-        internal string GetMessageStringForChallengeVerificationCodeSend(int Choice = 1)
+        internal string GetMessageStringForChallengeVerificationCodeSend(int choice = 1)
         {
-            return JsonConvert.SerializeObject(new {choice = Choice.ToString(), _csrftoken = "ReplaceCSRF", System.Guid, DeviceId});
+            return JsonConvert.SerializeObject(new
+            {
+                choice = choice.ToString(),
+                _csrftoken = "ReplaceCSRF",
+                Guid,
+                DeviceId
+            });
         }
 
         internal bool IsEmpty()
@@ -151,7 +175,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
                 return true;
             }
 
-            if (Guid.Empty == System.Guid)
+            if (Guid.Empty == Guid)
             {
                 return true;
             }

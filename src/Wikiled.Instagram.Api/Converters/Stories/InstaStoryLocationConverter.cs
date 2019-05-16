@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
 
 namespace Wikiled.Instagram.Api.Converters.Stories
 {
@@ -14,17 +16,17 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             }
 
             var storyLocation = new InstaStoryLocation
-                                {
-                                    Height = SourceObject.Height,
-                                    IsHidden = SourceObject.IsHidden,
-                                    IsPinned = SourceObject.IsPinned,
-                                    Rotation = SourceObject.Rotation,
-                                    Width = SourceObject.Width,
-                                    X = SourceObject.X,
-                                    Y = SourceObject.Y,
-                                    Z = SourceObject.Z,
-                                    Location = ConvertersFabric.Instance.GetPlaceShortConverter(SourceObject.Location).Convert()
-                                };
+            {
+                Height = SourceObject.Height,
+                IsHidden = SourceObject.IsHidden,
+                IsPinned = SourceObject.IsPinned,
+                Rotation = SourceObject.Rotation,
+                Width = SourceObject.Width,
+                X = SourceObject.X,
+                Y = SourceObject.Y,
+                Z = SourceObject.Z,
+                Location = InstaConvertersFabric.Instance.GetPlaceShortConverter(SourceObject.Location).Convert()
+            };
 
             return storyLocation;
         }

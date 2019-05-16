@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Wikiled.Instagram.Api.Classes.Models.Broadcast;
+using Wikiled.Instagram.Api.Classes.Models.Hashtags;
 
 namespace Wikiled.Instagram.Api.Classes.Models.Story
 {

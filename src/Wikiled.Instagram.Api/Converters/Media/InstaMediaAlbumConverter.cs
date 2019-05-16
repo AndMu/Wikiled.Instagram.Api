@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Globalization;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Media
 {
@@ -15,39 +18,41 @@ namespace Wikiled.Instagram.Api.Converters.Media
             }
 
             var media = new InstaMedia
-                        {
-                            InstaIdentifier = SourceObject.Media.InstaIdentifier,
-                            Code = SourceObject.Media.Code,
-                            Pk = SourceObject.Media.Pk,
-                            ClientCacheKey = SourceObject.Media.ClientCacheKey,
-                            CommentsCount = SourceObject.Media.CommentsCount,
-                            DeviceTimeStamp = DateTimeHelper.UnixTimestampToDateTime(SourceObject.Media.DeviceTimeStampUnixLike),
-                            HasLiked = SourceObject.Media.HasLiked,
-                            PhotoOfYou = SourceObject.Media.PhotoOfYou,
-                            TrackingToken = SourceObject.Media.TrackingToken,
-                            TakenAt = DateTimeHelper.UnixTimestampToDateTime(SourceObject.Media.TakenAtUnixLike),
-                            Height = SourceObject.Media.Height,
-                            LikesCount = SourceObject.Media.LikesCount,
-                            MediaType = SourceObject.Media.MediaType,
-                            FilterType = SourceObject.Media.FilterType,
-                            Width = SourceObject.Media.Width,
-                            HasAudio = SourceObject.Media.HasAudio,
-                            ViewCount = int.Parse(SourceObject.Media.ViewCount.ToString(CultureInfo.InvariantCulture)),
-                            IsCommentsDisabled = SourceObject.Media.IsCommentsDisabled
-                        };
+            {
+                Identifier = SourceObject.Media.Identifier,
+                Code = SourceObject.Media.Code,
+                Pk = SourceObject.Media.Pk,
+                ClientCacheKey = SourceObject.Media.ClientCacheKey,
+                CommentsCount = SourceObject.Media.CommentsCount,
+                DeviceTimeStamp =
+                    InstaDateTimeHelper.UnixTimestampToDateTime(SourceObject.Media.DeviceTimeStampUnixLike),
+                HasLiked = SourceObject.Media.HasLiked,
+                PhotoOfYou = SourceObject.Media.PhotoOfYou,
+                TrackingToken = SourceObject.Media.TrackingToken,
+                TakenAt = InstaDateTimeHelper.UnixTimestampToDateTime(SourceObject.Media.TakenAtUnixLike),
+                Height = SourceObject.Media.Height,
+                LikesCount = SourceObject.Media.LikesCount,
+                MediaType = SourceObject.Media.MediaType,
+                FilterType = SourceObject.Media.FilterType,
+                Width = SourceObject.Media.Width,
+                HasAudio = SourceObject.Media.HasAudio,
+                ViewCount = int.Parse(SourceObject.Media.ViewCount.ToString(CultureInfo.InvariantCulture)),
+                IsCommentsDisabled = SourceObject.Media.IsCommentsDisabled
+            };
             if (SourceObject.Media.CarouselMedia != null)
             {
-                media.Carousel = ConvertersFabric.Instance.GetCarouselConverter(SourceObject.Media.CarouselMedia).Convert();
+                media.Carousel = InstaConvertersFabric.Instance.GetCarouselConverter(SourceObject.Media.CarouselMedia)
+                    .Convert();
             }
 
             if (SourceObject.Media.User != null)
             {
-                media.User = ConvertersFabric.Instance.GetUserConverter(SourceObject.Media.User).Convert();
+                media.User = InstaConvertersFabric.Instance.GetUserConverter(SourceObject.Media.User).Convert();
             }
 
             if (SourceObject.Media.Caption != null)
             {
-                media.Caption = ConvertersFabric.Instance.GetCaptionConverter(SourceObject.Media.Caption).Convert();
+                media.Caption = InstaConvertersFabric.Instance.GetCaptionConverter(SourceObject.Media.Caption).Convert();
             }
 
             if (SourceObject.Media.NextMaxId != null)
@@ -59,7 +64,7 @@ namespace Wikiled.Instagram.Api.Converters.Media
             {
                 foreach (var liker in SourceObject.Media.Likers)
                 {
-                    media.Likers.Add(ConvertersFabric.Instance.GetUserShortConverter(liker).Convert());
+                    media.Likers.Add(InstaConvertersFabric.Instance.GetUserShortConverter(liker).Convert());
                 }
             }
 
@@ -67,7 +72,7 @@ namespace Wikiled.Instagram.Api.Converters.Media
             {
                 foreach (var tag in SourceObject.Media.UserTagList.In)
                 {
-                    media.UserTags.Add(ConvertersFabric.Instance.GetUserTagConverter(tag).Convert());
+                    media.UserTags.Add(InstaConvertersFabric.Instance.GetUserTagConverter(tag).Convert());
                 }
             }
 
@@ -75,13 +80,13 @@ namespace Wikiled.Instagram.Api.Converters.Media
             {
                 foreach (var comment in SourceObject.Media.PreviewComments)
                 {
-                    media.PreviewComments.Add(ConvertersFabric.Instance.GetCommentConverter(comment).Convert());
+                    media.PreviewComments.Add(InstaConvertersFabric.Instance.GetCommentConverter(comment).Convert());
                 }
             }
 
             if (SourceObject.Media.Location != null)
             {
-                media.Location = ConvertersFabric.Instance.GetLocationConverter(SourceObject.Media.Location).Convert();
+                media.Location = InstaConvertersFabric.Instance.GetLocationConverter(SourceObject.Media.Location).Convert();
             }
 
             if (SourceObject.Media.Images?.Candidates == null)

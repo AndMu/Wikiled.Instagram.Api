@@ -8,6 +8,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Broadcast
         [JsonProperty("broadcast_status_items")]
         public List<InstaBroadcastStatusItemResponse> BroadcastStatusItems { get; set; }
 
-        [JsonProperty("status")] public string Status { get; set; }
+        [JsonProperty("status")]
+        public string Status { get; set; }
     }
 }

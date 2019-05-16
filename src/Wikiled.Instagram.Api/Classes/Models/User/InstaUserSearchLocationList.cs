@@ -1,14 +1,21 @@
 ﻿using Newtonsoft.Json;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Hashtags;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Location;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
+using Wikiled.Instagram.Api.Enums;
 
 namespace Wikiled.Instagram.Api.Classes.Models.User
 {
     public class InstaUserSearchLocationList
     {
-        [JsonProperty("hashtag")] public InstaHashtagResponse Hashtag { get; set; }
+        [JsonProperty("hashtag")]
+        public InstaHashtagResponse Hashtag { get; set; }
 
-        [JsonProperty("place")] public InstaPlaceResponse Place { get; set; }
+        [JsonProperty("place")]
+        public InstaPlaceResponse Place { get; set; }
 
-        [JsonProperty("position")] public int Position { get; set; }
+        [JsonProperty("position")]
+        public int Position { get; set; }
 
         [JsonIgnore]
         public InstaSearchType Type
@@ -34,6 +41,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.User
             }
         }
 
-        [JsonProperty("user")] public InstaUserShortFriendshipResponse User { get; set; }
+        [JsonProperty("user")]
+        public InstaUserShortFriendshipResponse User { get; set; }
     }
 }

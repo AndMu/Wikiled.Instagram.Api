@@ -1,4 +1,7 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Web;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Web;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Web
 {
@@ -13,10 +16,7 @@ namespace Wikiled.Instagram.Api.Converters.Web
                 throw new ArgumentNullException("Source object");
             }
 
-            var data = new InstaWebDataItem
-                       {
-                           Text = SourceObject.Text
-                       };
+            var data = new InstaWebDataItem { Text = SourceObject.Text };
 
             if (SourceObject.Timestamp != null)
             {

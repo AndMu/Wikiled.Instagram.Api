@@ -3,7 +3,7 @@ using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.Models.Feed;
 using Wikiled.Instagram.Api.Classes.Models.Media;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Feed api functions.
@@ -73,7 +73,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <returns>
         ///     <see cref="InstaTopicalExploreFeed" />
         /// </returns>
-        Task<IResult<InstaTopicalExploreFeed>> GetTopicalExploreFeedAsync(PaginationParameters paginationParameters, string clusterId = null);
+        Task<IResult<InstaTopicalExploreFeed>> GetTopicalExploreFeedAsync(
+            PaginationParameters paginationParameters,
+            string clusterId = null);
 
         /// <summary>
         ///     Get user timeline feed (feed of recent posts from users you follow) asynchronously.
@@ -84,6 +86,8 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <returns>
         ///     <see cref="InstaFeed" />
         /// </returns>
-        Task<IResult<InstaFeed>> GetUserTimelineFeedAsync(PaginationParameters paginationParameters, string[] seenMediaIds = null, bool refreshRequest = false);
+        Task<IResult<InstaFeed>> GetUserTimelineFeedAsync(PaginationParameters paginationParameters,
+                                                          string[] seenMediaIds = null,
+                                                          bool refreshRequest = false);
     }
 }

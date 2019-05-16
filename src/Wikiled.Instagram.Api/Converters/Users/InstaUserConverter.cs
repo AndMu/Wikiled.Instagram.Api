@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
 
 namespace Wikiled.Instagram.Api.Converters.Users
 {
@@ -13,15 +15,15 @@ namespace Wikiled.Instagram.Api.Converters.Users
                 throw new ArgumentNullException("Source object");
             }
 
-            var shortConverter = ConvertersFabric.Instance.GetUserShortConverter(SourceObject);
+            var shortConverter = InstaConvertersFabric.Instance.GetUserShortConverter(SourceObject);
             var user = new InstaUser(shortConverter.Convert())
-                       {
-                           HasAnonymousProfilePicture = SourceObject.HasAnonymousProfilePicture,
-                           FollowersCount = SourceObject.FollowersCount,
-                           FollowersCountByLine = SourceObject.FollowersCountByLine,
-                           SearchSocialContext = SourceObject.SearchSocialContext,
-                           SocialContext = SourceObject.SocialContext
-                       };
+            {
+                HasAnonymousProfilePicture = SourceObject.HasAnonymousProfilePicture,
+                FollowersCount = SourceObject.FollowersCount,
+                FollowersCountByLine = SourceObject.FollowersCountByLine,
+                SearchSocialContext = SourceObject.SearchSocialContext,
+                SocialContext = SourceObject.SocialContext
+            };
 
             if (double.TryParse(SourceObject.MulualFollowersCount, out var mutualFollowers))
             {
@@ -31,7 +33,7 @@ namespace Wikiled.Instagram.Api.Converters.Users
             if (SourceObject.FriendshipStatus != null)
             {
                 var freindShipStatusConverter =
-                    ConvertersFabric.Instance.GetSingleFriendshipShortStatusConverter(SourceObject.FriendshipStatus);
+                    InstaConvertersFabric.Instance.GetSingleFriendshipShortStatusConverter(SourceObject.FriendshipStatus);
                 user.FriendshipStatus = freindShipStatusConverter.Convert();
             }
 

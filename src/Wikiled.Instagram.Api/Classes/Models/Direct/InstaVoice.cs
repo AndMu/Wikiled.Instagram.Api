@@ -1,4 +1,6 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.Direct
+﻿using Wikiled.Instagram.Api.Classes.Models.User;
+
+namespace Wikiled.Instagram.Api.Classes.Models.Direct
 {
     public class InstaVoice
     {

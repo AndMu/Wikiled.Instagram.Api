@@ -1,26 +1,29 @@
 ﻿using System;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.TV;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.TV;
 
 namespace Wikiled.Instagram.Api.Converters.TV
 {
-    internal class InstaTVSelfChannelConverter : IObjectConverter<InstaTVSelfChannel, InstaTVSelfChannelResponse>
+    internal class InstaTvSelfChannelConverter : IObjectConverter<InstaTvSelfChannel, InstaTvSelfChannelResponse>
     {
-        public InstaTVSelfChannelResponse SourceObject { get; set; }
+        public InstaTvSelfChannelResponse SourceObject { get; set; }
 
-        public InstaTVSelfChannel Convert()
+        public InstaTvSelfChannel Convert()
         {
             if (SourceObject == null)
             {
                 throw new ArgumentNullException("SourceObject");
             }
 
-            var channel = new InstaTVSelfChannel
-                          {
-                              HasMoreAvailable = SourceObject.HasMoreAvailable,
-                              Id = SourceObject.Id,
-                              MaxId = SourceObject.MaxId,
-                              Title = SourceObject.Title,
-                              Type = SourceObject.Type
-                          };
+            var channel = new InstaTvSelfChannel
+            {
+                HasMoreAvailable = SourceObject.HasMoreAvailable,
+                Id = SourceObject.Id,
+                MaxId = SourceObject.MaxId,
+                Title = SourceObject.Title,
+                Type = SourceObject.Type
+            };
 
             if (SourceObject.Items != null && SourceObject.Items.Any())
             {
@@ -28,7 +31,7 @@ namespace Wikiled.Instagram.Api.Converters.TV
                 {
                     try
                     {
-                        channel.Items.Add(ConvertersFabric.Instance.GetSingleMediaConverter(item).Convert());
+                        channel.Items.Add(InstaConvertersFabric.Instance.GetSingleMediaConverter(item).Convert());
                     }
                     catch
                     {
@@ -40,7 +43,7 @@ namespace Wikiled.Instagram.Api.Converters.TV
             {
                 try
                 {
-                    channel.User = ConvertersFabric.Instance.GetTVUserConverter(SourceObject.User).Convert();
+                    channel.User = InstaConvertersFabric.Instance.GetTvUserConverter(SourceObject.User).Convert();
                 }
                 catch
                 {

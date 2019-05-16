@@ -1,4 +1,6 @@
 using System;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
 
 namespace Wikiled.Instagram.Api.Converters.Media
 {
@@ -16,7 +18,7 @@ namespace Wikiled.Instagram.Api.Converters.Media
 
             foreach (var item in SourceObject)
             {
-                var carouselItem = ConvertersFabric.Instance.GetCarouselItemConverter(item);
+                var carouselItem = InstaConvertersFabric.Instance.GetCarouselItemConverter(item);
                 carousel.Add(carouselItem.Convert());
             }
 

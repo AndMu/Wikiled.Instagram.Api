@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Broadcast;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Broadcast;
 
 namespace Wikiled.Instagram.Api.Converters.Broadcast
 {
@@ -13,10 +15,7 @@ namespace Wikiled.Instagram.Api.Converters.Broadcast
                 throw new ArgumentNullException("Source object");
             }
 
-            var broadcastStart = new InstaBroadcastStart
-                                 {
-                                     MediaId = SourceObject.MediaId
-                                 };
+            var broadcastStart = new InstaBroadcastStart { MediaId = SourceObject.MediaId };
 
             return broadcastStart;
         }

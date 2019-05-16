@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Shopping;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Shopping;
 
 namespace Wikiled.Instagram.Api.Converters.Shopping
 {
@@ -14,11 +16,9 @@ namespace Wikiled.Instagram.Api.Converters.Shopping
             }
 
             var merchant = new InstaMerchant
-                           {
-                               Pk = SourceObject.Pk,
-                               ProfilePicture = SourceObject.ProfilePicture,
-                               Username = SourceObject.Username
-                           };
+            {
+                Pk = SourceObject.Pk, ProfilePicture = SourceObject.ProfilePicture, Username = SourceObject.Username
+            };
             return merchant;
         }
     }

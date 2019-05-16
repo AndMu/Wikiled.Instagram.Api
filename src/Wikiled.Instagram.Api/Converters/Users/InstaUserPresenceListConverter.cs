@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
 
 namespace Wikiled.Instagram.Api.Converters.Users
 {
-    internal class InstaUserPresenceListConverter : IObjectConverter<InstaUserPresenceList, InstaUserPresenceContainerResponse>
+    internal class
+        InstaUserPresenceListConverter : IObjectConverter<InstaUserPresenceList, InstaUserPresenceContainerResponse>
     {
         public InstaUserPresenceContainerResponse SourceObject { get; set; }
 
@@ -20,7 +24,7 @@ namespace Wikiled.Instagram.Api.Converters.Users
                 {
                     try
                     {
-                        list.Add(ConvertersFabric.Instance.GetSingleUserPresenceConverter(item).Convert());
+                        list.Add(InstaConvertersFabric.Instance.GetSingleUserPresenceConverter(item).Convert());
                     }
                     catch
                     {

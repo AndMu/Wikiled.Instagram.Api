@@ -2,12 +2,15 @@
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Media
 {
-    public class ImageResponse
+    public class InstaImageResponse
     {
-        [JsonProperty("height")] public string Height { get; set; }
+        [JsonProperty("height")]
+        public string Height { get; set; }
 
-        [JsonProperty("url")] public string Url { get; set; }
+        [JsonProperty("url")]
+        public string Url { get; set; }
 
-        [JsonProperty("width")] public string Width { get; set; }
+        [JsonProperty("width")]
+        public string Width { get; set; }
     }
 }

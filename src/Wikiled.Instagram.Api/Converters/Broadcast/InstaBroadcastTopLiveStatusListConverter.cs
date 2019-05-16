@@ -1,8 +1,11 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Broadcast;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Broadcast;
 
 namespace Wikiled.Instagram.Api.Converters.Broadcast
 {
-    internal class InstaBroadcastTopLiveStatusListConverter : IObjectConverter<InstaBroadcastTopLiveStatusList, InstaBroadcastTopLiveStatusResponse>
+    internal class InstaBroadcastTopLiveStatusListConverter : IObjectConverter<InstaBroadcastTopLiveStatusList,
+        InstaBroadcastTopLiveStatusResponse>
     {
         public InstaBroadcastTopLiveStatusResponse SourceObject { get; set; }
 
@@ -20,7 +23,8 @@ namespace Wikiled.Instagram.Api.Converters.Broadcast
                 {
                     foreach (var statusItem in SourceObject.BroadcastStatusItems)
                     {
-                        broadcastStatusItems.Add(ConvertersFabric.Instance.GetBroadcastStatusItemConverter(statusItem).Convert());
+                        broadcastStatusItems.Add(InstaConvertersFabric.Instance.GetBroadcastStatusItemConverter(statusItem)
+                                                     .Convert());
                     }
                 }
             }

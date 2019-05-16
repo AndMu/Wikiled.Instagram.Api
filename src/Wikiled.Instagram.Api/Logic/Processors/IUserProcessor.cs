@@ -7,7 +7,7 @@ using Wikiled.Instagram.Api.Classes.Models.Story;
 using Wikiled.Instagram.Api.Classes.Models.User;
 using Wikiled.Instagram.Api.Enums;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     User api functions.
@@ -268,7 +268,8 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <returns>
         ///     <see cref="InstaMediaList" />
         /// </returns>
-        Task<IResult<InstaMediaList>> GetUserShoppableMediaAsync(string username, PaginationParameters paginationParameters);
+        Task<IResult<InstaMediaList>> GetUserShoppableMediaAsync(string username,
+                                                                 PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Get user tags by username asynchronously

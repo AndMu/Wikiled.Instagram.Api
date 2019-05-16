@@ -1,4 +1,6 @@
 using System;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
 
 namespace Wikiled.Instagram.Api.Converters.Media
 {
@@ -14,14 +16,14 @@ namespace Wikiled.Instagram.Api.Converters.Media
             }
 
             var carouselItem = new InstaCarouselItem
-                               {
-                                   CarouselParentId = SourceObject.CarouselParentId,
-                                   Height = int.Parse(SourceObject.Height),
-                                   Width = int.Parse(SourceObject.Width),
-                                   MediaType = SourceObject.MediaType,
-                                   InstaIdentifier = SourceObject.InstaIdentifier,
-                                   Pk = SourceObject.Pk
-                               };
+            {
+                CarouselParentId = SourceObject.CarouselParentId,
+                Height = int.Parse(SourceObject.Height),
+                Width = int.Parse(SourceObject.Width),
+                MediaType = SourceObject.MediaType,
+                Identifier = SourceObject.Identifier,
+                Pk = SourceObject.Pk
+            };
             if (SourceObject?.Images?.Candidates != null)
             {
                 foreach (var image in SourceObject.Images.Candidates)
@@ -47,7 +49,7 @@ namespace Wikiled.Instagram.Api.Converters.Media
             {
                 foreach (var tag in SourceObject.UserTagList.In)
                 {
-                    carouselItem.UserTags.Add(ConvertersFabric.Instance.GetUserTagConverter(tag).Convert());
+                    carouselItem.UserTags.Add(InstaConvertersFabric.Instance.GetUserTagConverter(tag).Convert());
                 }
             }
 

@@ -2,102 +2,32 @@
 
 namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
 {
-    public class AndroidVersionList
+    public class InstaAndroidVersionList
     {
-        public static AndroidVersionList GetVersionList()
+        public static InstaAndroidVersionList GetVersionList()
         {
-            return new AndroidVersionList();
+            return new InstaAndroidVersionList();
         }
 
-        public List<AndroidVersion> AndroidVersions()
+        public List<InstaAndroidVersion> AndroidVersions()
         {
-            return new List<AndroidVersion>
-                   {
-                       new AndroidVersion
-                       {
-                           Codename = "Ice Cream Sandwich",
-                           VersionNumber = "4.0",
-                           APILevel = "14"
-                       },
-                       new AndroidVersion
-                       {
-                           Codename = "Ice Cream Sandwich",
-                           VersionNumber = "4.0.3",
-                           APILevel = "15"
-                       },
-                       new AndroidVersion
-                       {
-                           Codename = "Jelly Bean",
-                           VersionNumber = "4.1",
-                           APILevel = "16"
-                       },
-                       new AndroidVersion
-                       {
-                           Codename = "Jelly Bean",
-                           VersionNumber = "4.2",
-                           APILevel = "17"
-                       },
-                       new AndroidVersion
-                       {
-                           Codename = "Jelly Bean",
-                           VersionNumber = "4.3",
-                           APILevel = "18"
-                       },
-                       new AndroidVersion
-                       {
-                           Codename = "KitKat",
-                           VersionNumber = "4.4",
-                           APILevel = "19"
-                       },
-                       new AndroidVersion
-                       {
-                           Codename = "KitKat",
-                           VersionNumber = "5.0",
-                           APILevel = "21"
-                       },
-                       new AndroidVersion
-                       {
-                           Codename = "Lollipop",
-                           VersionNumber = "5.1",
-                           APILevel = "22"
-                       },
-                       new AndroidVersion
-                       {
-                           Codename = "Marshmallow",
-                           VersionNumber = "6.0",
-                           APILevel = "23"
-                       },
-                       new AndroidVersion
-                       {
-                           Codename = "Nougat",
-                           VersionNumber = "7.0",
-                           APILevel = "24"
-                       },
-                       new AndroidVersion
-                       {
-                           Codename = "Nougat",
-                           VersionNumber = "7.1",
-                           APILevel = "25"
-                       },
-                       new AndroidVersion
-                       {
-                           Codename = "Oreo",
-                           VersionNumber = "8.0",
-                           APILevel = "26"
-                       },
-                       new AndroidVersion
-                       {
-                           Codename = "Oreo",
-                           VersionNumber = "8.1",
-                           APILevel = "27"
-                       },
-                       new AndroidVersion
-                       {
-                           Codename = "Pie",
-                           VersionNumber = "9.0",
-                           APILevel = "27"
-                       }
-                   };
+            return new List<InstaAndroidVersion>
+            {
+                new InstaAndroidVersion { Codename = "Ice Cream Sandwich", VersionNumber = "4.0", ApiLevel = "14" },
+                new InstaAndroidVersion { Codename = "Ice Cream Sandwich", VersionNumber = "4.0.3", ApiLevel = "15" },
+                new InstaAndroidVersion { Codename = "Jelly Bean", VersionNumber = "4.1", ApiLevel = "16" },
+                new InstaAndroidVersion { Codename = "Jelly Bean", VersionNumber = "4.2", ApiLevel = "17" },
+                new InstaAndroidVersion { Codename = "Jelly Bean", VersionNumber = "4.3", ApiLevel = "18" },
+                new InstaAndroidVersion { Codename = "KitKat", VersionNumber = "4.4", ApiLevel = "19" },
+                new InstaAndroidVersion { Codename = "KitKat", VersionNumber = "5.0", ApiLevel = "21" },
+                new InstaAndroidVersion { Codename = "Lollipop", VersionNumber = "5.1", ApiLevel = "22" },
+                new InstaAndroidVersion { Codename = "Marshmallow", VersionNumber = "6.0", ApiLevel = "23" },
+                new InstaAndroidVersion { Codename = "Nougat", VersionNumber = "7.0", ApiLevel = "24" },
+                new InstaAndroidVersion { Codename = "Nougat", VersionNumber = "7.1", ApiLevel = "25" },
+                new InstaAndroidVersion { Codename = "Oreo", VersionNumber = "8.0", ApiLevel = "26" },
+                new InstaAndroidVersion { Codename = "Oreo", VersionNumber = "8.1", ApiLevel = "27" },
+                new InstaAndroidVersion { Codename = "Pie", VersionNumber = "9.0", ApiLevel = "27" }
+            };
         }
     }
 }

@@ -1,8 +1,11 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Broadcast;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Broadcast;
 
 namespace Wikiled.Instagram.Api.Converters.Broadcast
 {
-    internal class InstaBroadcastPostLiveConverter : IObjectConverter<InstaBroadcastPostLive, InstaBroadcastPostLiveResponse>
+    internal class
+        InstaBroadcastPostLiveConverter : IObjectConverter<InstaBroadcastPostLive, InstaBroadcastPostLiveResponse>
     {
         public InstaBroadcastPostLiveResponse SourceObject { get; set; }
 
@@ -14,15 +17,15 @@ namespace Wikiled.Instagram.Api.Converters.Broadcast
             }
 
             var postLive = new InstaBroadcastPostLive
-                           {
-                               PeakViewerCount = SourceObject.PeakViewerCount,
-                               Pk = SourceObject.Pk
-                           };
+            {
+                PeakViewerCount = SourceObject.PeakViewerCount, Pk = SourceObject.Pk
+            };
 
             if (SourceObject.User != null)
             {
-                postLive.User = ConvertersFabric.Instance
-                                                .GetUserShortFriendshipFullConverter(SourceObject.User).Convert();
+                postLive.User = InstaConvertersFabric.Instance
+                    .GetUserShortFriendshipFullConverter(SourceObject.User)
+                    .Convert();
             }
 
             try
@@ -31,7 +34,8 @@ namespace Wikiled.Instagram.Api.Converters.Broadcast
                 {
                     foreach (var broadcastInfo in SourceObject.Broadcasts)
                     {
-                        postLive.Broadcasts.Add(ConvertersFabric.Instance.GetBroadcastInfoConverter(broadcastInfo).Convert());
+                        postLive.Broadcasts.Add(InstaConvertersFabric.Instance.GetBroadcastInfoConverter(broadcastInfo)
+                                                    .Convert());
                     }
                 }
             }

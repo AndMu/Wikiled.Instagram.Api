@@ -1,8 +1,12 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Discover;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Discover;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Discover
 {
-    internal class InstaDiscoverSearchesConverter : IObjectConverter<InstaDiscoverSearches, InstaDiscoverSearchesResponse>
+    internal class
+        InstaDiscoverSearchesConverter : IObjectConverter<InstaDiscoverSearches, InstaDiscoverSearchesResponse>
     {
         public InstaDiscoverSearchesResponse SourceObject { get; set; }
 
@@ -14,11 +18,11 @@ namespace Wikiled.Instagram.Api.Converters.Discover
             }
 
             var searches = new InstaDiscoverSearches
-                           {
-                               ClientTime = DateTimeHelper.FromUnixTimeSeconds(SourceObject.ClientTime ?? 0),
-                               Position = SourceObject.Position,
-                               User = ConvertersFabric.Instance.GetUserConverter(SourceObject.User).Convert()
-                           };
+            {
+                ClientTime = InstaDateTimeHelper.FromUnixTimeSeconds(SourceObject.ClientTime ?? 0),
+                Position = SourceObject.Position,
+                User = InstaConvertersFabric.Instance.GetUserConverter(SourceObject.User).Convert()
+            };
             return searches;
         }
     }

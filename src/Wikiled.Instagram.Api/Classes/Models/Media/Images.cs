@@ -1,6 +1,6 @@
 ﻿namespace Wikiled.Instagram.Api.Classes.Models.Media
 {
-    public class Images
+    public class InstaImages
     {
         public InstaImage LowResolution { get; set; }
 

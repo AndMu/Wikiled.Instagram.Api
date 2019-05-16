@@ -1,6 +1,6 @@
 ﻿namespace Wikiled.Instagram.Api.Classes.Models.Story
 {
-    public class InstaStoryCTA
+    public class InstaStoryCta
     {
         public string AndroidClass { get; set; }
 

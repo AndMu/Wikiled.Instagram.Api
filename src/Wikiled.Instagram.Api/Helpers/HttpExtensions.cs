@@ -2,7 +2,7 @@
 
 namespace Wikiled.Instagram.Api.Helpers
 {
-    public static class HttpExtensions
+    public static class InstaHttpExtensions
     {
         public static Uri AddQueryParameter(this Uri uri, string name, string value)
         {
@@ -11,7 +11,7 @@ namespace Wikiled.Instagram.Api.Helpers
                 return uri;
             }
 
-            var httpValueCollection = HttpUtility.ParseQueryString(uri);
+            var httpValueCollection = InstaHttpUtility.ParseQueryString(uri);
 
             httpValueCollection.Remove(name);
             httpValueCollection.Add(name, value);
@@ -41,7 +41,7 @@ namespace Wikiled.Instagram.Api.Helpers
                 return uri;
             }
 
-            var httpValueCollection = HttpUtility.ParseQueryString(uri);
+            var httpValueCollection = InstaHttpUtility.ParseQueryString(uri);
             httpValueCollection.Remove(name);
             httpValueCollection.Add(name, value);
             var ub = new UriBuilder(uri);

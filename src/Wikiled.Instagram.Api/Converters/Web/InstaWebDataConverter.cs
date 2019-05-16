@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Web;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Web;
 
 namespace Wikiled.Instagram.Api.Converters.Web
 {
@@ -19,7 +21,7 @@ namespace Wikiled.Instagram.Api.Converters.Web
             {
                 foreach (var item in SourceObject.Data.Data)
                 {
-                    data.Items.Add(ConvertersFabric.Instance.GetWebDataItemConverter(item).Convert());
+                    data.Items.Add(InstaConvertersFabric.Instance.GetWebDataItemConverter(item).Convert());
                 }
 
                 data.MaxId = SourceObject.Data.Cursor;

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Feed;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.TV;
 
 namespace Wikiled.Instagram.Api.Converters.Json
 {
@@ -76,7 +79,7 @@ namespace Wikiled.Instagram.Api.Converters.Json
                                     var channels = GetTVs(channelsToken);
                                     if (channels?.Count > 0)
                                     {
-                                        feed.TVChannels.AddRange(channels);
+                                        feed.TvChannels.AddRange(channels);
                                     }
                                 }
                             }
@@ -106,9 +109,9 @@ namespace Wikiled.Instagram.Api.Converters.Json
             return token.ToObject<InstaMediaItemResponse>();
         }
 
-        private List<InstaTVChannelResponse> GetTVs(JToken token)
+        private List<InstaTvChannelResponse> GetTVs(JToken token)
         {
-            return token.ToObject<List<InstaTVChannelResponse>>();
+            return token.ToObject<List<InstaTvChannelResponse>>();
         }
     }
 }

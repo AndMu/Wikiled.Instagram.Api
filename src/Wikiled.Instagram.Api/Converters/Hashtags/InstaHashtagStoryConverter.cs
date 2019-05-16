@@ -1,4 +1,7 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Hashtags;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Hashtags;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Hashtags
 {
@@ -14,25 +17,25 @@ namespace Wikiled.Instagram.Api.Converters.Hashtags
             }
 
             var hashtagStory = new InstaHashtagStory
-                               {
-                                   CanReply = SourceObject.CanReply,
-                                   CanReshare = SourceObject.CanReshare,
-                                   ExpiringAt = SourceObject.ExpiringAt.FromUnixTimeSeconds(),
-                                   Id = SourceObject.Id,
-                                   LatestReelMedia = SourceObject.LatestReelMedia,
-                                   Muted = SourceObject.Muted,
-                                   PrefetchCount = SourceObject.PrefetchCount,
-                                   ReelType = SourceObject.ReelType,
-                                   UniqueIntegerReelId = SourceObject.UniqueIntegerReelId,
-                                   Owner = ConvertersFabric.Instance.GetHashtagOwnerConverter(SourceObject.Owner).Convert()
-                               };
+            {
+                CanReply = SourceObject.CanReply,
+                CanReshare = SourceObject.CanReshare,
+                ExpiringAt = SourceObject.ExpiringAt.FromUnixTimeSeconds(),
+                Id = SourceObject.Id,
+                LatestReelMedia = SourceObject.LatestReelMedia,
+                Muted = SourceObject.Muted,
+                PrefetchCount = SourceObject.PrefetchCount,
+                ReelType = SourceObject.ReelType,
+                UniqueIntegerReelId = SourceObject.UniqueIntegerReelId,
+                Owner = InstaConvertersFabric.Instance.GetHashtagOwnerConverter(SourceObject.Owner).Convert()
+            };
             try
             {
                 foreach (var story in SourceObject.Items)
                 {
                     try
                     {
-                        hashtagStory.Items.Add(ConvertersFabric.Instance.GetStoryItemConverter(story).Convert());
+                        hashtagStory.Items.Add(InstaConvertersFabric.Instance.GetStoryItemConverter(story).Convert());
                     }
                     catch
                     {

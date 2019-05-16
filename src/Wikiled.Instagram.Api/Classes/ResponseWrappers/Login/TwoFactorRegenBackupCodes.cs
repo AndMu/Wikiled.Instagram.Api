@@ -2,10 +2,12 @@
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Login
 {
-    public class TwoFactorRegenBackupCodes
+    public class InstaTwoFactorRegenBackupCodes
     {
-        [JsonProperty("backup_codes")] public string[] BackupCodes { get; set; }
+        [JsonProperty("backup_codes")]
+        public string[] BackupCodes { get; set; }
 
-        [JsonProperty("status")] internal string Status { get; set; }
+        [JsonProperty("status")]
+        internal string Status { get; set; }
     }
 }

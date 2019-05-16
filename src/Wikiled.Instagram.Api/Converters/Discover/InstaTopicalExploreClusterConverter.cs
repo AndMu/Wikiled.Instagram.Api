@@ -1,25 +1,30 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Feed;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Feed;
+using Wikiled.Instagram.Api.Enums;
 
 namespace Wikiled.Instagram.Api.Converters.Discover
 {
-    internal class InstaTopicalExploreClusterConverter : IObjectConverter<InstaTopicalExploreCluster, InstaTopicalExploreClusterResponse>
+    internal class
+        InstaTopicalExploreClusterConverter : IObjectConverter<InstaTopicalExploreCluster,
+            InstaTopicalExploreClusterResponse>
     {
         public InstaTopicalExploreClusterResponse SourceObject { get; set; }
 
         public InstaTopicalExploreCluster Convert()
         {
             var cluster = new InstaTopicalExploreCluster
-                          {
-                              CanMute = SourceObject.CanMute ?? false,
-                              Context = SourceObject.Context,
-                              DebugInfo = SourceObject.DebugInfo,
-                              Description = SourceObject.Description,
-                              Id = SourceObject.Id,
-                              IsMuted = SourceObject.IsMuted ?? false,
-                              Name = SourceObject.Name,
-                              RankedPosition = SourceObject.RankedPosition ?? 0,
-                              Title = SourceObject.Title
-                          };
+            {
+                CanMute = SourceObject.CanMute ?? false,
+                Context = SourceObject.Context,
+                DebugInfo = SourceObject.DebugInfo,
+                Description = SourceObject.Description,
+                Id = SourceObject.Id,
+                IsMuted = SourceObject.IsMuted ?? false,
+                Name = SourceObject.Name,
+                RankedPosition = SourceObject.RankedPosition ?? 0,
+                Title = SourceObject.Title
+            };
             try
             {
                 var type = SourceObject.Type.Replace("_", "");

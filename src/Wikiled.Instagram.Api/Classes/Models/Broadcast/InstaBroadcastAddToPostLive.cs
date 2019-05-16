@@ -1,4 +1,6 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.Broadcast
+﻿using Wikiled.Instagram.Api.Classes.Models.User;
+
+namespace Wikiled.Instagram.Api.Classes.Models.Broadcast
 {
     public class InstaBroadcastAddToPostLive
     {

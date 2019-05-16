@@ -1,4 +1,7 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Users
 {
@@ -14,11 +17,11 @@ namespace Wikiled.Instagram.Api.Converters.Users
             }
 
             var userPresence = new InstaUserPresence
-                               {
-                                   Pk = SourceObject.Pk,
-                                   IsActive = SourceObject.IsActive ?? false,
-                                   LastActivity = DateTimeHelper.FromUnixTimeMiliSeconds(SourceObject.LastActivityAtMs ?? 0)
-                               };
+            {
+                Pk = SourceObject.Pk,
+                IsActive = SourceObject.IsActive ?? false,
+                LastActivity = (SourceObject.LastActivityAtMs ?? 0).FromUnixTimeMiliSeconds()
+            };
             return userPresence;
         }
     }

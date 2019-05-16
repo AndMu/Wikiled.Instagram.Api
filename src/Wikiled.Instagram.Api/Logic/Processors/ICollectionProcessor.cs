@@ -3,7 +3,7 @@ using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.Models.Collection;
 using Wikiled.Instagram.Api.Classes.Models.Media;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Collection api functions.
@@ -39,10 +39,12 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="collectionId">Collection ID to edit</param>
         /// <param name="name">New name for giving collection (set null if you don't want to change it)</param>
         /// <param name="photoCoverMediaId">
-        ///     New photo cover media Id (get it from <see cref="InstaMedia.InstaIdentifier" />) => Optional
+        ///     New photo cover media Id (get it from <see cref="InstaMedia.Identifier" />) => Optional
         ///     <para>Important note: media id must be exists in giving collection!</para>
         /// </param>
-        Task<IResult<InstaCollectionItem>> EditCollectionAsync(long collectionId, string name, string photoCoverMediaId = null);
+        Task<IResult<InstaCollectionItem>> EditCollectionAsync(long collectionId,
+                                                               string name,
+                                                               string photoCoverMediaId = null);
 
         /// <summary>
         ///     Get your collections

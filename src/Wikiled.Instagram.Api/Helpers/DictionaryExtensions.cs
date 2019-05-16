@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Wikiled.Instagram.Api.Helpers
 {
-    internal static class DictionaryExtensions
+    internal static class InstaDictionaryExtensions
     {
         public static string AsQueryString(this Dictionary<string, string> parameters)
         {

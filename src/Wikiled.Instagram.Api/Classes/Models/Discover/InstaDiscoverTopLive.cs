@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Wikiled.Instagram.Api.Classes.Models.Broadcast;
 
 namespace Wikiled.Instagram.Api.Classes.Models.Discover
 {

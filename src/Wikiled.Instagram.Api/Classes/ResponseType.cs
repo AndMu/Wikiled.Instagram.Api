@@ -1,6 +1,6 @@
 namespace Wikiled.Instagram.Api.Classes
 {
-    public enum ResponseType
+    public enum InstaResponseType
     {
         /// <summary>
         ///     Unknown type:|
@@ -30,7 +30,7 @@ namespace Wikiled.Instagram.Api.Classes
         /// <summary>
         ///     Everything works fine
         /// </summary>
-        OK = 5,
+        Ok = 5,
 
         /// <summary>
         ///     Wrong request

@@ -1,5 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.Direct;
+using Wikiled.Instagram.Api.Classes.Models.Location;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Direct;
+using Wikiled.Instagram.Api.Enums;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Directs
 {
@@ -10,12 +18,11 @@ namespace Wikiled.Instagram.Api.Converters.Directs
         public InstaDirectInboxItem Convert()
         {
             var threadItem = new InstaDirectInboxItem
-                             {
-                                 ClientContext = SourceObject.ClientContext,
-                                 ItemId = SourceObject.ItemId
-                             };
+            {
+                ClientContext = SourceObject.ClientContext, ItemId = SourceObject.ItemId
+            };
 
-            threadItem.TimeStamp = DateTimeHelper.UnixTimestampMilisecondsToDateTime(SourceObject.TimeStamp);
+            threadItem.TimeStamp = InstaDateTimeHelper.UnixTimestampMilisecondsToDateTime(SourceObject.TimeStamp);
             threadItem.UserId = SourceObject.UserId;
 
             var truncatedItemType = SourceObject.ItemType.Trim().Replace("_", "");
@@ -29,10 +36,7 @@ namespace Wikiled.Instagram.Api.Converters.Directs
                 threadItem.Text = SourceObject.Link.Text;
                 try
                 {
-                    threadItem.LinkMedia = new InstaWebLink
-                                           {
-                                               Text = SourceObject.Link.Text
-                                           };
+                    threadItem.LinkMedia = new InstaWebLink { Text = SourceObject.Link.Text };
                     if (SourceObject.Link.LinkContext != null)
                     {
                         threadItem.LinkMedia.LinkContext = new InstaWebLinkContext();
@@ -66,33 +70,30 @@ namespace Wikiled.Instagram.Api.Converters.Directs
             {
                 threadItem.Text = SourceObject.Like;
             }
-            else if (threadItem.ItemType == InstaDirectThreadItemType.Media
-                     && SourceObject.Media != null)
+            else if (threadItem.ItemType == InstaDirectThreadItemType.Media && SourceObject.Media != null)
             {
-                var converter = ConvertersFabric.Instance.GetInboxMediaConverter(SourceObject.Media);
+                var converter = InstaConvertersFabric.Instance.GetInboxMediaConverter(SourceObject.Media);
                 threadItem.Media = converter.Convert();
             }
-            else if (threadItem.ItemType == InstaDirectThreadItemType.MediaShare
-                     && SourceObject.MediaShare != null)
+            else if (threadItem.ItemType == InstaDirectThreadItemType.MediaShare && SourceObject.MediaShare != null)
             {
-                var converter = ConvertersFabric.Instance.GetSingleMediaConverter(SourceObject.MediaShare);
+                var converter = InstaConvertersFabric.Instance.GetSingleMediaConverter(SourceObject.MediaShare);
                 threadItem.MediaShare = converter.Convert();
             }
-            else if (threadItem.ItemType == InstaDirectThreadItemType.StoryShare
-                     && SourceObject.StoryShare != null)
+            else if (threadItem.ItemType == InstaDirectThreadItemType.StoryShare && SourceObject.StoryShare != null)
             {
                 threadItem.StoryShare = new InstaStoryShare
-                                        {
-                                            IsReelPersisted = SourceObject.StoryShare.IsReelPersisted,
-                                            ReelType = SourceObject.StoryShare.ReelType,
-                                            Text = SourceObject.StoryShare.Text,
-                                            IsLinked = SourceObject.StoryShare.IsLinked,
-                                            Message = SourceObject.StoryShare.Message,
-                                            Title = SourceObject.StoryShare.Title
-                                        };
+                {
+                    IsReelPersisted = SourceObject.StoryShare.IsReelPersisted,
+                    ReelType = SourceObject.StoryShare.ReelType,
+                    Text = SourceObject.StoryShare.Text,
+                    IsLinked = SourceObject.StoryShare.IsLinked,
+                    Message = SourceObject.StoryShare.Message,
+                    Title = SourceObject.StoryShare.Title
+                };
                 if (SourceObject.StoryShare.Media != null)
                 {
-                    var converter = ConvertersFabric.Instance.GetSingleMediaConverter(SourceObject.StoryShare.Media);
+                    var converter = InstaConvertersFabric.Instance.GetSingleMediaConverter(SourceObject.StoryShare.Media);
                     threadItem.StoryShare.Media = converter.Convert();
                 }
             }
@@ -101,49 +102,52 @@ namespace Wikiled.Instagram.Api.Converters.Directs
                 threadItem.Text = SourceObject.Text;
             }
             else if (threadItem.ItemType == InstaDirectThreadItemType.RavenMedia &&
-                     SourceObject.RavenMedia != null)
+                SourceObject.RavenMedia != null)
             {
-                var converter = ConvertersFabric.Instance.GetVisualMediaConverter(SourceObject.RavenMedia);
+                var converter = InstaConvertersFabric.Instance.GetVisualMediaConverter(SourceObject.RavenMedia);
                 threadItem.RavenMedia = converter.Convert();
                 threadItem.RavenSeenUserIds = SourceObject.RavenSeenUserIds;
                 if (!string.IsNullOrEmpty(SourceObject.RavenViewMode))
                 {
-                    threadItem.RavenViewMode = (InstaViewMode)Enum.Parse(typeof(InstaViewMode), SourceObject.RavenViewMode, true);
+                    threadItem.RavenViewMode =
+                        (InstaViewMode)Enum.Parse(typeof(InstaViewMode), SourceObject.RavenViewMode, true);
                 }
 
                 threadItem.RavenReplayChainCount = SourceObject.RavenReplayChainCount ?? 0;
                 threadItem.RavenSeenCount = SourceObject.RavenSeenCount;
                 if (SourceObject.RavenExpiringMediaActionSummary != null)
                 {
-                    var ravenType = SourceObject.RavenExpiringMediaActionSummary.Type.ToLower() == "raven_delivered" ? InstaRavenType.Delivered : InstaRavenType.Opened;
+                    var ravenType = SourceObject.RavenExpiringMediaActionSummary.Type.ToLower() == "raven_delivered"
+                        ? InstaRavenType.Delivered
+                        : InstaRavenType.Opened;
                     threadItem.RavenExpiringMediaActionSummary = new InstaRavenMediaActionSummary
-                                                                 {
-                                                                     Count = SourceObject.RavenExpiringMediaActionSummary.Count,
-                                                                     Type = ravenType
-                                                                 };
+                    {
+                        Count = SourceObject.RavenExpiringMediaActionSummary.Count, Type = ravenType
+                    };
                     if (!string.IsNullOrEmpty(SourceObject.RavenExpiringMediaActionSummary.TimeStamp))
                     {
-                        threadItem.RavenExpiringMediaActionSummary.ExpireTime = DateTimeHelper.UnixTimestampMilisecondsToDateTime(SourceObject.RavenExpiringMediaActionSummary.TimeStamp);
+                        threadItem.RavenExpiringMediaActionSummary.ExpireTime =
+                            InstaDateTimeHelper.UnixTimestampMilisecondsToDateTime(
+                                SourceObject.RavenExpiringMediaActionSummary.TimeStamp);
                     }
                 }
             }
 
             // VisualMedia is updated RavenMedia for v61 and newer
             else if (threadItem.ItemType == InstaDirectThreadItemType.RavenMedia &&
-                     SourceObject.VisualMedia != null)
+                SourceObject.VisualMedia != null)
             {
-                threadItem.VisualMedia = ConvertersFabric.Instance.GetVisualMediaContainerConverter(SourceObject.VisualMedia).Convert();
+                threadItem.VisualMedia = InstaConvertersFabric.Instance
+                    .GetVisualMediaContainerConverter(SourceObject.VisualMedia)
+                    .Convert();
             }
             else if (threadItem.ItemType == InstaDirectThreadItemType.ActionLog && SourceObject.ActionLogMedia != null)
             {
-                threadItem.ActionLog = new InstaActionLog
-                                       {
-                                           Description = SourceObject.ActionLogMedia.Description
-                                       };
+                threadItem.ActionLog = new InstaActionLog { Description = SourceObject.ActionLogMedia.Description };
             }
             else if (threadItem.ItemType == InstaDirectThreadItemType.Profile && SourceObject.ProfileMedia != null)
             {
-                var converter = ConvertersFabric.Instance.GetUserShortConverter(SourceObject.ProfileMedia);
+                var converter = InstaConvertersFabric.Instance.GetUserShortConverter(SourceObject.ProfileMedia);
                 threadItem.ProfileMedia = converter.Convert();
                 if (SourceObject.ProfileMediasPreview != null && SourceObject.ProfileMediasPreview.Any())
                 {
@@ -152,7 +156,7 @@ namespace Wikiled.Instagram.Api.Converters.Directs
                         var previewMedias = new List<InstaMedia>();
                         foreach (var item in SourceObject.ProfileMediasPreview)
                         {
-                            previewMedias.Add(ConvertersFabric.Instance.GetSingleMediaConverter(item).Convert());
+                            previewMedias.Add(InstaConvertersFabric.Instance.GetSingleMediaConverter(item).Convert());
                         }
 
                         threadItem.ProfileMediasPreview = previewMedias;
@@ -165,10 +169,9 @@ namespace Wikiled.Instagram.Api.Converters.Directs
             else if (threadItem.ItemType == InstaDirectThreadItemType.Placeholder && SourceObject.Placeholder != null)
             {
                 threadItem.Placeholder = new InstaPlaceholder
-                                         {
-                                             IsLinked = SourceObject.Placeholder.IsLinked,
-                                             Message = SourceObject.Placeholder.Message
-                                         };
+                {
+                    IsLinked = SourceObject.Placeholder.IsLinked, Message = SourceObject.Placeholder.Message
+                };
             }
             else if (threadItem.ItemType == InstaDirectThreadItemType.Location && SourceObject.LocationMedia != null)
             {
@@ -213,12 +216,15 @@ namespace Wikiled.Instagram.Api.Converters.Directs
                 {
                 }
             }
-            else if (threadItem.ItemType == InstaDirectThreadItemType.FelixShare && SourceObject.FelixShareMedia != null &&
-                     SourceObject.FelixShareMedia.Video != null)
+            else if (threadItem.ItemType == InstaDirectThreadItemType.FelixShare &&
+                SourceObject.FelixShareMedia != null &&
+                SourceObject.FelixShareMedia.Video != null)
             {
                 try
                 {
-                    threadItem.FelixShareMedia = ConvertersFabric.Instance.GetSingleMediaConverter(SourceObject.FelixShareMedia.Video).Convert();
+                    threadItem.FelixShareMedia = InstaConvertersFabric.Instance
+                        .GetSingleMediaConverter(SourceObject.FelixShareMedia.Video)
+                        .Convert();
                 }
                 catch
                 {
@@ -228,7 +234,9 @@ namespace Wikiled.Instagram.Api.Converters.Directs
             {
                 try
                 {
-                    threadItem.ReelShareMedia = ConvertersFabric.Instance.GetReelShareConverter(SourceObject.ReelShareMedia).Convert();
+                    threadItem.ReelShareMedia = InstaConvertersFabric.Instance
+                        .GetReelShareConverter(SourceObject.ReelShareMedia)
+                        .Convert();
                 }
                 catch
                 {
@@ -238,17 +246,21 @@ namespace Wikiled.Instagram.Api.Converters.Directs
             {
                 try
                 {
-                    threadItem.VoiceMedia = ConvertersFabric.Instance.GetVoiceMediaConverter(SourceObject.VoiceMedia).Convert();
+                    threadItem.VoiceMedia = InstaConvertersFabric.Instance.GetVoiceMediaConverter(SourceObject.VoiceMedia)
+                        .Convert();
                 }
                 catch
                 {
                 }
             }
-            else if (threadItem.ItemType == InstaDirectThreadItemType.AnimatedMedia && SourceObject.AnimatedMedia != null)
+            else if (threadItem.ItemType == InstaDirectThreadItemType.AnimatedMedia &&
+                SourceObject.AnimatedMedia != null)
             {
                 try
                 {
-                    threadItem.AnimatedMedia = ConvertersFabric.Instance.GetAnimatedImageConverter(SourceObject.AnimatedMedia).Convert();
+                    threadItem.AnimatedMedia = InstaConvertersFabric.Instance
+                        .GetAnimatedImageConverter(SourceObject.AnimatedMedia)
+                        .Convert();
                 }
                 catch
                 {
@@ -258,17 +270,22 @@ namespace Wikiled.Instagram.Api.Converters.Directs
             {
                 try
                 {
-                    threadItem.HashtagMedia = ConvertersFabric.Instance.GetDirectHashtagConverter(SourceObject.HashtagMedia).Convert();
+                    threadItem.HashtagMedia = InstaConvertersFabric.Instance
+                        .GetDirectHashtagConverter(SourceObject.HashtagMedia)
+                        .Convert();
                 }
                 catch
                 {
                 }
             }
-            else if (threadItem.ItemType == InstaDirectThreadItemType.LiveViewerInvite && SourceObject.LiveViewerInvite != null)
+            else if (threadItem.ItemType == InstaDirectThreadItemType.LiveViewerInvite &&
+                SourceObject.LiveViewerInvite != null)
             {
                 try
                 {
-                    threadItem.LiveViewerInvite = ConvertersFabric.Instance.GetDirectBroadcastConverter(SourceObject.LiveViewerInvite).Convert();
+                    threadItem.LiveViewerInvite = InstaConvertersFabric.Instance
+                        .GetDirectBroadcastConverter(SourceObject.LiveViewerInvite)
+                        .Convert();
                 }
                 catch
                 {

@@ -1,4 +1,7 @@
-﻿namespace Wikiled.Instagram.Api.Converters.Business
+﻿using Wikiled.Instagram.Api.Classes.Models.Business;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Business;
+
+namespace Wikiled.Instagram.Api.Converters.Business
 {
     internal class InstaStatisticsConverter : IObjectConverter<InstaStatistics, InstaStatisticsRootResponse>
     {
@@ -13,13 +16,13 @@
 
             var user = SourceObject.Data.User;
             var statisfics = new InstaStatistics
-                             {
-                                 BusinessProfileId = user.BusinessProfile.Id,
-                                 FollowersCount = user.FollowersCount ?? 0,
-                                 Id = user.Id,
-                                 UserId = user.InstagramUserId,
-                                 Username = user.Username
-                             };
+            {
+                BusinessProfileId = user.BusinessProfile.Id,
+                FollowersCount = user.FollowersCount ?? 0,
+                Id = user.Id,
+                UserId = user.InstagramUserId,
+                Username = user.Username
+            };
             if (user.BusinessProfile != null && user.BusinessProfile.Id != null)
             {
                 statisfics.BusinessProfileId = user.BusinessProfile.Id;
@@ -39,9 +42,9 @@
                 try
                 {
                     statisfics.BusinessManager.PromotionsUnit = new InstaStatisticsSummaryPromotions
-                                                                {
-                                                                    Edges = businessManager.PromotionsUnit.SummaryPromotions.Edges
-                                                                };
+                    {
+                        Edges = businessManager.PromotionsUnit.SummaryPromotions.Edges
+                    };
                 }
                 catch
                 {
@@ -53,12 +56,13 @@
                 try
                 {
                     statisfics.BusinessManager.AccountSummaryUnit = new InstaStatisticsAccountSummaryUnit
-                                                                    {
-                                                                        FollowersCount = businessManager.AccountSummaryUnit.FollowersCount ?? 0,
-                                                                        FollowersDeltaFromLastWeek = businessManager.AccountSummaryUnit.FollowersDeltaFromLastWeek ?? 0,
-                                                                        PostsCount = businessManager.AccountSummaryUnit.PostsCount ?? 0,
-                                                                        PostsDeltaFromLastWeek = businessManager.AccountSummaryUnit.PostsDeltaFromLastWeek ?? 0
-                                                                    };
+                    {
+                        FollowersCount = businessManager.AccountSummaryUnit.FollowersCount ?? 0,
+                        FollowersDeltaFromLastWeek =
+                            businessManager.AccountSummaryUnit.FollowersDeltaFromLastWeek ?? 0,
+                        PostsCount = businessManager.AccountSummaryUnit.PostsCount ?? 0,
+                        PostsDeltaFromLastWeek = businessManager.AccountSummaryUnit.PostsDeltaFromLastWeek ?? 0
+                    };
                 }
                 catch
                 {
@@ -70,18 +74,18 @@
                 try
                 {
                     var storyUnit = new InstaStatisticsStoriesUnit
-                                    {
-                                        LastWeekStoriesCount = businessManager.StoriesUnit.LastWeekStoriesCount ?? 0,
-                                        State = businessManager.StoriesUnit.State,
-                                        WeekOverWeekStoriesDelta = businessManager.StoriesUnit.WeekOverWeekStoriesDelta ?? 0
-                                    };
+                    {
+                        LastWeekStoriesCount = businessManager.StoriesUnit.LastWeekStoriesCount ?? 0,
+                        State = businessManager.StoriesUnit.State,
+                        WeekOverWeekStoriesDelta = businessManager.StoriesUnit.WeekOverWeekStoriesDelta ?? 0
+                    };
                     if (businessManager.StoriesUnit.SummaryStories != null)
                     {
                         storyUnit.SummaryStories = new InstaStatisticsSummaryStories
-                                                   {
-                                                       Count = businessManager.StoriesUnit.SummaryStories.Count ?? 0,
-                                                       Edges = businessManager.StoriesUnit.SummaryStories.Edges
-                                                   };
+                        {
+                            Count = businessManager.StoriesUnit.SummaryStories.Count ?? 0,
+                            Edges = businessManager.StoriesUnit.SummaryStories.Edges
+                        };
                     }
 
                     statisfics.BusinessManager.StoriesUnit = storyUnit;
@@ -96,17 +100,18 @@
                 try
                 {
                     statisfics.BusinessManager.TopPostsUnit = new InstaStatisticsTopPostsUnit
-                                                              {
-                                                                  LastWeekPostsCount = businessManager.TopPostsUnit.LastWeekPostsCount ?? 0,
-                                                                  WeekOverWeekPostsDelta = businessManager.TopPostsUnit.WeekOverWeekPostsDelta ?? 0
-                                                              };
+                    {
+                        LastWeekPostsCount = businessManager.TopPostsUnit.LastWeekPostsCount ?? 0,
+                        WeekOverWeekPostsDelta = businessManager.TopPostsUnit.WeekOverWeekPostsDelta ?? 0
+                    };
                     if (businessManager.TopPostsUnit.SummaryPosts != null)
                     {
                         foreach (var media in businessManager.TopPostsUnit.SummaryPosts.Edges)
                         {
                             try
                             {
-                                var convertedMedia = ConvertersFabric.Instance.GetMediaShortConverter(media.Node).Convert();
+                                var convertedMedia = InstaConvertersFabric.Instance.GetMediaShortConverter(media.Node)
+                                    .Convert();
                                 statisfics.BusinessManager.TopPostsUnit.SummaryPosts.Add(convertedMedia);
                             }
                             catch
@@ -121,7 +126,8 @@
                         {
                             try
                             {
-                                var convertedMedia = ConvertersFabric.Instance.GetMediaShortConverter(media.Node).Convert();
+                                var convertedMedia = InstaConvertersFabric.Instance.GetMediaShortConverter(media.Node)
+                                    .Convert();
                                 statisfics.BusinessManager.TopPostsUnit.TopPosts.Add(convertedMedia);
                             }
                             catch
@@ -140,15 +146,18 @@
                 try
                 {
                     statisfics.BusinessManager.FollowersUnit = new InstaStatisticsFollowersUnit
-                                                               {
-                                                                   FollowersUnitState = businessManager.FollowersUnit.FollowersUnitState,
-                                                                   FollowersDeltaFromLastWeek = businessManager.FollowersUnit.FollowersDeltaFromLastWeek ?? default
-                                                               };
+                    {
+                        FollowersUnitState = businessManager.FollowersUnit.FollowersUnitState,
+                        FollowersDeltaFromLastWeek =
+                            businessManager.FollowersUnit.FollowersDeltaFromLastWeek ?? default
+                    };
                     foreach (var dataPoint in businessManager.FollowersUnit.AllFollowersAgeGraph.DataPoints)
                     {
                         try
                         {
-                            var convertedDataPoint = ConvertersFabric.Instance.GetStatisticsDataPointConverter(dataPoint).Convert();
+                            var convertedDataPoint = InstaConvertersFabric.Instance
+                                .GetStatisticsDataPointConverter(dataPoint)
+                                .Convert();
                             statisfics.BusinessManager.FollowersUnit.AllFollowersAgeGraph.Add(convertedDataPoint);
                         }
                         catch
@@ -162,8 +171,11 @@
                         {
                             try
                             {
-                                var convertedDataPoint = ConvertersFabric.Instance.GetStatisticsDataPointConverter(dataPoint).Convert();
-                                statisfics.BusinessManager.FollowersUnit.DaysHourlyFollowersGraphs.Add(convertedDataPoint);
+                                var convertedDataPoint = InstaConvertersFabric.Instance
+                                    .GetStatisticsDataPointConverter(dataPoint)
+                                    .Convert();
+                                statisfics.BusinessManager.FollowersUnit.DaysHourlyFollowersGraphs.Add(
+                                    convertedDataPoint);
                             }
                             catch
                             {
@@ -175,7 +187,9 @@
                     {
                         try
                         {
-                            var convertedDataPoint = ConvertersFabric.Instance.GetStatisticsDataPointConverter(dataPoint).Convert();
+                            var convertedDataPoint = InstaConvertersFabric.Instance
+                                .GetStatisticsDataPointConverter(dataPoint)
+                                .Convert();
                             statisfics.BusinessManager.FollowersUnit.FollowersTopCitiesGraph.Add(convertedDataPoint);
                         }
                         catch
@@ -187,7 +201,9 @@
                     {
                         try
                         {
-                            var convertedDataPoint = ConvertersFabric.Instance.GetStatisticsDataPointConverter(dataPoint).Convert();
+                            var convertedDataPoint = InstaConvertersFabric.Instance
+                                .GetStatisticsDataPointConverter(dataPoint)
+                                .Convert();
                             statisfics.BusinessManager.FollowersUnit.FollowersTopCountriesGraph.Add(convertedDataPoint);
                         }
                         catch
@@ -199,7 +215,9 @@
                     {
                         try
                         {
-                            var convertedDataPoint = ConvertersFabric.Instance.GetStatisticsDataPointConverter(dataPoint).Convert();
+                            var convertedDataPoint = InstaConvertersFabric.Instance
+                                .GetStatisticsDataPointConverter(dataPoint)
+                                .Convert();
                             statisfics.BusinessManager.FollowersUnit.GenderGraph.Add(convertedDataPoint);
                         }
                         catch
@@ -211,7 +229,9 @@
                     {
                         try
                         {
-                            var convertedDataPoint = ConvertersFabric.Instance.GetStatisticsDataPointConverter(dataPoint).Convert();
+                            var convertedDataPoint = InstaConvertersFabric.Instance
+                                .GetStatisticsDataPointConverter(dataPoint)
+                                .Convert();
                             statisfics.BusinessManager.FollowersUnit.MenFollowersAgeGraph.Add(convertedDataPoint);
                         }
                         catch
@@ -223,7 +243,9 @@
                     {
                         try
                         {
-                            var convertedDataPoint = ConvertersFabric.Instance.GetStatisticsDataPointConverter(dataPoint).Convert();
+                            var convertedDataPoint = InstaConvertersFabric.Instance
+                                .GetStatisticsDataPointConverter(dataPoint)
+                                .Convert();
                             statisfics.BusinessManager.FollowersUnit.TodayHourlyGraph.Add(convertedDataPoint);
                         }
                         catch
@@ -235,7 +257,9 @@
                     {
                         try
                         {
-                            var convertedDataPoint = ConvertersFabric.Instance.GetStatisticsDataPointConverter(dataPoint).Convert();
+                            var convertedDataPoint = InstaConvertersFabric.Instance
+                                .GetStatisticsDataPointConverter(dataPoint)
+                                .Convert();
                             statisfics.BusinessManager.FollowersUnit.WeekDailyFollowersGraph.Add(convertedDataPoint);
                         }
                         catch
@@ -247,7 +271,9 @@
                     {
                         try
                         {
-                            var convertedDataPoint = ConvertersFabric.Instance.GetStatisticsDataPointConverter(dataPoint).Convert();
+                            var convertedDataPoint = InstaConvertersFabric.Instance
+                                .GetStatisticsDataPointConverter(dataPoint)
+                                .Convert();
                             statisfics.BusinessManager.FollowersUnit.WomenFollowersAgeGraph.Add(convertedDataPoint);
                         }
                         catch
@@ -265,38 +291,42 @@
                 try
                 {
                     statisfics.BusinessManager.AccountInsightsUnit = new InstaStatisticsAccountInsightsUnit
-                                                                     {
-                                                                         LastWeekCall = businessManager.AccountInsightsUnit.LastWeekCall ?? 0,
-                                                                         LastWeekGetDirection = businessManager.AccountInsightsUnit.LastWeekGetDirection ?? 0,
-                                                                         LastWeekImpressions = businessManager.AccountInsightsUnit.LastWeekImpressions ?? 0,
-                                                                         LastWeekProfileVisits = businessManager.AccountInsightsUnit.LastWeekProfileVisits ?? 0,
-                                                                         LastWeekReach = businessManager.AccountInsightsUnit.LastWeekReach ?? 0,
-                                                                         LastWeekText = businessManager.AccountInsightsUnit.LastWeekText ?? 0,
-                                                                         LastWeekWebsiteVisits = businessManager.AccountInsightsUnit.LastWeekWebsiteVisits ?? 0,
-                                                                         LastWeekEmail = businessManager.AccountInsightsUnit.LastWeekWebsiteVisits ?? 0,
-                                                                         WeekOverWeekCall = businessManager.AccountInsightsUnit.WeekOverWeekEmail ?? 0,
-                                                                         WeekOverWeekEmail = businessManager.AccountInsightsUnit.WeekOverWeekEmail ?? 0,
-                                                                         WeekOverWeekGetDirection = businessManager.AccountInsightsUnit.WeekOverWeekGetDirection ?? 0,
-                                                                         WeekOverWeekImpressions = businessManager.AccountInsightsUnit.WeekOverWeekImpressions ?? 0,
-                                                                         WeekOverWeekProfileVisits = businessManager.AccountInsightsUnit.WeekOverWeekReach ?? 0,
-                                                                         WeekOverWeekReach = businessManager.AccountInsightsUnit.WeekOverWeekReach ?? 0,
-                                                                         WeekOverWeekText = businessManager.AccountInsightsUnit.WeekOverWeekText ?? 0,
-                                                                         WeekOverWeekWebsiteVisits = businessManager.AccountInsightsUnit.WeekOverWeekWebsiteVisits ?? 0
-                                                                     };
+                    {
+                        LastWeekCall = businessManager.AccountInsightsUnit.LastWeekCall ?? 0,
+                        LastWeekGetDirection = businessManager.AccountInsightsUnit.LastWeekGetDirection ?? 0,
+                        LastWeekImpressions = businessManager.AccountInsightsUnit.LastWeekImpressions ?? 0,
+                        LastWeekProfileVisits = businessManager.AccountInsightsUnit.LastWeekProfileVisits ?? 0,
+                        LastWeekReach = businessManager.AccountInsightsUnit.LastWeekReach ?? 0,
+                        LastWeekText = businessManager.AccountInsightsUnit.LastWeekText ?? 0,
+                        LastWeekWebsiteVisits = businessManager.AccountInsightsUnit.LastWeekWebsiteVisits ?? 0,
+                        LastWeekEmail = businessManager.AccountInsightsUnit.LastWeekWebsiteVisits ?? 0,
+                        WeekOverWeekCall = businessManager.AccountInsightsUnit.WeekOverWeekEmail ?? 0,
+                        WeekOverWeekEmail = businessManager.AccountInsightsUnit.WeekOverWeekEmail ?? 0,
+                        WeekOverWeekGetDirection =
+                            businessManager.AccountInsightsUnit.WeekOverWeekGetDirection ?? 0,
+                        WeekOverWeekImpressions = businessManager.AccountInsightsUnit.WeekOverWeekImpressions ?? 0,
+                        WeekOverWeekProfileVisits = businessManager.AccountInsightsUnit.WeekOverWeekReach ?? 0,
+                        WeekOverWeekReach = businessManager.AccountInsightsUnit.WeekOverWeekReach ?? 0,
+                        WeekOverWeekText = businessManager.AccountInsightsUnit.WeekOverWeekText ?? 0,
+                        WeekOverWeekWebsiteVisits =
+                            businessManager.AccountInsightsUnit.WeekOverWeekWebsiteVisits ?? 0
+                    };
 
                     if (businessManager.AccountInsightsUnit.InstagramAccountInsightsChannel != null)
                     {
                         try
                         {
-                            statisfics.BusinessManager.AccountInsightsUnit.InstagramAccountInsightsChannel = new InstaStatisticsInsightsChannel
-                                                                                                             {
-                                                                                                                 ChannelId = businessManager
-                                                                                                                             .AccountInsightsUnit.InstagramAccountInsightsChannel.ChannelId,
-                                                                                                                 Id = businessManager.AccountInsightsUnit.InstagramAccountInsightsChannel.Id,
-                                                                                                                 Tips = businessManager.AccountInsightsUnit.InstagramAccountInsightsChannel.Tips,
-                                                                                                                 UnseenCount = businessManager.AccountInsightsUnit.InstagramAccountInsightsChannel
-                                                                                                                                              .UnseenCount ?? 0
-                                                                                                             };
+                            statisfics.BusinessManager.AccountInsightsUnit.InstagramAccountInsightsChannel =
+                                new InstaStatisticsInsightsChannel
+                                {
+                                    ChannelId = businessManager
+                                        .AccountInsightsUnit.InstagramAccountInsightsChannel.ChannelId,
+                                    Id = businessManager.AccountInsightsUnit.InstagramAccountInsightsChannel.Id,
+                                    Tips = businessManager.AccountInsightsUnit.InstagramAccountInsightsChannel.Tips,
+                                    UnseenCount = businessManager.AccountInsightsUnit.InstagramAccountInsightsChannel
+                                            .UnseenCount ??
+                                        0
+                                };
                         }
                         catch
                         {
@@ -305,14 +335,20 @@
 
                     if (businessManager.AccountInsightsUnit.AccountActionsLastWeekDailyGraph != null &&
                         businessManager.AccountInsightsUnit.AccountActionsLastWeekDailyGraph.TotalCountGraph != null &&
-                        businessManager.AccountInsightsUnit.AccountActionsLastWeekDailyGraph.TotalCountGraph.DataPoints != null)
+                        businessManager.AccountInsightsUnit.AccountActionsLastWeekDailyGraph.TotalCountGraph
+                            .DataPoints !=
+                        null)
                     {
-                        foreach (var dataPoint in businessManager.AccountInsightsUnit.AccountActionsLastWeekDailyGraph.TotalCountGraph.DataPoints)
+                        foreach (var dataPoint in businessManager.AccountInsightsUnit.AccountActionsLastWeekDailyGraph
+                            .TotalCountGraph.DataPoints)
                         {
                             try
                             {
-                                var convertedDataPoint = ConvertersFabric.Instance.GetStatisticsDataPointConverter(dataPoint).Convert();
-                                statisfics.BusinessManager.AccountInsightsUnit.AccountActionsLastWeekDailyGraph.Add(convertedDataPoint);
+                                var convertedDataPoint = InstaConvertersFabric.Instance
+                                    .GetStatisticsDataPointConverter(dataPoint)
+                                    .Convert();
+                                statisfics.BusinessManager.AccountInsightsUnit.AccountActionsLastWeekDailyGraph.Add(
+                                    convertedDataPoint);
                             }
                             catch
                             {
@@ -323,14 +359,18 @@
                     if (businessManager.AccountInsightsUnit.AccountDiscoveryLastWeekDailyGraph != null &&
                         businessManager.AccountInsightsUnit.AccountDiscoveryLastWeekDailyGraph.Nodes != null)
                     {
-                        foreach (var node in businessManager.AccountInsightsUnit.AccountDiscoveryLastWeekDailyGraph.Nodes)
+                        foreach (var node in businessManager.AccountInsightsUnit.AccountDiscoveryLastWeekDailyGraph
+                            .Nodes)
                         {
                             foreach (var dataPoint in node.DataPoints)
                             {
                                 try
                                 {
-                                    var convertedDataPoint = ConvertersFabric.Instance.GetStatisticsDataPointConverter(dataPoint).Convert();
-                                    statisfics.BusinessManager.AccountInsightsUnit.AccountDiscoveryLastWeekDailyGraph.Add(convertedDataPoint);
+                                    var convertedDataPoint = InstaConvertersFabric.Instance
+                                        .GetStatisticsDataPointConverter(dataPoint)
+                                        .Convert();
+                                    statisfics.BusinessManager.AccountInsightsUnit.AccountDiscoveryLastWeekDailyGraph
+                                        .Add(convertedDataPoint);
                                 }
                                 catch
                                 {

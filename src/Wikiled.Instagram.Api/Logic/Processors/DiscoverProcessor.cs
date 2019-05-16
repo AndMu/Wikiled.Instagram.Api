@@ -18,43 +18,43 @@ using Wikiled.Instagram.Api.Enums;
 using Wikiled.Instagram.Api.Helpers;
 using Wikiled.Instagram.Api.Logger;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Discover api functions.
     /// </summary>
-    internal class DiscoverProcessor : IDiscoverProcessor
+    internal class InstaDiscoverProcessor : IDiscoverProcessor
     {
-        private readonly AndroidDevice _deviceInfo;
+        private readonly InstaAndroidDevice deviceInfo;
 
-        private readonly HttpHelper _httpHelper;
+        private readonly InstaHttpHelper httpHelper;
 
-        private readonly IHttpRequestProcessor _httpRequestProcessor;
+        private readonly IHttpRequestProcessor httpRequestProcessor;
 
-        private readonly InstaApi _instaApi;
+        private readonly InstaApi instaApi;
 
-        private readonly IInstaLogger _logger;
+        private readonly IInstaLogger logger;
 
-        private readonly UserSessionData _user;
+        private readonly UserSessionData user;
 
-        private readonly UserAuthValidate _userAuthValidate;
+        private readonly InstaUserAuthValidate userAuthValidate;
 
-        public DiscoverProcessor(
-            AndroidDevice deviceInfo,
+        public InstaDiscoverProcessor(
+            InstaAndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             IInstaLogger logger,
-            UserAuthValidate userAuthValidate,
+            InstaUserAuthValidate userAuthValidate,
             InstaApi instaApi,
-            HttpHelper httpHelper)
+            InstaHttpHelper httpHelper)
         {
-            _deviceInfo = deviceInfo;
-            _user = user;
-            _httpRequestProcessor = httpRequestProcessor;
-            _logger = logger;
-            _userAuthValidate = userAuthValidate;
-            _instaApi = instaApi;
-            _httpHelper = httpHelper;
+            this.deviceInfo = deviceInfo;
+            this.user = user;
+            this.httpRequestProcessor = httpRequestProcessor;
+            this.logger = logger;
+            this.userAuthValidate = userAuthValidate;
+            this.instaApi = instaApi;
+            this.httpHelper = httpHelper;
         }
 
         /// <summary>
@@ -64,33 +64,32 @@ namespace Wikiled.Instagram.Api.API.Processors
         {
             try
             {
-                var instaUri = UriCreator.GetClearSearchHistoryUri();
+                var instaUri = InstaUriCreator.GetClearSearchHistoryUri();
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_csrftoken", user.CsrfToken }, { "_uuid", deviceInfo.DeviceGuid.ToString() }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<bool>(response, json);
+                    return InstaResult.UnExpectedResponse<bool>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaDefault>(json);
-                return obj.Status == "ok" ? Result.Success(true) : Result.UnExpectedResponse<bool>(response, json);
+                return obj.Status == "ok" ? InstaResult.Success(true) : InstaResult.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<bool>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<bool>(exception);
             }
         }
 
@@ -101,28 +100,28 @@ namespace Wikiled.Instagram.Api.API.Processors
         {
             try
             {
-                var instaUri = UriCreator.GetDiscoverChainingUri(_user.LoggedInUser.Pk);
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var instaUri = InstaUriCreator.GetDiscoverChainingUri(user.LoggedInUser.Pk);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaUserChainingList>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaUserChainingList>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaUserChainingContainerResponse>(json);
-                return Result.Success(ConvertersFabric.Instance.GetUserChainingListConverter(obj).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetUserChainingListConverter(obj).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaUserChainingList), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaUserChainingList), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaUserChainingList>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaUserChainingList>(exception);
             }
         }
 
@@ -133,28 +132,28 @@ namespace Wikiled.Instagram.Api.API.Processors
         {
             try
             {
-                var instaUri = UriCreator.GetRecentSearchUri();
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var instaUri = InstaUriCreator.GetRecentSearchUri();
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaDiscoverRecentSearches>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaDiscoverRecentSearches>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaDiscoverRecentSearchesResponse>(json);
-                return Result.Success(ConvertersFabric.Instance.GetDiscoverRecentSearchesConverter(obj).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetDiscoverRecentSearchesConverter(obj).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaDiscoverRecentSearches), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaDiscoverRecentSearches), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaDiscoverRecentSearches>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaDiscoverRecentSearches>(exception);
             }
         }
 
@@ -168,28 +167,28 @@ namespace Wikiled.Instagram.Api.API.Processors
         {
             try
             {
-                var instaUri = UriCreator.GetSuggestedSearchUri(searchType);
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var instaUri = InstaUriCreator.GetSuggestedSearchUri(searchType);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaDiscoverSuggestedSearches>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaDiscoverSuggestedSearches>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaDiscoverSuggestedSearchesResponse>(json);
-                return Result.Success(ConvertersFabric.Instance.GetDiscoverSuggestedSearchesConverter(obj).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetDiscoverSuggestedSearchesConverter(obj).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaDiscoverSuggestedSearches), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaDiscoverSuggestedSearches), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaDiscoverSuggestedSearches>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaDiscoverSuggestedSearches>(exception);
             }
         }
 
@@ -198,37 +197,40 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         /// <param name="querry">querry string of the search</param>
         /// <param name="searchType">Search type(only blended and users works)</param>
-        /// <param name="timezone_offset">
+        /// <param name="timezoneOffset">
         ///     Timezone offset of the search region (GMT Offset * 60 * 60 - Like Tehran GMT +3:30 = 3.5*
         ///     60*60 = 12600)
         /// </param>
         /// <returns></returns>
-        public async Task<IResult<InstaDiscoverTopSearches>> GetTopSearchesAsync(string querry = "", InstaDiscoverSearchType searchType = InstaDiscoverSearchType.Users, int timezone_offset = 12600)
+        public async Task<IResult<InstaDiscoverTopSearches>> GetTopSearchesAsync(
+            string querry = "",
+            InstaDiscoverSearchType searchType = InstaDiscoverSearchType.Users,
+            int timezoneOffset = 12600)
         {
             try
             {
-                var instaUri = UriCreator.GetTopSearchUri(_user.RankToken, querry, searchType, timezone_offset);
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var instaUri = InstaUriCreator.GetTopSearchUri(user.RankToken, querry, searchType, timezoneOffset);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaDiscoverTopSearches>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaDiscoverTopSearches>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaDiscoverTopSearchesResponse>(json);
-                return Result.Success(ConvertersFabric.Instance.GetDiscoverTopSearchesConverter(obj).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetDiscoverTopSearchesConverter(obj).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaDiscoverTopSearches), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaDiscoverTopSearches), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaDiscoverTopSearches>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaDiscoverTopSearches>(exception);
             }
         }
 
@@ -241,79 +243,30 @@ namespace Wikiled.Instagram.Api.API.Processors
         {
             try
             {
-                var instaUri = UriCreator.GetSearchUserUri(query, count);
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var instaUri = InstaUriCreator.GetSearchUserUri(query, count);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaDiscoverSearchResult>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaDiscoverSearchResult>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaDiscoverSearchResultResponse>(json);
-                return Result.Success(ConvertersFabric.Instance.GetDiscoverSearchResultConverter(obj).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetDiscoverSearchResultConverter(obj).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaDiscoverSearchResult), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaDiscoverSearchResult), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaDiscoverSearchResult>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaDiscoverSearchResult>(exception);
             }
         }
-
-        /// <summary>
-        ///     NOT COMPLETE
-        /// </summary>
-        /// <returns></returns>
-        private async Task<IResult<object>> DiscoverPeopleAsync()
-        {
-            try
-            {
-                var instaUri = UriCreator.GetDiscoverPeopleUri();
-                Debug.WriteLine(instaUri.ToString());
-
-                var data = new JObject
-                           {
-                               {"phone_id", _deviceInfo.DeviceGuid.ToString()},
-                               {"module", "discover_people"},
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"paginate", "true"}
-
-                               //{"_uid", _user.LoggedInUder.Pk.ToString()},
-                           };
-
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                request.Headers.Host = "i.instagram.com";
-                var response = await _httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
-                Debug.WriteLine(json);
-                if (response.StatusCode != HttpStatusCode.OK)
-                {
-                    return Result.UnExpectedResponse<InstaDefaultResponse>(response, json);
-                }
-
-                var obj = JsonConvert.DeserializeObject<InstaDefaultResponse>(json);
-                return Result.Success(obj);
-            }
-            catch (HttpRequestException httpException)
-            {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaDefaultResponse), ResponseType.NetworkProblem);
-            }
-            catch (Exception exception)
-            {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaDefaultResponse>(exception);
-            }
-        }
-
-        #region Other functions
 
         /// <summary>
         ///     Sync your phone contact list to instagram
@@ -330,13 +283,13 @@ namespace Wikiled.Instagram.Api.API.Processors
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaContactUserList), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaContactUserList), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaContactUserList>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaContactUserList>(exception);
             }
         }
 
@@ -347,44 +300,86 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="instaContacts">Contact list</param>
         public async Task<IResult<InstaContactUserList>> SyncContactsAsync(InstaContactList instaContacts)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetSyncContactsUri();
+                var instaUri = InstaUriCreator.GetSyncContactsUri();
 
                 var jsonContacts = JsonConvert.SerializeObject(instaContacts);
 
-                var fields = new Dictionary<string, string>
-                             {
-                                 {"contacts", jsonContacts}
-                             };
+                var fields = new Dictionary<string, string> { { "contacts", jsonContacts } };
 
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, _deviceInfo, fields);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, deviceInfo, fields);
 
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaContactUserList>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaContactUserList>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaContactUserListResponse>(json);
 
-                return Result.Success(ConvertersFabric.Instance.GetUserContactListConverter(obj).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetUserContactListConverter(obj).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaContactUserList), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaContactUserList), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaContactUserList>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaContactUserList>(exception);
             }
         }
 
-        #endregion Other functions
+        /// <summary>
+        ///     NOT COMPLETE
+        /// </summary>
+        /// <returns></returns>
+        private async Task<IResult<object>> DiscoverPeopleAsync()
+        {
+            try
+            {
+                var instaUri = InstaUriCreator.GetDiscoverPeopleUri();
+                Debug.WriteLine(instaUri.ToString());
+
+                var data = new JObject
+                {
+                    { "phone_id", deviceInfo.DeviceGuid.ToString() },
+                    { "module", "discover_people" },
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "paginate", "true" }
+
+                    //{"_uid", _user.LoggedInUder.Pk.ToString()},
+                };
+
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                request.Headers.Host = "i.instagram.com";
+                var response = await httpRequestProcessor.SendAsync(request);
+                var json = await response.Content.ReadAsStringAsync();
+                Debug.WriteLine(json);
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    return InstaResult.UnExpectedResponse<InstaDefaultResponse>(response, json);
+                }
+
+                var obj = JsonConvert.DeserializeObject<InstaDefaultResponse>(json);
+                return InstaResult.Success(obj);
+            }
+            catch (HttpRequestException httpException)
+            {
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaDefaultResponse), InstaResponseType.NetworkProblem);
+            }
+            catch (Exception exception)
+            {
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaDefaultResponse>(exception);
+            }
+        }
     }
 }

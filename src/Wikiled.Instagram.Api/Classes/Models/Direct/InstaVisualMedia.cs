@@ -11,9 +11,9 @@ namespace Wikiled.Instagram.Api.Classes.Models.Direct
 
         public List<InstaImage> Images { get; set; } = new List<InstaImage>();
 
-        public string InstaIdentifier { get; set; }
+        public string Identifier { get; set; }
 
-        public bool IsExpired => string.IsNullOrEmpty(InstaIdentifier);
+        public bool IsExpired => string.IsNullOrEmpty(Identifier);
 
         public long MediaId { get; set; }
 

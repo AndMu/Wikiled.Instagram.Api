@@ -6,24 +6,34 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Story
 {
     public class InstaReelFeedResponse
     {
-        [JsonProperty("can_reply")] public bool CanReply { get; set; }
+        [JsonProperty("can_reply")]
+        public bool CanReply { get; set; }
 
-        [JsonProperty("can_reshare")] public string CanReshare { get; set; }
+        [JsonProperty("can_reshare")]
+        public string CanReshare { get; set; }
 
-        [JsonProperty("expiring_at")] public long ExpiringAt { get; set; }
+        [JsonProperty("expiring_at")]
+        public long ExpiringAt { get; set; }
 
-        [JsonProperty("has_besties_media")] public long HasBestiesMedia { get; set; }
+        [JsonProperty("has_besties_media")]
+        public long HasBestiesMedia { get; set; }
 
-        [JsonProperty("id")] public string Id { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
 
-        [JsonProperty("items")] public List<InstaStoryItemResponse> Items { get; set; }
+        [JsonProperty("items")]
+        public List<InstaStoryItemResponse> Items { get; set; }
 
-        [JsonProperty("latest_reel_media")] public long? LatestReelMedia { get; set; }
+        [JsonProperty("latest_reel_media")]
+        public long? LatestReelMedia { get; set; }
 
-        [JsonProperty("prefetch_count")] public long PrefetchCount { get; set; }
+        [JsonProperty("prefetch_count")]
+        public long PrefetchCount { get; set; }
 
-        [JsonProperty("seen")] public long? Seen { get; set; }
+        [JsonProperty("seen")]
+        public long? Seen { get; set; }
 
-        [JsonProperty("user")] public InstaUserShortFriendshipFullResponse User { get; set; }
+        [JsonProperty("user")]
+        public InstaUserShortFriendshipFullResponse User { get; set; }
     }
 }

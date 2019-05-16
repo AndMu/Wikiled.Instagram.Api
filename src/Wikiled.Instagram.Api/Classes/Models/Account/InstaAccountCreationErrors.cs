@@ -4,6 +4,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Account
 {
     public class InstaAccountCreationErrors
     {
-        [JsonProperty("username")] public string[] Username { get; set; }
+        [JsonProperty("username")]
+        public string[] Username { get; set; }
     }
 }

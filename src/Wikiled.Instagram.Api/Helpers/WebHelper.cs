@@ -2,7 +2,7 @@
 
 namespace Wikiled.Instagram.Api.Helpers
 {
-    internal static class WebHelper
+    internal static class InstaWebHelper
     {
         private const string EndTag = ";</script>";
 

@@ -16,57 +16,43 @@ using Wikiled.Instagram.Api.Converters.Json;
 using Wikiled.Instagram.Api.Helpers;
 using Wikiled.Instagram.Api.Logger;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Shopping and commerce api functions.
     /// </summary>
-    internal class ShoppingProcessor : IShoppingProcessor
+    internal class InstaShoppingProcessor : IShoppingProcessor
     {
-        public async Task<IResult<InstaProductInfo>> GetCatalogsAsync()
+        private readonly InstaAndroidDevice deviceInfo;
+
+        private readonly InstaHttpHelper httpHelper;
+
+        private readonly IHttpRequestProcessor httpRequestProcessor;
+
+        private readonly InstaApi instaApi;
+
+        private readonly IInstaLogger logger;
+
+        private readonly UserSessionData user;
+
+        private readonly InstaUserAuthValidate userAuthValidate;
+
+        public InstaShoppingProcessor(
+            InstaAndroidDevice deviceInfo,
+            UserSessionData user,
+            IHttpRequestProcessor httpRequestProcessor,
+            IInstaLogger logger,
+            InstaUserAuthValidate userAuthValidate,
+            InstaApi instaApi,
+            InstaHttpHelper httpHelper)
         {
-            try
-            {
-                var instaUri = new Uri($"https://i.instagram.com/api/v1/wwwgraphql/ig/query/?locale={InstaApiConstants.ACCEPT_LANGUAGE.Replace("-", "_")}");
-
-                var sources = new JObject
-                              {
-                                  {"sources", null}
-                              };
-
-                var data = new Dictionary<string, string>
-                           {
-                               {"access_token", "undefined"},
-                               {"fb_api_caller_class", "RelayModern"},
-                               {"variables", sources.ToString(Formatting.Indented)},
-                               {"doc_id", "1742970149122229"}
-                           };
-
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
-
-                //{"data":{"me":{"taggable_catalogs":{"edges":[],"page_info":{"has_next_page":false,"end_cursor":null}},"id":"17841407343005740"}}}
-                if (response.StatusCode != HttpStatusCode.OK)
-                {
-                    return Result.UnExpectedResponse<InstaProductInfo>(response, json);
-                }
-
-                var productInfoResponse = JsonConvert.DeserializeObject<InstaProductInfoResponse>(json);
-                var converted = ConvertersFabric.Instance.GetProductInfoConverter(productInfoResponse).Convert();
-
-                return Result.Success(converted);
-            }
-            catch (HttpRequestException httpException)
-            {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaProductInfo), ResponseType.NetworkProblem);
-            }
-            catch (Exception exception)
-            {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaProductInfo>(exception);
-            }
+            this.deviceInfo = deviceInfo;
+            this.user = user;
+            this.httpRequestProcessor = httpRequestProcessor;
+            this.logger = logger;
+            this.userAuthValidate = userAuthValidate;
+            this.instaApi = instaApi;
+            this.httpHelper = httpHelper;
         }
 
         /// <summary>
@@ -75,34 +61,37 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="productId">Product id (get it from <see cref="InstaProduct.ProductId" /> )</param>
         /// <param name="mediaPk">Media Pk (get it from <see cref="InstaMedia.Pk" />)</param>
         /// <param name="deviceWidth">Device width (pixel)</param>
-        public async Task<IResult<InstaProductInfo>> GetProductInfoAsync(long productId, string mediaPk, int deviceWidth = 720)
+        public async Task<IResult<InstaProductInfo>> GetProductInfoAsync(
+            long productId,
+            string mediaPk,
+            int deviceWidth = 720)
         {
             try
             {
-                var instaUri = UriCreator.GetProductInfoUri(productId, mediaPk, deviceWidth);
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var instaUri = InstaUriCreator.GetProductInfoUri(productId, mediaPk, deviceWidth);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaProductInfo>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaProductInfo>(response, json);
                 }
 
                 var productInfoResponse = JsonConvert.DeserializeObject<InstaProductInfoResponse>(json);
-                var converted = ConvertersFabric.Instance.GetProductInfoConverter(productInfoResponse).Convert();
+                var converted = InstaConvertersFabric.Instance.GetProductInfoConverter(productInfoResponse).Convert();
 
-                return Result.Success(converted);
+                return InstaResult.Success(converted);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaProductInfo), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaProductInfo), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaProductInfo>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaProductInfo>(exception);
             }
         }
 
@@ -118,11 +107,11 @@ namespace Wikiled.Instagram.Api.API.Processors
             string username,
             PaginationParameters paginationParameters)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
-            var user = await _instaApi.UserProcessor.GetUserAsync(username);
+            InstaUserAuthValidator.Validate(userAuthValidate);
+            var user = await instaApi.UserProcessor.GetUserAsync(username);
             if (!user.Succeeded)
             {
-                return Result.Fail<InstaMediaList>("Unable to get user to load shoppable media");
+                return InstaResult.Fail<InstaMediaList>("Unable to get user to load shoppable media");
             }
 
             return await GetUserShoppableMedia(user.Value.Pk, paginationParameters);
@@ -143,37 +132,82 @@ namespace Wikiled.Instagram.Api.API.Processors
             return await GetUserShoppableMedia(userId, paginationParameters);
         }
 
+        public async Task<IResult<InstaProductInfo>> GetCatalogsAsync()
+        {
+            try
+            {
+                var instaUri =
+                    new Uri(
+                        $"https://i.instagram.com/api/v1/wwwgraphql/ig/query/?locale={InstaApiConstants.AcceptLanguage.Replace("-", "_")}");
+
+                var sources = new JObject { { "sources", null } };
+
+                var data = new Dictionary<string, string>
+                {
+                    { "access_token", "undefined" },
+                    { "fb_api_caller_class", "RelayModern" },
+                    { "variables", sources.ToString(Formatting.Indented) },
+                    { "doc_id", "1742970149122229" }
+                };
+
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
+                var json = await response.Content.ReadAsStringAsync();
+
+                //{"data":{"me":{"taggable_catalogs":{"edges":[],"page_info":{"has_next_page":false,"end_cursor":null}},"id":"17841407343005740"}}}
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    return InstaResult.UnExpectedResponse<InstaProductInfo>(response, json);
+                }
+
+                var productInfoResponse = JsonConvert.DeserializeObject<InstaProductInfoResponse>(json);
+                var converted = InstaConvertersFabric.Instance.GetProductInfoConverter(productInfoResponse).Convert();
+
+                return InstaResult.Success(converted);
+            }
+            catch (HttpRequestException httpException)
+            {
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaProductInfo), InstaResponseType.NetworkProblem);
+            }
+            catch (Exception exception)
+            {
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaProductInfo>(exception);
+            }
+        }
+
         private async Task<IResult<InstaMediaListResponse>> GetShoppableMedia(
             long userId,
             PaginationParameters paginationParameters)
         {
             try
             {
-                var instaUri = UriCreator.GetUserShoppableMediaListUri(userId, paginationParameters.NextMaxId);
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var instaUri = InstaUriCreator.GetUserShoppableMediaListUri(userId, paginationParameters.NextMaxId);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaMediaListResponse>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaMediaListResponse>(response, json);
                 }
 
                 var mediaResponse = JsonConvert.DeserializeObject<InstaMediaListResponse>(
                     json,
                     new InstaMediaListDataConverter());
 
-                return Result.Success(mediaResponse);
+                return InstaResult.Success(mediaResponse);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaMediaListResponse), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaMediaListResponse), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, default(InstaMediaListResponse));
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, default(InstaMediaListResponse));
             }
         }
 
@@ -191,7 +225,7 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 InstaMediaList Convert(InstaMediaListResponse mediaListResponse)
                 {
-                    return ConvertersFabric.Instance.GetMediaListConverter(mediaListResponse).Convert();
+                    return InstaConvertersFabric.Instance.GetMediaListConverter(mediaListResponse).Convert();
                 }
 
                 var mediaResult = await GetShoppableMedia(userId, paginationParameters);
@@ -199,25 +233,25 @@ namespace Wikiled.Instagram.Api.API.Processors
                 {
                     if (mediaResult.Value != null)
                     {
-                        return Result.Fail(mediaResult.Info, Convert(mediaResult.Value));
+                        return InstaResult.Fail(mediaResult.Info, Convert(mediaResult.Value));
                     }
 
-                    return Result.Fail(mediaResult.Info, mediaList);
+                    return InstaResult.Fail(mediaResult.Info, mediaList);
                 }
 
                 var mediaResponse = mediaResult.Value;
-                mediaList = ConvertersFabric.Instance.GetMediaListConverter(mediaResponse).Convert();
+                mediaList = InstaConvertersFabric.Instance.GetMediaListConverter(mediaResponse).Convert();
                 mediaList.NextMaxId = paginationParameters.NextMaxId = mediaResponse.NextMaxId;
                 paginationParameters.PagesLoaded++;
 
-                while (mediaResponse.MoreAvailable
-                       && !string.IsNullOrEmpty(paginationParameters.NextMaxId)
-                       && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
+                while (mediaResponse.MoreAvailable &&
+                    !string.IsNullOrEmpty(paginationParameters.NextMaxId) &&
+                    paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var nextMedia = await GetShoppableMedia(userId, paginationParameters);
                     if (!nextMedia.Succeeded)
                     {
-                        return Result.Fail(nextMedia.Info, mediaList);
+                        return InstaResult.Fail(nextMedia.Info, mediaList);
                     }
 
                     mediaList.NextMaxId = paginationParameters.NextMaxId = nextMedia.Value.NextMaxId;
@@ -229,54 +263,18 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 mediaList.Pages = paginationParameters.PagesLoaded;
                 mediaList.PageSize = mediaResponse.ResultsCount;
-                return Result.Success(mediaList);
+                return InstaResult.Success(mediaList);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaMediaList), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaMediaList), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, mediaList);
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, mediaList);
             }
         }
-
-        #region Properties and constructor
-
-        private readonly AndroidDevice _deviceInfo;
-
-        private readonly IHttpRequestProcessor _httpRequestProcessor;
-
-        private readonly IInstaLogger _logger;
-
-        private readonly UserSessionData _user;
-
-        private readonly UserAuthValidate _userAuthValidate;
-
-        private readonly InstaApi _instaApi;
-
-        private readonly HttpHelper _httpHelper;
-
-        public ShoppingProcessor(
-            AndroidDevice deviceInfo,
-            UserSessionData user,
-            IHttpRequestProcessor httpRequestProcessor,
-            IInstaLogger logger,
-            UserAuthValidate userAuthValidate,
-            InstaApi instaApi,
-            HttpHelper httpHelper)
-        {
-            _deviceInfo = deviceInfo;
-            _user = user;
-            _httpRequestProcessor = httpRequestProcessor;
-            _logger = logger;
-            _userAuthValidate = userAuthValidate;
-            _instaApi = instaApi;
-            _httpHelper = httpHelper;
-        }
-
-        #endregion Properties and constructor
     }
 }

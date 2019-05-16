@@ -4,6 +4,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Business
 {
     public class InstaFullMediaInsightsNodeResponse
     {
-        [JsonProperty("nodes")] public InstaInsightsDataNodeResponse[] Nodes { get; set; }
+        [JsonProperty("nodes")]
+        public InstaInsightsDataNodeResponse[] Nodes { get; set; }
     }
 }

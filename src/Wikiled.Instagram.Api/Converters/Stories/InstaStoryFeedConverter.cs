@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Hashtags;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
 
 namespace Wikiled.Instagram.Api.Converters.Stories
 {
@@ -14,12 +18,12 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             }
 
             var feed = new InstaStoryFeed
-                       {
-                           FaceFilterNuxVersion = SourceObject.FaceFilterNuxVersion,
-                           HasNewNuxStory = SourceObject.HasNewNuxStory,
-                           StickerVersion = SourceObject.StickerVersion,
-                           StoryRankingToken = SourceObject.StoryRankingToken
-                       };
+            {
+                FaceFilterNuxVersion = SourceObject.FaceFilterNuxVersion,
+                HasNewNuxStory = SourceObject.HasNewNuxStory,
+                StickerVersion = SourceObject.StickerVersion,
+                StoryRankingToken = SourceObject.StoryRankingToken
+            };
 
             if (SourceObject.Tray != null && SourceObject.Tray.Any())
             {
@@ -29,12 +33,13 @@ namespace Wikiled.Instagram.Api.Converters.Stories
                     if (reel.Id.ToLower().StartsWith("tag:"))
                     {
                         feed.HashtagStories.Add(
-                            ConvertersFabric.Instance
-                                            .GetHashtagStoryConverter(itemResponse.ToObject<InstaHashtagStoryResponse>()).Convert());
+                            InstaConvertersFabric.Instance
+                                .GetHashtagStoryConverter(itemResponse.ToObject<InstaHashtagStoryResponse>())
+                                .Convert());
                     }
                     else
                     {
-                        feed.Items.Add(ConvertersFabric.Instance.GetReelFeedConverter(reel).Convert());
+                        feed.Items.Add(InstaConvertersFabric.Instance.GetReelFeedConverter(reel).Convert());
                     }
                 }
             }
@@ -43,7 +48,7 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             {
                 foreach (var item in SourceObject.Broadcasts)
                 {
-                    feed.Broadcasts.Add(ConvertersFabric.Instance.GetBroadcastConverter(item).Convert());
+                    feed.Broadcasts.Add(InstaConvertersFabric.Instance.GetBroadcastConverter(item).Convert());
                 }
             }
 
@@ -51,7 +56,7 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             {
                 foreach (var postlive in SourceObject.PostLives.PostLiveItems)
                 {
-                    feed.PostLives.Add(ConvertersFabric.Instance.GetAddToPostLiveConverter(postlive).Convert());
+                    feed.PostLives.Add(InstaConvertersFabric.Instance.GetAddToPostLiveConverter(postlive).Convert());
                 }
             }
 

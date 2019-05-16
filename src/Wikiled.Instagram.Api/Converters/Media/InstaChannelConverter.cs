@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
 
 namespace Wikiled.Instagram.Api.Converters.Media
 {
@@ -14,16 +16,16 @@ namespace Wikiled.Instagram.Api.Converters.Media
             }
 
             var channel = new InstaChannel
-                          {
-                              ChannelId = SourceObject.ChannelId,
-                              ChannelType = SourceObject.ChannelType,
-                              Context = SourceObject.Context,
-                              Header = SourceObject.Header,
-                              Title = SourceObject.Title
-                          };
+            {
+                ChannelId = SourceObject.ChannelId,
+                ChannelType = SourceObject.ChannelType,
+                Context = SourceObject.Context,
+                Header = SourceObject.Header,
+                Title = SourceObject.Title
+            };
             if (SourceObject.Media != null)
             {
-                channel.Media = ConvertersFabric.Instance.GetSingleMediaConverter(SourceObject.Media).Convert();
+                channel.Media = InstaConvertersFabric.Instance.GetSingleMediaConverter(SourceObject.Media).Convert();
             }
 
             return channel;

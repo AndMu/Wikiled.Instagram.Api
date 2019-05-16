@@ -9,7 +9,7 @@ using Wikiled.Instagram.Api.Classes.Models.User;
 using Wikiled.Instagram.Api.Classes.ResponseWrappers.Login;
 using Wikiled.Instagram.Api.Enums;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Account api functions.
@@ -17,8 +17,6 @@ namespace Wikiled.Instagram.Api.API.Processors
     /// </summary>
     public interface IAccountProcessor
     {
-        #region Edit profile
-
         /// <summary>
         ///     Change password
         /// </summary>
@@ -41,7 +39,8 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         /// <param name="progress">Progress action</param>
         /// <param name="pictureBytes">Picture(JPG,JPEG) bytes</param>
-        Task<IResult<InstaUserEdit>> ChangeProfilePictureAsync(Action<InstaUploaderProgress> progress, byte[] pictureBytes);
+        Task<IResult<InstaUserEdit>> ChangeProfilePictureAsync(Action<InstaUploaderProgress> progress,
+                                                               byte[] pictureBytes);
 
         /// <summary>
         ///     Edit profile
@@ -53,7 +52,13 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="phone">Phone number (leave null if you don't want to change it)</param>
         /// <param name="gender">Gender type (leave null if you don't want to change it)</param>
         /// <param name="newUsername">New username (optional) (leave null if you don't want to change it)</param>
-        Task<IResult<InstaUserEdit>> EditProfileAsync(string name, string biography, string url, string email, string phone, InstaGenderType? gender, string newUsername = null);
+        Task<IResult<InstaUserEdit>> EditProfileAsync(string name,
+                                                      string biography,
+                                                      string url,
+                                                      string email,
+                                                      string phone,
+                                                      InstaGenderType? gender,
+                                                      string newUsername = null);
 
         /// <summary>
         ///     Get request for download backup account data.
@@ -107,10 +112,6 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="nametagImage">Nametag image</param>
         Task<IResult<InstaMedia>> UploadNametagAsync(InstaImage nametagImage);
 
-        #endregion Edit profile
-
-        #region Story settings
-
         /// <summary>
         ///     Allow story message replies.
         /// </summary>
@@ -155,10 +156,6 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         Task<IResult<InstaStorySettings>> GetStorySettingsAsync();
 
-        #endregion Story settings
-
-        #region two factor authentication enable/disable
-
         /// <summary>
         ///     Disable two factor authentication.
         /// </summary>
@@ -173,7 +170,7 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <summary>
         ///     Regenerate two factor backup codes
         /// </summary>
-        Task<IResult<TwoFactorRegenBackupCodes>> RegenerateTwoFactorBackupCodesAsync();
+        Task<IResult<InstaTwoFactorRegenBackupCodes>> RegenerateTwoFactorBackupCodesAsync();
 
         /// <summary>
         ///     Send confirm email.
@@ -212,10 +209,6 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="verificationCode">Verification code</param>
         Task<IResult<InstaAccountVerifySms>> VerifySmsCodeAsync(string phoneNumber, string verificationCode);
 
-        #endregion two factor authentication enable/disable
-
-        #region Other functions
-
         /// <summary>
         ///     Enable presence (people can track your activities and you can see their activies too)
         /// </summary>
@@ -241,15 +234,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         Task<IResult<InstaBusinessUser>> SwitchToBusinessAccountAsync();
 
-        #endregion Other functions
-
-        #region NOT COMPLETE FUNCTIONS
-
         /// <summary>
         ///     NOT COMPLETE dastrasi last activity
         /// </summary>
         //Task<IResult<object>> GetCommentFilterAsync();
-
-        #endregion NOT COMPLETE FUNCTIONS
     }
 }

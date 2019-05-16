@@ -1,4 +1,6 @@
-﻿namespace Wikiled.Instagram.Api.Classes
+﻿using Wikiled.Instagram.Api.Enums;
+
+namespace Wikiled.Instagram.Api.Classes
 {
     public class InstaUploaderProgress
     {

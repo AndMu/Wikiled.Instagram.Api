@@ -1,4 +1,7 @@
 using System;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
 
 namespace Wikiled.Instagram.Api.Converters.Users
 {
@@ -22,7 +25,7 @@ namespace Wikiled.Instagram.Api.Converters.Users
             userTag.TimeInVideo = SourceObject.TimeInVideo;
             if (SourceObject.User != null)
             {
-                userTag.User = ConvertersFabric.Instance.GetUserShortConverter(SourceObject.User).Convert();
+                userTag.User = InstaConvertersFabric.Instance.GetUserShortConverter(SourceObject.User).Convert();
             }
 
             return userTag;

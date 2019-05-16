@@ -1,17 +1,7 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+
 /////////////////////////////////////////////////////////////////////
 ////////////////////// IMPORTANT NOTE ///////////////////////////////
 // Please check wiki pages for more information:
@@ -20,11 +10,11 @@ using System.Threading.Tasks;
 /////////////////////////////////////////////////////////////////////
 namespace FacebookLoginExample
 {
-    static class Helper
+    internal static class InstaHelper
     {
         public static string PrintException(this Exception ex, string name = "")
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.AppendLine($"{name} exception thrown: ");
             sb.AppendLine($"Source: {ex.Source}");
             sb.AppendLine($"Stack trace: {ex.StackTrace}");
@@ -34,7 +24,7 @@ namespace FacebookLoginExample
 
         public static string Output(this object source, string start = "")
         {
-            string content = $"{start} {Convert.ToString(source)}";
+            var content = $"{start} {Convert.ToString(source)}";
             Debug.WriteLine(content);
             return content;
         }

@@ -7,7 +7,7 @@ using Wikiled.Instagram.Api.Classes.Models.Media;
 using Wikiled.Instagram.Api.Classes.Models.User;
 using Wikiled.Instagram.Api.Enums;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Business api functions
@@ -80,7 +80,7 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <summary>
         ///     Get full media insights
         /// </summary>
-        /// <param name="mediaId">Media id (<see cref="InstaMedia.InstaIdentifier" />)</param>
+        /// <param name="mediaId">Media id (<see cref="InstaMedia.Identifier" />)</param>
         Task<IResult<InstaFullMediaInsights>> GetFullMediaInsightsAsync(string mediaId);
 
         /// <summary>

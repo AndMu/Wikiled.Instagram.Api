@@ -1,4 +1,8 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Direct;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Direct;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Directs
 {
@@ -14,14 +18,14 @@ namespace Wikiled.Instagram.Api.Converters.Directs
             }
 
             var visualMedia = new InstaVisualMedia
-                              {
-                                  Height = SourceObject.Height ?? 0,
-                                  InstaIdentifier = SourceObject.InstaIdentifier,
-                                  MediaType = SourceObject.MediaType,
-                                  MediaId = SourceObject.MediaId,
-                                  TrackingToken = SourceObject.TrackingToken,
-                                  Width = SourceObject.Width ?? 0
-                              };
+            {
+                Height = SourceObject.Height ?? 0,
+                Identifier = SourceObject.Identifier,
+                MediaType = SourceObject.MediaType,
+                MediaId = SourceObject.MediaId,
+                TrackingToken = SourceObject.TrackingToken,
+                Width = SourceObject.Width ?? 0
+            };
 
             if (SourceObject.UrlExpireAtSecs != null)
             {

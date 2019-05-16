@@ -1,6 +1,8 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
 
 namespace Wikiled.Instagram.Api.Converters.Json
 {
@@ -27,8 +29,8 @@ namespace Wikiled.Instagram.Api.Converters.Json
             {
                 var mediaToken = item?.SelectToken("media");
                 var media = mediaToken != null
-                                ? mediaToken.ToObject<InstaMediaItemResponse>()
-                                : item?.ToObject<InstaMediaItemResponse>();
+                    ? mediaToken.ToObject<InstaMediaItemResponse>()
+                    : item?.ToObject<InstaMediaItemResponse>();
                 if (string.IsNullOrEmpty(media?.Pk))
                 {
                     continue;

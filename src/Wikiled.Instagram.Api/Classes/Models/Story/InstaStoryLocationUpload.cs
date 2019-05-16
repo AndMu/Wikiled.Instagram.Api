@@ -1,4 +1,6 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.Story
+﻿using Wikiled.Instagram.Api.Logic.Processors;
+
+namespace Wikiled.Instagram.Api.Classes.Models.Story
 {
     public class InstaStoryLocationUpload
     {

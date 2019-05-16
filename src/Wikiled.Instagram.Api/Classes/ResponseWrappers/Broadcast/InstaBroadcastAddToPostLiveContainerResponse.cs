@@ -5,6 +5,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Broadcast
 {
     public class InstaBroadcastAddToPostLiveContainerResponse
     {
-        [JsonProperty("post_live_items")] public List<InstaBroadcastAddToPostLiveResponse> PostLiveItems { get; set; }
+        [JsonProperty("post_live_items")]
+        public List<InstaBroadcastAddToPostLiveResponse> PostLiveItems { get; set; }
     }
 }

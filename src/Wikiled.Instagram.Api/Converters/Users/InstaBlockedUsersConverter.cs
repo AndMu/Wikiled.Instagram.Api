@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
 
 namespace Wikiled.Instagram.Api.Converters.Users
 {
@@ -13,16 +16,13 @@ namespace Wikiled.Instagram.Api.Converters.Users
                 throw new ArgumentNullException("Source object");
             }
 
-            var blockedUsers = new InstaBlockedUsers
-                               {
-                                   MaxId = SourceObject.MaxId
-                               };
+            var blockedUsers = new InstaBlockedUsers { MaxId = SourceObject.MaxId };
 
             if (SourceObject.BlockedList != null && SourceObject.BlockedList.Any())
             {
                 foreach (var user in SourceObject.BlockedList)
                 {
-                    blockedUsers.BlockedList.Add(ConvertersFabric.Instance.GetBlockedUserInfoConverter(user).Convert());
+                    blockedUsers.BlockedList.Add(InstaConvertersFabric.Instance.GetBlockedUserInfoConverter(user).Convert());
                 }
             }
 

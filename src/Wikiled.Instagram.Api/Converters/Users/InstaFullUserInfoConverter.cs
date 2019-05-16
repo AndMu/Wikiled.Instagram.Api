@@ -1,4 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Users
 {
@@ -8,20 +14,17 @@ namespace Wikiled.Instagram.Api.Converters.Users
 
         public InstaFullUserInfo Convert()
         {
-            var fullUserInfo = new InstaFullUserInfo
-                               {
-                                   Status = SourceObject.Status
-                               };
+            var fullUserInfo = new InstaFullUserInfo { Status = SourceObject.Status };
             if (SourceObject.Feed != null)
             {
                 fullUserInfo.Feed = new InstaFullUserInfoUserFeed
-                                    {
-                                        AutoLoadMoreEnabled = SourceObject.Feed.AutoLoadMoreEnabled,
-                                        MoreAvailable = SourceObject.Feed.MoreAvailable,
-                                        NextMaxId = SourceObject.Feed.NextMaxId ?? string.Empty,
-                                        NextMinId = SourceObject.Feed.NextMinId ?? string.Empty,
-                                        NumResults = SourceObject.Feed.NumResults
-                                    };
+                {
+                    AutoLoadMoreEnabled = SourceObject.Feed.AutoLoadMoreEnabled,
+                    MoreAvailable = SourceObject.Feed.MoreAvailable,
+                    NextMaxId = SourceObject.Feed.NextMaxId ?? string.Empty,
+                    NextMinId = SourceObject.Feed.NextMinId ?? string.Empty,
+                    NumResults = SourceObject.Feed.NumResults
+                };
                 if (SourceObject.Feed.Items != null && SourceObject.Feed.Items.Any())
                 {
                     if (fullUserInfo.Feed.Items == null)
@@ -33,7 +36,8 @@ namespace Wikiled.Instagram.Api.Converters.Users
                     {
                         try
                         {
-                            fullUserInfo.Feed.Items.Add(ConvertersFabric.Instance.GetSingleMediaConverter(media).Convert());
+                            fullUserInfo.Feed.Items.Add(InstaConvertersFabric.Instance.GetSingleMediaConverter(media)
+                                                            .Convert());
                         }
                         catch
                         {
@@ -46,7 +50,8 @@ namespace Wikiled.Instagram.Api.Converters.Users
             {
                 try
                 {
-                    fullUserInfo.UserDetail = ConvertersFabric.Instance.GetUserInfoConverter(SourceObject.UserDetail).Convert();
+                    fullUserInfo.UserDetail = InstaConvertersFabric.Instance.GetUserInfoConverter(SourceObject.UserDetail)
+                        .Convert();
                 }
                 catch
                 {
@@ -58,20 +63,22 @@ namespace Wikiled.Instagram.Api.Converters.Users
                 try
                 {
                     fullUserInfo.ReelFeed = new InstaFullUserInfoUserStoryReel
-                                            {
-                                                CanReply = SourceObject.ReelFeed.CanReply,
-                                                CanReshare = SourceObject.ReelFeed.CanReshare,
-                                                ExpiringAt = SourceObject.ReelFeed.ExpiringAt.FromUnixTimeSeconds(),
-                                                HasBestiesMedia = SourceObject.ReelFeed.HasBestiesMedia,
-                                                Id = SourceObject.ReelFeed.Id,
-                                                LatestReelMedia = SourceObject.ReelFeed.LatestReelMedia,
-                                                PrefetchCount = SourceObject.ReelFeed.PrefetchCount,
-                                                ReelType = SourceObject.ReelFeed.ReelType,
-                                                Seen = SourceObject.ReelFeed.Seen ?? 0
-                                            };
+                    {
+                        CanReply = SourceObject.ReelFeed.CanReply,
+                        CanReshare = SourceObject.ReelFeed.CanReshare,
+                        ExpiringAt = SourceObject.ReelFeed.ExpiringAt.FromUnixTimeSeconds(),
+                        HasBestiesMedia = SourceObject.ReelFeed.HasBestiesMedia,
+                        Id = SourceObject.ReelFeed.Id,
+                        LatestReelMedia = SourceObject.ReelFeed.LatestReelMedia,
+                        PrefetchCount = SourceObject.ReelFeed.PrefetchCount,
+                        ReelType = SourceObject.ReelFeed.ReelType,
+                        Seen = SourceObject.ReelFeed.Seen ?? 0
+                    };
                     if (SourceObject.ReelFeed.User != null)
                     {
-                        fullUserInfo.ReelFeed.User = ConvertersFabric.Instance.GetUserShortConverter(SourceObject.ReelFeed.User).Convert();
+                        fullUserInfo.ReelFeed.User = InstaConvertersFabric.Instance
+                            .GetUserShortConverter(SourceObject.ReelFeed.User)
+                            .Convert();
                     }
 
                     if (SourceObject.ReelFeed.Items != null && SourceObject.ReelFeed.Items.Any())
@@ -85,7 +92,8 @@ namespace Wikiled.Instagram.Api.Converters.Users
                         {
                             try
                             {
-                                fullUserInfo.ReelFeed.Items.Add(ConvertersFabric.Instance.GetStoryItemConverter(story).Convert());
+                                fullUserInfo.ReelFeed.Items.Add(
+                                    InstaConvertersFabric.Instance.GetStoryItemConverter(story).Convert());
                             }
                             catch
                             {
@@ -105,8 +113,9 @@ namespace Wikiled.Instagram.Api.Converters.Users
                 {
                     try
                     {
-                        fullUserInfo.UserStory.Broadcast = ConvertersFabric.Instance
-                                                                           .GetBroadcastListConverter(SourceObject.UserStory.Broadcast?.Broadcasts).Convert();
+                        fullUserInfo.UserStory.Broadcast = InstaConvertersFabric.Instance
+                            .GetBroadcastListConverter(SourceObject.UserStory.Broadcast?.Broadcasts)
+                            .Convert();
                     }
                     catch
                     {
@@ -116,20 +125,22 @@ namespace Wikiled.Instagram.Api.Converters.Users
                 if (SourceObject.UserStory.Reel != null)
                 {
                     fullUserInfo.UserStory.Reel = new InstaFullUserInfoUserStoryReel
-                                                  {
-                                                      CanReply = SourceObject.UserStory.Reel.CanReply,
-                                                      CanReshare = SourceObject.UserStory.Reel.CanReshare,
-                                                      ExpiringAt = SourceObject.UserStory.Reel.ExpiringAt.FromUnixTimeSeconds(),
-                                                      HasBestiesMedia = SourceObject.UserStory.Reel.HasBestiesMedia,
-                                                      Id = SourceObject.UserStory.Reel.Id,
-                                                      LatestReelMedia = SourceObject.UserStory.Reel.LatestReelMedia,
-                                                      PrefetchCount = SourceObject.UserStory.Reel.PrefetchCount,
-                                                      ReelType = SourceObject.UserStory.Reel.ReelType,
-                                                      Seen = SourceObject.UserStory.Reel.Seen ?? 0
-                                                  };
+                    {
+                        CanReply = SourceObject.UserStory.Reel.CanReply,
+                        CanReshare = SourceObject.UserStory.Reel.CanReshare,
+                        ExpiringAt = SourceObject.UserStory.Reel.ExpiringAt.FromUnixTimeSeconds(),
+                        HasBestiesMedia = SourceObject.UserStory.Reel.HasBestiesMedia,
+                        Id = SourceObject.UserStory.Reel.Id,
+                        LatestReelMedia = SourceObject.UserStory.Reel.LatestReelMedia,
+                        PrefetchCount = SourceObject.UserStory.Reel.PrefetchCount,
+                        ReelType = SourceObject.UserStory.Reel.ReelType,
+                        Seen = SourceObject.UserStory.Reel.Seen ?? 0
+                    };
                     if (SourceObject.UserStory.Reel.User != null)
                     {
-                        fullUserInfo.UserStory.Reel.User = ConvertersFabric.Instance.GetUserShortConverter(SourceObject.UserStory.Reel.User).Convert();
+                        fullUserInfo.UserStory.Reel.User = InstaConvertersFabric.Instance
+                            .GetUserShortConverter(SourceObject.UserStory.Reel.User)
+                            .Convert();
                     }
 
                     if (SourceObject.UserStory.Reel.Items != null && SourceObject.UserStory.Reel.Items.Any())
@@ -143,7 +154,8 @@ namespace Wikiled.Instagram.Api.Converters.Users
                         {
                             try
                             {
-                                fullUserInfo.UserStory.Reel.Items.Add(ConvertersFabric.Instance.GetStoryItemConverter(story).Convert());
+                                fullUserInfo.UserStory.Reel.Items.Add(
+                                    InstaConvertersFabric.Instance.GetStoryItemConverter(story).Convert());
                             }
                             catch
                             {

@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.Models.Web;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     public interface IWebProcessor
     {

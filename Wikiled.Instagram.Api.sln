@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{25DEBDED-4F9C-47F5-BC3F-4D5ED7D42090}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wikiled.Instagram.Api", "src\InstagramApiSharp\Wikiled.Instagram.Api.csproj", "{2A588963-CEBE-47EC-BFBB-2F3D405E4C80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wikiled.Instagram.Api", "src\Wikiled.Instagram.Api\Wikiled.Instagram.Api.csproj", "{2A588963-CEBE-47EC-BFBB-2F3D405E4C80}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{5E33EE0C-BF45-4CC7-A1A0-2C70CACBD2D0}"
 EndProject

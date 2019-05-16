@@ -1,4 +1,6 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.Collection
+﻿using Wikiled.Instagram.Api.Classes.Models.Media;
+
+namespace Wikiled.Instagram.Api.Classes.Models.Collection
 {
     public class InstaCollectionItem
     {

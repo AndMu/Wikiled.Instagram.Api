@@ -1,6 +1,9 @@
 ﻿using System.Threading.Tasks;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.Shopping;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Shopping and commerce api functions.
@@ -23,7 +26,8 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <returns>
         ///     <see cref="InstaMediaList" />
         /// </returns>
-        Task<IResult<InstaMediaList>> GetUserShoppableMediaAsync(string username, PaginationParameters paginationParameters);
+        Task<IResult<InstaMediaList>> GetUserShoppableMediaAsync(string username,
+                                                                 PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Get all user shoppable media by user id (pk)
@@ -33,7 +37,8 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <returns>
         ///     <see cref="InstaMediaList" />
         /// </returns>
-        Task<IResult<InstaMediaList>> GetUserShoppableMediaByIdAsync(long userId, PaginationParameters paginationParameters);
+        Task<IResult<InstaMediaList>> GetUserShoppableMediaByIdAsync(long userId,
+                                                                     PaginationParameters paginationParameters);
 
         //Task<IResult<InstaProductInfo>> GetCatalogsAsync();
     }

@@ -2,11 +2,11 @@
 
 namespace Wikiled.Instagram.Api.Classes.Models.TV
 {
-    public class InstaTV
+    public class InstaTv
     {
-        public List<InstaTVChannel> Channels { get; set; } = new List<InstaTVChannel>();
+        public List<InstaTvChannel> Channels { get; set; } = new List<InstaTvChannel>();
 
-        public InstaTVSelfChannel MyChannel { get; set; }
+        public InstaTvSelfChannel MyChannel { get; set; }
 
         internal string Status { get; set; }
     }

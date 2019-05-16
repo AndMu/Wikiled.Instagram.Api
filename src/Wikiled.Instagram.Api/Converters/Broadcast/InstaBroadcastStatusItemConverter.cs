@@ -1,8 +1,11 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Broadcast;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Broadcast;
 
 namespace Wikiled.Instagram.Api.Converters.Broadcast
 {
-    internal class InstaBroadcastStatusItemConverter : IObjectConverter<InstaBroadcastStatusItem, InstaBroadcastStatusItemResponse>
+    internal class
+        InstaBroadcastStatusItemConverter : IObjectConverter<InstaBroadcastStatusItem, InstaBroadcastStatusItemResponse>
     {
         public InstaBroadcastStatusItemResponse SourceObject { get; set; }
 
@@ -14,13 +17,13 @@ namespace Wikiled.Instagram.Api.Converters.Broadcast
             }
 
             var broadcastStatusItem = new InstaBroadcastStatusItem
-                                      {
-                                          BroadcastStatus = SourceObject.BroadcastStatus,
-                                          CoverFrameUrl = SourceObject.CoverFrameUrl,
-                                          HasReducedVisibility = SourceObject.HasReducedVisibility,
-                                          Id = SourceObject.Id,
-                                          ViewerCount = SourceObject.ViewerCount
-                                      };
+            {
+                BroadcastStatus = SourceObject.BroadcastStatus,
+                CoverFrameUrl = SourceObject.CoverFrameUrl,
+                HasReducedVisibility = SourceObject.HasReducedVisibility,
+                Id = SourceObject.Id,
+                ViewerCount = SourceObject.ViewerCount
+            };
 
             return broadcastStatusItem;
         }

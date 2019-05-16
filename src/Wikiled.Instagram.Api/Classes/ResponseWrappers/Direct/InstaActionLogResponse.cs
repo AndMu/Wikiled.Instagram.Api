@@ -4,6 +4,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Direct
 {
     public class InstaActionLogResponse
     {
-        [JsonProperty("description")] public string Description { get; set; }
+        [JsonProperty("description")]
+        public string Description { get; set; }
     }
 }

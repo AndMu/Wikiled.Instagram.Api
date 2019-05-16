@@ -1,28 +1,30 @@
 ﻿using Newtonsoft.Json;
+using Wikiled.Instagram.Api.Helpers;
+using Wikiled.Instagram.Api.Logic.Versions;
 
 namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
 {
-    internal class ApiTwoFactorRequestMessage
+    internal class InstaApiTwoFactorRequestMessage
     {
-        internal ApiTwoFactorRequestMessage(
+        internal InstaApiTwoFactorRequestMessage(
             string verificationCode,
             string username,
             string deviceId,
             string twoFactorIdentifier)
         {
-            verification_code = verificationCode;
-            this.username = username;
-            device_id = deviceId;
-            two_factor_identifier = twoFactorIdentifier;
+            VerificationCode = verificationCode;
+            this.Username = username;
+            DeviceId = deviceId;
+            TwoFactorIdentifier = twoFactorIdentifier;
         }
 
-        public string device_id { get; set; }
+        public string DeviceId { get; set; }
 
-        public string two_factor_identifier { get; set; }
+        public string TwoFactorIdentifier { get; set; }
 
-        public string username { get; set; }
+        public string Username { get; set; }
 
-        public string verification_code { get; set; }
+        public string VerificationCode { get; set; }
 
         internal string GenerateSignature(InstaApiVersion apiVersion, string signatureKey)
         {
@@ -31,7 +33,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
                 signatureKey = apiVersion.SignatureKey;
             }
 
-            return CryptoHelper.CalculateHash(
+            return InstaCryptoHelper.CalculateHash(
                 signatureKey,
                 JsonConvert.SerializeObject(this));
         }

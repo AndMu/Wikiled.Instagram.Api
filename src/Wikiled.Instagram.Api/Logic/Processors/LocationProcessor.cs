@@ -18,43 +18,43 @@ using Wikiled.Instagram.Api.Enums;
 using Wikiled.Instagram.Api.Helpers;
 using Wikiled.Instagram.Api.Logger;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Location api functions.
     /// </summary>
-    internal class LocationProcessor : ILocationProcessor
+    internal class InstaLocationProcessor : ILocationProcessor
     {
-        private readonly AndroidDevice _deviceInfo;
+        private readonly InstaAndroidDevice deviceInfo;
 
-        private readonly HttpHelper _httpHelper;
+        private readonly InstaHttpHelper httpHelper;
 
-        private readonly IHttpRequestProcessor _httpRequestProcessor;
+        private readonly IHttpRequestProcessor httpRequestProcessor;
 
-        private readonly InstaApi _instaApi;
+        private readonly InstaApi instaApi;
 
-        private readonly IInstaLogger _logger;
+        private readonly IInstaLogger logger;
 
-        private readonly UserSessionData _user;
+        private readonly UserSessionData user;
 
-        private readonly UserAuthValidate _userAuthValidate;
+        private readonly InstaUserAuthValidate userAuthValidate;
 
-        public LocationProcessor(
-            AndroidDevice deviceInfo,
+        public InstaLocationProcessor(
+            InstaAndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             IInstaLogger logger,
-            UserAuthValidate userAuthValidate,
+            InstaUserAuthValidate userAuthValidate,
             InstaApi instaApi,
-            HttpHelper httpHelper)
+            InstaHttpHelper httpHelper)
         {
-            _deviceInfo = deviceInfo;
-            _user = user;
-            _httpRequestProcessor = httpRequestProcessor;
-            _logger = logger;
-            _userAuthValidate = userAuthValidate;
-            _instaApi = instaApi;
-            _httpHelper = httpHelper;
+            this.deviceInfo = deviceInfo;
+            this.user = user;
+            this.httpRequestProcessor = httpRequestProcessor;
+            this.logger = logger;
+            this.userAuthValidate = userAuthValidate;
+            this.instaApi = instaApi;
+            this.httpHelper = httpHelper;
         }
 
         /// <summary>
@@ -83,30 +83,30 @@ namespace Wikiled.Instagram.Api.API.Processors
         {
             try
             {
-                var instaUri = UriCreator.GetLocationInfoUri(externalIdOrFacebookPlacesId);
+                var instaUri = InstaUriCreator.GetLocationInfoUri(externalIdOrFacebookPlacesId);
 
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaPlaceShort>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaPlaceShort>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaPlaceResponse>(json);
 
-                return Result.Success(ConvertersFabric.Instance.GetPlaceShortConverter(obj.Location).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetPlaceShortConverter(obj.Location).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaPlaceShort), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaPlaceShort), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaPlaceShort>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaPlaceShort>(exception);
             }
         }
 
@@ -119,32 +119,32 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </returns>
         public async Task<IResult<InstaStory>> GetLocationStoriesAsync(long locationId)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var uri = UriCreator.GetLocationFeedUri(locationId.ToString());
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, uri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var uri = InstaUriCreator.GetLocationFeedUri(locationId.ToString());
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, uri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaStory>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaStory>(response, json);
                 }
 
                 var feedResponse = JsonConvert.DeserializeObject<InstaLocationFeedResponse>(json);
-                var feed = ConvertersFabric.Instance.GetLocationFeedConverter(feedResponse).Convert();
+                var feed = InstaConvertersFabric.Instance.GetLocationFeedConverter(feedResponse).Convert();
 
-                return Result.Success(feed.Story);
+                return InstaResult.Success(feed.Story);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaStory), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaStory), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaStory>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaStory>(exception);
             }
         }
 
@@ -154,7 +154,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         /// <param name="locationId">Location identifier (location pk, external id, facebook id)</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        public async Task<IResult<InstaSectionMedia>> GetRecentLocationFeedsAsync(long locationId, PaginationParameters paginationParameters)
+        public async Task<IResult<InstaSectionMedia>> GetRecentLocationFeedsAsync(
+            long locationId,
+            PaginationParameters paginationParameters)
         {
             return await GetSectionAsync(locationId, paginationParameters, InstaSectionType.Recent);
         }
@@ -165,7 +167,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         /// <param name="locationId">Location identifier (location pk, external id, facebook id)</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        public async Task<IResult<InstaSectionMedia>> GetTopLocationFeedsAsync(long locationId, PaginationParameters paginationParameters)
+        public async Task<IResult<InstaSectionMedia>> GetTopLocationFeedsAsync(
+            long locationId,
+            PaginationParameters paginationParameters)
         {
             return await GetSectionAsync(locationId, paginationParameters, InstaSectionType.Ranked);
         }
@@ -179,22 +183,25 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <returns>
         ///     List of locations (short format)
         /// </returns>
-        public async Task<IResult<InstaLocationShortList>> SearchLocationAsync(double latitude, double longitude, string query)
+        public async Task<IResult<InstaLocationShortList>> SearchLocationAsync(
+            double latitude,
+            double longitude,
+            string query)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var uri = UriCreator.GetLocationSearchUri();
+                var uri = InstaUriCreator.GetLocationSearchUri();
 
                 var fields = new Dictionary<string, string>
-                             {
-                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
-                                 {"_csrftoken", _user.CsrfToken},
-                                 {"latitude", latitude.ToString(CultureInfo.InvariantCulture)},
-                                 {"longitude", longitude.ToString(CultureInfo.InvariantCulture)},
-                                 {"rank_token", _user.RankToken}
-                             };
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_csrftoken", user.CsrfToken },
+                    { "latitude", latitude.ToString(CultureInfo.InvariantCulture) },
+                    { "longitude", longitude.ToString(CultureInfo.InvariantCulture) },
+                    { "rank_token", user.RankToken }
+                };
 
                 if (!string.IsNullOrEmpty(query))
                 {
@@ -202,35 +209,35 @@ namespace Wikiled.Instagram.Api.API.Processors
                 }
                 else
                 {
-                    fields.Add("timestamp", DateTimeHelper.GetUnixTimestampSeconds().ToString());
+                    fields.Add("timestamp", InstaDateTimeHelper.GetUnixTimestampSeconds().ToString());
                 }
 
                 if (!Uri.TryCreate(uri, fields.AsQueryString(), out var newuri))
                 {
-                    return Result.Fail<InstaLocationShortList>("Unable to create uri for location search");
+                    return InstaResult.Fail<InstaLocationShortList>("Unable to create uri for location search");
                 }
 
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, newuri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, newuri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaLocationShortList>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaLocationShortList>(response, json);
                 }
 
                 var locations = JsonConvert.DeserializeObject<InstaLocationSearchResponse>(json);
-                var converter = ConvertersFabric.Instance.GetLocationsSearchConverter(locations);
-                return Result.Success(converter.Convert());
+                var converter = InstaConvertersFabric.Instance.GetLocationsSearchConverter(locations);
+                return InstaResult.Success(converter.Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaLocationShortList), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaLocationShortList), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaLocationShortList>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaLocationShortList>(exception);
             }
         }
 
@@ -244,7 +251,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <returns>
         ///     <see cref="InstaPlaceList" />
         /// </returns>
-        public async Task<IResult<InstaPlaceList>> SearchPlacesAsync(double latitude, double longitude, PaginationParameters paginationParameters)
+        public async Task<IResult<InstaPlaceList>> SearchPlacesAsync(double latitude,
+                                                                     double longitude,
+                                                                     PaginationParameters paginationParameters)
         {
             return await SearchPlacesAsync(latitude, longitude, null, paginationParameters);
         }
@@ -260,9 +269,12 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <returns>
         ///     <see cref="InstaPlaceList" />
         /// </returns>
-        public async Task<IResult<InstaPlaceList>> SearchPlacesAsync(double latitude, double longitude, string query, PaginationParameters paginationParameters)
+        public async Task<IResult<InstaPlaceList>> SearchPlacesAsync(double latitude,
+                                                                     double longitude,
+                                                                     string query,
+                                                                     PaginationParameters paginationParameters)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 if (paginationParameters == null)
@@ -272,29 +284,29 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 InstaPlaceList Convert(InstaPlaceListResponse placelistResponse)
                 {
-                    return ConvertersFabric.Instance.GetPlaceListConverter(placelistResponse).Convert();
+                    return InstaConvertersFabric.Instance.GetPlaceListConverter(placelistResponse).Convert();
                 }
 
                 var places = await SearchPlaces(latitude, longitude, query, paginationParameters);
                 if (!places.Succeeded)
                 {
-                    return Result.Fail(places.Info, default(InstaPlaceList));
+                    return InstaResult.Fail(places.Info, default(InstaPlaceList));
                 }
 
                 var placesResponse = places.Value;
                 paginationParameters.NextMaxId = placesResponse.RankToken;
                 paginationParameters.ExcludeList = placesResponse.ExcludeList;
                 var pagesLoaded = 1;
-                while (placesResponse.HasMore != null
-                       && placesResponse.HasMore.Value
-                       && !string.IsNullOrEmpty(placesResponse.RankToken)
-                       && pagesLoaded < paginationParameters.MaximumPagesToLoad)
+                while (placesResponse.HasMore != null &&
+                    placesResponse.HasMore.Value &&
+                    !string.IsNullOrEmpty(placesResponse.RankToken) &&
+                    pagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var nextPlaces = await SearchPlaces(latitude, longitude, query, paginationParameters);
 
                     if (!nextPlaces.Succeeded)
                     {
-                        return Result.Fail(nextPlaces.Info, Convert(nextPlaces.Value));
+                        return InstaResult.Fail(nextPlaces.Info, Convert(nextPlaces.Value));
                     }
 
                     placesResponse.RankToken = paginationParameters.NextMaxId = nextPlaces.Value.RankToken;
@@ -305,17 +317,17 @@ namespace Wikiled.Instagram.Api.API.Processors
                     pagesLoaded++;
                 }
 
-                return Result.Success(ConvertersFabric.Instance.GetPlaceListConverter(placesResponse).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetPlaceListConverter(placesResponse).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaPlaceList), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaPlaceList), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaPlaceList>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaPlaceList>(exception);
             }
         }
 
@@ -326,52 +338,58 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="longitude">Longitude</param>
         /// <param name="desireUsername">Desire username</param>
         /// <param name="count">Maximum user count</param>
-        public async Task<IResult<InstaUserSearchLocation>> SearchUserByLocationAsync(double latitude, double longitude, string desireUsername, int count = 50)
+        public async Task<IResult<InstaUserSearchLocation>> SearchUserByLocationAsync(
+            double latitude,
+            double longitude,
+            string desireUsername,
+            int count = 50)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var uri = UriCreator.GetUserSearchByLocationUri();
+                var uri = InstaUriCreator.GetUserSearchByLocationUri();
                 if (count <= 0)
                 {
                     count = 30;
                 }
 
                 var fields = new Dictionary<string, string>
-                             {
-                                 {"timezone_offset", InstaApiConstants.TIMEZONE_OFFSET.ToString()},
-                                 {"lat", latitude.ToString(CultureInfo.InvariantCulture)},
-                                 {"lng", longitude.ToString(CultureInfo.InvariantCulture)},
-                                 {"count", count.ToString()},
-                                 {"query", desireUsername},
-                                 {"context", "blended"},
-                                 {"rank_token", _user.RankToken}
-                             };
+                {
+                    { "timezone_offset", InstaApiConstants.TimezoneOffset.ToString() },
+                    { "lat", latitude.ToString(CultureInfo.InvariantCulture) },
+                    { "lng", longitude.ToString(CultureInfo.InvariantCulture) },
+                    { "count", count.ToString() },
+                    { "query", desireUsername },
+                    { "context", "blended" },
+                    { "rank_token", user.RankToken }
+                };
                 if (!Uri.TryCreate(uri, fields.AsQueryString(), out var newuri))
                 {
-                    return Result.Fail<InstaUserSearchLocation>("Unable to create uri for user search by location");
+                    return InstaResult.Fail<InstaUserSearchLocation>("Unable to create uri for user search by location");
                 }
 
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, newuri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, newuri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaUserSearchLocation>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaUserSearchLocation>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaUserSearchLocation>(json);
-                return obj.Status.ToLower() == "ok" ? Result.Success(obj) : Result.UnExpectedResponse<InstaUserSearchLocation>(response, json);
+                return obj.Status.ToLower() == "ok"
+                    ? InstaResult.Success(obj)
+                    : InstaResult.UnExpectedResponse<InstaUserSearchLocation>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaUserSearchLocation), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaUserSearchLocation), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaUserSearchLocation>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaUserSearchLocation>(exception);
             }
         }
 
@@ -380,7 +398,7 @@ namespace Wikiled.Instagram.Api.API.Processors
             PaginationParameters paginationParameters,
             InstaSectionType sectionType)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 if (paginationParameters == null)
@@ -390,71 +408,73 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 InstaSectionMedia Convert(InstaSectionMediaListResponse sectionMediaListResponse)
                 {
-                    return ConvertersFabric.Instance.GetHashtagMediaListConverter(sectionMediaListResponse).Convert();
+                    return InstaConvertersFabric.Instance.GetHashtagMediaListConverter(sectionMediaListResponse).Convert();
                 }
 
                 var mediaResponse = await GetSectionMedia(
-                                        sectionType,
-                                        locationId,
-                                        paginationParameters.NextMaxId,
-                                        paginationParameters.NextPage,
-                                        paginationParameters.NextMediaIds);
+                    sectionType,
+                    locationId,
+                    paginationParameters.NextMaxId,
+                    paginationParameters.NextPage,
+                    paginationParameters.NextMediaIds);
 
                 if (!mediaResponse.Succeeded)
                 {
                     if (mediaResponse.Value != null)
                     {
-                        Result.Fail(mediaResponse.Info, Convert(mediaResponse.Value));
+                        InstaResult.Fail(mediaResponse.Info, Convert(mediaResponse.Value));
                     }
                     else
                     {
-                        Result.Fail(mediaResponse.Info, default(InstaSectionMedia));
+                        InstaResult.Fail(mediaResponse.Info, default(InstaSectionMedia));
                     }
                 }
 
                 paginationParameters.NextMediaIds = mediaResponse.Value.NextMediaIds;
                 paginationParameters.NextPage = mediaResponse.Value.NextPage;
                 paginationParameters.NextMaxId = mediaResponse.Value.NextMaxId;
-                while (mediaResponse.Value.MoreAvailable
-                       && !string.IsNullOrEmpty(paginationParameters.NextMaxId)
-                       && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
+                while (mediaResponse.Value.MoreAvailable &&
+                    !string.IsNullOrEmpty(paginationParameters.NextMaxId) &&
+                    paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var moreMedias = await GetSectionMedia(
-                                         sectionType,
-                                         locationId,
-                                         paginationParameters.NextMaxId,
-                                         mediaResponse.Value.NextPage,
-                                         mediaResponse.Value.NextMediaIds);
+                        sectionType,
+                        locationId,
+                        paginationParameters.NextMaxId,
+                        mediaResponse.Value.NextPage,
+                        mediaResponse.Value.NextMediaIds);
                     if (!moreMedias.Succeeded)
                     {
                         if (mediaResponse.Value.Sections?.Count > 0)
                         {
-                            return Result.Success(Convert(mediaResponse.Value));
+                            return InstaResult.Success(Convert(mediaResponse.Value));
                         }
 
-                        return Result.Fail(moreMedias.Info, Convert(mediaResponse.Value));
+                        return InstaResult.Fail(moreMedias.Info, Convert(mediaResponse.Value));
                     }
 
                     mediaResponse.Value.MoreAvailable = moreMedias.Value.MoreAvailable;
                     mediaResponse.Value.NextMaxId = paginationParameters.NextMaxId = moreMedias.Value.NextMaxId;
                     mediaResponse.Value.AutoLoadMoreEnabled = moreMedias.Value.AutoLoadMoreEnabled;
-                    mediaResponse.Value.NextMediaIds = paginationParameters.NextMediaIds = moreMedias.Value.NextMediaIds;
+                    mediaResponse.Value.NextMediaIds =
+                        paginationParameters.NextMediaIds = moreMedias.Value.NextMediaIds;
                     mediaResponse.Value.NextPage = paginationParameters.NextPage = moreMedias.Value.NextPage;
                     mediaResponse.Value.Sections.AddRange(moreMedias.Value.Sections);
                     paginationParameters.PagesLoaded++;
                 }
 
-                return Result.Success(ConvertersFabric.Instance.GetHashtagMediaListConverter(mediaResponse.Value).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetHashtagMediaListConverter(mediaResponse.Value)
+                                          .Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaSectionMedia), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaSectionMedia), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaSectionMedia>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaSectionMedia>(exception);
             }
         }
 
@@ -467,15 +487,15 @@ namespace Wikiled.Instagram.Api.API.Processors
         {
             try
             {
-                var instaUri = UriCreator.GetLocationSectionUri(locationId.ToString());
+                var instaUri = InstaUriCreator.GetLocationSectionUri(locationId.ToString());
                 var data = new Dictionary<string, string>
-                           {
-                               {"rank_token", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_csrftoken", _user.CsrfToken},
-                               {"session_id", Guid.NewGuid().ToString()},
-                               {"tab", sectionType.ToString().ToLower()}
-                           };
+                {
+                    { "rank_token", deviceInfo.DeviceGuid.ToString() },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_csrftoken", user.CsrfToken },
+                    { "session_id", Guid.NewGuid().ToString() },
+                    { "tab", sectionType.ToString().ToLower() }
+                };
 
                 if (!string.IsNullOrEmpty(maxId))
                 {
@@ -500,28 +520,28 @@ namespace Wikiled.Instagram.Api.API.Processors
                     }
                 }
 
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaSectionMediaListResponse>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaSectionMediaListResponse>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaSectionMediaListResponse>(json);
 
-                return Result.Success(obj);
+                return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaSectionMediaListResponse), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaSectionMediaListResponse), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaSectionMediaListResponse>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaSectionMediaListResponse>(exception);
             }
         }
 
@@ -538,22 +558,22 @@ namespace Wikiled.Instagram.Api.API.Processors
                     paginationParameters = PaginationParameters.MaxPagesToLoad(1);
                 }
 
-                var instaUri = UriCreator.GetSearchPlacesUri(
-                    InstaApiConstants.TIMEZONE_OFFSET,
+                var instaUri = InstaUriCreator.GetSearchPlacesUri(
+                    InstaApiConstants.TimezoneOffset,
                     latitude,
                     longitude,
                     query,
                     paginationParameters.NextMaxId,
                     paginationParameters.ExcludeList);
 
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 var obj = JsonConvert.DeserializeObject<InstaPlaceListResponse>(json);
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaPlaceListResponse>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaPlaceListResponse>(response, json);
                 }
 
                 if (obj.Items?.Count > 0)
@@ -564,17 +584,17 @@ namespace Wikiled.Instagram.Api.API.Processors
                     }
                 }
 
-                return Result.Success(obj);
+                return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaPlaceListResponse), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaPlaceListResponse), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaPlaceListResponse>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaPlaceListResponse>(exception);
             }
         }
     }

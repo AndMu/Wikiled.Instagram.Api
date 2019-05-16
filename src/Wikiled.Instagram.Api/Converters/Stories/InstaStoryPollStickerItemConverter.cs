@@ -1,8 +1,12 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
 
 namespace Wikiled.Instagram.Api.Converters.Stories
 {
-    internal class InstaStoryPollStickerItemConverter : IObjectConverter<InstaStoryPollStickerItem, InstaStoryPollStickerItemResponse>
+    internal class
+        InstaStoryPollStickerItemConverter : IObjectConverter<InstaStoryPollStickerItem,
+            InstaStoryPollStickerItemResponse>
     {
         public InstaStoryPollStickerItemResponse SourceObject { get; set; }
 
@@ -14,15 +18,15 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             }
 
             var pollSticker = new InstaStoryPollStickerItem
-                              {
-                                  Finished = SourceObject.Finished,
-                                  Id = SourceObject.Id,
-                                  IsSharedResult = SourceObject.IsSharedResult,
-                                  PollId = SourceObject.PollId,
-                                  Question = SourceObject.Question,
-                                  ViewerCanVote = SourceObject.ViewerCanVote,
-                                  ViewerVote = SourceObject.ViewerVote ?? 0
-                              };
+            {
+                Finished = SourceObject.Finished,
+                Id = SourceObject.Id,
+                IsSharedResult = SourceObject.IsSharedResult,
+                PollId = SourceObject.PollId,
+                Question = SourceObject.Question,
+                ViewerCanVote = SourceObject.ViewerCanVote,
+                ViewerVote = SourceObject.ViewerVote ?? 0
+            };
 
             if (SourceObject.Tallies?.Count > 0)
             {
@@ -30,7 +34,8 @@ namespace Wikiled.Instagram.Api.Converters.Stories
                 {
                     try
                     {
-                        pollSticker.Tallies.Add(ConvertersFabric.Instance.GetStoryTalliesItemConverter(tallies).Convert());
+                        pollSticker.Tallies.Add(InstaConvertersFabric.Instance.GetStoryTalliesItemConverter(tallies)
+                                                    .Convert());
                     }
                     catch
                     {

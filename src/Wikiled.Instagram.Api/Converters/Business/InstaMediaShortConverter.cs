@@ -1,4 +1,7 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Business;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Business;
+using Wikiled.Instagram.Api.Enums;
 
 namespace Wikiled.Instagram.Api.Converters.Business
 {
@@ -8,16 +11,13 @@ namespace Wikiled.Instagram.Api.Converters.Business
 
         public InstaMediaShort Convert()
         {
-            var media = new InstaMediaShort
-                        {
-                            Id = SourceObject.Id,
-                            MediaIdentifier = SourceObject.MediaIdentifier
-                        };
+            var media = new InstaMediaShort { Id = SourceObject.Id, MediaIdentifier = SourceObject.MediaIdentifier };
             if (!string.IsNullOrEmpty(SourceObject.InstagramMediaType))
             {
                 try
                 {
-                    media.MediaType = (InstaMediaType)Enum.Parse(typeof(InstaMediaType), SourceObject.InstagramMediaType, true);
+                    media.MediaType =
+                        (InstaMediaType)Enum.Parse(typeof(InstaMediaType), SourceObject.InstagramMediaType, true);
                 }
                 catch
                 {

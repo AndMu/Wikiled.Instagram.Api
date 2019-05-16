@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
 
 namespace Wikiled.Instagram.Api.Converters.Stories
 {
@@ -14,16 +16,16 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             }
 
             var reelShare = new InstaReelShare
-                            {
-                                IsReelPersisted = SourceObject.IsReelPersisted ?? false,
-                                ReelOwnerId = SourceObject.ReelOwnerId,
-                                ReelType = SourceObject.ReelType,
-                                Text = SourceObject.Text,
-                                Type = SourceObject.Type
-                            };
+            {
+                IsReelPersisted = SourceObject.IsReelPersisted ?? false,
+                ReelOwnerId = SourceObject.ReelOwnerId,
+                ReelType = SourceObject.ReelType,
+                Text = SourceObject.Text,
+                Type = SourceObject.Type
+            };
             try
             {
-                reelShare.Media = ConvertersFabric.Instance.GetStoryItemConverter(SourceObject.Media).Convert();
+                reelShare.Media = InstaConvertersFabric.Instance.GetStoryItemConverter(SourceObject.Media).Convert();
             }
             catch
             {

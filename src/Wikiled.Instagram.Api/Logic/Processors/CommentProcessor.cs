@@ -20,43 +20,43 @@ using Wikiled.Instagram.Api.Converters.Json;
 using Wikiled.Instagram.Api.Helpers;
 using Wikiled.Instagram.Api.Logger;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Comments api functions.
     /// </summary>
-    internal class CommentProcessor : ICommentProcessor
+    internal class InstaCommentProcessor : ICommentProcessor
     {
-        private readonly AndroidDevice _deviceInfo;
+        private readonly InstaAndroidDevice deviceInfo;
 
-        private readonly HttpHelper _httpHelper;
+        private readonly InstaHttpHelper httpHelper;
 
-        private readonly IHttpRequestProcessor _httpRequestProcessor;
+        private readonly IHttpRequestProcessor httpRequestProcessor;
 
-        private readonly InstaApi _instaApi;
+        private readonly InstaApi instaApi;
 
-        private readonly IInstaLogger _logger;
+        private readonly IInstaLogger logger;
 
-        private readonly UserSessionData _user;
+        private readonly UserSessionData user;
 
-        private readonly UserAuthValidate _userAuthValidate;
+        private readonly InstaUserAuthValidate userAuthValidate;
 
-        public CommentProcessor(
-            AndroidDevice deviceInfo,
+        public InstaCommentProcessor(
+            InstaAndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             IInstaLogger logger,
-            UserAuthValidate userAuthValidate,
+            InstaUserAuthValidate userAuthValidate,
             InstaApi instaApi,
-            HttpHelper httpHelper)
+            InstaHttpHelper httpHelper)
         {
-            _deviceInfo = deviceInfo;
-            _user = user;
-            _httpRequestProcessor = httpRequestProcessor;
-            _logger = logger;
-            _userAuthValidate = userAuthValidate;
-            _instaApi = instaApi;
-            _httpHelper = httpHelper;
+            this.deviceInfo = deviceInfo;
+            this.user = user;
+            this.httpRequestProcessor = httpRequestProcessor;
+            this.logger = logger;
+            this.userAuthValidate = userAuthValidate;
+            this.instaApi = instaApi;
+            this.httpHelper = httpHelper;
         }
 
         /// <summary>
@@ -75,46 +75,46 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="text">Comment text</param>
         public async Task<IResult<InstaComment>> CommentMediaAsync(string mediaId, string text)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetPostCommetUri(mediaId);
-                var breadcrumb = CryptoHelper.GetCommentBreadCrumbEncoded(text);
+                var instaUri = InstaUriCreator.GetPostCommetUri(mediaId);
+                var breadcrumb = InstaCryptoHelper.GetCommentBreadCrumbEncoded(text);
                 var fields = new Dictionary<string, string>
-                             {
-                                 {"user_breadcrumb", breadcrumb},
-                                 {"idempotence_token", Guid.NewGuid().ToString()},
-                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
-                                 {"_csrftoken", _user.CsrfToken},
-                                 {"comment_text", text},
-                                 {"containermodule", "comments_feed_timeline"},
-                                 {"radio_type", "wifi-none"}
-                             };
+                {
+                    { "user_breadcrumb", breadcrumb },
+                    { "idempotence_token", Guid.NewGuid().ToString() },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_csrftoken", user.CsrfToken },
+                    { "comment_text", text },
+                    { "containermodule", "comments_feed_timeline" },
+                    { "radio_type", "wifi-none" }
+                };
                 var request =
-                    _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, fields);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, fields);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaComment>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaComment>(response, json);
                 }
 
                 var commentResponse = JsonConvert.DeserializeObject<InstaCommentResponse>(
                     json,
                     new InstaCommentDataConverter());
-                var converter = ConvertersFabric.Instance.GetCommentConverter(commentResponse);
-                return Result.Success(converter.Convert());
+                var converter = InstaConvertersFabric.Instance.GetCommentConverter(commentResponse);
+                return InstaResult.Success(converter.Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaComment), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaComment), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaComment>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaComment>(exception);
             }
         }
 
@@ -125,33 +125,33 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="commentId">Comment id</param>
         public async Task<IResult<bool>> DeleteCommentAsync(string mediaId, string commentId)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetDeleteCommentUri(mediaId, commentId);
+                var instaUri = InstaUriCreator.GetDeleteCommentUri(mediaId, commentId);
                 var fields = new Dictionary<string, string>
-                             {
-                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
-                                 {"_csrftoken", _user.CsrfToken}
-                             };
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_csrftoken", user.CsrfToken }
+                };
                 var request =
-                    _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, fields);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, fields);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 return response.StatusCode == HttpStatusCode.OK
-                           ? Result.Success(true)
-                           : Result.UnExpectedResponse<bool>(response, json);
+                    ? InstaResult.Success(true)
+                    : InstaResult.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, false);
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, false);
             }
         }
 
@@ -162,34 +162,34 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="commentIds">Comment id</param>
         public async Task<IResult<bool>> DeleteMultipleCommentsAsync(string mediaId, params string[] commentIds)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetDeleteMultipleCommentsUri(mediaId);
+                var instaUri = InstaUriCreator.GetDeleteMultipleCommentsUri(mediaId);
                 var fields = new Dictionary<string, string>
-                             {
-                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
-                                 {"_csrftoken", _user.CsrfToken},
-                                 {"comment_ids_to_delete", commentIds.EncodeList(false)}
-                             };
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_csrftoken", user.CsrfToken },
+                    { "comment_ids_to_delete", commentIds.EncodeList(false) }
+                };
                 var request =
-                    _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, fields);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, fields);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 return response.StatusCode == HttpStatusCode.OK
-                           ? Result.Success(true)
-                           : Result.UnExpectedResponse<bool>(response, json);
+                    ? InstaResult.Success(true)
+                    : InstaResult.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, false);
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, false);
             }
         }
 
@@ -199,34 +199,34 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="mediaId">Media id</param>
         public async Task<IResult<bool>> DisableMediaCommentAsync(string mediaId)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetDisableMediaCommetsUri(mediaId);
+                var instaUri = InstaUriCreator.GetDisableMediaCommetsUri(mediaId);
                 var fields = new Dictionary<string, string>
-                             {
-                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
-                                 {"_csrftoken", _user.CsrfToken}
-                             };
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_csrftoken", user.CsrfToken }
+                };
                 var request =
-                    _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, fields);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, fields);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 return response.StatusCode == HttpStatusCode.OK
-                           ? Result.Success(true)
-                           : Result.UnExpectedResponse<bool>(response, json);
+                    ? InstaResult.Success(true)
+                    : InstaResult.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, false);
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, false);
             }
         }
 
@@ -236,33 +236,33 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="mediaId">Media id</param>
         public async Task<IResult<bool>> EnableMediaCommentAsync(string mediaId)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetAllowMediaCommetsUri(mediaId);
+                var instaUri = InstaUriCreator.GetAllowMediaCommetsUri(mediaId);
                 var fields = new Dictionary<string, string>
-                             {
-                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
-                                 {"_csrftoken", _user.CsrfToken}
-                             };
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_csrftoken", user.CsrfToken }
+                };
                 var request =
-                    _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, fields);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, fields);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 return response.StatusCode == HttpStatusCode.OK
-                           ? Result.Success(true)
-                           : Result.UnExpectedResponse<bool>(response, json);
+                    ? InstaResult.Success(true)
+                    : InstaResult.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, false);
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, false);
             }
         }
 
@@ -271,31 +271,31 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         public async Task<IResult<InstaUserShortList>> GetBlockedCommentersAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetBlockedCommentersUri();
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var instaUri = InstaUriCreator.GetBlockedCommentersUri();
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaUserShortList>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaUserShortList>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaBlockedCommentersResponse>(json);
 
-                return Result.Success(ConvertersFabric.Instance.GetBlockedCommentersConverter(obj).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetBlockedCommentersConverter(obj).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaUserShortList), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaUserShortList), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaUserShortList>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaUserShortList>(exception);
             }
         }
 
@@ -305,36 +305,36 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="mediaId">Media id</param>
         public async Task<IResult<InstaLikersList>> GetMediaCommentLikersAsync(string mediaId)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetMediaCommetLikersUri(mediaId);
+                var instaUri = InstaUriCreator.GetMediaCommetLikersUri(mediaId);
                 var request =
-                    _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaLikersList>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaLikersList>(response, json);
                 }
 
                 var likers = new InstaLikersList();
                 var likersResponse = JsonConvert.DeserializeObject<InstaMediaLikersResponse>(json);
                 likers.UsersCount = likersResponse.UsersCount;
                 likers.AddRange(
-                    likersResponse.Users.Select(ConvertersFabric.Instance.GetUserShortConverter)
-                                  .Select(converter => converter.Convert()));
-                return Result.Success(likers);
+                    likersResponse.Users.Select(InstaConvertersFabric.Instance.GetUserShortConverter)
+                        .Select(converter => converter.Convert()));
+                return InstaResult.Success(likers);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaLikersList), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaLikersList), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaLikersList>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaLikersList>(exception);
             }
         }
 
@@ -347,7 +347,7 @@ namespace Wikiled.Instagram.Api.API.Processors
             string mediaId,
             PaginationParameters paginationParameters)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 if (paginationParameters == null)
@@ -355,18 +355,18 @@ namespace Wikiled.Instagram.Api.API.Processors
                     paginationParameters = PaginationParameters.MaxPagesToLoad(1);
                 }
 
-                var commentsUri = UriCreator.GetMediaCommentsUri(mediaId, paginationParameters.NextMaxId);
+                var commentsUri = InstaUriCreator.GetMediaCommentsUri(mediaId, paginationParameters.NextMaxId);
                 if (!string.IsNullOrEmpty(paginationParameters.NextMinId))
                 {
-                    commentsUri = UriCreator.GetMediaCommentsMinIdUri(mediaId, paginationParameters.NextMinId);
+                    commentsUri = InstaUriCreator.GetMediaCommentsMinIdUri(mediaId, paginationParameters.NextMinId);
                 }
 
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, commentsUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, commentsUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaCommentList>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaCommentList>(response, json);
                 }
 
                 var commentListResponse = JsonConvert.DeserializeObject<InstaCommentListResponse>(json);
@@ -374,15 +374,15 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 InstaCommentList Convert(InstaCommentListResponse commentsResponse)
                 {
-                    return ConvertersFabric.Instance.GetCommentListConverter(commentsResponse).Convert();
+                    return InstaConvertersFabric.Instance.GetCommentListConverter(commentsResponse).Convert();
                 }
 
-                while (commentListResponse.MoreCommentsAvailable
-                       && !string.IsNullOrEmpty(commentListResponse.NextMaxId)
-                       && pagesLoaded < paginationParameters.MaximumPagesToLoad ||
-                       commentListResponse.MoreHeadLoadAvailable
-                       && !string.IsNullOrEmpty(commentListResponse.NextMinId)
-                       && pagesLoaded < paginationParameters.MaximumPagesToLoad)
+                while (commentListResponse.MoreCommentsAvailable &&
+                    !string.IsNullOrEmpty(commentListResponse.NextMaxId) &&
+                    pagesLoaded < paginationParameters.MaximumPagesToLoad ||
+                    commentListResponse.MoreHeadLoadAvailable &&
+                    !string.IsNullOrEmpty(commentListResponse.NextMinId) &&
+                    pagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     IResult<InstaCommentListResponse> nextComments;
                     if (!string.IsNullOrEmpty(commentListResponse.NextMaxId))
@@ -396,7 +396,7 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                     if (!nextComments.Succeeded)
                     {
-                        return Result.Fail(nextComments.Info, Convert(commentListResponse));
+                        return InstaResult.Fail(nextComments.Info, Convert(commentListResponse));
                     }
 
                     commentListResponse.NextMaxId = nextComments.Value.NextMaxId;
@@ -411,18 +411,18 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 paginationParameters.NextMaxId = commentListResponse.NextMaxId;
                 paginationParameters.NextMinId = commentListResponse.NextMinId;
-                var converter = ConvertersFabric.Instance.GetCommentListConverter(commentListResponse);
-                return Result.Success(converter.Convert());
+                var converter = InstaConvertersFabric.Instance.GetCommentListConverter(commentListResponse);
+                return InstaResult.Success(converter.Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaCommentList), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaCommentList), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaCommentList>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaCommentList>(exception);
             }
         }
 
@@ -438,7 +438,7 @@ namespace Wikiled.Instagram.Api.API.Processors
             string targetCommentId,
             PaginationParameters paginationParameters)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 if (paginationParameters == null)
@@ -446,18 +446,22 @@ namespace Wikiled.Instagram.Api.API.Processors
                     paginationParameters = PaginationParameters.MaxPagesToLoad(1);
                 }
 
-                var commentsUri = UriCreator.GetMediaInlineCommentsUri(mediaId, targetCommentId, paginationParameters.NextMaxId);
+                var commentsUri =
+                    InstaUriCreator.GetMediaInlineCommentsUri(mediaId, targetCommentId, paginationParameters.NextMaxId);
                 if (!string.IsNullOrEmpty(paginationParameters.NextMinId))
                 {
-                    commentsUri = UriCreator.GetMediaInlineCommentsWithMinIdUri(mediaId, targetCommentId, paginationParameters.NextMinId);
+                    commentsUri =
+                        InstaUriCreator.GetMediaInlineCommentsWithMinIdUri(mediaId,
+                                                                      targetCommentId,
+                                                                      paginationParameters.NextMinId);
                 }
 
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, commentsUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, commentsUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaInlineCommentList>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaInlineCommentList>(response, json);
                 }
 
                 var commentListResponse = JsonConvert.DeserializeObject<InstaInlineCommentListResponse>(json);
@@ -466,29 +470,37 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 InstaInlineCommentList Convert(InstaInlineCommentListResponse commentsResponse)
                 {
-                    return ConvertersFabric.Instance.GetInlineCommentsConverter(commentsResponse).Convert();
+                    return InstaConvertersFabric.Instance.GetInlineCommentsConverter(commentsResponse).Convert();
                 }
 
-                while (commentListResponse.HasMoreTailChildComments
-                       && !string.IsNullOrEmpty(commentListResponse.NextMaxId)
-                       && pagesLoaded < paginationParameters.MaximumPagesToLoad ||
-                       commentListResponse.HasMoreHeadChildComments
-                       && !string.IsNullOrEmpty(commentListResponse.NextMinId)
-                       && pagesLoaded < paginationParameters.MaximumPagesToLoad)
+                while (commentListResponse.HasMoreTailChildComments &&
+                    !string.IsNullOrEmpty(commentListResponse.NextMaxId) &&
+                    pagesLoaded < paginationParameters.MaximumPagesToLoad ||
+                    commentListResponse.HasMoreHeadChildComments &&
+                    !string.IsNullOrEmpty(commentListResponse.NextMinId) &&
+                    pagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     IResult<InstaInlineCommentListResponse> nextComments;
                     if (!string.IsNullOrEmpty(commentListResponse.NextMaxId))
                     {
-                        nextComments = await GetInlineCommentListWithMaxIdAsync(mediaId, targetCommentId, commentListResponse.NextMaxId, null);
+                        nextComments =
+                            await GetInlineCommentListWithMaxIdAsync(mediaId,
+                                                                     targetCommentId,
+                                                                     commentListResponse.NextMaxId,
+                                                                     null);
                     }
                     else
                     {
-                        nextComments = await GetInlineCommentListWithMaxIdAsync(mediaId, targetCommentId, null, commentListResponse.NextMinId);
+                        nextComments =
+                            await GetInlineCommentListWithMaxIdAsync(mediaId,
+                                                                     targetCommentId,
+                                                                     null,
+                                                                     commentListResponse.NextMinId);
                     }
 
                     if (!nextComments.Succeeded)
                     {
-                        return Result.Fail(nextComments.Info, Convert(commentListResponse));
+                        return InstaResult.Fail(nextComments.Info, Convert(commentListResponse));
                     }
 
                     commentListResponse.NextMaxId = nextComments.Value.NextMaxId;
@@ -503,18 +515,18 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 paginationParameters.NextMaxId = commentListResponse.NextMaxId;
                 paginationParameters.NextMinId = commentListResponse.NextMinId;
-                var comments = ConvertersFabric.Instance.GetInlineCommentsConverter(commentListResponse).Convert();
-                return Result.Success(comments);
+                var comments = InstaConvertersFabric.Instance.GetInlineCommentsConverter(commentListResponse).Convert();
+                return InstaResult.Success(comments);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaInlineCommentList), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaInlineCommentList), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaInlineCommentList>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaInlineCommentList>(exception);
             }
         }
 
@@ -524,34 +536,34 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="commentId">Comment id</param>
         public async Task<IResult<bool>> LikeCommentAsync(string commentId)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetLikeCommentUri(commentId);
+                var instaUri = InstaUriCreator.GetLikeCommentUri(commentId);
                 var fields = new Dictionary<string, string>
-                             {
-                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
-                                 {"_csrftoken", _user.CsrfToken}
-                             };
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_csrftoken", user.CsrfToken }
+                };
                 var request =
-                    _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, fields);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, fields);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 return response.StatusCode == HttpStatusCode.OK
-                           ? Result.Success(true)
-                           : Result.UnExpectedResponse<bool>(response, json);
+                    ? InstaResult.Success(true)
+                    : InstaResult.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, false);
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, false);
             }
         }
 
@@ -561,49 +573,52 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="mediaId">Media id</param>
         /// <param name="targetCommentId">Target comment id</param>
         /// <param name="text">Comment text</param>
-        public async Task<IResult<InstaComment>> ReplyCommentMediaAsync(string mediaId, string targetCommentId, string text)
+        public async Task<IResult<InstaComment>> ReplyCommentMediaAsync(
+            string mediaId,
+            string targetCommentId,
+            string text)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetPostCommetUri(mediaId);
-                var breadcrumb = CryptoHelper.GetCommentBreadCrumbEncoded(text);
+                var instaUri = InstaUriCreator.GetPostCommetUri(mediaId);
+                var breadcrumb = InstaCryptoHelper.GetCommentBreadCrumbEncoded(text);
                 var fields = new Dictionary<string, string>
-                             {
-                                 {"user_breadcrumb", breadcrumb},
-                                 {"idempotence_token", Guid.NewGuid().ToString()},
-                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                                 {"replied_to_comment_id", targetCommentId},
-                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
-                                 {"_csrftoken", _user.CsrfToken},
-                                 {"comment_text", text},
-                                 {"containermodule", "comments_feed_timeline"},
-                                 {"radio_type", "wifi-none"}
-                             };
+                {
+                    { "user_breadcrumb", breadcrumb },
+                    { "idempotence_token", Guid.NewGuid().ToString() },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "replied_to_comment_id", targetCommentId },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_csrftoken", user.CsrfToken },
+                    { "comment_text", text },
+                    { "containermodule", "comments_feed_timeline" },
+                    { "radio_type", "wifi-none" }
+                };
                 var request =
-                    _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, fields);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, fields);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaComment>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaComment>(response, json);
                 }
 
                 var commentResponse = JsonConvert.DeserializeObject<InstaCommentResponse>(
                     json,
                     new InstaCommentDataConverter());
-                var converter = ConvertersFabric.Instance.GetCommentConverter(commentResponse);
-                return Result.Success(converter.Convert());
+                var converter = InstaConvertersFabric.Instance.GetCommentConverter(commentResponse);
+                return InstaResult.Success(converter.Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaComment), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaComment), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaComment>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaComment>(exception);
             }
         }
 
@@ -614,36 +629,36 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="commentId">Comment id</param>
         public async Task<IResult<bool>> ReportCommentAsync(string mediaId, string commentId)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetReportCommetUri(mediaId, commentId);
+                var instaUri = InstaUriCreator.GetReportCommetUri(mediaId, commentId);
                 var fields = new Dictionary<string, string>
-                             {
-                                 {"media_id", mediaId},
-                                 {"comment_id", commentId},
-                                 {"reason", "1"},
-                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
-                                 {"_csrftoken", _user.CsrfToken}
-                             };
+                {
+                    { "media_id", mediaId },
+                    { "comment_id", commentId },
+                    { "reason", "1" },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_csrftoken", user.CsrfToken }
+                };
                 var request =
-                    _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, fields);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, fields);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 return response.StatusCode == HttpStatusCode.OK
-                           ? Result.Success(true)
-                           : Result.UnExpectedResponse<bool>(response, json);
+                    ? InstaResult.Success(true)
+                    : InstaResult.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, false);
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, false);
             }
         }
 
@@ -661,30 +676,30 @@ namespace Wikiled.Instagram.Api.API.Processors
                     throw new ArgumentException("At least one comment id require");
                 }
 
-                var instaUri = UriCreator.GetTranslateCommentsUri(string.Join(",", commentIds));
+                var instaUri = InstaUriCreator.GetTranslateCommentsUri(string.Join(",", commentIds));
 
                 var request =
-                    _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK || string.IsNullOrEmpty(json))
                 {
-                    return Result.UnExpectedResponse<InstaTranslateList>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaTranslateList>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaTranslateContainerResponse>(json);
 
-                return Result.Success(ConvertersFabric.Instance.GetTranslateContainerConverter(obj).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetTranslateContainerConverter(obj).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaTranslateList), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaTranslateList), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaTranslateList>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaTranslateList>(exception);
             }
         }
 
@@ -703,48 +718,48 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="commentId">Comment id</param>
         public async Task<IResult<bool>> UnlikeCommentAsync(string commentId)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetUnLikeCommentUri(commentId);
+                var instaUri = InstaUriCreator.GetUnLikeCommentUri(commentId);
                 var fields = new Dictionary<string, string>
-                             {
-                                 {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                                 {"_uid", _user.LoggedInUser.Pk.ToString()},
-                                 {"_csrftoken", _user.CsrfToken}
-                             };
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_csrftoken", user.CsrfToken }
+                };
                 var request =
-                    _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, fields);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, fields);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 return response.StatusCode == HttpStatusCode.OK
-                           ? Result.Success(true)
-                           : Result.UnExpectedResponse<bool>(response, json);
+                    ? InstaResult.Success(true)
+                    : InstaResult.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, false);
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, false);
             }
         }
 
         private async Task<IResult<bool>> BlockUnblockCommenting(bool block, long[] userIds)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 if (userIds == null || userIds?.Length == 0)
                 {
-                    Result.Fail<bool>("At least one user id (pk) is require");
+                    InstaResult.Fail<bool>("At least one user id (pk) is require");
                 }
 
-                var instaUri = UriCreator.GetSetBlockedCommentersUri();
+                var instaUri = InstaUriCreator.GetSetBlockedCommentersUri();
 
                 //var blockedUsersResponse = await GetBlockedCommentersAsync();
                 //var blockedUsers = new List<long>();
@@ -780,28 +795,28 @@ namespace Wikiled.Instagram.Api.API.Processors
                 }
 
                 var data = new JObject
-                           {
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"_csrftoken", _user.CsrfToken},
-                               {"commenter_block_status", commenterBlockStatus}
-                           };
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_csrftoken", user.CsrfToken },
+                    { "commenter_block_status", commenterBlockStatus }
+                };
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 return response.StatusCode == HttpStatusCode.OK
-                           ? Result.Success(true)
-                           : Result.UnExpectedResponse<bool>(response, json);
+                    ? InstaResult.Success(true)
+                    : InstaResult.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, false);
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, false);
             }
         }
 
@@ -812,33 +827,33 @@ namespace Wikiled.Instagram.Api.API.Processors
         {
             try
             {
-                var commentsUri = UriCreator.GetMediaCommentsUri(mediaId, nextMaxId);
+                var commentsUri = InstaUriCreator.GetMediaCommentsUri(mediaId, nextMaxId);
                 if (!string.IsNullOrEmpty(nextMinId))
                 {
-                    commentsUri = UriCreator.GetMediaCommentsMinIdUri(mediaId, nextMinId);
+                    commentsUri = InstaUriCreator.GetMediaCommentsMinIdUri(mediaId, nextMinId);
                 }
 
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, commentsUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, commentsUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaCommentListResponse>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaCommentListResponse>(response, json);
                 }
 
                 var comments = JsonConvert.DeserializeObject<InstaCommentListResponse>(json);
-                return Result.Success(comments);
+                return InstaResult.Success(comments);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaCommentListResponse), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaCommentListResponse), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaCommentListResponse>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaCommentListResponse>(exception);
             }
         }
 
@@ -850,33 +865,33 @@ namespace Wikiled.Instagram.Api.API.Processors
         {
             try
             {
-                var commentsUri = UriCreator.GetMediaInlineCommentsUri(mediaId, targetCommandId, nextMaxId);
+                var commentsUri = InstaUriCreator.GetMediaInlineCommentsUri(mediaId, targetCommandId, nextMaxId);
                 if (!string.IsNullOrEmpty(nextMinId))
                 {
-                    commentsUri = UriCreator.GetMediaInlineCommentsWithMinIdUri(mediaId, targetCommandId, nextMinId);
+                    commentsUri = InstaUriCreator.GetMediaInlineCommentsWithMinIdUri(mediaId, targetCommandId, nextMinId);
                 }
 
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, commentsUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, commentsUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaInlineCommentListResponse>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaInlineCommentListResponse>(response, json);
                 }
 
                 var commentListResponse = JsonConvert.DeserializeObject<InstaInlineCommentListResponse>(json);
-                return Result.Success(commentListResponse);
+                return InstaResult.Success(commentListResponse);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaInlineCommentListResponse), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaInlineCommentListResponse), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaInlineCommentListResponse>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaInlineCommentListResponse>(exception);
             }
         }
     }

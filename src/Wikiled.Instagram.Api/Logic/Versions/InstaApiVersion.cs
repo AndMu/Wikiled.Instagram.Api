@@ -1,4 +1,4 @@
-﻿namespace Wikiled.Instagram.Api.API.Versions
+﻿namespace Wikiled.Instagram.Api.Logic.Versions
 {
     public class InstaApiVersion
     {

@@ -1,4 +1,7 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Broadcast;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Broadcast;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Broadcast
 {
@@ -14,11 +17,11 @@ namespace Wikiled.Instagram.Api.Converters.Broadcast
             }
 
             var broadcastLike = new InstaBroadcastLike
-                                {
-                                    BurstLikes = SourceObject.BurstLikes,
-                                    Likes = SourceObject.Likes,
-                                    LikeTime = DateTimeHelper.FromUnixTimeSeconds(SourceObject.LikeTs ?? DateTime.Now.ToUnixTime())
-                                };
+            {
+                BurstLikes = SourceObject.BurstLikes,
+                Likes = SourceObject.Likes,
+                LikeTime = (SourceObject.LikeTs ?? DateTime.Now.ToUnixTime()).FromUnixTimeSeconds()
+            };
             return broadcastLike;
         }
     }

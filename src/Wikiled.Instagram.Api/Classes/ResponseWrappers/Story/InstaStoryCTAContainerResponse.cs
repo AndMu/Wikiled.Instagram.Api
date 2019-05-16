@@ -2,8 +2,9 @@
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Story
 {
-    public class InstaStoryCTAContainerResponse
+    public class InstaStoryCtaContainerResponse
     {
-        [JsonProperty("links")] public InstaStoryCTAResponse[] Links { get; set; }
+        [JsonProperty("links")]
+        public InstaStoryCtaResponse[] Links { get; set; }
     }
 }

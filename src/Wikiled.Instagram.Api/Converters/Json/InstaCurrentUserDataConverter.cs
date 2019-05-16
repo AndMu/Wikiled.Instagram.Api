@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
 
 namespace Wikiled.Instagram.Api.Converters.Json
 {
@@ -20,8 +21,8 @@ namespace Wikiled.Instagram.Api.Converters.Json
             var token = JToken.Load(reader);
             var userToken = token?.SelectToken("user");
             var user = userToken != null
-                           ? userToken.ToObject<InstaCurrentUserResponse>()
-                           : token?.ToObject<InstaCurrentUserResponse>();
+                ? userToken.ToObject<InstaCurrentUserResponse>()
+                : token?.ToObject<InstaCurrentUserResponse>();
             return user;
         }
 

@@ -1,4 +1,6 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.Discover
+﻿using Wikiled.Instagram.Api.Classes.Models.User;
+
+namespace Wikiled.Instagram.Api.Classes.Models.Discover
 {
     public class InstaUserContact : InstaUserShort
     {

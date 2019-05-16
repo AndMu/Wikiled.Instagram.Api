@@ -1,4 +1,5 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Enums;
 
 namespace Wikiled.Instagram.Api.Classes.Models.Business
 {

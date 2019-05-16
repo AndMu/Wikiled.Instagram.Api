@@ -1,6 +1,6 @@
 ﻿namespace Wikiled.Instagram.Api.Enums
 {
-    public enum CheckPointType
+    public enum InstaCheckPointType
     {
         CheckpointLoggedOut = 0
     }

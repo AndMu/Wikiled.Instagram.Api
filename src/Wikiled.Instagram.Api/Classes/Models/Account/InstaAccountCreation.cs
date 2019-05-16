@@ -1,13 +1,17 @@
 ﻿using Newtonsoft.Json;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
 
 namespace Wikiled.Instagram.Api.Classes.Models.Account
 {
     public class InstaAccountCreation
     {
-        [JsonProperty("account_created")] public bool AccountCreated { get; set; }
+        [JsonProperty("account_created")]
+        public bool AccountCreated { get; set; }
 
-        [JsonProperty("created_user")] public InstaUserShortResponse CreatedUser { get; set; }
+        [JsonProperty("created_user")]
+        public InstaUserShortResponse CreatedUser { get; set; }
 
-        [JsonProperty("status")] public string Status { get; set; }
+        [JsonProperty("status")]
+        public string Status { get; set; }
     }
 }

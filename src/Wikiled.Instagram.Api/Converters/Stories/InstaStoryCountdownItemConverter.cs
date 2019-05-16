@@ -1,8 +1,11 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
 
 namespace Wikiled.Instagram.Api.Converters.Stories
 {
-    internal class InstaStoryCountdownItemConverter : IObjectConverter<InstaStoryCountdownItem, InstaStoryCountdownItemResponse>
+    internal class
+        InstaStoryCountdownItemConverter : IObjectConverter<InstaStoryCountdownItem, InstaStoryCountdownItemResponse>
     {
         public InstaStoryCountdownItemResponse SourceObject { get; set; }
 
@@ -14,21 +17,22 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             }
 
             var storyCountdownItem = new InstaStoryCountdownItem
-                                     {
-                                         Height = SourceObject.Height,
-                                         IsHidden = SourceObject.IsHidden,
-                                         IsPinned = SourceObject.IsPinned,
-                                         Rotation = SourceObject.Rotation,
-                                         Width = SourceObject.Width,
-                                         X = SourceObject.X,
-                                         Y = SourceObject.Y,
-                                         Z = SourceObject.Z
-                                     };
+            {
+                Height = SourceObject.Height,
+                IsHidden = SourceObject.IsHidden,
+                IsPinned = SourceObject.IsPinned,
+                Rotation = SourceObject.Rotation,
+                Width = SourceObject.Width,
+                X = SourceObject.X,
+                Y = SourceObject.Y,
+                Z = SourceObject.Z
+            };
 
             if (SourceObject.CountdownSticker != null)
             {
-                storyCountdownItem.CountdownSticker = ConvertersFabric.Instance
-                                                                      .GetStoryCountdownStickerItemConverter(SourceObject.CountdownSticker).Convert();
+                storyCountdownItem.CountdownSticker = InstaConvertersFabric.Instance
+                    .GetStoryCountdownStickerItemConverter(SourceObject.CountdownSticker)
+                    .Convert();
             }
 
             return storyCountdownItem;

@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Other;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Other;
 
 namespace Wikiled.Instagram.Api.Converters.Other
 {
@@ -13,11 +15,7 @@ namespace Wikiled.Instagram.Api.Converters.Other
                 throw new ArgumentNullException("SourceObject");
             }
 
-            var translate = new InstaTranslate
-                            {
-                                Id = SourceObject.Id,
-                                Translation = SourceObject.Translation
-                            };
+            var translate = new InstaTranslate { Id = SourceObject.Id, Translation = SourceObject.Translation };
             return translate;
         }
     }

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Wikiled.Instagram.Api.Classes.Models.Broadcast;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Broadcast;
 
 namespace Wikiled.Instagram.Api.Converters.Broadcast
 {
@@ -14,7 +16,7 @@ namespace Wikiled.Instagram.Api.Converters.Broadcast
             {
                 foreach (var broadcast in SourceObject)
                 {
-                    broadcastList.Add(ConvertersFabric.Instance.GetBroadcastConverter(broadcast).Convert());
+                    broadcastList.Add(InstaConvertersFabric.Instance.GetBroadcastConverter(broadcast).Convert());
                 }
             }
 

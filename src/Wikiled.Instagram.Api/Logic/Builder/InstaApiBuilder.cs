@@ -1,43 +1,37 @@
 ﻿using System;
 using System.Net.Http;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.Android.DeviceInfo;
+using Wikiled.Instagram.Api.Classes.SessionHandlers;
+using Wikiled.Instagram.Api.Enums;
+using Wikiled.Instagram.Api.Logger;
 
-namespace Wikiled.Instagram.Api.API.Builder
+namespace Wikiled.Instagram.Api.Logic.Builder
 {
     public class InstaApiBuilder : IInstaApiBuilder
     {
-        private InstaApiVersionType? _apiVersionType;
+        private InstaApiVersionType? apiVersionType;
 
-        private IRequestDelay _delay = RequestDelay.Empty();
+        private IRequestDelay delay = RequestDelay.Empty();
 
-        private AndroidDevice _device;
+        private InstaAndroidDevice device;
 
-        private HttpClient _httpClient;
+        private HttpClient httpClient;
 
-        private HttpClientHandler _httpHandler = new HttpClientHandler();
+        private HttpClientHandler httpHandler = new HttpClientHandler();
 
-        private IHttpRequestProcessor _httpRequestProcessor;
+        private IHttpRequestProcessor httpRequestProcessor;
 
-        private IInstaLogger _logger;
+        private IInstaLogger logger;
 
-        private ApiRequestMessage _requestMessage;
+        private InstaApiRequestMessage requestMessage;
 
-        private ISessionHandler _sessionHandler;
+        private ISessionHandler sessionHandler;
 
-        private UserSessionData _user;
+        private UserSessionData user;
 
         private InstaApiBuilder()
         {
-        }
-
-        /// <summary>
-        ///     Creates the builder.
-        /// </summary>
-        /// <returns>
-        ///     API Builder
-        /// </returns>
-        public static IInstaApiBuilder CreateBuilder()
-        {
-            return new InstaApiBuilder();
         }
 
         /// <summary>
@@ -49,73 +43,73 @@ namespace Wikiled.Instagram.Api.API.Builder
         /// <exception cref="ArgumentNullException">User auth data must be specified</exception>
         public IInstaApi Build()
         {
-            if (_user == null)
+            if (user == null)
             {
-                _user = UserSessionData.Empty;
+                user = UserSessionData.Empty;
             }
 
-            if (_httpHandler == null)
+            if (httpHandler == null)
             {
-                _httpHandler = new HttpClientHandler();
+                httpHandler = new HttpClientHandler();
             }
 
-            if (_httpClient == null)
+            if (httpClient == null)
             {
-                _httpClient = new HttpClient(_httpHandler) {BaseAddress = new Uri(InstaApiConstants.INSTAGRAM_URL)};
+                httpClient = new HttpClient(httpHandler) { BaseAddress = new Uri(InstaApiConstants.InstagramUrl) };
             }
 
-            if (_requestMessage == null)
+            if (requestMessage == null)
             {
-                if (_device == null)
+                if (device == null)
                 {
-                    _device = AndroidDeviceGenerator.GetRandomAndroidDevice();
+                    device = InstaAndroidDeviceGenerator.GetRandomAndroidDevice();
                 }
 
-                _requestMessage = new ApiRequestMessage
-                                  {
-                                      PhoneId = _device.PhoneGuid.ToString(),
-                                      Guid = _device.DeviceGuid,
-                                      Password = _user?.Password,
-                                      Username = _user?.UserName,
-                                      DeviceId = ApiRequestMessage.GenerateDeviceId(),
-                                      AdId = _device.AdId.ToString()
-                                  };
+                requestMessage = new InstaApiRequestMessage
+                {
+                    PhoneId = device.PhoneGuid.ToString(),
+                    Guid = device.DeviceGuid,
+                    Password = user?.Password,
+                    Username = user?.UserName,
+                    DeviceId = InstaApiRequestMessage.GenerateDeviceId(),
+                    AdId = device.AdId.ToString()
+                };
             }
 
-            if (string.IsNullOrEmpty(_requestMessage.Password))
+            if (string.IsNullOrEmpty(requestMessage.Password))
             {
-                _requestMessage.Password = _user?.Password;
+                requestMessage.Password = user?.Password;
             }
 
-            if (string.IsNullOrEmpty(_requestMessage.Username))
+            if (string.IsNullOrEmpty(requestMessage.Username))
             {
-                _requestMessage.Username = _user?.UserName;
+                requestMessage.Username = user?.UserName;
             }
 
             try
             {
-                InstaApiConstants.TIMEZONE_OFFSET = int.Parse(DateTimeOffset.Now.Offset.TotalSeconds.ToString());
+                InstaApiConstants.TimezoneOffset = int.Parse(DateTimeOffset.Now.Offset.TotalSeconds.ToString());
             }
             catch
             {
             }
 
-            if (_httpRequestProcessor == null)
+            if (httpRequestProcessor == null)
             {
-                _httpRequestProcessor =
-                    new HttpRequestProcessor(_delay, _httpClient, _httpHandler, _requestMessage, _logger);
+                httpRequestProcessor =
+                    new InstaHttpRequestProcessor(delay, httpClient, httpHandler, requestMessage, logger);
             }
 
-            if (_apiVersionType == null)
+            if (apiVersionType == null)
             {
-                _apiVersionType = InstaApiVersionType.Version86;
+                apiVersionType = InstaApiVersionType.Version86;
             }
 
-            var instaApi = new InstaApi(_user, _logger, _device, _httpRequestProcessor, _apiVersionType.Value);
-            if (_sessionHandler != null)
+            var instaApi = new InstaApi(user, logger, device, httpRequestProcessor, apiVersionType.Value);
+            if (sessionHandler != null)
             {
-                _sessionHandler.InstaApi = instaApi;
-                instaApi.SessionHandler = _sessionHandler;
+                sessionHandler.Api = instaApi;
+                instaApi.SessionHandler = sessionHandler;
             }
 
             return instaApi;
@@ -131,9 +125,9 @@ namespace Wikiled.Instagram.Api.API.Builder
         /// <remarks>
         ///     Please, do not use if you don't know what you are doing
         /// </remarks>
-        public IInstaApiBuilder SetApiRequestMessage(ApiRequestMessage requestMessage)
+        public IInstaApiBuilder SetApiRequestMessage(InstaApiRequestMessage requestMessage)
         {
-            _requestMessage = requestMessage;
+            this.requestMessage = requestMessage;
             return this;
         }
 
@@ -146,7 +140,7 @@ namespace Wikiled.Instagram.Api.API.Builder
         /// </returns>
         public IInstaApiBuilder SetApiVersion(InstaApiVersionType apiVersion)
         {
-            _apiVersionType = apiVersion;
+            apiVersionType = apiVersion;
             return this;
         }
 
@@ -158,9 +152,9 @@ namespace Wikiled.Instagram.Api.API.Builder
         /// <returns>
         ///     API Builder
         /// </returns>
-        public IInstaApiBuilder SetDevice(AndroidDevice androidDevice)
+        public IInstaApiBuilder SetDevice(InstaAndroidDevice androidDevice)
         {
-            _device = androidDevice;
+            device = androidDevice;
             return this;
         }
 
@@ -173,7 +167,7 @@ namespace Wikiled.Instagram.Api.API.Builder
         /// </returns>
         public IInstaApiBuilder SetHttpRequestProcessor(IHttpRequestProcessor httpRequestProcessor)
         {
-            _httpRequestProcessor = httpRequestProcessor;
+            this.httpRequestProcessor = httpRequestProcessor;
             return this;
         }
 
@@ -191,7 +185,7 @@ namespace Wikiled.Instagram.Api.API.Builder
                 delay = RequestDelay.Empty();
             }
 
-            _delay = delay;
+            this.delay = delay;
             return this;
         }
 
@@ -204,7 +198,7 @@ namespace Wikiled.Instagram.Api.API.Builder
         /// </returns>
         public IInstaApiBuilder SetSessionHandler(ISessionHandler sessionHandler)
         {
-            _sessionHandler = sessionHandler;
+            this.sessionHandler = sessionHandler;
             return this;
         }
 
@@ -217,7 +211,7 @@ namespace Wikiled.Instagram.Api.API.Builder
         /// </returns>
         public IInstaApiBuilder SetUser(UserSessionData user)
         {
-            _user = user;
+            this.user = user;
             return this;
         }
 
@@ -230,7 +224,7 @@ namespace Wikiled.Instagram.Api.API.Builder
         /// </returns>
         public IInstaApiBuilder UseHttpClient(HttpClient httpClient)
         {
-            _httpClient = httpClient;
+            this.httpClient = httpClient;
             return this;
         }
 
@@ -243,7 +237,7 @@ namespace Wikiled.Instagram.Api.API.Builder
         /// </returns>
         public IInstaApiBuilder UseHttpClientHandler(HttpClientHandler handler)
         {
-            _httpHandler = handler;
+            httpHandler = handler;
             return this;
         }
 
@@ -256,8 +250,19 @@ namespace Wikiled.Instagram.Api.API.Builder
         /// </returns>
         public IInstaApiBuilder UseLogger(IInstaLogger logger)
         {
-            _logger = logger;
+            this.logger = logger;
             return this;
+        }
+
+        /// <summary>
+        ///     Creates the builder.
+        /// </summary>
+        /// <returns>
+        ///     API Builder
+        /// </returns>
+        public static IInstaApiBuilder CreateBuilder()
+        {
+            return new InstaApiBuilder();
         }
     }
 }

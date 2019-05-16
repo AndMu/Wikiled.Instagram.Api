@@ -1,8 +1,11 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Comment;
 
 namespace Wikiled.Instagram.Api.Converters.Other
 {
-    internal class InstaBlockedCommentersConverter : IObjectConverter<InstaUserShortList, InstaBlockedCommentersResponse>
+    internal class
+        InstaBlockedCommentersConverter : IObjectConverter<InstaUserShortList, InstaBlockedCommentersResponse>
     {
         public InstaBlockedCommentersResponse SourceObject { get; set; }
 
@@ -19,7 +22,7 @@ namespace Wikiled.Instagram.Api.Converters.Other
             {
                 foreach (var user in SourceObject.BlockedCommenters)
                 {
-                    users.Add(ConvertersFabric.Instance.GetUserShortConverter(user).Convert());
+                    users.Add(InstaConvertersFabric.Instance.GetUserShortConverter(user).Convert());
                 }
             }
 

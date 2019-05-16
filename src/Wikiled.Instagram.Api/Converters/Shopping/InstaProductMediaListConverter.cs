@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.Shopping;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Shopping;
 
 namespace Wikiled.Instagram.Api.Converters.Shopping
 {
-    internal class InstaProductMediaListConverter : IObjectConverter<InstaProductMediaList, InstaProductMediaListResponse>
+    internal class
+        InstaProductMediaListConverter : IObjectConverter<InstaProductMediaList, InstaProductMediaListResponse>
     {
         public InstaProductMediaListResponse SourceObject { get; set; }
 
@@ -14,18 +18,18 @@ namespace Wikiled.Instagram.Api.Converters.Shopping
             }
 
             var productMedia = new InstaProductMediaList
-                               {
-                                   AutoLoadMoreEnabled = SourceObject.AutoLoadMoreEnabled,
-                                   MoreAvailable = SourceObject.MoreAvailable,
-                                   NextMaxId = SourceObject.NextMaxId,
-                                   ResultsCount = SourceObject.ResultsCount,
-                                   TotalCount = SourceObject.TotalCount
-                               };
+            {
+                AutoLoadMoreEnabled = SourceObject.AutoLoadMoreEnabled,
+                MoreAvailable = SourceObject.MoreAvailable,
+                NextMaxId = SourceObject.NextMaxId,
+                ResultsCount = SourceObject.ResultsCount,
+                TotalCount = SourceObject.TotalCount
+            };
             if (SourceObject.Medias != null && SourceObject.Medias.Any())
             {
                 foreach (var media in SourceObject.Medias)
                 {
-                    productMedia.Medias.Add(ConvertersFabric.Instance.GetSingleMediaConverter(media).Convert());
+                    productMedia.Medias.Add(InstaConvertersFabric.Instance.GetSingleMediaConverter(media).Convert());
                 }
             }
 

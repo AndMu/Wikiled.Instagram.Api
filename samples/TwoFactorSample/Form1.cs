@@ -1,33 +1,13 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using InstagramApiSharp.API;
-using InstagramApiSharp.API.Builder;
-using InstagramApiSharp.Classes;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Logger;
-using Wikiled.Instagram.Api.API;
-using Wikiled.Instagram.Api.API.Builder;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Enums;
 using Wikiled.Instagram.Api.Logger;
+using Wikiled.Instagram.Api.Logic;
+using Wikiled.Instagram.Api.Logic.Builder;
 
 /////////////////////////////////////////////////////////////////////
 ////////////////////// IMPORTANT NOTE ///////////////////////////////
@@ -37,30 +17,28 @@ using Wikiled.Instagram.Api.Logger;
 /////////////////////////////////////////////////////////////////////
 namespace TwoFactorSample
 {
-    public partial class Form1 : Form
+    public partial class InstaForm1 : Form
     {
-        const string AppName = "Two Factor";
-        const string StateFile = "state.bin";
-        private static IInstaApi InstaApi;
-        //307, 280
-        readonly Size NormalSize = new Size(307, 150);
-        readonly Size TwoFactorSize = new Size(307, 280);
+        private const string AppName = "Two Factor";
+        private const string StateFile = "state.bin";
 
-        public Form1()
+        private static IInstaApi api;
+
+        //307, 280
+        private readonly Size normalSize = new Size(307, 150);
+        private readonly Size twoFactorSize = new Size(307, 280);
+
+        public InstaForm1()
         {
             InitializeComponent();
         }
 
         private async void LoginButton_Click(object sender, EventArgs e)
         {
-            Size = NormalSize;
-            var userSession = new UserSessionData
-            {
-                UserName = txtUsername.Text,
-                Password = txtPassword.Text
-            };
+            Size = normalSize;
+            var userSession = new UserSessionData { UserName = txtUsername.Text, Password = txtPassword.Text };
 
-            InstaApi = InstaApiBuilder.CreateBuilder()
+            api = InstaApiBuilder.CreateBuilder()
                 .SetUser(userSession)
                 .UseLogger(new DebugLogger(LogLevel.All))
                 .SetRequestDelay(RequestDelay.FromSeconds(0, 1))
@@ -68,9 +46,9 @@ namespace TwoFactorSample
             Text = $"{AppName} Connecting";
             LoadSession();
 
-            if (!InstaApi.IsUserAuthenticated)
+            if (!api.IsUserAuthenticated)
             {
-                var logInResult = await InstaApi.LoginAsync();
+                var logInResult = await api.LoginAsync();
                 Debug.WriteLine(logInResult.Value);
                 if (logInResult.Succeeded)
                 {
@@ -84,7 +62,7 @@ namespace TwoFactorSample
                     if (logInResult.Value == InstaLoginResult.TwoFactorRequired)
                     {
                         // open a box so user can send two factor code
-                        Size = TwoFactorSize;
+                        Size = twoFactorSize;
                     }
                 }
             }
@@ -96,22 +74,29 @@ namespace TwoFactorSample
 
         private async void TwoFactorButton_Click(object sender, EventArgs e)
         {
-            if (InstaApi == null)
-                return;
-            if (string.IsNullOrEmpty(txtTwoFactorCode.Text))
+            if (api == null)
             {
-                MessageBox.Show("Please type your two factor code and then press Auth button.", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            if (string.IsNullOrEmpty(txtTwoFactorCode.Text))
+            {
+                MessageBox.Show("Please type your two factor code and then press Auth button.",
+                                "",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                return;
+            }
+
             // send two factor code
-            var twoFactorLogin = await InstaApi.TwoFactorLoginAsync(txtTwoFactorCode.Text);
+            var twoFactorLogin = await api.TwoFactorLoginAsync(txtTwoFactorCode.Text);
             if (twoFactorLogin.Succeeded)
             {
                 // connected
                 // save session
                 SaveSession();
                 Text = $"{AppName} Connected";
-                Size = NormalSize;
+                Size = normalSize;
             }
             else
             {
@@ -119,7 +104,7 @@ namespace TwoFactorSample
             }
         }
 
-        void LoadSession()
+        private void LoadSession()
         {
             try
             {
@@ -128,7 +113,7 @@ namespace TwoFactorSample
                     Debug.WriteLine("Loading state from file");
                     using (var fs = File.OpenRead(StateFile))
                     {
-                        InstaApi.LoadStateDataFromStream(fs);
+                        api.LoadStateDataFromStream(fs);
                     }
                 }
             }
@@ -137,11 +122,15 @@ namespace TwoFactorSample
                 Debug.WriteLine(ex);
             }
         }
-        void SaveSession()
+
+        private void SaveSession()
         {
-            if (InstaApi == null)
+            if (api == null)
+            {
                 return;
-            var state = InstaApi.GetStateDataAsStream();
+            }
+
+            var state = api.GetStateDataAsStream();
             using (var fileStream = File.Create(StateFile))
             {
                 state.Seek(0, SeekOrigin.Begin);

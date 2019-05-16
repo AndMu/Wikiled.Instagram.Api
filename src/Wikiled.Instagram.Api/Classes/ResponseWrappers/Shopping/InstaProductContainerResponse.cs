@@ -4,8 +4,10 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Shopping
 {
     public class InstaProductContainerResponse
     {
-        [JsonProperty("position")] public double[] Position { get; set; }
+        [JsonProperty("position")]
+        public double[] Position { get; set; }
 
-        [JsonProperty("product")] public InstaProductResponse Product { get; set; }
+        [JsonProperty("product")]
+        public InstaProductResponse Product { get; set; }
     }
 }

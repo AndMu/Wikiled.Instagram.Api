@@ -1,8 +1,13 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Stories
 {
-    internal class InstaStoryQuestionResponderConverter : IObjectConverter<InstaStoryQuestionResponder, InstaStoryQuestionResponderResponse>
+    internal class
+        InstaStoryQuestionResponderConverter : IObjectConverter<InstaStoryQuestionResponder,
+            InstaStoryQuestionResponderResponse>
     {
         public InstaStoryQuestionResponderResponse SourceObject { get; set; }
 
@@ -14,16 +19,16 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             }
 
             var responder = new InstaStoryQuestionResponder
-                            {
-                                HasSharedResponse = SourceObject.HasSharedResponse ?? false,
-                                Id = SourceObject.Id,
-                                ResponseText = SourceObject.Response,
-                                Time = DateTimeHelper.FromUnixTimeSeconds(SourceObject.Ts ?? DateTime.UtcNow.ToUnixTime())
-                            };
+            {
+                HasSharedResponse = SourceObject.HasSharedResponse ?? false,
+                Id = SourceObject.Id,
+                ResponseText = SourceObject.Response,
+                Time = (SourceObject.Ts ?? DateTime.UtcNow.ToUnixTime()).FromUnixTimeSeconds()
+            };
 
             if (SourceObject.User != null)
             {
-                responder.User = ConvertersFabric.Instance.GetUserShortConverter(SourceObject.User).Convert();
+                responder.User = InstaConvertersFabric.Instance.GetUserShortConverter(SourceObject.User).Convert();
             }
 
             return responder;

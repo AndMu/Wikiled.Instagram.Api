@@ -1,4 +1,7 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Users
 {
@@ -14,9 +17,9 @@ namespace Wikiled.Instagram.Api.Converters.Users
             }
 
             var details = new InstaAccountDetails
-                          {
-                              DateJoined = DateTimeHelper.FromUnixTimeSeconds(SourceObject.DateJoined ?? 0)
-                          };
+            {
+                DateJoined = InstaDateTimeHelper.FromUnixTimeSeconds(SourceObject.DateJoined ?? 0)
+            };
             if (SourceObject.FormerUsernameInfo != null)
             {
                 details.HasFormerUsernames = SourceObject.FormerUsernameInfo.HasFormerUsernames ?? false;
@@ -24,14 +27,15 @@ namespace Wikiled.Instagram.Api.Converters.Users
 
             if (SourceObject.SharedFollowerAccountsInfo != null)
             {
-                details.HasSharedFollowerAccounts = SourceObject.SharedFollowerAccountsInfo.HasSharedFollowerAccounts ?? false;
+                details.HasSharedFollowerAccounts =
+                    SourceObject.SharedFollowerAccountsInfo.HasSharedFollowerAccounts ?? false;
             }
 
             if (SourceObject.AdsInfo != null)
             {
                 try
                 {
-                    details.AdsInfo = ConvertersFabric.Instance.GetAdsInfoConverter(SourceObject.AdsInfo).Convert();
+                    details.AdsInfo = InstaConvertersFabric.Instance.GetAdsInfoConverter(SourceObject.AdsInfo).Convert();
                 }
                 catch
                 {
@@ -42,7 +46,9 @@ namespace Wikiled.Instagram.Api.Converters.Users
             {
                 try
                 {
-                    details.PrimaryCountryInfo = ConvertersFabric.Instance.GetPrimaryCountryInfoConverter(SourceObject.PrimaryCountryInfo).Convert();
+                    details.PrimaryCountryInfo = InstaConvertersFabric.Instance
+                        .GetPrimaryCountryInfoConverter(SourceObject.PrimaryCountryInfo)
+                        .Convert();
                 }
                 catch
                 {

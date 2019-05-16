@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.Models.Hashtags;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Hashtag api functions.
@@ -43,7 +43,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         /// <param name="tagname">Tag name</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        Task<IResult<InstaSectionMedia>> GetRecentHashtagMediaListAsync(string tagname, PaginationParameters paginationParameters);
+        Task<IResult<InstaSectionMedia>> GetRecentHashtagMediaListAsync(
+            string tagname,
+            PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Get suggested hashtags
@@ -58,7 +60,8 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         /// <param name="tagname">Tag name</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        Task<IResult<InstaSectionMedia>> GetTopHashtagMediaListAsync(string tagname, PaginationParameters paginationParameters);
+        Task<IResult<InstaSectionMedia>> GetTopHashtagMediaListAsync(string tagname,
+                                                                     PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Searches for specific hashtag by search query.
@@ -72,7 +75,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <returns>
         ///     List of hashtags
         /// </returns>
-        Task<IResult<InstaHashtagSearch>> SearchHashtagAsync(string query, IEnumerable<long> excludeList = null, string rankToken = null);
+        Task<IResult<InstaHashtagSearch>> SearchHashtagAsync(string query,
+                                                             IEnumerable<long> excludeList = null,
+                                                             string rankToken = null);
 
         /// <summary>
         ///     Unfollow a hashtag

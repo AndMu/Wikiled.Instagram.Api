@@ -1,6 +1,8 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.TV
+﻿using Wikiled.Instagram.Api.Classes.Models.User;
+
+namespace Wikiled.Instagram.Api.Classes.Models.TV
 {
-    public class InstaTVUser
+    public class InstaTvUser
     {
         public string AllowedCommenterType { get; set; }
 
@@ -52,7 +54,7 @@
 
         public bool ShowInsightsTerms { get; set; }
 
-        public int TotalIGTVVideosCount { get; set; }
+        public int TotalIgtvVideosCount { get; set; }
 
         public string Username { get; set; }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using InstagramApiSharp.API;
+using Wikiled.Instagram.Api.Logic;
+
 /////////////////////////////////////////////////////////////////////
 ////////////////////// IMPORTANT NOTE ///////////////////////////////
 // Please check wiki pages for more information:
@@ -9,21 +10,21 @@ using InstagramApiSharp.API;
 /////////////////////////////////////////////////////////////////////
 namespace Examples.Samples
 {
-    internal class CommentMedia : IDemoSample
+    internal class InstaCommentMedia : IDemoSample
     {
-        private readonly IInstaApi InstaApi;
+        private readonly IInstaApi api;
 
-        public CommentMedia(IInstaApi instaApi)
+        public InstaCommentMedia(IInstaApi instaApi)
         {
-            InstaApi = instaApi;
+            api = instaApi;
         }
 
         public async Task DoShow()
         {
-            var commentResult = await InstaApi.CommentProcessor.CommentMediaAsync("", "Hi there!");
+            var commentResult = await api.CommentProcessor.CommentMediaAsync("", "Hi there!");
             Console.WriteLine(commentResult.Succeeded
-                ? $"Comment created: {commentResult.Value.Pk}, text: {commentResult.Value.Text}"
-                : $"Unable to create comment: {commentResult.Info.Message}");
+                                  ? $"Comment created: {commentResult.Value.Pk}, text: {commentResult.Value.Text}"
+                                  : $"Unable to create comment: {commentResult.Info.Message}");
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Location;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Location;
 
 namespace Wikiled.Instagram.Api.Converters.Location
 {
@@ -14,11 +16,11 @@ namespace Wikiled.Instagram.Api.Converters.Location
             }
 
             var place = new InstaPlace
-                        {
-                            Location = ConvertersFabric.Instance.GetPlaceShortConverter(SourceObject.Location).Convert(),
-                            Title = SourceObject.Title,
-                            Subtitle = SourceObject.Subtitle
-                        };
+            {
+                Location = InstaConvertersFabric.Instance.GetPlaceShortConverter(SourceObject.Location).Convert(),
+                Title = SourceObject.Title,
+                Subtitle = SourceObject.Subtitle
+            };
             return place;
         }
     }

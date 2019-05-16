@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using InstagramApiSharp.API;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Logic;
+
 /////////////////////////////////////////////////////////////////////
 ////////////////////// IMPORTANT NOTE ///////////////////////////////
 // Please check wiki pages for more information:
@@ -9,23 +11,25 @@ using InstagramApiSharp.API;
 /////////////////////////////////////////////////////////////////////
 namespace Examples.Samples
 {
-    internal class CollectionSample : IDemoSample
+    internal class InstaCollectionSample : IDemoSample
     {
-        private readonly IInstaApi InstaApi;
+        private readonly IInstaApi api;
 
-        public CollectionSample(IInstaApi instaApi)
+        public InstaCollectionSample(IInstaApi instaApi)
         {
-            InstaApi = instaApi;
+            api = instaApi;
         }
 
         public async Task DoShow()
         {
             // get all collections of current user
-            var collections = await InstaApi.CollectionProcessor.GetCollectionsAsync(InstagramApiSharp.PaginationParameters.MaxPagesToLoad(1));
+            var collections =
+                await api.CollectionProcessor.GetCollectionsAsync(PaginationParameters.MaxPagesToLoad(1));
             Console.WriteLine($"Loaded {collections.Value.Items.Count} collections for current user");
             foreach (var instaCollection in collections.Value.Items)
             {
-                Console.WriteLine($"Collection: name={instaCollection.CollectionName}, id={instaCollection.CollectionId}");
+                Console.WriteLine(
+                    $"Collection: name={instaCollection.CollectionName}, id={instaCollection.CollectionId}");
             }
         }
     }

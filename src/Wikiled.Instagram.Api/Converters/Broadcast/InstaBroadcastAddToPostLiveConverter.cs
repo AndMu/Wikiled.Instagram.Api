@@ -1,8 +1,12 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Broadcast;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Broadcast;
 
 namespace Wikiled.Instagram.Api.Converters.Broadcast
 {
-    internal class InstaBroadcastAddToPostLiveConverter : IObjectConverter<InstaBroadcastAddToPostLive, InstaBroadcastAddToPostLiveResponse>
+    internal class
+        InstaBroadcastAddToPostLiveConverter : IObjectConverter<InstaBroadcastAddToPostLive,
+            InstaBroadcastAddToPostLiveResponse>
     {
         public InstaBroadcastAddToPostLiveResponse SourceObject { get; set; }
 
@@ -14,20 +18,22 @@ namespace Wikiled.Instagram.Api.Converters.Broadcast
             }
 
             var postlive = new InstaBroadcastAddToPostLive
-                           {
-                               CanReply = SourceObject.CanReply,
-                               LastSeenBroadcastTs = SourceObject.LastSeenBroadcastTs ?? 0,
-                               Pk = SourceObject.Pk
-                           };
+            {
+                CanReply = SourceObject.CanReply,
+                LastSeenBroadcastTs = SourceObject.LastSeenBroadcastTs ?? 0,
+                Pk = SourceObject.Pk
+            };
 
             if (SourceObject.User != null)
             {
-                postlive.User = ConvertersFabric.Instance.GetUserShortFriendshipFullConverter(SourceObject.User).Convert();
+                postlive.User = InstaConvertersFabric.Instance.GetUserShortFriendshipFullConverter(SourceObject.User)
+                    .Convert();
             }
 
             if (SourceObject.Broadcasts?.Count > 0)
             {
-                postlive.Broadcasts = ConvertersFabric.Instance.GetBroadcastListConverter(SourceObject.Broadcasts).Convert();
+                postlive.Broadcasts = InstaConvertersFabric.Instance.GetBroadcastListConverter(SourceObject.Broadcasts)
+                    .Convert();
             }
 
             return postlive;

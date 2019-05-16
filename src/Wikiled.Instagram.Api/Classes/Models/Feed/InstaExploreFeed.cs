@@ -1,4 +1,7 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.Feed
+﻿using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+
+namespace Wikiled.Instagram.Api.Classes.Models.Feed
 {
     public class InstaExploreFeed : InstaBaseFeed
     {

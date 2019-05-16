@@ -1,10 +1,12 @@
 using System;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
 
 namespace Wikiled.Instagram.Api.Converters.Media
 {
-    internal class InstaMediaImageConverter : IObjectConverter<InstaImage, ImageResponse>
+    internal class InstaMediaImageConverter : IObjectConverter<InstaImage, InstaImageResponse>
     {
-        public ImageResponse SourceObject { get; set; }
+        public InstaImageResponse SourceObject { get; set; }
 
         public InstaImage Convert()
         {

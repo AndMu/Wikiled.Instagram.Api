@@ -6,7 +6,7 @@ using Wikiled.Instagram.Api.Classes.Models.Media;
 using Wikiled.Instagram.Api.Classes.Models.User;
 using Wikiled.Instagram.Api.Enums;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Messaging (direct) api functions.
@@ -66,7 +66,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <returns>
         ///     <see cref="InstaDirectInboxThread" />
         /// </returns>
-        Task<IResult<InstaDirectInboxThread>> GetDirectInboxThreadAsync(string threadId, PaginationParameters paginationParameters);
+        Task<IResult<InstaDirectInboxThread>> GetDirectInboxThreadAsync(
+            string threadId,
+            PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Get direct pending inbox threads for current user asynchronously
@@ -202,7 +204,8 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="threadIds">Thread ids</param>
         /// <param name="recipients">Recipients ids</param>
         /// <returns>Returns True if hashtag sent</returns>
-        Task<IResult<bool>> SendDirectHashtagAsync(string text, string hashtag, string[] threadIds, string[] recipients);
+        Task<IResult<bool>>
+            SendDirectHashtagAsync(string text, string hashtag, string[] threadIds, string[] recipients);
 
         /// <summary>
         ///     Send hashtag to direct thread
@@ -250,7 +253,7 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <summary>
         ///     Send location to direct thread
         /// </summary>
-        /// <param name="externalId">External id (get it from <seealso cref="LocationProcessor.SearchLocationAsync" /></param>
+        /// <param name="externalId">External id (get it from <seealso cref="InstaLocationProcessor.SearchLocationAsync" /></param>
         /// <param name="threadIds">Thread ids</param>
         /// <returns>Returns True if location sent</returns>
         Task<IResult<bool>> SendDirectLocationAsync(string externalId, params string[] threadIds);
@@ -270,7 +273,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="image">Image to upload</param>
         /// <param name="threadId">Thread id</param>
         /// <returns>Returns True is sent</returns>
-        Task<IResult<bool>> SendDirectPhotoAsync(Action<InstaUploaderProgress> progress, InstaImage image, string threadId);
+        Task<IResult<bool>> SendDirectPhotoAsync(Action<InstaUploaderProgress> progress,
+                                                 InstaImage image,
+                                                 string threadId);
 
         /// <summary>
         ///     Send photo to multiple recipients (multiple user)
@@ -287,7 +292,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="image">Image to upload</param>
         /// <param name="recipients">Recipients (user ids/pk)</param>
         /// <returns>Returns True is sent</returns>
-        Task<IResult<bool>> SendDirectPhotoToRecipientsAsync(Action<InstaUploaderProgress> progress, InstaImage image, params string[] recipients);
+        Task<IResult<bool>> SendDirectPhotoToRecipientsAsync(Action<InstaUploaderProgress> progress,
+                                                             InstaImage image,
+                                                             params string[] recipients);
 
         /// <summary>
         ///     Send profile to direct thread
@@ -329,7 +336,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="progress">Progress action</param>
         /// <param name="video">Video to upload (no need to set thumbnail)</param>
         /// <param name="threadId">Thread id</param>
-        Task<IResult<bool>> SendDirectVideoAsync(Action<InstaUploaderProgress> progress, InstaVideoUpload video, string threadId);
+        Task<IResult<bool>> SendDirectVideoAsync(Action<InstaUploaderProgress> progress,
+                                                 InstaVideoUpload video,
+                                                 string threadId);
 
         /// <summary>
         ///     Send video to multiple recipients (multiple user)
@@ -344,7 +353,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="progress">Progress action</param>
         /// <param name="video">Video to upload (no need to set thumbnail)</param>
         /// <param name="recipients">Recipients (user ids/pk)</param>
-        Task<IResult<bool>> SendDirectVideoToRecipientsAsync(Action<InstaUploaderProgress> progress, InstaVideoUpload video, params string[] recipients);
+        Task<IResult<bool>> SendDirectVideoToRecipientsAsync(Action<InstaUploaderProgress> progress,
+                                                             InstaVideoUpload video,
+                                                             params string[] recipients);
 
         /// <summary>
         ///     Share media to direct thread
@@ -353,7 +364,10 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="mediaType">Media type</param>
         /// <param name="text">Text to send</param>
         /// <param name="threadIds">Thread ids</param>
-        Task<IResult<bool>> ShareMediaToThreadAsync(string mediaId, InstaMediaType mediaType, string text, params string[] threadIds);
+        Task<IResult<bool>> ShareMediaToThreadAsync(string mediaId,
+                                                    InstaMediaType mediaType,
+                                                    string text,
+                                                    params string[] threadIds);
 
         /// <summary>
         ///     Share media to user id
@@ -362,10 +376,12 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="mediaType">Media type</param>
         /// <param name="text">Text to send</param>
         /// <param name="userIds">User ids (pk)</param>
-        Task<IResult<bool>> ShareMediaToUserAsync(string mediaId, InstaMediaType mediaType, string text, params long[] userIds);
+        Task<IResult<bool>> ShareMediaToUserAsync(string mediaId,
+                                                  InstaMediaType mediaType,
+                                                  string text,
+                                                  params long[] userIds);
 
         [Obsolete("ShareUserAsync is deprecated. Use SendDirectProfileAsync instead.")]
-
         /// <summary>
         ///     Share an user
         /// </summary>

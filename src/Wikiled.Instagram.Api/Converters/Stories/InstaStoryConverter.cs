@@ -1,4 +1,8 @@
-﻿namespace Wikiled.Instagram.Api.Converters.Stories
+﻿using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
+using Wikiled.Instagram.Api.Helpers;
+
+namespace Wikiled.Instagram.Api.Converters.Stories
 {
     internal class InstaStoryConverter : IObjectConverter<InstaStory, InstaStoryResponse>
     {
@@ -12,37 +16,37 @@
             }
 
             var story = new InstaStory
-                        {
-                            CanReply = SourceObject.CanReply,
-                            ExpiringAt = SourceObject.ExpiringAt.FromUnixTimeSeconds(),
-                            Id = SourceObject.Id,
-                            LatestReelMedia = SourceObject.LatestReelMedia,
-                            Muted = SourceObject.Muted,
-                            PrefetchCount = SourceObject.PrefetchCount,
-                            RankedPosition = SourceObject.RankedPosition,
-                            Seen = (SourceObject.Seen ?? 0).FromUnixTimeSeconds(),
-                            SeenRankedPosition = SourceObject.SeenRankedPosition,
-                            SocialContext = SourceObject.SocialContext,
-                            SourceToken = SourceObject.SourceToken,
-                            TakenAtUnix = SourceObject.TakenAtUnixLike,
-                            CanReshare = SourceObject.CanReshare,
-                            CanViewerSave = SourceObject.CanViewerSave,
-                            CaptionIsEdited = SourceObject.CaptionIsEdited,
-                            CaptionPosition = SourceObject.CaptionPosition,
-                            ClientCacheKey = SourceObject.ClientCacheKey,
-                            PhotoOfYou = SourceObject.PhotoOfYou,
-                            IsReelMedia = SourceObject.IsReelMedia,
-                            VideoDuration = SourceObject.VideoDuration ?? 0,
-                            SupportsReelReactions = SourceObject.SupportsReelReactions,
-                            HasSharedToFb = SourceObject.HasSharedToFb,
-                            ImportedTakenAt = SourceObject.ImportedTakenAt.FromUnixTimeSeconds()
-                        };
+            {
+                CanReply = SourceObject.CanReply,
+                ExpiringAt = SourceObject.ExpiringAt.FromUnixTimeSeconds(),
+                Id = SourceObject.Id,
+                LatestReelMedia = SourceObject.LatestReelMedia,
+                Muted = SourceObject.Muted,
+                PrefetchCount = SourceObject.PrefetchCount,
+                RankedPosition = SourceObject.RankedPosition,
+                Seen = (SourceObject.Seen ?? 0).FromUnixTimeSeconds(),
+                SeenRankedPosition = SourceObject.SeenRankedPosition,
+                SocialContext = SourceObject.SocialContext,
+                SourceToken = SourceObject.SourceToken,
+                TakenAtUnix = SourceObject.TakenAtUnixLike,
+                CanReshare = SourceObject.CanReshare,
+                CanViewerSave = SourceObject.CanViewerSave,
+                CaptionIsEdited = SourceObject.CaptionIsEdited,
+                CaptionPosition = SourceObject.CaptionPosition,
+                ClientCacheKey = SourceObject.ClientCacheKey,
+                PhotoOfYou = SourceObject.PhotoOfYou,
+                IsReelMedia = SourceObject.IsReelMedia,
+                VideoDuration = SourceObject.VideoDuration ?? 0,
+                SupportsReelReactions = SourceObject.SupportsReelReactions,
+                HasSharedToFb = SourceObject.HasSharedToFb,
+                ImportedTakenAt = SourceObject.ImportedTakenAt.FromUnixTimeSeconds()
+            };
 
             if (SourceObject.StoryHashtags != null)
             {
                 foreach (var item in SourceObject.StoryHashtags)
                 {
-                    story.StoryHashtags.Add(ConvertersFabric.Instance.GetMentionConverter(item).Convert());
+                    story.StoryHashtags.Add(InstaConvertersFabric.Instance.GetMentionConverter(item).Convert());
                 }
             }
 
@@ -53,19 +57,19 @@
 
             if (SourceObject.Owner != null)
             {
-                story.Owner = ConvertersFabric.Instance.GetUserShortConverter(SourceObject.Owner).Convert();
+                story.Owner = InstaConvertersFabric.Instance.GetUserShortConverter(SourceObject.Owner).Convert();
             }
 
             if (SourceObject.User != null)
             {
-                story.User = ConvertersFabric.Instance.GetUserShortFriendshipFullConverter(SourceObject.User).Convert();
+                story.User = InstaConvertersFabric.Instance.GetUserShortFriendshipFullConverter(SourceObject.User).Convert();
             }
 
             if (SourceObject.Items != null)
             {
                 foreach (var item in SourceObject.Items)
                 {
-                    story.Items.Add(ConvertersFabric.Instance.GetStoryItemConverter(item).Convert());
+                    story.Items.Add(InstaConvertersFabric.Instance.GetStoryItemConverter(item).Convert());
                 }
             }
 

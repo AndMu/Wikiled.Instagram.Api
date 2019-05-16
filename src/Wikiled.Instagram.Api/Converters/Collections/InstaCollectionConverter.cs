@@ -1,4 +1,9 @@
-﻿namespace Wikiled.Instagram.Api.Converters.Collections
+﻿using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.Collection;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Collection;
+
+namespace Wikiled.Instagram.Api.Converters.Collections
 {
     internal class InstaCollectionConverter : IObjectConverter<InstaCollectionItem, InstaCollectionItemResponse>
     {
@@ -12,21 +17,21 @@
             {
                 instaMediaList.AddRange(
                     SourceObject.Media.Medias
-                                .Select(ConvertersFabric.Instance.GetSingleMediaConverter)
-                                .Select(converter => converter.Convert()));
+                        .Select(InstaConvertersFabric.Instance.GetSingleMediaConverter)
+                        .Select(converter => converter.Convert()));
             }
 
             return new InstaCollectionItem
-                   {
-                       CollectionId = SourceObject.CollectionId,
-                       CollectionName = SourceObject.CollectionName,
-                       HasRelatedMedia = SourceObject.HasRelatedMedia,
-                       Media = instaMediaList,
-                       CoverMedia = SourceObject.CoverMedia != null
-                                        ? ConvertersFabric.Instance.GetCoverMediaConverter(SourceObject.CoverMedia).Convert()
-                                        : null,
-                       NextMaxId = SourceObject.NextMaxId
-                   };
+            {
+                CollectionId = SourceObject.CollectionId,
+                CollectionName = SourceObject.CollectionName,
+                HasRelatedMedia = SourceObject.HasRelatedMedia,
+                Media = instaMediaList,
+                CoverMedia = SourceObject.CoverMedia != null
+                    ? InstaConvertersFabric.Instance.GetCoverMediaConverter(SourceObject.CoverMedia).Convert()
+                    : null,
+                NextMaxId = SourceObject.NextMaxId
+            };
         }
     }
 }

@@ -1,8 +1,14 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Direct;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Direct;
+using Wikiled.Instagram.Api.Enums;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Directs
 {
-    internal class InstaVisualMediaContainerConverter : IObjectConverter<InstaVisualMediaContainer, InstaVisualMediaContainerResponse>
+    internal class
+        InstaVisualMediaContainerConverter : IObjectConverter<InstaVisualMediaContainer,
+            InstaVisualMediaContainerResponse>
     {
         public InstaVisualMediaContainerResponse SourceObject { get; set; }
 
@@ -13,10 +19,7 @@ namespace Wikiled.Instagram.Api.Converters.Directs
                 throw new ArgumentNullException("Source object");
             }
 
-            var visualMedia = new InstaVisualMediaContainer
-                              {
-                                  SeenCount = SourceObject.SeenCount ?? 0
-                              };
+            var visualMedia = new InstaVisualMediaContainer { SeenCount = SourceObject.SeenCount ?? 0 };
 
             if (SourceObject.UrlExpireAtSecs != null)
             {
@@ -25,12 +28,13 @@ namespace Wikiled.Instagram.Api.Converters.Directs
 
             if (SourceObject.ReplayExpiringAtUs != null)
             {
-                visualMedia.ReplayExpiringAtUs = DateTime.MinValue /*SourceObject.ReplayExpiringAtUs.Value.FromUnixTimeSeconds()*/;
+                visualMedia.ReplayExpiringAtUs =
+                    DateTime.MinValue /*SourceObject.ReplayExpiringAtUs.Value.FromUnixTimeSeconds()*/;
             }
 
             if (SourceObject.Media != null)
             {
-                visualMedia.Media = ConvertersFabric.Instance.GetVisualMediaConverter(SourceObject.Media).Convert();
+                visualMedia.Media = InstaConvertersFabric.Instance.GetVisualMediaConverter(SourceObject.Media).Convert();
             }
 
             if (!string.IsNullOrEmpty(SourceObject.ViewMode))

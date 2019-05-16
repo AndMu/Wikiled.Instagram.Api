@@ -16,43 +16,43 @@ using Wikiled.Instagram.Api.Converters.Json;
 using Wikiled.Instagram.Api.Helpers;
 using Wikiled.Instagram.Api.Logger;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Hashtag api functions.
     /// </summary>
-    internal class HashtagProcessor : IHashtagProcessor
+    internal class InstaHashtagProcessor : IHashtagProcessor
     {
-        private readonly AndroidDevice _deviceInfo;
+        private readonly InstaAndroidDevice deviceInfo;
 
-        private readonly HttpHelper _httpHelper;
+        private readonly InstaHttpHelper httpHelper;
 
-        private readonly IHttpRequestProcessor _httpRequestProcessor;
+        private readonly IHttpRequestProcessor httpRequestProcessor;
 
-        private readonly InstaApi _instaApi;
+        private readonly InstaApi instaApi;
 
-        private readonly IInstaLogger _logger;
+        private readonly IInstaLogger logger;
 
-        private readonly UserSessionData _user;
+        private readonly UserSessionData user;
 
-        private readonly UserAuthValidate _userAuthValidate;
+        private readonly InstaUserAuthValidate userAuthValidate;
 
-        public HashtagProcessor(
-            AndroidDevice deviceInfo,
+        public InstaHashtagProcessor(
+            InstaAndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             IInstaLogger logger,
-            UserAuthValidate userAuthValidate,
+            InstaUserAuthValidate userAuthValidate,
             InstaApi instaApi,
-            HttpHelper httpHelper)
+            InstaHttpHelper httpHelper)
         {
-            _deviceInfo = deviceInfo;
-            _user = user;
-            _httpRequestProcessor = httpRequestProcessor;
-            _logger = logger;
-            _userAuthValidate = userAuthValidate;
-            _instaApi = instaApi;
-            _httpHelper = httpHelper;
+            this.deviceInfo = deviceInfo;
+            this.user = user;
+            this.httpRequestProcessor = httpRequestProcessor;
+            this.logger = logger;
+            this.userAuthValidate = userAuthValidate;
+            this.instaApi = instaApi;
+            this.httpHelper = httpHelper;
         }
 
         /// <summary>
@@ -61,38 +61,40 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="tagname">Tag name</param>
         public async Task<IResult<bool>> FollowHashtagAsync(string tagname)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetFollowHashtagUri(tagname);
+                var instaUri = InstaUriCreator.GetFollowHashtagUri(tagname);
 
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()}
-                           };
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() }
+                };
                 var request =
-                    _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<bool>(response, json);
+                    return InstaResult.UnExpectedResponse<bool>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaDefault>(json);
-                return obj.Status.ToLower() == "ok" ? Result.Success(true) : Result.UnExpectedResponse<bool>(response, json);
+                return obj.Status.ToLower() == "ok"
+                    ? InstaResult.Success(true)
+                    : InstaResult.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<bool>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<bool>(exception);
             }
         }
 
@@ -105,36 +107,36 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </returns>
         public async Task<IResult<InstaHashtagSearch>> GetFollowingHashtagsInfoAsync(long userId)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             var tags = new InstaHashtagSearch();
             try
             {
-                var userUri = UriCreator.GetFollowingTagsInfoUri(userId);
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, userUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var userUri = InstaUriCreator.GetFollowingTagsInfoUri(userId);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, userUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaHashtagSearch>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaHashtagSearch>(response, json);
                 }
 
                 var tagsResponse = JsonConvert.DeserializeObject<InstaHashtagSearchResponse>(
                     json,
                     new InstaHashtagSuggestedDataConverter());
 
-                tags = ConvertersFabric.Instance.GetHashTagsSearchConverter(tagsResponse).Convert();
-                return Result.Success(tags);
+                tags = InstaConvertersFabric.Instance.GetHashTagsSearchConverter(tagsResponse).Convert();
+                return InstaResult.Success(tags);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaHashtagSearch), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaHashtagSearch), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, tags);
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, tags);
             }
         }
 
@@ -145,33 +147,33 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <returns>Hashtag information</returns>
         public async Task<IResult<InstaHashtag>> GetHashtagInfoAsync(string tagname)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var userUri = UriCreator.GetTagInfoUri(tagname);
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, userUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var userUri = InstaUriCreator.GetTagInfoUri(tagname);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, userUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaHashtag>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaHashtag>(response, json);
                 }
 
                 var tagInfoResponse = JsonConvert.DeserializeObject<InstaHashtagResponse>(json);
-                var tagInfo = ConvertersFabric.Instance.GetHashTagConverter(tagInfoResponse).Convert();
+                var tagInfo = InstaConvertersFabric.Instance.GetHashTagConverter(tagInfoResponse).Convert();
 
-                return Result.Success(tagInfo);
+                return InstaResult.Success(tagInfo);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaHashtag), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaHashtag), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaHashtag>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaHashtag>(exception);
             }
         }
 
@@ -181,33 +183,33 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="tagname">Tag name</param>
         public async Task<IResult<InstaHashtagStory>> GetHashtagStoriesAsync(string tagname)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetHashtagStoryUri(tagname);
+                var instaUri = InstaUriCreator.GetHashtagStoryUri(tagname);
 
                 var request =
-                    _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaHashtagStory>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaHashtagStory>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaHashtagStoryContainerResponse>(json);
 
-                return Result.Success(ConvertersFabric.Instance.GetHashtagStoryConverter(obj.Story).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetHashtagStoryConverter(obj.Story).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaHashtagStory), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaHashtagStory), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaHashtagStory>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaHashtagStory>(exception);
             }
         }
 
@@ -220,7 +222,7 @@ namespace Wikiled.Instagram.Api.API.Processors
             string tagname,
             PaginationParameters paginationParameters)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 if (paginationParameters == null)
@@ -230,68 +232,70 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 InstaSectionMedia Convert(InstaSectionMediaListResponse hashtagMediaListResponse)
                 {
-                    return ConvertersFabric.Instance.GetHashtagMediaListConverter(hashtagMediaListResponse).Convert();
+                    return InstaConvertersFabric.Instance.GetHashtagMediaListConverter(hashtagMediaListResponse).Convert();
                 }
 
                 var mediaResponse = await GetHashtagSection(
-                                        tagname,
-                                        Guid.NewGuid().ToString(),
-                                        paginationParameters.NextMaxId,
-                                        true);
+                    tagname,
+                    Guid.NewGuid().ToString(),
+                    paginationParameters.NextMaxId,
+                    true);
                 if (!mediaResponse.Succeeded)
                 {
                     if (mediaResponse.Value != null)
                     {
-                        Result.Fail(mediaResponse.Info, Convert(mediaResponse.Value));
+                        InstaResult.Fail(mediaResponse.Info, Convert(mediaResponse.Value));
                     }
                     else
                     {
-                        Result.Fail(mediaResponse.Info, default(InstaSectionMedia));
+                        InstaResult.Fail(mediaResponse.Info, default(InstaSectionMedia));
                     }
                 }
 
                 paginationParameters.NextMediaIds = mediaResponse.Value.NextMediaIds;
                 paginationParameters.NextPage = mediaResponse.Value.NextPage;
                 paginationParameters.NextMaxId = mediaResponse.Value.NextMaxId;
-                while (mediaResponse.Value.MoreAvailable
-                       && !string.IsNullOrEmpty(paginationParameters.NextMaxId)
-                       && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
+                while (mediaResponse.Value.MoreAvailable &&
+                    !string.IsNullOrEmpty(paginationParameters.NextMaxId) &&
+                    paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var moreMedias = await GetHashtagSection(
-                                         tagname,
-                                         Guid.NewGuid().ToString(),
-                                         paginationParameters.NextMaxId,
-                                         true);
+                        tagname,
+                        Guid.NewGuid().ToString(),
+                        paginationParameters.NextMaxId,
+                        true);
                     if (!moreMedias.Succeeded)
                     {
                         if (mediaResponse.Value.Sections != null && mediaResponse.Value.Sections.Any())
                         {
-                            return Result.Success(Convert(mediaResponse.Value));
+                            return InstaResult.Success(Convert(mediaResponse.Value));
                         }
 
-                        return Result.Fail(moreMedias.Info, Convert(mediaResponse.Value));
+                        return InstaResult.Fail(moreMedias.Info, Convert(mediaResponse.Value));
                     }
 
                     mediaResponse.Value.MoreAvailable = moreMedias.Value.MoreAvailable;
                     mediaResponse.Value.NextMaxId = paginationParameters.NextMaxId = moreMedias.Value.NextMaxId;
                     mediaResponse.Value.AutoLoadMoreEnabled = moreMedias.Value.AutoLoadMoreEnabled;
-                    mediaResponse.Value.NextMediaIds = paginationParameters.NextMediaIds = moreMedias.Value.NextMediaIds;
+                    mediaResponse.Value.NextMediaIds =
+                        paginationParameters.NextMediaIds = moreMedias.Value.NextMediaIds;
                     mediaResponse.Value.NextPage = paginationParameters.NextPage = moreMedias.Value.NextPage;
                     mediaResponse.Value.Sections.AddRange(moreMedias.Value.Sections);
                     paginationParameters.PagesLoaded++;
                 }
 
-                return Result.Success(ConvertersFabric.Instance.GetHashtagMediaListConverter(mediaResponse.Value).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetHashtagMediaListConverter(mediaResponse.Value)
+                                          .Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaSectionMedia), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaSectionMedia), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaSectionMedia>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaSectionMedia>(exception);
             }
         }
 
@@ -303,36 +307,36 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </returns>
         public async Task<IResult<InstaHashtagSearch>> GetSuggestedHashtagsAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             var tags = new InstaHashtagSearch();
             try
             {
-                var userUri = UriCreator.GetSuggestedTagsUri();
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, userUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var userUri = InstaUriCreator.GetSuggestedTagsUri();
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, userUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaHashtagSearch>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaHashtagSearch>(response, json);
                 }
 
                 var tagsResponse = JsonConvert.DeserializeObject<InstaHashtagSearchResponse>(
                     json,
                     new InstaHashtagSuggestedDataConverter());
 
-                tags = ConvertersFabric.Instance.GetHashTagsSearchConverter(tagsResponse).Convert();
-                return Result.Success(tags);
+                tags = InstaConvertersFabric.Instance.GetHashTagsSearchConverter(tagsResponse).Convert();
+                return InstaResult.Success(tags);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaHashtagSearch), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaHashtagSearch), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, tags);
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, tags);
             }
         }
 
@@ -345,7 +349,7 @@ namespace Wikiled.Instagram.Api.API.Processors
             string tagname,
             PaginationParameters paginationParameters)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 if (paginationParameters == null)
@@ -355,67 +359,69 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 InstaSectionMedia Convert(InstaSectionMediaListResponse hashtagMediaListResponse)
                 {
-                    return ConvertersFabric.Instance.GetHashtagMediaListConverter(hashtagMediaListResponse).Convert();
+                    return InstaConvertersFabric.Instance.GetHashtagMediaListConverter(hashtagMediaListResponse).Convert();
                 }
 
                 var mediaResponse = await GetHashtagSection(
-                                        tagname,
-                                        Guid.NewGuid().ToString(),
-                                        paginationParameters.NextMaxId);
+                    tagname,
+                    Guid.NewGuid().ToString(),
+                    paginationParameters.NextMaxId);
 
                 if (!mediaResponse.Succeeded)
                 {
                     if (mediaResponse.Value != null)
                     {
-                        Result.Fail(mediaResponse.Info, Convert(mediaResponse.Value));
+                        InstaResult.Fail(mediaResponse.Info, Convert(mediaResponse.Value));
                     }
                     else
                     {
-                        Result.Fail(mediaResponse.Info, default(InstaSectionMedia));
+                        InstaResult.Fail(mediaResponse.Info, default(InstaSectionMedia));
                     }
                 }
 
                 paginationParameters.NextMediaIds = mediaResponse.Value.NextMediaIds;
                 paginationParameters.NextPage = mediaResponse.Value.NextPage;
                 paginationParameters.NextMaxId = mediaResponse.Value.NextMaxId;
-                while (mediaResponse.Value.MoreAvailable
-                       && !string.IsNullOrEmpty(paginationParameters.NextMaxId)
-                       && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
+                while (mediaResponse.Value.MoreAvailable &&
+                    !string.IsNullOrEmpty(paginationParameters.NextMaxId) &&
+                    paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var moreMedias = await GetHashtagSection(
-                                         tagname,
-                                         Guid.NewGuid().ToString(),
-                                         paginationParameters.NextMaxId);
+                        tagname,
+                        Guid.NewGuid().ToString(),
+                        paginationParameters.NextMaxId);
                     if (!moreMedias.Succeeded)
                     {
                         if (mediaResponse.Value.Sections != null && mediaResponse.Value.Sections.Any())
                         {
-                            return Result.Success(Convert(mediaResponse.Value));
+                            return InstaResult.Success(Convert(mediaResponse.Value));
                         }
 
-                        return Result.Fail(moreMedias.Info, Convert(mediaResponse.Value));
+                        return InstaResult.Fail(moreMedias.Info, Convert(mediaResponse.Value));
                     }
 
                     mediaResponse.Value.MoreAvailable = moreMedias.Value.MoreAvailable;
                     mediaResponse.Value.NextMaxId = paginationParameters.NextMaxId = moreMedias.Value.NextMaxId;
                     mediaResponse.Value.AutoLoadMoreEnabled = moreMedias.Value.AutoLoadMoreEnabled;
-                    mediaResponse.Value.NextMediaIds = paginationParameters.NextMediaIds = moreMedias.Value.NextMediaIds;
+                    mediaResponse.Value.NextMediaIds =
+                        paginationParameters.NextMediaIds = moreMedias.Value.NextMediaIds;
                     mediaResponse.Value.NextPage = paginationParameters.NextPage = moreMedias.Value.NextPage;
                     mediaResponse.Value.Sections.AddRange(moreMedias.Value.Sections);
                     paginationParameters.PagesLoaded++;
                 }
 
-                return Result.Success(ConvertersFabric.Instance.GetHashtagMediaListConverter(mediaResponse.Value).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetHashtagMediaListConverter(mediaResponse.Value)
+                                          .Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaSectionMedia), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaSectionMedia), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaSectionMedia>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaSectionMedia>(exception);
             }
         }
 
@@ -431,34 +437,37 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <returns>
         ///     List of hashtags
         /// </returns>
-        public async Task<IResult<InstaHashtagSearch>> SearchHashtagAsync(string query, IEnumerable<long> excludeList, string rankToken)
+        public async Task<IResult<InstaHashtagSearch>> SearchHashtagAsync(
+            string query,
+            IEnumerable<long> excludeList,
+            string rankToken)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
-            var RequestHeaderFieldsTooLarge = (HttpStatusCode)431;
+            InstaUserAuthValidator.Validate(userAuthValidate);
+            var requestHeaderFieldsTooLarge = (HttpStatusCode)431;
             var count = 50;
             var tags = new InstaHashtagSearch();
 
             try
             {
-                var userUri = UriCreator.GetSearchTagUri(query, count, excludeList, rankToken);
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, userUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var userUri = InstaUriCreator.GetSearchTagUri(query, count, excludeList, rankToken);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, userUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
-                if (response.StatusCode == RequestHeaderFieldsTooLarge)
+                if (response.StatusCode == requestHeaderFieldsTooLarge)
                 {
-                    return Result.Success(tags);
+                    return InstaResult.Success(tags);
                 }
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaHashtagSearch>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaHashtagSearch>(response, json);
                 }
 
                 var tagsResponse = JsonConvert.DeserializeObject<InstaHashtagSearchResponse>(
                     json,
                     new InstaHashtagSearchDataConverter());
-                tags = ConvertersFabric.Instance.GetHashTagsSearchConverter(tagsResponse).Convert();
+                tags = InstaConvertersFabric.Instance.GetHashTagsSearchConverter(tagsResponse).Convert();
 
                 if (tags.Any() && excludeList != null && excludeList.Contains(tags.First().Id))
                 {
@@ -470,17 +479,17 @@ namespace Wikiled.Instagram.Api.API.Processors
                     tags = new InstaHashtagSearch();
                 }
 
-                return Result.Success(tags);
+                return InstaResult.Success(tags);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaHashtagSearch), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaHashtagSearch), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, tags);
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, tags);
             }
         }
 
@@ -490,38 +499,40 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="tagname">Tag name</param>
         public async Task<IResult<bool>> UnFollowHashtagAsync(string tagname)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetUnFollowHashtagUri(tagname);
+                var instaUri = InstaUriCreator.GetUnFollowHashtagUri(tagname);
 
                 var data = new JObject
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()}
-                           };
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() }
+                };
                 var request =
-                    _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<bool>(response, json);
+                    return InstaResult.UnExpectedResponse<bool>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaDefault>(json);
-                return obj.Status.ToLower() == "ok" ? Result.Success(true) : Result.UnExpectedResponse<bool>(response, json);
+                return obj.Status.ToLower() == "ok"
+                    ? InstaResult.Success(true)
+                    : InstaResult.UnExpectedResponse<bool>(response, json);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<bool>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<bool>(exception);
             }
         }
 
@@ -534,7 +545,7 @@ namespace Wikiled.Instagram.Api.API.Processors
         {
             try
             {
-                var instaUri = UriCreator.GetHashtagRecentMediaUri(
+                var instaUri = InstaUriCreator.GetHashtagRecentMediaUri(
                     tagname,
                     rankToken,
                     maxId,
@@ -542,28 +553,28 @@ namespace Wikiled.Instagram.Api.API.Processors
                     nextMediaIds);
 
                 var request =
-                    _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaSectionMediaListResponse>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaSectionMediaListResponse>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaSectionMediaListResponse>(json);
 
-                return Result.Success(obj);
+                return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaSectionMediaListResponse), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaSectionMediaListResponse), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaSectionMediaListResponse>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaSectionMediaListResponse>(exception);
             }
         }
 
@@ -575,15 +586,15 @@ namespace Wikiled.Instagram.Api.API.Processors
         {
             try
             {
-                var instaUri = UriCreator.GetHashtagSectionUri(tagname);
+                var instaUri = InstaUriCreator.GetHashtagSectionUri(tagname);
 
                 var data = new Dictionary<string, string>
-                           {
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"include_persistent", !recent ? "true" : "false"},
-                               {"rank_token", rankToken}
-                           };
+                {
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "include_persistent", !recent ? "true" : "false" },
+                    { "rank_token", rankToken }
+                };
                 if (recent)
                 {
                     data.Add("tab", "recent");
@@ -599,28 +610,28 @@ namespace Wikiled.Instagram.Api.API.Processors
                 }
 
                 var request =
-                    _httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                    httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaSectionMediaListResponse>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaSectionMediaListResponse>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaSectionMediaListResponse>(json);
 
-                return Result.Success(obj);
+                return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaSectionMediaListResponse), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaSectionMediaListResponse), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaSectionMediaListResponse>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaSectionMediaListResponse>(exception);
             }
         }
     }

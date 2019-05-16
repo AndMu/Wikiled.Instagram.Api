@@ -3,7 +3,7 @@
 namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
 {
     [Serializable]
-    public class AndroidDevice
+    public class InstaAndroidDevice
     {
         public Guid AdId { get; set; } = Guid.NewGuid();
 
@@ -11,7 +11,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
 
         public string AndroidBootloader { get; set; }
 
-        public AndroidVersion AndroidVer { get; set; } = AndroidVersion.GetRandomAndriodVersion();
+        public InstaAndroidVersion AndroidVer { get; set; } = InstaAndroidVersion.GetRandomAndriodVersion();
 
         public string DeviceBrand { get; set; }
 

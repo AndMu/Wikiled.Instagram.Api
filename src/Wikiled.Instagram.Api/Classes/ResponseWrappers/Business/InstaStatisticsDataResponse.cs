@@ -4,6 +4,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Business
 {
     public class InstaStatisticsDataResponse
     {
-        [JsonProperty("user")] public InstaStatisticsUserDataResponse User { get; set; }
+        [JsonProperty("user")]
+        public InstaStatisticsUserDataResponse User { get; set; }
     }
 }

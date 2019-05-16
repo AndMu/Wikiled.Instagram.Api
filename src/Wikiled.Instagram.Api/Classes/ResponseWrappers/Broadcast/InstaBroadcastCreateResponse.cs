@@ -7,20 +7,26 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Broadcast
         [JsonProperty("allow_resolution_change")]
         public int AllowResolutionChange { get; set; }
 
-        [JsonProperty("avc_rtmp_payload")] public int AvcRtmpPayload { get; set; }
+        [JsonProperty("avc_rtmp_payload")]
+        public int AvcRtmpPayload { get; set; }
 
         [JsonProperty("broadcaster_update_frequency")]
         public int BroadcasterUpdateFrequency { get; set; }
 
-        [JsonProperty("broadcast_id")] public long BroadcastId { get; set; }
+        [JsonProperty("broadcast_id")]
+        public long BroadcastId { get; set; }
 
-        [JsonProperty("connect_with_1rtt")] public int ConnectWith1rtt { get; set; }
+        [JsonProperty("connect_with_1rtt")]
+        public int ConnectWith1Rtt { get; set; }
 
-        [JsonProperty("disable_speed_test")] public int DisableSpeedTest { get; set; }
+        [JsonProperty("disable_speed_test")]
+        public int DisableSpeedTest { get; set; }
 
-        [JsonProperty("heartbeat_interval")] public int HeartbeatInterval { get; set; }
+        [JsonProperty("heartbeat_interval")]
+        public int HeartbeatInterval { get; set; }
 
-        [JsonProperty("live_trace_enabled")] public int LiveTraceEnabled { get; set; }
+        [JsonProperty("live_trace_enabled")]
+        public int LiveTraceEnabled { get; set; }
 
         [JsonProperty("live_trace_sample_interval_in_seconds")]
         public int LiveTraceSampleIntervalInSeconds { get; set; }
@@ -28,9 +34,11 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Broadcast
         [JsonProperty("live_trace_sampling_source")]
         public int LiveTraceSamplingSource { get; set; }
 
-        [JsonProperty("max_time_in_seconds")] public int MaxTimeInSeconds { get; set; }
+        [JsonProperty("max_time_in_seconds")]
+        public int MaxTimeInSeconds { get; set; }
 
-        [JsonProperty("pass_thru_enabled")] public int PassThruEnabled { get; set; }
+        [JsonProperty("pass_thru_enabled")]
+        public int PassThruEnabled { get; set; }
 
         [JsonProperty("speed_test_minimum_bandwidth_threshold")]
         public int SpeedTestMinimumBandwidthThreshold { get; set; }
@@ -44,7 +52,8 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Broadcast
         [JsonProperty("speed_test_ui_timeout")]
         public int SpeedTestUiTimeout { get; set; }
 
-        [JsonProperty("status")] public string Status { get; set; }
+        [JsonProperty("status")]
+        public string Status { get; set; }
 
         [JsonProperty("stream_audio_bit_rate")]
         public int StreamAudioBitRate { get; set; }
@@ -79,10 +88,13 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Broadcast
         [JsonProperty("stream_video_bit_rate")]
         public int StreamVideoBitRate { get; set; }
 
-        [JsonProperty("stream_video_fps")] public int StreamVideoFps { get; set; }
+        [JsonProperty("stream_video_fps")]
+        public int StreamVideoFps { get; set; }
 
-        [JsonProperty("stream_video_width")] public int StreamVideoWidth { get; set; }
+        [JsonProperty("stream_video_width")]
+        public int StreamVideoWidth { get; set; }
 
-        [JsonProperty("upload_url")] public string UploadUrl { get; set; }
+        [JsonProperty("upload_url")]
+        public string UploadUrl { get; set; }
     }
 }

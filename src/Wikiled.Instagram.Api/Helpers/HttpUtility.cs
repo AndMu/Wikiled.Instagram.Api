@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Wikiled.Instagram.Api.Helpers
 {
-    public class HttpUtility
+    public class InstaHttpUtility
     {
         public static Dictionary<string, string> ParseQueryString(Uri uri)
         {
@@ -19,14 +19,15 @@ namespace Wikiled.Instagram.Api.Helpers
             }
 
             return uri.Query.TrimStart('?')
-                      .Split(new[] {'&', ';'}, StringSplitOptions.RemoveEmptyEntries)
-                      .Select(parameter => parameter.Split(new[] {'='}, StringSplitOptions.RemoveEmptyEntries))
-                      .GroupBy(
-                          parts => parts[0],
-                          parts => parts.Length > 2 ? string.Join("=", parts, 1, parts.Length - 1) : parts.Length > 1 ? parts[1] : "")
-                      .ToDictionary(
-                          grouping => grouping.Key,
-                          grouping => string.Join(",", grouping));
+                .Split(new[] { '&', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(parameter => parameter.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries))
+                .GroupBy(
+                    parts => parts[0],
+                    parts => parts.Length > 2 ? string.Join("=", parts, 1, parts.Length - 1) :
+                        parts.Length > 1 ? parts[1] : "")
+                .ToDictionary(
+                    grouping => grouping.Key,
+                    grouping => string.Join(",", grouping));
         }
     }
 }

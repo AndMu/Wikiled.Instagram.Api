@@ -14,43 +14,43 @@ using Wikiled.Instagram.Api.Enums;
 using Wikiled.Instagram.Api.Helpers;
 using Wikiled.Instagram.Api.Logger;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Instagram TV api functions.
     /// </summary>
-    internal class TVProcessor : ITVProcessor
+    internal class InstaTvProcessor : ITvProcessor
     {
-        private readonly AndroidDevice _deviceInfo;
+        private readonly InstaAndroidDevice deviceInfo;
 
-        private readonly HttpHelper _httpHelper;
+        private readonly InstaHttpHelper httpHelper;
 
-        private readonly IHttpRequestProcessor _httpRequestProcessor;
+        private readonly IHttpRequestProcessor httpRequestProcessor;
 
-        private readonly InstaApi _instaApi;
+        private readonly InstaApi instaApi;
 
-        private readonly IInstaLogger _logger;
+        private readonly IInstaLogger logger;
 
-        private readonly UserSessionData _user;
+        private readonly UserSessionData user;
 
-        private readonly UserAuthValidate _userAuthValidate;
+        private readonly InstaUserAuthValidate userAuthValidate;
 
-        public TVProcessor(
-            AndroidDevice deviceInfo,
+        public InstaTvProcessor(
+            InstaAndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             IInstaLogger logger,
-            UserAuthValidate userAuthValidate,
+            InstaUserAuthValidate userAuthValidate,
             InstaApi instaApi,
-            HttpHelper httpHelper)
+            InstaHttpHelper httpHelper)
         {
-            _deviceInfo = deviceInfo;
-            _user = user;
-            _httpRequestProcessor = httpRequestProcessor;
-            _logger = logger;
-            _userAuthValidate = userAuthValidate;
-            _instaApi = instaApi;
-            _httpHelper = httpHelper;
+            this.deviceInfo = deviceInfo;
+            this.user = user;
+            this.httpRequestProcessor = httpRequestProcessor;
+            this.logger = logger;
+            this.userAuthValidate = userAuthValidate;
+            this.instaApi = instaApi;
+            this.httpHelper = httpHelper;
         }
 
         /// <summary>
@@ -58,88 +58,91 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </summary>
         /// <param name="userId">User id (pk) => channel owner</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        public async Task<IResult<InstaTVChannel>> GetChannelByIdAsync(long userId, PaginationParameters paginationParameters)
+        public async Task<IResult<InstaTvChannel>> GetChannelByIdAsync(long userId,
+                                                                       PaginationParameters paginationParameters)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             return await GetChannel(null, userId, paginationParameters);
         }
 
         /// <summary>
-        ///     Get channel by <seealso cref="InstaTVChannelType" />
+        ///     Get channel by <seealso cref="InstaTvChannelType" />
         /// </summary>
         /// <param name="channelType">Channel type</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        public async Task<IResult<InstaTVChannel>> GetChannelByTypeAsync(InstaTVChannelType channelType, PaginationParameters paginationParameters)
+        public async Task<IResult<InstaTvChannel>> GetChannelByTypeAsync(
+            InstaTvChannelType channelType,
+            PaginationParameters paginationParameters)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             return await GetChannel(channelType, null, paginationParameters);
         }
 
         /// <summary>
         ///     Get suggested searches
         /// </summary>
-        public async Task<IResult<InstaTVSearch>> GetSuggestedSearchesAsync()
+        public async Task<IResult<InstaTvSearch>> GetSuggestedSearchesAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetIGTVSuggestedSearchesUri();
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var instaUri = InstaUriCreator.GetIgtvSuggestedSearchesUri();
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaTVSearch>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaTvSearch>(response, json);
                 }
 
-                var obj = JsonConvert.DeserializeObject<InstaTVSearchResponse>(json);
+                var obj = JsonConvert.DeserializeObject<InstaTvSearchResponse>(json);
 
-                return Result.Success(ConvertersFabric.Instance.GetTVSearchConverter(obj).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetTvSearchConverter(obj).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaTVSearch), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaTvSearch), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaTVSearch>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaTvSearch>(exception);
             }
         }
 
         /// <summary>
         ///     Get TV Guide (gets popular and suggested channels)
         /// </summary>
-        public async Task<IResult<InstaTV>> GetTVGuideAsync()
+        public async Task<IResult<InstaTv>> GetTvGuideAsync()
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetIGTVGuideUri();
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var instaUri = InstaUriCreator.GetIgtvGuideUri();
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaTV>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaTv>(response, json);
                 }
 
-                var obj = JsonConvert.DeserializeObject<InstaTVResponse>(json);
+                var obj = JsonConvert.DeserializeObject<InstaTvResponse>(json);
 
-                return Result.Success(ConvertersFabric.Instance.GetTVConverter(obj).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetTvConverter(obj).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaTV), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaTv), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaTV>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaTv>(exception);
             }
         }
 
@@ -147,34 +150,34 @@ namespace Wikiled.Instagram.Api.API.Processors
         ///     Search channels
         /// </summary>
         /// <param name="query">Channel or username</param>
-        public async Task<IResult<InstaTVSearch>> SearchAsync(string query)
+        public async Task<IResult<InstaTvSearch>> SearchAsync(string query)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = UriCreator.GetIGTVSearchUri(query);
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var instaUri = InstaUriCreator.GetIgtvSearchUri(query);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaTVSearch>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaTvSearch>(response, json);
                 }
 
-                var obj = JsonConvert.DeserializeObject<InstaTVSearchResponse>(json);
+                var obj = JsonConvert.DeserializeObject<InstaTvSearchResponse>(json);
 
-                return Result.Success(ConvertersFabric.Instance.GetTVSearchConverter(obj).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetTvSearchConverter(obj).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaTVSearch), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaTvSearch), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaTVSearch>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaTvSearch>(exception);
             }
         }
 
@@ -202,23 +205,28 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </param>
         /// <param name="title">Title</param>
         /// <param name="caption">Caption</param>
-        public async Task<IResult<InstaMedia>> UploadVideoAsync(Action<InstaUploaderProgress> progress, InstaVideoUpload video, string title, string caption)
+        public async Task<IResult<InstaMedia>> UploadVideoAsync(Action<InstaUploaderProgress> progress,
+                                                                InstaVideoUpload video,
+                                                                string title,
+                                                                string caption)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
-            return await _instaApi.HelperProcessor.SendIGTVVideoAsync(progress, video, title, caption);
+            InstaUserAuthValidator.Validate(userAuthValidate);
+            return await instaApi.HelperProcessor.SendIgtvVideoAsync(progress, video, title, caption);
         }
 
-        private async Task<IResult<InstaTVChannel>> GetChannel(InstaTVChannelType? channelType, long? userId, PaginationParameters paginationParameters)
+        private async Task<IResult<InstaTvChannel>> GetChannel(InstaTvChannelType? channelType,
+                                                               long? userId,
+                                                               PaginationParameters paginationParameters)
         {
             try
             {
-                var instaUri = UriCreator.GetIGTVChannelUri();
+                var instaUri = InstaUriCreator.GetIgtvChannelUri();
                 var data = new JObject
-                           {
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"_uid", _user.LoggedInUser.Pk.ToString()},
-                               {"_csrftoken", _user.CsrfToken}
-                           };
+                {
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "_uid", user.LoggedInUser.Pk.ToString() },
+                    { "_csrftoken", user.CsrfToken }
+                };
                 if (channelType != null)
                 {
                     data.Add("id", channelType.Value.GetRealChannelType());
@@ -233,28 +241,28 @@ namespace Wikiled.Instagram.Api.API.Processors
                     data.Add("max_id", paginationParameters.NextMaxId);
                 }
 
-                var request = _httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, _deviceInfo, data);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var request = httpHelper.GetSignedRequest(HttpMethod.Post, instaUri, deviceInfo, data);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaTVChannel>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaTvChannel>(response, json);
                 }
 
-                var obj = JsonConvert.DeserializeObject<InstaTVChannelResponse>(json);
+                var obj = JsonConvert.DeserializeObject<InstaTvChannelResponse>(json);
 
-                return Result.Success(ConvertersFabric.Instance.GetTVChannelConverter(obj).Convert());
+                return InstaResult.Success(InstaConvertersFabric.Instance.GetTvChannelConverter(obj).Convert());
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaTVChannel), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaTvChannel), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaTVChannel>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaTvChannel>(exception);
             }
         }
     }

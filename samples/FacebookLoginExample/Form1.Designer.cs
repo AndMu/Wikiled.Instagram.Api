@@ -1,6 +1,6 @@
 ﻿namespace FacebookLoginExample
 {
-    partial class Form1
+    partial class InstaForm1
     {
         /// <summary>
         /// Required designer variable.
@@ -86,7 +86,7 @@
             this.Controls.Add(this.RtBox);
             this.Controls.Add(this.GetFeedButton);
             this.Controls.Add(this.FacebookLoginButton);
-            this.Name = "Form1";
+            this.Name = "InstaForm1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Facebook login example";
             this.Load += new System.EventHandler(this.Form1_Load);

@@ -4,9 +4,11 @@ namespace Wikiled.Instagram.Api.Classes.Models.Business
 {
     public class InstaStatisticsAccountInsightsUnit
     {
-        public List<InstaStatisticsDataPointItem> AccountActionsLastWeekDailyGraph { get; set; } = new List<InstaStatisticsDataPointItem>();
+        public List<InstaStatisticsDataPointItem> AccountActionsLastWeekDailyGraph { get; set; } =
+            new List<InstaStatisticsDataPointItem>();
 
-        public List<InstaStatisticsDataPointItem> AccountDiscoveryLastWeekDailyGraph { get; set; } = new List<InstaStatisticsDataPointItem>();
+        public List<InstaStatisticsDataPointItem> AccountDiscoveryLastWeekDailyGraph { get; set; } =
+            new List<InstaStatisticsDataPointItem>();
 
         public InstaStatisticsInsightsChannel InstagramAccountInsightsChannel { get; set; }
 

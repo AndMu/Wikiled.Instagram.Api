@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Hashtags;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Hashtags;
 
 namespace Wikiled.Instagram.Api.Converters.Hashtags
 {
@@ -14,11 +16,9 @@ namespace Wikiled.Instagram.Api.Converters.Hashtags
             }
 
             var relatedHashtag = new InstaRelatedHashtag
-                                 {
-                                     Id = SourceObject.Id,
-                                     Name = SourceObject.Name,
-                                     Type = SourceObject.Type
-                                 };
+            {
+                Id = SourceObject.Id, Name = SourceObject.Name, Type = SourceObject.Type
+            };
             return relatedHashtag;
         }
     }

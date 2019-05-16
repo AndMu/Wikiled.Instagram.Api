@@ -5,7 +5,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.User
     [Serializable]
     public class InstaUserShort
     {
-        public static InstaUserShort Empty => new InstaUserShort {FullName = string.Empty, UserName = string.Empty};
+        public static InstaUserShort Empty => new InstaUserShort { FullName = string.Empty, UserName = string.Empty };
 
         public string FullName { get; set; }
 

@@ -1,4 +1,7 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.Shopping;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Shopping;
 
 namespace Wikiled.Instagram.Api.Converters.Shopping
 {
@@ -14,9 +17,9 @@ namespace Wikiled.Instagram.Api.Converters.Shopping
             }
 
             var productTag = new InstaProductTag
-                             {
-                                 Product = ConvertersFabric.Instance.GetProductConverter(SourceObject.Product).Convert()
-                             };
+            {
+                Product = InstaConvertersFabric.Instance.GetProductConverter(SourceObject.Product).Convert()
+            };
 
             if (SourceObject.Position != null)
             {

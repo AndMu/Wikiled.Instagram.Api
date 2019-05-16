@@ -1,4 +1,7 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Highlight;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Highlight;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Highlights
 {
@@ -14,13 +17,13 @@ namespace Wikiled.Instagram.Api.Converters.Highlights
             }
 
             var highlight = new InstaHighlightShort
-                            {
-                                Id = SourceObject.Id,
-                                LatestReelMedia = SourceObject.LatestReelMedia,
-                                MediaCount = SourceObject.MediaCount,
-                                ReelType = SourceObject.ReelType,
-                                Time = DateTimeHelper.FromUnixTimeSeconds(SourceObject.Timestamp ?? 0)
-                            };
+            {
+                Id = SourceObject.Id,
+                LatestReelMedia = SourceObject.LatestReelMedia,
+                MediaCount = SourceObject.MediaCount,
+                ReelType = SourceObject.ReelType,
+                Time = (SourceObject.Timestamp ?? 0).FromUnixTimeSeconds()
+            };
             return highlight;
         }
     }

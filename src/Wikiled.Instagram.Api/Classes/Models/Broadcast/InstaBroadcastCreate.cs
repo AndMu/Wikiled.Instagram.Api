@@ -10,7 +10,7 @@
 
         public long BroadcastId { get; set; }
 
-        public int ConnectWith1rtt { get; set; }
+        public int ConnectWith1Rtt { get; set; }
 
         public int DisableSpeedTest { get; set; }
 

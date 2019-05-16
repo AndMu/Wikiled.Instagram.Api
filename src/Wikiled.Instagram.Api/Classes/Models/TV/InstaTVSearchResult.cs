@@ -1,8 +1,10 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.TV
+﻿using Wikiled.Instagram.Api.Classes.Models.User;
+
+namespace Wikiled.Instagram.Api.Classes.Models.TV
 {
-    public class InstaTVSearchResult
+    public class InstaTvSearchResult
     {
-        public InstaTVChannel Channel { get; set; }
+        public InstaTvChannel Channel { get; set; }
 
         public string Type { get; set; }
 

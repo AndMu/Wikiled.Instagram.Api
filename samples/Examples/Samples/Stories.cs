@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using InstagramApiSharp.API;
-using InstagramApiSharp.Classes.Models;
-using Wikiled.Instagram.Api.API;
 using Wikiled.Instagram.Api.Classes.Models.Media;
 using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Logic;
 
 /////////////////////////////////////////////////////////////////////
 ////////////////////// IMPORTANT NOTE ///////////////////////////////
@@ -15,31 +13,34 @@ using Wikiled.Instagram.Api.Classes.Models.Story;
 /////////////////////////////////////////////////////////////////////
 namespace Examples.Samples
 {
-    internal class Stories : IDemoSample
+    internal class InstaStories : IDemoSample
     {
-        private readonly IInstaApi InstaApi;
+        private readonly IInstaApi api;
 
-        public Stories(IInstaApi instaApi)
+        public InstaStories(IInstaApi instaApi)
         {
-            InstaApi = instaApi;
+            api = instaApi;
         }
 
         public async Task DoShow()
         {
-            var result = await InstaApi.StoryProcessor.GetStoryFeedAsync();
+            var result = await api.StoryProcessor.GetStoryFeedAsync();
             if (!result.Succeeded)
             {
                 Console.WriteLine($"Unable to get story feed: {result.Info}");
                 return;
             }
+
             var storyFeed = result.Value;
             Console.WriteLine($"Got {storyFeed.Items.Count} story reels.");
             foreach (var feedItem in storyFeed.Items)
             {
                 Console.WriteLine($"User: {feedItem.User.FullName}");
                 foreach (var item in feedItem.Items)
+                {
                     Console.WriteLine(
                         $"Story item: {item.Caption?.Text ?? item.Code}, images:{item.ImageList?.Count ?? 0}, videos: {item.VideoList?.Count ?? 0}");
+                }
             }
         }
 
@@ -47,10 +48,10 @@ namespace Examples.Samples
         {
             var image = new InstaImage { Uri = @"c:\someawesomepicture.jpg" };
 
-            var result = await InstaApi.StoryProcessor.UploadStoryPhotoAsync(image, "someawesomepicture");
+            var result = await api.StoryProcessor.UploadStoryPhotoAsync(image, "someawesomepicture");
             Console.WriteLine(result.Succeeded
-                ? $"Story created: {result.Value.Media.Pk}"
-                : $"Unable to upload photo story: {result.Info.Message}");
+                                  ? $"Story created: {result.Value.Media.Pk}"
+                                  : $"Unable to upload photo story: {result.Info.Message}");
         }
 
         public async void UploadVideo()
@@ -60,10 +61,10 @@ namespace Examples.Samples
                 Video = new InstaVideo(@"c:\video1.mp4", 0, 0),
                 VideoThumbnail = new InstaImage(@"c:\video thumbnail 1.jpg", 0, 0)
             };
-            var result = await InstaApi.MediaProcessor.UploadVideoAsync(video, "ramtinak");
+            var result = await api.MediaProcessor.UploadVideoAsync(video, "ramtinak");
             Console.WriteLine(result.Succeeded
-                ? $"Story created: {result.Value.Pk}"
-                : $"Unable to upload video story: {result.Info.Message}");
+                                  ? $"Story created: {result.Value.Pk}"
+                                  : $"Unable to upload video story: {result.Info.Message}");
         }
 
         public async void UploadWithOptions()
@@ -99,7 +100,7 @@ namespace Examples.Samples
             });
 
             // Add location
-            var locationsResult = await InstaApi.LocationProcessor.SearchLocationAsync(0, 0, "kazeroun");
+            var locationsResult = await api.LocationProcessor.SearchLocationAsync(0, 0, "kazeroun");
             var firstLocation = locationsResult.Value.FirstOrDefault();
             var locationId = firstLocation.ExternalId;
 
@@ -143,12 +144,12 @@ namespace Examples.Samples
 
             var image = new InstaImage { Uri = @"c:\someawesomepicture.jpg" };
 
-            var result = await InstaApi.StoryProcessor.UploadStoryPhotoAsync(image, "someawesomepicture", storyOptions);
+            var result = await api.StoryProcessor.UploadStoryPhotoAsync(image, "someawesomepicture", storyOptions);
             // upload video
             //var result = await InstaApi.MediaProcessor.UploadVideoAsync(video, "ramtinak", storyOptions);
             Console.WriteLine(result.Succeeded
-                ? $"Story created: {result.Value.Media.Pk}"
-                : $"Unable to upload photo story: {result.Info.Message}");
+                                  ? $"Story created: {result.Value.Media.Pk}"
+                                  : $"Unable to upload photo story: {result.Info.Message}");
         }
 
         public async void ShareMediaAsStory()
@@ -158,7 +159,7 @@ namespace Examples.Samples
             // Also it's on you to calculate clickable media but mostly is 0.5 for width and height
 
 
-            long mediaPk = 1912406543385492359; // Get it from InstaMedia.Pk, you can use video or album pk too!
+            var mediaPk = 1912406543385492359; // Get it from InstaMedia.Pk, you can use video or album pk too!
 
             var mediaStory = new InstaMediaStoryUpload
             {
@@ -172,11 +173,11 @@ namespace Examples.Samples
 
             var image = new InstaImage { Uri = @"c:\someawesomepicture.jpg" };
 
-            var result = await InstaApi.StoryProcessor.ShareMediaAsStoryAsync(image, mediaStory);
+            var result = await api.StoryProcessor.ShareMediaAsStoryAsync(image, mediaStory);
 
             Console.WriteLine(result.Succeeded
-                ? $"Story created from an media post: {result.Value.Media.Pk}"
-                : $"Unable to share media as story: {result.Info.Message}");
+                                  ? $"Story created from an media post: {result.Value.Media.Pk}"
+                                  : $"Unable to share media as story: {result.Info.Message}");
         }
     }
 }

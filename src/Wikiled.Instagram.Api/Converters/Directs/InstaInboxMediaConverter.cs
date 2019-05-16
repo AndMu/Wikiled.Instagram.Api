@@ -1,4 +1,7 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Direct;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
 
 namespace Wikiled.Instagram.Api.Converters.Directs
 {
@@ -14,11 +17,11 @@ namespace Wikiled.Instagram.Api.Converters.Directs
             }
 
             var inboxMedia = new InstaInboxMedia
-                             {
-                                 MediaType = SourceObject.MediaType,
-                                 OriginalHeight = SourceObject.OriginalHeight,
-                                 OriginalWidth = SourceObject.OriginalWidth
-                             };
+            {
+                MediaType = SourceObject.MediaType,
+                OriginalHeight = SourceObject.OriginalHeight,
+                OriginalWidth = SourceObject.OriginalWidth
+            };
             if (SourceObject?.ImageCandidates?.Candidates == null)
             {
                 return inboxMedia;

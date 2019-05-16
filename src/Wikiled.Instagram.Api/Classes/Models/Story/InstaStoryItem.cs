@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Wikiled.Instagram.Api.Classes.Models.Comment;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.User;
 
 namespace Wikiled.Instagram.Api.Classes.Models.Story
 {
@@ -77,7 +80,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Story
 
         public bool ShowOneTapTooltip { get; set; }
 
-        public List<InstaStoryCTA> StoryCTA { get; set; } = new List<InstaStoryCTA>();
+        public List<InstaStoryCta> StoryCta { get; set; } = new List<InstaStoryCta>();
 
         public List<InstaStoryFeedMedia> StoryFeedMedia { get; set; } = new List<InstaStoryFeedMedia>();
 
@@ -89,15 +92,18 @@ namespace Wikiled.Instagram.Api.Classes.Models.Story
 
         public List<InstaStoryPollItem> StoryPolls { get; set; } = new List<InstaStoryPollItem>();
 
-        public List<InstaStoryPollVoterInfoItem> StoryPollVoters { get; set; } = new List<InstaStoryPollVoterInfoItem>();
+        public List<InstaStoryPollVoterInfoItem> StoryPollVoters { get; set; } =
+            new List<InstaStoryPollVoterInfoItem>();
 
         public List<InstaStoryQuestionItem> StoryQuestions { get; set; } = new List<InstaStoryQuestionItem>();
 
-        public List<InstaStoryQuestionInfo> StoryQuestionsResponderInfos { get; set; } = new List<InstaStoryQuestionInfo>();
+        public List<InstaStoryQuestionInfo> StoryQuestionsResponderInfos { get; set; } =
+            new List<InstaStoryQuestionInfo>();
 
         public List<InstaStorySliderItem> StorySliders { get; set; } = new List<InstaStorySliderItem>();
 
-        public List<InstaStorySliderVoterInfoItem> StorySliderVoters { get; set; } = new List<InstaStorySliderVoterInfoItem>();
+        public List<InstaStorySliderVoterInfoItem> StorySliderVoters { get; set; } =
+            new List<InstaStorySliderVoterInfoItem>();
 
         public string StoryStickerIds { get; set; }
 

@@ -1,8 +1,12 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
 
 namespace Wikiled.Instagram.Api.Converters.Users
 {
-    internal class InstaFriendshipShortStatusConverter : IObjectConverter<InstaFriendshipShortStatus, InstaFriendshipShortStatusResponse>
+    internal class
+        InstaFriendshipShortStatusConverter : IObjectConverter<InstaFriendshipShortStatus,
+            InstaFriendshipShortStatusResponse>
     {
         public InstaFriendshipShortStatusResponse SourceObject { get; set; }
 
@@ -14,13 +18,13 @@ namespace Wikiled.Instagram.Api.Converters.Users
             }
 
             var friendships = new InstaFriendshipShortStatus
-                              {
-                                  Following = SourceObject.Following,
-                                  IncomingRequest = SourceObject.IncomingRequest,
-                                  IsBestie = SourceObject.IsBestie,
-                                  IsPrivate = SourceObject.IsPrivate,
-                                  OutgoingRequest = SourceObject.OutgoingRequest
-                              };
+            {
+                Following = SourceObject.Following,
+                IncomingRequest = SourceObject.IncomingRequest,
+                IsBestie = SourceObject.IsBestie,
+                IsPrivate = SourceObject.IsPrivate,
+                OutgoingRequest = SourceObject.OutgoingRequest
+            };
 
             return friendships;
         }

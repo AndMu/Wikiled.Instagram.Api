@@ -1,4 +1,6 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.User
+﻿using Wikiled.Instagram.Api.Classes.Models.Broadcast;
+
+namespace Wikiled.Instagram.Api.Classes.Models.User
 {
     public class InstaFullUserInfoUserStory
     {

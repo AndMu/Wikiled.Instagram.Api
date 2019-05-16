@@ -1,39 +1,18 @@
-﻿/*
- * Developer: Ramtin Jokar [ Ramtinak@live.com ] [ My Telegram Account: https://t.me/ramtinak ]
- * 
- * Github source: https://github.com/ramtinak/InstagramApiSharp
- * Nuget package: https://www.nuget.org/packages/InstagramApiSharp
- * 
- * IRANIAN DEVELOPERS
- */
-using InstagramApiSharp;
-using InstagramApiSharp.API;
-using InstagramApiSharp.API.Builder;
-using InstagramApiSharp.Classes;
-using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.SessionHandlers;
-using InstagramApiSharp.Helpers;
-using InstagramApiSharp.Logger;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
+﻿using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Wikiled.Instagram.Api.API;
-using Wikiled.Instagram.Api.API.Builder;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.Models.Media;
 using Wikiled.Instagram.Api.Classes.SessionHandlers;
 using Wikiled.Instagram.Api.Enums;
 using Wikiled.Instagram.Api.Helpers;
 using Wikiled.Instagram.Api.Logger;
+using Wikiled.Instagram.Api.Logic;
+using Wikiled.Instagram.Api.Logic.Builder;
 
 /////////////////////////////////////////////////////////////////////
 ////////////////////// IMPORTANT NOTE ///////////////////////////////
@@ -43,9 +22,13 @@ using Wikiled.Instagram.Api.Logger;
 /////////////////////////////////////////////////////////////////////
 namespace FacebookLoginExample
 {
-    public partial class Form1 : Form
+    public partial class InstaForm1 : Form
     {
-        const string AppName = "Facebook login example";
+        private const string AppName = "Facebook login example";
+
+        private const string StateFile = "state.bin";
+
+        private const int InternetCookieHttponly = 0x2000;
         // Facebook examples
         // Facebook login is not a built-in implements in InstagramApiSharp but you can
         // use it easily to login with Facebook.
@@ -54,17 +37,18 @@ namespace FacebookLoginExample
         // Note 1: if you in Iran, you cannot test this example without VPN.
         // only VPN works for winform/wpf apps. TunnelPlus or SSL Tunnel won't work.
 
-        IInstaApi InstaApi;
-        const string StateFile = "state.bin";
+        private IInstaApi api;
 
-        public Form1()
+        public InstaForm1()
         {
             InitializeComponent();
         }
+
         private void Form1_Load(object sender, EventArgs e)
         {
             FacebookWebBrowser.Dock = DockStyle.Fill;
         }
+
         private async void FacebookLoginButton_Click(object sender, EventArgs e)
         {
             await Task.Delay(1500);
@@ -75,34 +59,40 @@ namespace FacebookLoginExample
             try
             {
                 // remove handler
-                FacebookWebBrowser.DocumentCompleted -= new WebBrowserDocumentCompletedEventHandler(FacebookWebBrowserDocumentCompleted);
+                FacebookWebBrowser.DocumentCompleted -= FacebookWebBrowserDocumentCompleted;
             }
-            catch { }
+            catch
+            {
+            }
+
             // add handler
-            FacebookWebBrowser.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(FacebookWebBrowserDocumentCompleted);
+            FacebookWebBrowser.DocumentCompleted += FacebookWebBrowserDocumentCompleted;
 
             // Every time we want to login with another facebook account, we need to clear
             // all cached and cookies for facebook addresses.
             // WebBrowser control uses Internet Explorer so we need to clean up.
-            WebBrowserHelper.ClearForSpecificUrl(InstaFbHelper.FacebookAddressWithWWWAddress.ToString());
-            WebBrowserHelper.ClearForSpecificUrl(InstaFbHelper.FacebookAddress.ToString());
-            WebBrowserHelper.ClearForSpecificUrl(InstaFbHelper.FacebookMobileAddress.ToString());
+            InstaWebBrowserHelper.ClearForSpecificUrl(InstaFbHelper.FacebookAddressWithWwwAddress.ToString());
+            InstaWebBrowserHelper.ClearForSpecificUrl(InstaFbHelper.FacebookAddress.ToString());
+            InstaWebBrowserHelper.ClearForSpecificUrl(InstaFbHelper.FacebookMobileAddress.ToString());
 
             // wait 3.5 second
-            System.Threading.Thread.Sleep(3500);
+            Thread.Sleep(3500);
 
             var facebookLoginUri = InstaFbHelper.GetFacebookLoginUri();
             var userAgent = InstaFbHelper.GetFacebookUserAgent();
-            
-            FacebookWebBrowser.Navigate(facebookLoginUri, null, null, string.Format("\r\nUser-Agent: {0}\r\n", userAgent));
+
+            FacebookWebBrowser.Navigate(facebookLoginUri,
+                                        null,
+                                        null,
+                                        string.Format("\r\nUser-Agent: {0}\r\n", userAgent));
 
             do
             {
                 Application.DoEvents();
-                System.Threading.Thread.Sleep(1);
-            }
-            while (FacebookWebBrowser.ReadyState != WebBrowserReadyState.Complete);
+                Thread.Sleep(1);
+            } while (FacebookWebBrowser.ReadyState != WebBrowserReadyState.Complete);
         }
+
         private async void FacebookWebBrowserDocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs args)
         {
             try
@@ -113,9 +103,9 @@ namespace FacebookLoginExample
                     var cookies = GetUriCookies(args.Url);
                     var fbToken = InstaFbHelper.GetAccessToken(html);
 
-                    InstaApi = BuildApi();
+                    api = BuildApi();
                     Text = $"{AppName} Connecting";
-                    var loginResult = await InstaApi.LoginWithFacebookAsync(fbToken, cookies);
+                    var loginResult = await api.LoginWithFacebookAsync(fbToken, cookies);
 
                     if (loginResult.Succeeded)
                     {
@@ -138,67 +128,73 @@ namespace FacebookLoginExample
                                 MessageBox.Show($"ERR: {loginResult.Value}\r\n{loginResult.Info.Message}");
                                 break;
                         }
+
                         Text = $"{AppName} ERROR";
                     }
-
                 }
             }
-            catch { }
+            catch
+            {
+            }
         }
+
         private async void GetFeedButtonClick(object sender, EventArgs e)
         {
             // Note2: A RichTextBox control added to show you some of feeds.
 
-            if (InstaApi == null)
-            {
-                MessageBox.Show("Login first.");
-                return;
-            }
-            if (!InstaApi.IsUserAuthenticated)
+            if (api == null)
             {
                 MessageBox.Show("Login first.");
                 return;
             }
 
-            var x = await InstaApi.FeedProcessor.GetExploreFeedAsync(PaginationParameters.MaxPagesToLoad(1));
+            if (!api.IsUserAuthenticated)
+            {
+                MessageBox.Show("Login first.");
+                return;
+            }
+
+            var x = await api.FeedProcessor.GetExploreFeedAsync(PaginationParameters.MaxPagesToLoad(1));
 
             if (x.Succeeded)
             {
-                StringBuilder sb = new StringBuilder();
-                StringBuilder sb2 = new StringBuilder();
+                var sb = new StringBuilder();
+                var sb2 = new StringBuilder();
                 sb2.AppendLine("Like 5 Media>");
                 foreach (var item in x.Value.Medias.Take(5))
                 {
                     // like media...
-                    var liked = await InstaApi.MediaProcessor.LikeMediaAsync(item.InstaIdentifier);
-                    sb2.AppendLine($"{item.InstaIdentifier} liked? {liked.Succeeded}");
+                    var liked = await api.MediaProcessor.LikeMediaAsync(item.Identifier);
+                    sb2.AppendLine($"{item.Identifier} liked? {liked.Succeeded}");
                 }
 
                 sb.AppendLine(("Explore Feeds Result: " + x.Succeeded).Output());
                 foreach (var media in x.Value.Medias)
                 {
-                    sb.AppendLine(DebugUtils.PrintMedia("Feed media", media));
+                    sb.AppendLine(InstaDebugUtils.PrintMedia("Feed media", media));
                 }
-                RtBox.Text = sb2.ToString() + Environment.NewLine + Environment.NewLine + Environment.NewLine;
+
+                RtBox.Text = sb2 + Environment.NewLine + Environment.NewLine + Environment.NewLine;
 
                 RtBox.Text += sb.ToString();
                 RtBox.Visible = true;
             }
         }
 
-        IInstaApi BuildApi()
+        private IInstaApi BuildApi()
         {
             return InstaApiBuilder.CreateBuilder()
                 .SetUser(UserSessionData.ForUsername("FAKEUSERNAME").WithPassword("FAKEPASS"))
                 .UseLogger(new DebugLogger(LogLevel.All))
                 .SetRequestDelay(RequestDelay.FromSeconds(0, 1))
                 // Session handler, set a file path to save/load your state/session data
-                .SetSessionHandler(new FileSessionHandler() { FilePath = StateFile })
+                .SetSessionHandler(new FileSessionHandler { FilePath = StateFile })
                 .Build();
         }
-        void LoadSession()
+
+        private void LoadSession()
         {
-            InstaApi?.SessionHandler?.Load();
+            api?.SessionHandler?.Load();
 
             //// Old load session
             //try
@@ -217,13 +213,20 @@ namespace FacebookLoginExample
             //    Debug.WriteLine(ex);
             //}
         }
-        void SaveSession()
+
+        private void SaveSession()
         {
-            if (InstaApi == null)
+            if (api == null)
+            {
                 return;
-            if (!InstaApi.IsUserAuthenticated)
+            }
+
+            if (!api.IsUserAuthenticated)
+            {
                 return;
-            InstaApi.SessionHandler.Save();
+            }
+
+            api.SessionHandler.Save();
 
             //// Old save session 
             //var state = InstaApi.GetStateDataAsStream();
@@ -233,45 +236,55 @@ namespace FacebookLoginExample
             //    state.CopyTo(fileStream);
             //}
         }
-        #region DllImport for getting full cookies from WebBrowser
+
         [DllImport("wininet.dll", SetLastError = true)]
         public static extern bool InternetGetCookieEx(string url,
-            string cookieName,
-            StringBuilder cookieData,
-            ref int size,
-            Int32 dwFlags,
-            IntPtr lpReserved);
+                                                      string cookieName,
+                                                      StringBuilder cookieData,
+                                                      ref int size,
+                                                      int dwFlags,
+                                                      IntPtr lpReserved);
 
-        private const Int32 InternetCookieHttponly = 0x2000;
         public static string GetUriCookies(Uri uri)
         {
-            string cookies = "";
-            int datasize = 8192 * 16;
-            StringBuilder cookieData = new StringBuilder(datasize);
-            if (!InternetGetCookieEx(uri.ToString(), null, cookieData, ref datasize, InternetCookieHttponly, IntPtr.Zero))
+            var cookies = "";
+            var datasize = 8192 * 16;
+            var cookieData = new StringBuilder(datasize);
+            if (!InternetGetCookieEx(uri.ToString(),
+                                     null,
+                                     cookieData,
+                                     ref datasize,
+                                     InternetCookieHttponly,
+                                     IntPtr.Zero))
             {
                 if (datasize < 0)
+                {
                     return cookies;
+                }
+
                 cookieData = new StringBuilder(datasize);
                 if (!InternetGetCookieEx(
                     uri.ToString(),
-                    null, cookieData,
+                    null,
+                    cookieData,
                     ref datasize,
                     InternetCookieHttponly,
                     IntPtr.Zero))
+                {
                     return cookies;
+                }
             }
+
             if (cookieData.Length > 0)
             {
                 cookies = cookieData.ToString();
             }
+
             return cookies;
         }
-
-        #endregion
-
     }
-    public static class DebugUtils
+
+    public static class InstaDebugUtils
     {
         public static string PrintMedia(string header, InstaMedia media)
         {
@@ -279,6 +292,7 @@ namespace FacebookLoginExample
             content.Output();
             return content;
         }
+
         public static string Truncate(this string value, int maxChars)
         {
             return value.Length <= maxChars ? value : value.Substring(0, maxChars) + "...";

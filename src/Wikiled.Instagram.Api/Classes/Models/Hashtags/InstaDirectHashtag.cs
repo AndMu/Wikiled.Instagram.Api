@@ -1,4 +1,6 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.Hashtags
+﻿using Wikiled.Instagram.Api.Classes.Models.Media;
+
+namespace Wikiled.Instagram.Api.Classes.Models.Hashtags
 {
     public class InstaDirectHashtag
     {

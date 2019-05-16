@@ -5,6 +5,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Media
 {
     public class InstaImageCandidatesResponse
     {
-        [JsonProperty("candidates")] public List<ImageResponse> Candidates { get; set; }
+        [JsonProperty("candidates")]
+        public List<InstaImageResponse> Candidates { get; set; }
     }
 }

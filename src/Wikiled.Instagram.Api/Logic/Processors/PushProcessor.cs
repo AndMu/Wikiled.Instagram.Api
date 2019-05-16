@@ -1,4 +1,4 @@
-﻿namespace Wikiled.Instagram.Api.API.Processors
+﻿namespace Wikiled.Instagram.Api.Logic.Processors
 {
     //internal class PushProcessor : IPushProcessor
     //{

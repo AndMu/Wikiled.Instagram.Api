@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Wikiled.Instagram.Api.Classes.Models.User;
 
 namespace Wikiled.Instagram.Api.Classes.Models.Direct
 {
@@ -63,7 +64,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Direct
 
         public bool ValuedRequest { get; set; }
 
-        public bool VCMuted { get; set; }
+        public bool VcMuted { get; set; }
 
         public string VieweId { get; set; }
     }

@@ -6,7 +6,7 @@ using Wikiled.Instagram.Api.Classes.Models.Media;
 using Wikiled.Instagram.Api.Classes.Models.User;
 using Wikiled.Instagram.Api.Enums;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Media api functions.
@@ -16,14 +16,14 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <summary>
         ///     Add an post to archive list (this will show the post only for you!)
         /// </summary>
-        /// <param name="mediaId">Media id (<see cref="InstaMedia.InstaIdentifier" />)</param>
+        /// <param name="mediaId">Media id (<see cref="InstaMedia.Identifier" />)</param>
         /// <returns>Return true if the media is archived</returns>
         Task<IResult<bool>> ArchiveMediaAsync(string mediaId);
 
         /// <summary>
         ///     Delete a media (photo, video or album)
         /// </summary>
-        /// <param name="mediaId">Media id (<see cref="InstaMedia.InstaIdentifier" />)</param>
+        /// <param name="mediaId">Media id (<see cref="InstaMedia.Identifier" />)</param>
         /// <param name="mediaType">The type of the media</param>
         /// <returns>Return true if the media is deleted</returns>
         Task<IResult<bool>> DeleteMediaAsync(string mediaId, InstaMediaType mediaType);
@@ -38,7 +38,10 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </param>
         /// <param name="userTags">User tags => Optional</param>
         /// <returns>Return true if everything is ok</returns>
-        Task<IResult<InstaMedia>> EditMediaAsync(string mediaId, string caption, InstaLocationShort location = null, InstaUserTagUpload[] userTags = null);
+        Task<IResult<InstaMedia>> EditMediaAsync(string mediaId,
+                                                 string caption,
+                                                 InstaLocationShort location = null,
+                                                 InstaUserTagUpload[] userTags = null);
 
         /// <summary>
         ///     Get archived medias
@@ -58,7 +61,7 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <summary>
         ///     Get media by its id asynchronously
         /// </summary>
-        /// <param name="mediaId">Media id (<see cref="InstaMedia.InstaIdentifier>" />)</param>
+        /// <param name="mediaId">Media id (<see cref="InstaMedia.Identifier" />)</param>
         /// <returns>
         ///     <see cref="InstaMedia" />
         /// </returns>
@@ -115,7 +118,7 @@ namespace Wikiled.Instagram.Api.API.Processors
         ///     <summary>
         ///         Remove an post from archive list (this will show the post for everyone!)
         ///     </summary>
-        ///     <param name="mediaId">Media id (<see cref="InstaMedia.InstaIdentifier" />)</param>
+        ///     <param name="mediaId">Media id (<see cref="InstaMedia.Identifier" />)</param>
         ///     <returns>Return true if the media is unarchived</returns>
         Task<IResult<bool>> UnArchiveMediaAsync(string mediaId);
 
@@ -140,7 +143,10 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="location">
         ///     Location => Optional (get it from <seealso cref="ILocationProcessor.SearchLocationAsync" />
         /// </param>
-        Task<IResult<InstaMedia>> UploadAlbumAsync(InstaImageUpload[] images, InstaVideoUpload[] videos, string caption, InstaLocationShort location = null);
+        Task<IResult<InstaMedia>> UploadAlbumAsync(InstaImageUpload[] images,
+                                                   InstaVideoUpload[] videos,
+                                                   string caption,
+                                                   InstaLocationShort location = null);
 
         /// <summary>
         ///     Upload album (videos and photos) with progress
@@ -152,7 +158,11 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="location">
         ///     Location => Optional (get it from <seealso cref="ILocationProcessor.SearchLocationAsync" />
         /// </param>
-        Task<IResult<InstaMedia>> UploadAlbumAsync(Action<InstaUploaderProgress> progress, InstaImageUpload[] images, InstaVideoUpload[] videos, string caption, InstaLocationShort location = null);
+        Task<IResult<InstaMedia>> UploadAlbumAsync(Action<InstaUploaderProgress> progress,
+                                                   InstaImageUpload[] images,
+                                                   InstaVideoUpload[] videos,
+                                                   string caption,
+                                                   InstaLocationShort location = null);
 
         /// <summary>
         ///     Upload album (videos and photos)
@@ -162,7 +172,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="location">
         ///     Location => Optional (get it from <seealso cref="ILocationProcessor.SearchLocationAsync" />
         /// </param>
-        Task<IResult<InstaMedia>> UploadAlbumAsync(InstaAlbumUpload[] album, string caption, InstaLocationShort location = null);
+        Task<IResult<InstaMedia>> UploadAlbumAsync(InstaAlbumUpload[] album,
+                                                   string caption,
+                                                   InstaLocationShort location = null);
 
         /// <summary>
         ///     Upload album (videos and photos) with progress
@@ -173,7 +185,10 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="location">
         ///     Location => Optional (get it from <seealso cref="ILocationProcessor.SearchLocationAsync" />
         /// </param>
-        Task<IResult<InstaMedia>> UploadAlbumAsync(Action<InstaUploaderProgress> progress, InstaAlbumUpload[] album, string caption, InstaLocationShort location = null);
+        Task<IResult<InstaMedia>> UploadAlbumAsync(Action<InstaUploaderProgress> progress,
+                                                   InstaAlbumUpload[] album,
+                                                   string caption,
+                                                   InstaLocationShort location = null);
 
         /// <summary>
         ///     Upload photo [Supports user tags]
@@ -184,7 +199,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         ///     Location => Optional (get it from <seealso cref="ILocationProcessor.SearchLocationAsync" />
         /// </param>
         /// <param name="userTags">User tags => Optional</param>
-        Task<IResult<InstaMedia>> UploadPhotoAsync(InstaImageUpload image, string caption, InstaLocationShort location = null);
+        Task<IResult<InstaMedia>> UploadPhotoAsync(InstaImageUpload image,
+                                                   string caption,
+                                                   InstaLocationShort location = null);
 
         /// <summary>
         ///     Upload photo with progress [Supports user tags]
@@ -196,7 +213,10 @@ namespace Wikiled.Instagram.Api.API.Processors
         ///     Location => Optional (get it from <seealso cref="ILocationProcessor.SearchLocationAsync" />
         /// </param>
         /// <param name="userTags">User tags => Optional</param>
-        Task<IResult<InstaMedia>> UploadPhotoAsync(Action<InstaUploaderProgress> progress, InstaImageUpload image, string caption, InstaLocationShort location = null);
+        Task<IResult<InstaMedia>> UploadPhotoAsync(Action<InstaUploaderProgress> progress,
+                                                   InstaImageUpload image,
+                                                   string caption,
+                                                   InstaLocationShort location = null);
 
         /// <summary>
         ///     Upload video [Supports user tags]
@@ -206,7 +226,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="location">
         ///     Location => Optional (get it from <seealso cref="ILocationProcessor.SearchLocationAsync" />
         /// </param>
-        Task<IResult<InstaMedia>> UploadVideoAsync(InstaVideoUpload video, string caption, InstaLocationShort location = null);
+        Task<IResult<InstaMedia>> UploadVideoAsync(InstaVideoUpload video,
+                                                   string caption,
+                                                   InstaLocationShort location = null);
 
         /// <summary>
         ///     Upload video with progress [Supports user tags]
@@ -217,6 +239,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="location">
         ///     Location => Optional (get it from <seealso cref="ILocationProcessor.SearchLocationAsync" />
         /// </param>
-        Task<IResult<InstaMedia>> UploadVideoAsync(Action<InstaUploaderProgress> progress, InstaVideoUpload video, string caption, InstaLocationShort location = null);
+        Task<IResult<InstaMedia>> UploadVideoAsync(Action<InstaUploaderProgress> progress,
+                                                   InstaVideoUpload video,
+                                                   string caption,
+                                                   InstaLocationShort location = null);
     }
 }

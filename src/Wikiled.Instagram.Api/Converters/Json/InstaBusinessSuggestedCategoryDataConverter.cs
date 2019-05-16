@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Wikiled.Instagram.Api.Classes.Models.Business;
 
 namespace Wikiled.Instagram.Api.Converters.Json
 {

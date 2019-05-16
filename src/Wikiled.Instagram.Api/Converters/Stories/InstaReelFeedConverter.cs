@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Stories
 {
@@ -14,16 +18,16 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             }
 
             var reelFeed = new InstaReelFeed
-                           {
-                               CanReply = SourceObject.CanReply,
-                               ExpiringAt = DateTimeHelper.UnixTimestampToDateTime(SourceObject?.ExpiringAt ?? 0),
-                               HasBestiesMedia = SourceObject.HasBestiesMedia,
-                               Id = SourceObject.Id,
-                               LatestReelMedia = SourceObject.LatestReelMedia ?? 0,
-                               PrefetchCount = SourceObject.PrefetchCount,
-                               Seen = SourceObject.Seen ?? 0,
-                               User = ConvertersFabric.Instance.GetUserShortFriendshipFullConverter(SourceObject.User).Convert()
-                           };
+            {
+                CanReply = SourceObject.CanReply,
+                ExpiringAt = InstaDateTimeHelper.UnixTimestampToDateTime(SourceObject?.ExpiringAt ?? 0),
+                HasBestiesMedia = SourceObject.HasBestiesMedia,
+                Id = SourceObject.Id,
+                LatestReelMedia = SourceObject.LatestReelMedia ?? 0,
+                PrefetchCount = SourceObject.PrefetchCount,
+                Seen = SourceObject.Seen ?? 0,
+                User = InstaConvertersFabric.Instance.GetUserShortFriendshipFullConverter(SourceObject.User).Convert()
+            };
             try
             {
                 if (!string.IsNullOrEmpty(SourceObject.CanReshare))
@@ -41,7 +45,7 @@ namespace Wikiled.Instagram.Api.Converters.Stories
                 {
                     try
                     {
-                        reelFeed.Items.Add(ConvertersFabric.Instance.GetStoryItemConverter(item).Convert());
+                        reelFeed.Items.Add(InstaConvertersFabric.Instance.GetStoryItemConverter(item).Convert());
                     }
                     catch
                     {

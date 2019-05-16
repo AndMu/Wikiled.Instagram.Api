@@ -1,6 +1,6 @@
 ﻿namespace Wikiled.Instagram.Api.Enums
 {
-    public enum InstaTVChannelType
+    public enum InstaTvChannelType
     {
         /// <summary>
         ///     Chrono following

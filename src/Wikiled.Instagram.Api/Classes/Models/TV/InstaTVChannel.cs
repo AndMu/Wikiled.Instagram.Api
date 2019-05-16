@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Enums;
 
 namespace Wikiled.Instagram.Api.Classes.Models.TV
 {
-    public class InstaTVChannel
+    public class InstaTvChannel
     {
         public bool HasMoreAvailable { get; set; }
 
@@ -14,10 +16,10 @@ namespace Wikiled.Instagram.Api.Classes.Models.TV
 
         public string Title { get; set; }
 
-        public InstaTVChannelType Type { get; set; }
+        public InstaTvChannelType Type { get; set; }
 
         //public Seen_State1 seen_state { get; set; }
 
-        public InstaTVUser UserDetail { get; set; }
+        public InstaTvUser UserDetail { get; set; }
     }
 }

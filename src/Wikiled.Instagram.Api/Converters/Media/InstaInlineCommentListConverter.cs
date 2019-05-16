@@ -1,4 +1,8 @@
-﻿namespace Wikiled.Instagram.Api.Converters.Media
+﻿using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.Comment;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Comment;
+
+namespace Wikiled.Instagram.Api.Converters.Media
 {
     internal class InstaInlineCommentListConverter
         : IObjectConverter<InstaInlineCommentList, InstaInlineCommentListResponse>
@@ -13,19 +17,20 @@
             }
 
             var inline = new InstaInlineCommentList
-                         {
-                             ChildCommentCount = SourceObject.ChildCommentCount,
-                             HasMoreHeadChildComments = SourceObject.HasMoreHeadChildComments,
-                             HasMoreTailChildComments = SourceObject.HasMoreTailChildComments,
-                             NumTailChildComments = SourceObject.NumTailChildComments,
-                             NextMaxId = SourceObject.NextMaxId,
-                             NextMinId = SourceObject.NextMinId
-                         };
+            {
+                ChildCommentCount = SourceObject.ChildCommentCount,
+                HasMoreHeadChildComments = SourceObject.HasMoreHeadChildComments,
+                HasMoreTailChildComments = SourceObject.HasMoreTailChildComments,
+                NumTailChildComments = SourceObject.NumTailChildComments,
+                NextMaxId = SourceObject.NextMaxId,
+                NextMinId = SourceObject.NextMinId
+            };
             if (SourceObject.ParentComment != null)
             {
                 try
                 {
-                    inline.ParentComment = ConvertersFabric.Instance.GetCommentConverter(SourceObject.ParentComment).Convert();
+                    inline.ParentComment = InstaConvertersFabric.Instance.GetCommentConverter(SourceObject.ParentComment)
+                        .Convert();
                 }
                 catch
                 {
@@ -38,7 +43,7 @@
                 {
                     try
                     {
-                        inline.ChildComments.Add(ConvertersFabric.Instance.GetCommentConverter(cmt).Convert());
+                        inline.ChildComments.Add(InstaConvertersFabric.Instance.GetCommentConverter(cmt).Convert());
                     }
                     catch
                     {

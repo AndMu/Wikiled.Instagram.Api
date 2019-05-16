@@ -1,15 +1,18 @@
 ﻿using Newtonsoft.Json;
+using Wikiled.Instagram.Api.Classes.Models.User;
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Business
 {
     public class InstaBusinessUserResponse
     {
-        [JsonProperty("address_street")] public string AddressStreet { get; set; }
+        [JsonProperty("address_street")]
+        public string AddressStreet { get; set; }
 
         [JsonProperty("allowed_commenter_type")]
         public string AllowedCommenterType { get; set; }
 
-        [JsonProperty("biography")] public string Biography { get; set; }
+        [JsonProperty("biography")]
+        public string Biography { get; set; }
 
         [JsonProperty("biography_with_entities")]
         public InstaBiographyEntities BiographyWithEntities { get; set; }
@@ -17,9 +20,11 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Business
         [JsonProperty("business_contact_method")]
         public string BusinessContactMethod { get; set; }
 
-        [JsonProperty("can_boost_post")] public bool? CanBoostPost { get; set; }
+        [JsonProperty("can_boost_post")]
+        public bool? CanBoostPost { get; set; }
 
-        [JsonProperty("can_claim_page")] public bool? CanClaimPage { get; set; }
+        [JsonProperty("can_claim_page")]
+        public bool? CanClaimPage { get; set; }
 
         [JsonProperty("can_convert_to_business")]
         public bool? CanConvertToBusiness { get; set; }
@@ -33,17 +38,23 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Business
         [JsonProperty("can_see_organic_insights")]
         public bool? CanSeeOrganicInsights { get; set; }
 
-        [JsonProperty("category")] public string Category { get; set; }
+        [JsonProperty("category")]
+        public string Category { get; set; }
 
-        [JsonProperty("city_id")] public long? CityId { get; set; }
+        [JsonProperty("city_id")]
+        public long? CityId { get; set; }
 
-        [JsonProperty("city_name")] public string CityName { get; set; }
+        [JsonProperty("city_name")]
+        public string CityName { get; set; }
 
-        [JsonProperty("contact_phone_number")] public string ContactPhoneNumber { get; set; }
+        [JsonProperty("contact_phone_number")]
+        public string ContactPhoneNumber { get; set; }
 
-        [JsonProperty("direct_messaging")] public string DirectMessaging { get; set; }
+        [JsonProperty("direct_messaging")]
+        public string DirectMessaging { get; set; }
 
-        [JsonProperty("external_url")] public string ExternalUrl { get; set; }
+        [JsonProperty("external_url")]
+        public string ExternalUrl { get; set; }
 
         [JsonProperty("fb_page_call_to_action_id")]
         public string FbPageCallToActionId { get; set; }
@@ -60,52 +71,68 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Business
         [JsonProperty("fb_page_call_to_action_ix_url")]
         public string FbPageCallToActionIxUrl { get; set; }
 
-        [JsonProperty("full_name")] public string FullName { get; set; }
+        [JsonProperty("full_name")]
+        public string FullName { get; set; }
 
         [JsonProperty("has_anonymous_profile_picture")]
         public bool? HasAnonymousProfilePicture { get; set; }
 
-        [JsonProperty("has_placed_orders")] public bool? HasPlacedOrders { get; set; }
+        [JsonProperty("has_placed_orders")]
+        public bool? HasPlacedOrders { get; set; }
 
         [JsonProperty("instagram_location_id")]
         public string InstagramLocationId { get; set; }
 
-        [JsonProperty("is_business")] public bool? IsBusiness { get; set; }
+        [JsonProperty("is_business")]
+        public bool? IsBusiness { get; set; }
 
         [JsonProperty("is_call_to_action_enabled")]
         public bool? IsCallToActionEnabled { get; set; }
 
-        [JsonProperty("is_private")] public bool? IsPrivate { get; set; }
+        [JsonProperty("is_private")]
+        public bool? IsPrivate { get; set; }
 
-        [JsonProperty("is_verified")] public bool? IsVerified { get; set; }
+        [JsonProperty("is_verified")]
+        public bool? IsVerified { get; set; }
 
-        [JsonProperty("latitude")] public float? Latitude { get; set; }
+        [JsonProperty("latitude")]
+        public float? Latitude { get; set; }
 
-        [JsonProperty("longitude")] public float? Longitude { get; set; }
+        [JsonProperty("longitude")]
+        public float? Longitude { get; set; }
 
-        [JsonProperty("page_id")] public long? PageId { get; set; }
+        [JsonProperty("page_id")]
+        public long? PageId { get; set; }
 
-        [JsonProperty("page_name")] public string PageName { get; set; }
+        [JsonProperty("page_name")]
+        public string PageName { get; set; }
 
-        [JsonProperty("pk")] public long? Pk { get; set; }
+        [JsonProperty("pk")]
+        public long? Pk { get; set; }
 
-        [JsonProperty("profile_pic_id")] public string ProfilePicId { get; set; }
+        [JsonProperty("profile_pic_id")]
+        public string ProfilePicId { get; set; }
 
-        [JsonProperty("profile_visits_count")] public int? ProfileVisitsCount { get; set; }
+        [JsonProperty("profile_visits_count")]
+        public int? ProfileVisitsCount { get; set; }
 
         [JsonProperty("profile_visits_num_days")]
         public int? ProfileVisitsNumDays { get; set; }
 
-        [JsonProperty("profile_pic_url")] public string ProfilPicUrl { get; set; }
+        [JsonProperty("profile_pic_url")]
+        public string ProfilPicUrl { get; set; }
 
-        [JsonProperty("public_email")] public string PublicEmail { get; set; }
+        [JsonProperty("public_email")]
+        public string PublicEmail { get; set; }
 
         [JsonProperty("public_phone_country_code")]
         public string PublicPhoneCountryCode { get; set; }
 
-        [JsonProperty("public_phone_number")] public string PublicPhoneNumber { get; set; }
+        [JsonProperty("public_phone_number")]
+        public string PublicPhoneNumber { get; set; }
 
-        [JsonProperty("reel_auto_archive")] public string ReelAutoArchive { get; set; }
+        [JsonProperty("reel_auto_archive")]
+        public string ReelAutoArchive { get; set; }
 
         [JsonProperty("show_business_conversion_icon")]
         public bool? ShowBusinessConversionIcon { get; set; }
@@ -113,10 +140,13 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Business
         [JsonProperty("show_conversion_edit_entry")]
         public bool? ShowConversionEditEntry { get; set; }
 
-        [JsonProperty("show_insights_terms")] public bool? ShowInsightsTerms { get; set; }
+        [JsonProperty("show_insights_terms")]
+        public bool? ShowInsightsTerms { get; set; }
 
-        [JsonProperty("username")] public string Username { get; set; }
+        [JsonProperty("username")]
+        public string Username { get; set; }
 
-        [JsonProperty("zip")] public string ZipCode { get; set; }
+        [JsonProperty("zip")]
+        public string ZipCode { get; set; }
     }
 }

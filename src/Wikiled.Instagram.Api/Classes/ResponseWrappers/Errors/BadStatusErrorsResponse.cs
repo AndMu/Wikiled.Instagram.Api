@@ -1,9 +1,11 @@
 ﻿using Newtonsoft.Json;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.BaseResponse;
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Errors
 {
-    public class BadStatusErrorsResponse : BaseStatusResponse
+    public class InstaBadStatusErrorsResponse : InstaBaseStatusResponse
     {
-        [JsonProperty("message")] public MessageErrorsResponse Message { get; set; }
+        [JsonProperty("message")]
+        public InstaMessageErrorsResponse Message { get; set; }
     }
 }

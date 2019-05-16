@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Hashtags;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Hashtags;
 
 namespace Wikiled.Instagram.Api.Converters.Hashtags
 {
@@ -14,12 +16,12 @@ namespace Wikiled.Instagram.Api.Converters.Hashtags
             }
 
             var hashtag = new InstaHashtag
-                          {
-                              Id = SourceObject.Id,
-                              Name = SourceObject.Name,
-                              MediaCount = SourceObject.MediaCount,
-                              ProfilePicUrl = SourceObject.ProfilePicUrl
-                          };
+            {
+                Id = SourceObject.Id,
+                Name = SourceObject.Name,
+                MediaCount = SourceObject.MediaCount,
+                ProfilePicUrl = SourceObject.ProfilePicUrl
+            };
             return hashtag;
         }
     }

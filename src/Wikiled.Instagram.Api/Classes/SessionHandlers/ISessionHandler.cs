@@ -1,11 +1,13 @@
-﻿#if WINDOWS_UWP
+﻿using Wikiled.Instagram.Api.Logic;
+
+#if WINDOWS_UWP
 using Windows.Storage;
 #endif
 namespace Wikiled.Instagram.Api.Classes.SessionHandlers
 {
     public interface ISessionHandler
     {
-        IInstaApi InstaApi { get; set; }
+        IInstaApi Api { get; set; }
 #if WINDOWS_UWP
         /// <summary>
         ///     File => Optional

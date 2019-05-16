@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Wikiled.Instagram.Api.Classes.Models.Comment;
+using Wikiled.Instagram.Api.Classes.Models.Location;
+using Wikiled.Instagram.Api.Classes.Models.Shopping;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Enums;
 
 namespace Wikiled.Instagram.Api.Classes.Models.Media
 {
     public class InstaMedia : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        private string cmcount;
 
-        private string _cmcount;
+        private bool hasviewersaved;
 
-        private bool _hasviewersaved;
+        private int likecount;
 
-        private int _likecount;
-
-        private bool _play;
+        private bool play;
 
         public bool CanViewerReshare { get; set; }
 
@@ -36,10 +39,10 @@ namespace Wikiled.Instagram.Api.Classes.Models.Media
 
         public string CommentsCount
         {
-            get => _cmcount;
+            get => cmcount;
             set
             {
-                _cmcount = value;
+                cmcount = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CommentsCount"));
             }
         }
@@ -56,10 +59,10 @@ namespace Wikiled.Instagram.Api.Classes.Models.Media
 
         public bool HasLiked
         {
-            get => _hasliked;
+            get => Hasliked;
             set
             {
-                _hasliked = value;
+                Hasliked = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("HasLiked"));
             }
         }
@@ -68,10 +71,10 @@ namespace Wikiled.Instagram.Api.Classes.Models.Media
 
         public bool HasViewerSaved
         {
-            get => _hasviewersaved;
+            get => hasviewersaved;
             set
             {
-                _hasviewersaved = value;
+                hasviewersaved = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("HasViewerSaved"));
             }
         }
@@ -80,7 +83,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Media
 
         public List<InstaImage> Images { get; set; } = new List<InstaImage>();
 
-        public string InstaIdentifier { get; set; }
+        public string Identifier { get; set; }
 
         public bool IsCommentsDisabled { get; set; }
 
@@ -90,10 +93,10 @@ namespace Wikiled.Instagram.Api.Classes.Models.Media
 
         public int LikesCount
         {
-            get => _likecount;
+            get => likecount;
             set
             {
-                _likecount = value;
+                likecount = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LikesCount"));
             }
         }
@@ -119,10 +122,10 @@ namespace Wikiled.Instagram.Api.Classes.Models.Media
         /// </summary>
         public bool Play
         {
-            get => _play;
+            get => play;
             set
             {
-                _play = value;
+                play = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Play"));
             }
         }
@@ -153,6 +156,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Media
 
         public int Width { get; set; }
 
-        private bool _hasliked { get; set; }
+        private bool Hasliked { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

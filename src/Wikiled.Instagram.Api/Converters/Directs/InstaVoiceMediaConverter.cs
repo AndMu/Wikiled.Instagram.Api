@@ -1,4 +1,7 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Direct;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Direct;
+using Wikiled.Instagram.Api.Enums;
 
 namespace Wikiled.Instagram.Api.Converters.Directs
 {
@@ -14,10 +17,9 @@ namespace Wikiled.Instagram.Api.Converters.Directs
             }
 
             var voiceMedia = new InstaVoiceMedia
-                             {
-                                 ReplayExpiringAtUs = SourceObject.ReplayExpiringAtUs,
-                                 SeenCount = SourceObject.SeenCount ?? 0
-                             };
+            {
+                ReplayExpiringAtUs = SourceObject.ReplayExpiringAtUs, SeenCount = SourceObject.SeenCount ?? 0
+            };
 
             if (!string.IsNullOrEmpty(SourceObject.ViewMode))
             {
@@ -40,7 +42,7 @@ namespace Wikiled.Instagram.Api.Converters.Directs
 
             if (SourceObject.Media != null)
             {
-                voiceMedia.Media = ConvertersFabric.Instance.GetVoiceConverter(SourceObject.Media).Convert();
+                voiceMedia.Media = InstaConvertersFabric.Instance.GetVoiceConverter(SourceObject.Media).Convert();
             }
 
             return voiceMedia;

@@ -1,4 +1,5 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.User;
 
 namespace Wikiled.Instagram.Api.Classes
 {
@@ -29,7 +30,7 @@ namespace Wikiled.Instagram.Api.Classes
 
         public static UserSessionData ForUsername(string username)
         {
-            return new UserSessionData {UserName = username};
+            return new UserSessionData { UserName = username };
         }
 
         public UserSessionData WithPassword(string password)

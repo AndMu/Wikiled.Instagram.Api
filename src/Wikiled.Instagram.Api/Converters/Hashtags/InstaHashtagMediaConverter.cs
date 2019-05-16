@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Hashtags;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Hashtags;
 
 namespace Wikiled.Instagram.Api.Converters.Hashtags
 {
@@ -14,13 +16,13 @@ namespace Wikiled.Instagram.Api.Converters.Hashtags
             }
 
             var media = new InstaSectionMedia
-                        {
-                            AutoLoadMoreEnabled = SourceObject.AutoLoadMoreEnabled ?? false,
-                            MoreAvailable = SourceObject.MoreAvailable,
-                            NextMaxId = SourceObject.NextMaxId,
-                            NextMediaIds = SourceObject.NextMediaIds,
-                            NextPage = SourceObject.NextPage ?? 0
-                        };
+            {
+                AutoLoadMoreEnabled = SourceObject.AutoLoadMoreEnabled ?? false,
+                MoreAvailable = SourceObject.MoreAvailable,
+                NextMaxId = SourceObject.NextMaxId,
+                NextMediaIds = SourceObject.NextMediaIds,
+                NextPage = SourceObject.NextPage ?? 0
+            };
             if (SourceObject.Sections != null)
             {
                 foreach (var section in SourceObject.Sections)
@@ -31,7 +33,8 @@ namespace Wikiled.Instagram.Api.Converters.Hashtags
                         {
                             try
                             {
-                                media.Medias.Add(ConvertersFabric.Instance.GetSingleMediaConverter(item.Media).Convert());
+                                media.Medias.Add(
+                                    InstaConvertersFabric.Instance.GetSingleMediaConverter(item.Media).Convert());
                             }
                             catch
                             {
@@ -56,7 +59,8 @@ namespace Wikiled.Instagram.Api.Converters.Hashtags
                             {
                                 try
                                 {
-                                    media.RelatedHashtags.Add(ConvertersFabric.Instance.GetRelatedHashtagConverter(related).Convert());
+                                    media.RelatedHashtags.Add(
+                                        InstaConvertersFabric.Instance.GetRelatedHashtagConverter(related).Convert());
                                 }
                                 catch
                                 {

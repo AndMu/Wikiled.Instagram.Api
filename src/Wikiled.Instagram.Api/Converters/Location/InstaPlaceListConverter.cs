@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.Location;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Location;
 
 namespace Wikiled.Instagram.Api.Converters.Location
 {
@@ -14,18 +17,18 @@ namespace Wikiled.Instagram.Api.Converters.Location
             }
 
             var list = new InstaPlaceList
-                       {
-                           HasMore = SourceObject.HasMore ?? false,
-                           RankToken = SourceObject.RankToken,
-                           Status = SourceObject.Status
-                       };
+            {
+                HasMore = SourceObject.HasMore ?? false,
+                RankToken = SourceObject.RankToken,
+                Status = SourceObject.Status
+            };
             if (SourceObject.Items != null && SourceObject.Items.Any())
             {
                 foreach (var place in SourceObject.Items)
                 {
                     try
                     {
-                        list.Items.Add(ConvertersFabric.Instance.GetPlaceConverter(place).Convert());
+                        list.Items.Add(InstaConvertersFabric.Instance.GetPlaceConverter(place).Convert());
                     }
                     catch
                     {

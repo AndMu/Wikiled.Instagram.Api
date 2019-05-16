@@ -19,6 +19,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Login
         [JsonProperty("two_factor_identifier")]
         public string TwoFactorIdentifier { get; set; }
 
-        [JsonProperty("username")] public string Username { get; set; }
+        [JsonProperty("username")]
+        public string Username { get; set; }
     }
 }

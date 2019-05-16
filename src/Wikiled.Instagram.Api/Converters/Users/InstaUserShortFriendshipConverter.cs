@@ -1,8 +1,11 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
 
 namespace Wikiled.Instagram.Api.Converters.Users
 {
-    internal class InstaUserShortFriendshipConverter : IObjectConverter<InstaUserShortFriendship, InstaUserShortFriendshipResponse>
+    internal class
+        InstaUserShortFriendshipConverter : IObjectConverter<InstaUserShortFriendship, InstaUserShortFriendshipResponse>
     {
         public InstaUserShortFriendshipResponse SourceObject { get; set; }
 
@@ -14,28 +17,28 @@ namespace Wikiled.Instagram.Api.Converters.Users
             }
 
             var user = new InstaUserShortFriendship
-                       {
-                           Pk = SourceObject.Pk,
-                           UserName = SourceObject.UserName,
-                           FullName = SourceObject.FullName,
-                           IsPrivate = SourceObject.IsPrivate,
-                           ProfilePicture = SourceObject.ProfilePicture,
-                           ProfilePictureId = SourceObject.ProfilePictureId,
-                           IsVerified = SourceObject.IsVerified,
-                           ProfilePicUrl = SourceObject.ProfilePicture
-                       };
+            {
+                Pk = SourceObject.Pk,
+                UserName = SourceObject.UserName,
+                FullName = SourceObject.FullName,
+                IsPrivate = SourceObject.IsPrivate,
+                ProfilePicture = SourceObject.ProfilePicture,
+                ProfilePictureId = SourceObject.ProfilePictureId,
+                IsVerified = SourceObject.IsVerified,
+                ProfilePicUrl = SourceObject.ProfilePicture
+            };
             if (SourceObject.FriendshipStatus != null)
             {
                 var item = SourceObject.FriendshipStatus;
                 var friend = new InstaFriendshipShortStatus
-                             {
-                                 Following = item.Following,
-                                 IncomingRequest = item.IncomingRequest,
-                                 IsBestie = item.IsBestie,
-                                 IsPrivate = item.IsPrivate,
-                                 OutgoingRequest = item.OutgoingRequest,
-                                 Pk = 0
-                             };
+                {
+                    Following = item.Following,
+                    IncomingRequest = item.IncomingRequest,
+                    IsBestie = item.IsBestie,
+                    IsPrivate = item.IsPrivate,
+                    OutgoingRequest = item.OutgoingRequest,
+                    Pk = 0
+                };
                 user.FriendshipStatus = friend;
             }
 

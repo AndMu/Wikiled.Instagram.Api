@@ -1,24 +1,29 @@
-﻿namespace Wikiled.Instagram.Api.Converters.Stories
+﻿using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
+
+namespace Wikiled.Instagram.Api.Converters.Stories
 {
-    internal class InstaStoryFriendshipStatusConverter : IObjectConverter<InstaStoryFriendshipStatus, InstaStoryFriendshipStatusResponse>
+    internal class
+        InstaStoryFriendshipStatusConverter : IObjectConverter<InstaStoryFriendshipStatus,
+            InstaStoryFriendshipStatusResponse>
     {
         public InstaStoryFriendshipStatusResponse SourceObject { get; set; }
 
         public InstaStoryFriendshipStatus Convert()
         {
             var storyFriendshipStatus = new InstaStoryFriendshipStatus
-                                        {
-                                            Following = SourceObject.Following,
-                                            Blocking = SourceObject.Blocking ?? false,
-                                            FollowedBy = SourceObject.FollowedBy,
-                                            OutgoingRequest = SourceObject.OutgoingRequest ?? false,
-                                            IsBestie = SourceObject.IsBestie ?? false,
-                                            Muting = SourceObject.Muting ?? false,
-                                            IncomingRequest = SourceObject.IncomingRequest ?? false,
-                                            IsBlockingReel = SourceObject.IsBlockingReel ?? false,
-                                            IsMutingReel = SourceObject.IsMutingReel ?? false,
-                                            IsPrivate = SourceObject.IsPrivate
-                                        };
+            {
+                Following = SourceObject.Following,
+                Blocking = SourceObject.Blocking ?? false,
+                FollowedBy = SourceObject.FollowedBy,
+                OutgoingRequest = SourceObject.OutgoingRequest ?? false,
+                IsBestie = SourceObject.IsBestie ?? false,
+                Muting = SourceObject.Muting ?? false,
+                IncomingRequest = SourceObject.IncomingRequest ?? false,
+                IsBlockingReel = SourceObject.IsBlockingReel ?? false,
+                IsMutingReel = SourceObject.IsMutingReel ?? false,
+                IsPrivate = SourceObject.IsPrivate
+            };
             return storyFriendshipStatus;
         }
     }

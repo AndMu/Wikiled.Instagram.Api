@@ -5,7 +5,7 @@ using Wikiled.Instagram.Api.Classes.Models.Media;
 using Wikiled.Instagram.Api.Classes.Models.Other;
 using Wikiled.Instagram.Api.Classes.Models.User;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Comments api functions.
@@ -77,7 +77,9 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <param name="targetCommentId">Target comment id</param>
         /// <param name="paginationParameters">Maximum amount of pages to load and start id</param>
         Task<IResult<InstaInlineCommentList>>
-            GetMediaRepliesCommentsAsync(string mediaId, string targetCommentId, PaginationParameters paginationParameters);
+            GetMediaRepliesCommentsAsync(string mediaId,
+                                         string targetCommentId,
+                                         PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Like media comment

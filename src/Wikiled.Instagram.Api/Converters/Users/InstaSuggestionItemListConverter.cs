@@ -1,8 +1,11 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
 
 namespace Wikiled.Instagram.Api.Converters.Users
 {
-    internal class InstaSuggestionItemListConverter : IObjectConverter<InstaSuggestionItemList, InstaSuggestionItemListResponse>
+    internal class
+        InstaSuggestionItemListConverter : IObjectConverter<InstaSuggestionItemList, InstaSuggestionItemListResponse>
     {
         public InstaSuggestionItemListResponse SourceObject { get; set; }
 
@@ -21,7 +24,7 @@ namespace Wikiled.Instagram.Api.Converters.Users
                 {
                     try
                     {
-                        var convertedItem = ConvertersFabric.Instance.GetSuggestionItemConverter(item).Convert();
+                        var convertedItem = InstaConvertersFabric.Instance.GetSuggestionItemConverter(item).Convert();
                         suggest.Add(convertedItem);
                     }
                     catch

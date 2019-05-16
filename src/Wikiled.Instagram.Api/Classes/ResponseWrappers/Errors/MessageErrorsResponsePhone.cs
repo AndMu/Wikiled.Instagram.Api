@@ -3,8 +3,9 @@ using Newtonsoft.Json;
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Errors
 {
-    public class MessageErrorsResponsePhone
+    public class InstaMessageErrorsResponsePhone
     {
-        [JsonProperty("phone_number")] public List<string> Errors { get; set; }
+        [JsonProperty("phone_number")]
+        public List<string> Errors { get; set; }
     }
 }

@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Stories
 {
@@ -14,54 +19,54 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             }
 
             var instaStory = new InstaStoryItem
-                             {
-                                 CanViewerSave = SourceObject.CanViewerSave,
-                                 CaptionIsEdited = SourceObject.CaptionIsEdited,
-                                 CaptionPosition = SourceObject.CaptionPosition,
-                                 Code = SourceObject.Code,
-                                 CommentCount = SourceObject.CommentCount,
-                                 ExpiringAt = DateTimeHelper.UnixTimestampToDateTime(SourceObject.ExpiringAt),
-                                 FilterType = SourceObject.FilterType,
-                                 HasAudio = SourceObject.HasAudio ?? false,
-                                 HasLiked = SourceObject.HasLiked,
-                                 HasMoreComments = SourceObject.HasMoreComments,
-                                 Id = SourceObject.Id,
-                                 IsReelMedia = SourceObject.IsReelMedia,
-                                 LikeCount = SourceObject.LikeCount,
-                                 MaxNumVisiblePreviewComments = SourceObject.MaxNumVisiblePreviewComments,
-                                 MediaType = SourceObject.MediaType,
-                                 OriginalHeight = SourceObject.OriginalHeight,
-                                 OriginalWidth = SourceObject.OriginalWidth,
-                                 PhotoOfYou = SourceObject.PhotoOfYou,
-                                 Pk = SourceObject.Pk,
-                                 TakenAt = DateTimeHelper.UnixTimestampToDateTime(SourceObject.TakenAt),
-                                 ImportedTakenAt = DateTimeHelper.UnixTimestampToDateTime(SourceObject.ImportedTakenAt ?? 0),
-                                 VideoDuration = SourceObject.VideoDuration ?? 0,
-                                 AdAction = SourceObject.AdAction,
-                                 SupportsReelReactions = SourceObject.SupportsReelReactions,
-                                 ShowOneTapTooltip = SourceObject.ShowOneTapTooltip,
-                                 LinkText = SourceObject.LinkText,
-                                 CanReshare = SourceObject.CanReshare,
-                                 CommentLikesEnabled = SourceObject.CommentLikesEnabled,
-                                 CommentThreadingEnabled = SourceObject.CommentThreadingEnabled,
-                                 NumberOfQualities = SourceObject.NumberOfQualities ?? 0,
-                                 TimezoneOffset = SourceObject.TimezoneOffset ?? 0,
-                                 VideoDashManifest = SourceObject.VideoDashManifest,
-                                 StoryIsSavedToArchive = SourceObject.StoryIsSavedToArchive ?? false,
-                                 ViewerCount = SourceObject.ViewerCount ?? 0,
-                                 TotalViewerCount = SourceObject.TotalViewerCount ?? 0,
-                                 ViewerCursor = SourceObject.ViewerCursor,
-                                 HasSharedToFb = SourceObject.HasSharedToFb ?? 0
-                             };
+            {
+                CanViewerSave = SourceObject.CanViewerSave,
+                CaptionIsEdited = SourceObject.CaptionIsEdited,
+                CaptionPosition = SourceObject.CaptionPosition,
+                Code = SourceObject.Code,
+                CommentCount = SourceObject.CommentCount,
+                ExpiringAt = InstaDateTimeHelper.UnixTimestampToDateTime(SourceObject.ExpiringAt),
+                FilterType = SourceObject.FilterType,
+                HasAudio = SourceObject.HasAudio ?? false,
+                HasLiked = SourceObject.HasLiked,
+                HasMoreComments = SourceObject.HasMoreComments,
+                Id = SourceObject.Id,
+                IsReelMedia = SourceObject.IsReelMedia,
+                LikeCount = SourceObject.LikeCount,
+                MaxNumVisiblePreviewComments = SourceObject.MaxNumVisiblePreviewComments,
+                MediaType = SourceObject.MediaType,
+                OriginalHeight = SourceObject.OriginalHeight,
+                OriginalWidth = SourceObject.OriginalWidth,
+                PhotoOfYou = SourceObject.PhotoOfYou,
+                Pk = SourceObject.Pk,
+                TakenAt = InstaDateTimeHelper.UnixTimestampToDateTime(SourceObject.TakenAt),
+                ImportedTakenAt = InstaDateTimeHelper.UnixTimestampToDateTime(SourceObject.ImportedTakenAt ?? 0),
+                VideoDuration = SourceObject.VideoDuration ?? 0,
+                AdAction = SourceObject.AdAction,
+                SupportsReelReactions = SourceObject.SupportsReelReactions,
+                ShowOneTapTooltip = SourceObject.ShowOneTapTooltip,
+                LinkText = SourceObject.LinkText,
+                CanReshare = SourceObject.CanReshare,
+                CommentLikesEnabled = SourceObject.CommentLikesEnabled,
+                CommentThreadingEnabled = SourceObject.CommentThreadingEnabled,
+                NumberOfQualities = SourceObject.NumberOfQualities ?? 0,
+                TimezoneOffset = SourceObject.TimezoneOffset ?? 0,
+                VideoDashManifest = SourceObject.VideoDashManifest,
+                StoryIsSavedToArchive = SourceObject.StoryIsSavedToArchive ?? false,
+                ViewerCount = SourceObject.ViewerCount ?? 0,
+                TotalViewerCount = SourceObject.TotalViewerCount ?? 0,
+                ViewerCursor = SourceObject.ViewerCursor,
+                HasSharedToFb = SourceObject.HasSharedToFb ?? 0
+            };
 
             if (SourceObject.User != null)
             {
-                instaStory.User = ConvertersFabric.Instance.GetUserShortConverter(SourceObject.User).Convert();
+                instaStory.User = InstaConvertersFabric.Instance.GetUserShortConverter(SourceObject.User).Convert();
             }
 
             if (SourceObject.Caption != null)
             {
-                instaStory.Caption = ConvertersFabric.Instance.GetCaptionConverter(SourceObject.Caption).Convert();
+                instaStory.Caption = InstaConvertersFabric.Instance.GetCaptionConverter(SourceObject.Caption).Convert();
             }
 
             if (SourceObject.Images?.Candidates != null)
@@ -93,7 +98,7 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             {
                 foreach (var mention in SourceObject.ReelMentions)
                 {
-                    instaStory.ReelMentions.Add(ConvertersFabric.Instance.GetMentionConverter(mention).Convert());
+                    instaStory.ReelMentions.Add(InstaConvertersFabric.Instance.GetMentionConverter(mention).Convert());
                 }
             }
 
@@ -101,7 +106,7 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             {
                 foreach (var hashtag in SourceObject.StoryHashtags)
                 {
-                    instaStory.StoryHashtags.Add(ConvertersFabric.Instance.GetMentionConverter(hashtag).Convert());
+                    instaStory.StoryHashtags.Add(InstaConvertersFabric.Instance.GetMentionConverter(hashtag).Convert());
                 }
             }
 
@@ -109,7 +114,8 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             {
                 foreach (var location in SourceObject.StoryLocations)
                 {
-                    instaStory.StoryLocations.Add(ConvertersFabric.Instance.GetStoryLocationConverter(location).Convert());
+                    instaStory.StoryLocations.Add(InstaConvertersFabric.Instance.GetStoryLocationConverter(location)
+                                                      .Convert());
                 }
             }
 
@@ -117,19 +123,20 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             {
                 foreach (var storyFeed in SourceObject.StoryFeedMedia)
                 {
-                    instaStory.StoryFeedMedia.Add(ConvertersFabric.Instance.GetStoryFeedMediaConverter(storyFeed).Convert());
+                    instaStory.StoryFeedMedia.Add(InstaConvertersFabric.Instance.GetStoryFeedMediaConverter(storyFeed)
+                                                      .Convert());
                 }
             }
 
-            if (SourceObject.StoryCTA != null && SourceObject.StoryCTA.Any())
+            if (SourceObject.StoryCta != null && SourceObject.StoryCta.Any())
             {
-                foreach (var cta in SourceObject.StoryCTA)
+                foreach (var cta in SourceObject.StoryCta)
                 {
                     if (cta.Links != null && cta.Links.Any())
                     {
                         foreach (var link in cta.Links)
                         {
-                            instaStory.StoryCTA.Add(ConvertersFabric.Instance.GetStoryCtaConverter(link).Convert());
+                            instaStory.StoryCta.Add(InstaConvertersFabric.Instance.GetStoryCtaConverter(link).Convert());
                         }
                     }
                 }
@@ -139,7 +146,7 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             {
                 foreach (var poll in SourceObject.StoryPolls)
                 {
-                    instaStory.StoryPolls.Add(ConvertersFabric.Instance.GetStoryPollItemConverter(poll).Convert());
+                    instaStory.StoryPolls.Add(InstaConvertersFabric.Instance.GetStoryPollItemConverter(poll).Convert());
                 }
             }
 
@@ -147,15 +154,17 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             {
                 foreach (var slider in SourceObject.StorySliders)
                 {
-                    instaStory.StorySliders.Add(ConvertersFabric.Instance.GetStorySliderItemConverter(slider).Convert());
+                    instaStory.StorySliders.Add(InstaConvertersFabric.Instance.GetStorySliderItemConverter(slider)
+                                                    .Convert());
                 }
             }
 
             if (SourceObject.StoryQuestions?.Count > 0)
             {
-                foreach (var Question in SourceObject.StoryQuestions)
+                foreach (var question in SourceObject.StoryQuestions)
                 {
-                    instaStory.StoryQuestions.Add(ConvertersFabric.Instance.GetStoryQuestionItemConverter(Question).Convert());
+                    instaStory.StoryQuestions.Add(InstaConvertersFabric.Instance.GetStoryQuestionItemConverter(question)
+                                                      .Convert());
                 }
             }
 
@@ -163,7 +172,8 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             {
                 foreach (var voter in SourceObject.StoryPollVoters)
                 {
-                    instaStory.StoryPollVoters.Add(ConvertersFabric.Instance.GetStoryPollVoterInfoItemConverter(voter).Convert());
+                    instaStory.StoryPollVoters.Add(InstaConvertersFabric.Instance.GetStoryPollVoterInfoItemConverter(voter)
+                                                       .Convert());
                 }
             }
 
@@ -171,7 +181,7 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             {
                 foreach (var viewer in SourceObject.Viewers)
                 {
-                    instaStory.Viewers.Add(ConvertersFabric.Instance.GetUserShortConverter(viewer).Convert());
+                    instaStory.Viewers.Add(InstaConvertersFabric.Instance.GetUserShortConverter(viewer).Convert());
                 }
             }
 
@@ -179,7 +189,7 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             {
                 foreach (var liker in SourceObject.Likers)
                 {
-                    instaStory.Likers.Add(ConvertersFabric.Instance.GetUserShortConverter(liker).Convert());
+                    instaStory.Likers.Add(InstaConvertersFabric.Instance.GetUserShortConverter(liker).Convert());
                 }
             }
 
@@ -187,7 +197,7 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             {
                 foreach (var comment in SourceObject.PreviewComments)
                 {
-                    instaStory.PreviewComments.Add(ConvertersFabric.Instance.GetCommentConverter(comment).Convert());
+                    instaStory.PreviewComments.Add(InstaConvertersFabric.Instance.GetCommentConverter(comment).Convert());
                 }
             }
 
@@ -195,7 +205,9 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             {
                 foreach (var voter in SourceObject.StorySliderVoters)
                 {
-                    instaStory.StorySliderVoters.Add(ConvertersFabric.Instance.GetStorySliderVoterInfoItemConverter(voter).Convert());
+                    instaStory.StorySliderVoters.Add(InstaConvertersFabric.Instance
+                                                         .GetStorySliderVoterInfoItemConverter(voter)
+                                                         .Convert());
                 }
             }
 
@@ -203,7 +215,8 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             {
                 foreach (var responderInfo in SourceObject.StoryQuestionsResponderInfos)
                 {
-                    instaStory.StoryQuestionsResponderInfos.Add(ConvertersFabric.Instance.GetStoryQuestionInfoConverter(responderInfo).Convert());
+                    instaStory.StoryQuestionsResponderInfos.Add(
+                        InstaConvertersFabric.Instance.GetStoryQuestionInfoConverter(responderInfo).Convert());
                 }
             }
 
@@ -211,7 +224,8 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             {
                 foreach (var countdown in SourceObject.Countdowns)
                 {
-                    instaStory.Countdowns.Add(ConvertersFabric.Instance.GetStoryCountdownItemConverter(countdown).Convert());
+                    instaStory.Countdowns.Add(InstaConvertersFabric.Instance.GetStoryCountdownItemConverter(countdown)
+                                                  .Convert());
                 }
             }
 

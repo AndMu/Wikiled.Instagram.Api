@@ -4,12 +4,16 @@ namespace Wikiled.Instagram.Api.Classes.Models.Account
 {
     public class InstaAccountVerifySms
     {
-        [JsonProperty("errors")] public InstaAccountVerifySmsErrors Errors { get; set; }
+        [JsonProperty("errors")]
+        public InstaAccountVerifySmsErrors Errors { get; set; }
 
-        [JsonProperty("verified")] public bool Verified { get; set; }
+        [JsonProperty("verified")]
+        public bool Verified { get; set; }
 
-        [JsonProperty("error_type")] internal string ErrorType { get; set; }
+        [JsonProperty("error_type")]
+        internal string ErrorType { get; set; }
 
-        [JsonProperty("status")] internal string Status { get; set; }
+        [JsonProperty("status")]
+        internal string Status { get; set; }
     }
 }

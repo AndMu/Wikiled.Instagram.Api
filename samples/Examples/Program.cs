@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using InstagramApiSharp.API;
-using InstagramApiSharp.API.Builder;
-using InstagramApiSharp.Classes;
 using Examples.Samples;
-using InstagramApiSharp.Logger;
+using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Logger;
+using Wikiled.Instagram.Api.Logic;
+using Wikiled.Instagram.Api.Logic.Builder;
+
 /////////////////////////////////////////////////////////////////////
 ////////////////////// IMPORTANT NOTE ///////////////////////////////
 // Please check wiki pages for more information:
@@ -15,37 +16,37 @@ using InstagramApiSharp.Logger;
 /////////////////////////////////////////////////////////////////////
 namespace Examples
 {
-    class Program
+    internal class InstaProgram
     {
         /// <summary>
         ///     Api instance (one instance per Instagram user)
         /// </summary>
-        private static IInstaApi InstaApi;
+        private static IInstaApi api;
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var result = Task.Run(MainAsync).GetAwaiter().GetResult();
             if (result)
+            {
                 return;
+            }
+
             Console.ReadKey();
         }
+
         public static async Task<bool> MainAsync()
         {
             try
             {
                 Console.WriteLine("Starting demo of InstagramApiSharp project");
                 // create user session data and provide login details
-                var userSession = new UserSessionData
-                {
-                    UserName = "Username",
-                    Password = "Password"
-                };
+                var userSession = new UserSessionData { UserName = "Username", Password = "Password" };
                 // if you want to set custom device (user-agent) please check this:
                 // https://github.com/ramtinak/InstagramApiSharp/wiki/Set-custom-device(user-agent)
 
                 var delay = RequestDelay.FromSeconds(2, 2);
                 // create new InstaApi instance using Builder
-                InstaApi = InstaApiBuilder.CreateBuilder()
+                api = InstaApiBuilder.CreateBuilder()
                     .SetUser(userSession)
                     .UseLogger(new DebugLogger(LogLevel.All)) // use logger for requests and debug messages
                     .SetRequestDelay(delay)
@@ -61,7 +62,7 @@ namespace Examples
                         Console.WriteLine("Loading state from file");
                         using (var fs = File.OpenRead(stateFile))
                         {
-                            InstaApi.LoadStateDataFromStream(fs);
+                            api.LoadStateDataFromStream(fs);
                             // in .net core or uwp apps don't use LoadStateDataFromStream
                             // use this one:
                             // _instaApi.LoadStateDataFromString(new StreamReader(fs).ReadToEnd());
@@ -74,12 +75,12 @@ namespace Examples
                     Console.WriteLine(e);
                 }
 
-                if (!InstaApi.IsUserAuthenticated)
+                if (!api.IsUserAuthenticated)
                 {
                     // login
                     Console.WriteLine($"Logging in as {userSession.UserName}");
                     delay.Disable();
-                    var logInResult = await InstaApi.LoginAsync();
+                    var logInResult = await api.LoginAsync();
                     delay.Enable();
                     if (!logInResult.Succeeded)
                     {
@@ -87,7 +88,8 @@ namespace Examples
                         return false;
                     }
                 }
-                var state = InstaApi.GetStateDataAsStream();
+
+                var state = api.GetStateDataAsStream();
                 // in .net core or uwp apps don't use GetStateDataAsStream.
                 // use this one:
                 // var state = _instaApi.GetStateDataAsString();
@@ -110,20 +112,23 @@ namespace Examples
 
                 var samplesMap = new Dictionary<ConsoleKey, IDemoSample>
                 {
-                    [ConsoleKey.D1] = new Basics(InstaApi),
-                    [ConsoleKey.D2] = new UploadPhoto(InstaApi),
-                    [ConsoleKey.D3] = new CommentMedia(InstaApi),
-                    [ConsoleKey.D4] = new Stories(InstaApi),
-                    [ConsoleKey.D5] = new SaveLoadState(InstaApi),
-                    [ConsoleKey.D6] = new Messaging(InstaApi),
-                    [ConsoleKey.D7] = new LocationSample(InstaApi),
-                    [ConsoleKey.D8] = new CollectionSample(InstaApi),
-                    [ConsoleKey.D9] = new UploadVideo(InstaApi)
+                    [ConsoleKey.D1] = new InstaBasics(api),
+                    [ConsoleKey.D2] = new InstaUploadPhoto(api),
+                    [ConsoleKey.D3] = new InstaCommentMedia(api),
+                    [ConsoleKey.D4] = new InstaStories(api),
+                    [ConsoleKey.D5] = new InstaSaveLoadState(api),
+                    [ConsoleKey.D6] = new InstaMessaging(api),
+                    [ConsoleKey.D7] = new InstaLocationSample(api),
+                    [ConsoleKey.D8] = new InstaCollectionSample(api),
+                    [ConsoleKey.D9] = new InstaUploadVideo(api)
                 };
                 var key = Console.ReadKey();
                 Console.WriteLine(Environment.NewLine);
                 if (samplesMap.ContainsKey(key.Key))
+                {
                     await samplesMap[key.Key].DoShow();
+                }
+
                 Console.WriteLine("Done. Press esc key to exit...");
 
                 key = Console.ReadKey();
@@ -133,12 +138,7 @@ namespace Examples
             {
                 Console.WriteLine(ex);
             }
-            finally
-            {
-                // perform that if user needs to logged out
-                // var logoutResult = Task.Run(() => _instaApi.LogoutAsync()).GetAwaiter().GetResult();
-                // if (logoutResult.Succeeded) Console.WriteLine("Logout succeed");
-            }
+
             return false;
         }
     }

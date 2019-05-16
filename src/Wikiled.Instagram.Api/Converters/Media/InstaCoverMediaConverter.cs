@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
 
 namespace Wikiled.Instagram.Api.Converters.Media
 {
@@ -14,17 +17,18 @@ namespace Wikiled.Instagram.Api.Converters.Media
             {
                 instaImageList.AddRange(
                     SourceObject.ImageVersions.Candidates
-                                .Select(ConvertersFabric.Instance.GetImageConverter).Select(converter => converter.Convert()));
+                        .Select(InstaConvertersFabric.Instance.GetImageConverter)
+                        .Select(converter => converter.Convert()));
             }
 
             return new InstaCoverMedia
-                   {
-                       Id = SourceObject.Id,
-                       ImageVersions = instaImageList,
-                       MediaType = SourceObject.MediaType,
-                       OriginalHeight = SourceObject.OriginalHeight,
-                       OriginalWidth = SourceObject.OriginalWidth
-                   };
+            {
+                Id = SourceObject.Id,
+                ImageVersions = instaImageList,
+                MediaType = SourceObject.MediaType,
+                OriginalHeight = SourceObject.OriginalHeight,
+                OriginalWidth = SourceObject.OriginalWidth
+            };
         }
     }
 }

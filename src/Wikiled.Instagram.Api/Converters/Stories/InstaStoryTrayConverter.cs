@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
 
 namespace Wikiled.Instagram.Api.Converters.Stories
 {
@@ -14,17 +16,17 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             }
 
             var storyTray = new InstaStoryTray
-                            {
-                                Id = SourceObject.Id,
-                                IsPortrait = SourceObject.IsPortrait,
-                                TopLive = ConvertersFabric.Instance.GetTopLiveConverter(SourceObject.TopLive).Convert()
-                            };
+            {
+                Id = SourceObject.Id,
+                IsPortrait = SourceObject.IsPortrait,
+                TopLive = InstaConvertersFabric.Instance.GetTopLiveConverter(SourceObject.TopLive).Convert()
+            };
 
             if (SourceObject.Tray != null)
             {
                 foreach (var item in SourceObject.Tray)
                 {
-                    var story = ConvertersFabric.Instance.GetStoryConverter(item).Convert();
+                    var story = InstaConvertersFabric.Instance.GetStoryConverter(item).Convert();
                     storyTray.Tray.Add(story);
                 }
             }

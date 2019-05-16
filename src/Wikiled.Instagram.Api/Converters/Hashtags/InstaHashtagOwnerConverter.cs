@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Hashtags;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Hashtags;
 
 namespace Wikiled.Instagram.Api.Converters.Hashtags
 {
@@ -14,13 +16,13 @@ namespace Wikiled.Instagram.Api.Converters.Hashtags
             }
 
             var owner = new InstaHashtagOwner
-                        {
-                            Name = SourceObject.Name,
-                            Pk = SourceObject.Pk,
-                            ProfilePicUrl = SourceObject.ProfilePicUrl,
-                            ProfilePicUsername = SourceObject.ProfilePicUsername,
-                            Type = SourceObject.Type
-                        };
+            {
+                Name = SourceObject.Name,
+                Pk = SourceObject.Pk,
+                ProfilePicUrl = SourceObject.ProfilePicUrl,
+                ProfilePicUsername = SourceObject.ProfilePicUsername,
+                Type = SourceObject.Type
+            };
             return owner;
         }
     }

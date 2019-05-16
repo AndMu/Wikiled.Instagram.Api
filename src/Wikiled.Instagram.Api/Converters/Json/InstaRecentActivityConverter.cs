@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
 
 namespace Wikiled.Instagram.Api.Converters.Json
 {
@@ -29,13 +30,15 @@ namespace Wikiled.Instagram.Api.Converters.Json
             {
                 if (token.SelectToken("new_stories") != null)
                 {
-                    var newStories = token.SelectToken("new_stories")?.ToObject<List<InstaRecentActivityFeedResponse>>();
+                    var newStories = token.SelectToken("new_stories")
+                        ?.ToObject<List<InstaRecentActivityFeedResponse>>();
                     recentActivity.Stories.AddRange(newStories ?? throw new InvalidOperationException());
                 }
 
                 if (token.SelectToken("old_stories") != null)
                 {
-                    var oldStories = token.SelectToken("old_stories")?.ToObject<List<InstaRecentActivityFeedResponse>>();
+                    var oldStories = token.SelectToken("old_stories")
+                        ?.ToObject<List<InstaRecentActivityFeedResponse>>();
                     recentActivity.Stories.AddRange(oldStories ?? throw new InvalidOperationException());
                 }
 

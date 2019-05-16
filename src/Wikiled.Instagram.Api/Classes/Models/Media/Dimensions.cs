@@ -1,6 +1,6 @@
 ﻿namespace Wikiled.Instagram.Api.Classes.Models.Media
 {
-    public class Dimensions
+    public class InstaDimensions
     {
         public int Height { get; set; }
 

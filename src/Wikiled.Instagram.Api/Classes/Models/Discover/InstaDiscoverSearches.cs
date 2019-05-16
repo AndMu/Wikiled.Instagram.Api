@@ -1,4 +1,5 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.User;
 
 namespace Wikiled.Instagram.Api.Classes.Models.Discover
 {

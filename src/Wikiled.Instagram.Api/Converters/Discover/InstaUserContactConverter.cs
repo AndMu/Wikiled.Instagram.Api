@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Discover;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
 
 namespace Wikiled.Instagram.Api.Converters.Discover
 {
@@ -14,17 +16,17 @@ namespace Wikiled.Instagram.Api.Converters.Discover
             }
 
             var user = new InstaUserContact
-                       {
-                           Pk = SourceObject.Pk,
-                           UserName = SourceObject.UserName,
-                           FullName = SourceObject.FullName,
-                           IsPrivate = SourceObject.IsPrivate,
-                           ProfilePicture = SourceObject.ProfilePicture,
-                           ProfilePictureId = SourceObject.ProfilePictureId,
-                           IsVerified = SourceObject.IsVerified,
-                           ExtraDisplayName = SourceObject.ExtraDisplayName,
-                           ProfilePicUrl = SourceObject.ProfilePicture
-                       };
+            {
+                Pk = SourceObject.Pk,
+                UserName = SourceObject.UserName,
+                FullName = SourceObject.FullName,
+                IsPrivate = SourceObject.IsPrivate,
+                ProfilePicture = SourceObject.ProfilePicture,
+                ProfilePictureId = SourceObject.ProfilePictureId,
+                IsVerified = SourceObject.IsVerified,
+                ExtraDisplayName = SourceObject.ExtraDisplayName,
+                ProfilePicUrl = SourceObject.ProfilePicture
+            };
             return user;
         }
     }

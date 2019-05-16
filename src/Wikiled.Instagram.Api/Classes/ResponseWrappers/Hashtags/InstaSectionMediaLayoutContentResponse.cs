@@ -6,6 +6,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Hashtags
 {
     public class InstaSectionMediaLayoutContentResponse
     {
-        [JsonProperty("medias")] public List<InstaMediaAlbumResponse> Medias { get; set; }
+        [JsonProperty("medias")]
+        public List<InstaMediaAlbumResponse> Medias { get; set; }
     }
 }

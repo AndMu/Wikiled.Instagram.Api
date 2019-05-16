@@ -1,4 +1,7 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
+using Wikiled.Instagram.Api.Enums;
 
 namespace Wikiled.Instagram.Api.Converters.Users
 {
@@ -14,23 +17,24 @@ namespace Wikiled.Instagram.Api.Converters.Users
             }
 
             var lookup = new InstaUserLookup
-                         {
-                             CanEmailReset = SourceObject.CanEmailReset,
-                             CanSmsReset = SourceObject.CanSmsReset,
-                             CanWaReset = SourceObject.CanWaReset,
-                             CorrectedInput = SourceObject.CorrectedInput,
-                             Email = SourceObject.Email,
-                             EmailSent = SourceObject.EmailSent,
-                             HasValidPhone = SourceObject.HasValidPhone,
-                             MultipleUsersFound = SourceObject.MultipleUsersFound,
-                             PhoneNumber = SourceObject.PhoneNumber,
-                             SmsSent = SourceObject.SmsSent
-                         };
+            {
+                CanEmailReset = SourceObject.CanEmailReset,
+                CanSmsReset = SourceObject.CanSmsReset,
+                CanWaReset = SourceObject.CanWaReset,
+                CorrectedInput = SourceObject.CorrectedInput,
+                Email = SourceObject.Email,
+                EmailSent = SourceObject.EmailSent,
+                HasValidPhone = SourceObject.HasValidPhone,
+                MultipleUsersFound = SourceObject.MultipleUsersFound,
+                PhoneNumber = SourceObject.PhoneNumber,
+                SmsSent = SourceObject.SmsSent
+            };
             try
             {
                 if (!string.IsNullOrEmpty(SourceObject.LookupSource))
                 {
-                    lookup.LookupSourceType = (InstaLookupType)Enum.Parse(typeof(InstaLookupType), SourceObject.LookupSource, true);
+                    lookup.LookupSourceType =
+                        (InstaLookupType)Enum.Parse(typeof(InstaLookupType), SourceObject.LookupSource, true);
                 }
             }
             catch
@@ -41,7 +45,7 @@ namespace Wikiled.Instagram.Api.Converters.Users
             {
                 if (SourceObject.User != null)
                 {
-                    lookup.User = ConvertersFabric.Instance.GetUserShortConverter(SourceObject.User).Convert();
+                    lookup.User = InstaConvertersFabric.Instance.GetUserShortConverter(SourceObject.User).Convert();
                 }
             }
             catch

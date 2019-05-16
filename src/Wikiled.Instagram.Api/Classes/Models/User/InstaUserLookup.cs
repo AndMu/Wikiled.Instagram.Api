@@ -1,4 +1,6 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.User
+﻿using Wikiled.Instagram.Api.Enums;
+
+namespace Wikiled.Instagram.Api.Classes.Models.User
 {
     public class InstaUserLookup
     {

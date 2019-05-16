@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.Other;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Other;
 
 namespace Wikiled.Instagram.Api.Converters.Other
 {
-    internal class InstaTranslateContainerConverter : IObjectConverter<InstaTranslateList, InstaTranslateContainerResponse>
+    internal class
+        InstaTranslateContainerConverter : IObjectConverter<InstaTranslateList, InstaTranslateContainerResponse>
     {
         public InstaTranslateContainerResponse SourceObject { get; set; }
 
@@ -18,7 +22,7 @@ namespace Wikiled.Instagram.Api.Converters.Other
             {
                 foreach (var item in SourceObject.Translations)
                 {
-                    list.Add(ConvertersFabric.Instance.GetSingleTranslateConverter(item).Convert());
+                    list.Add(InstaConvertersFabric.Instance.GetSingleTranslateConverter(item).Convert());
                 }
             }
 

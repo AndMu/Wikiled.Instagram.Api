@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Location;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Location;
 
 namespace Wikiled.Instagram.Api.Converters.Location
 {
@@ -14,17 +16,17 @@ namespace Wikiled.Instagram.Api.Converters.Location
             }
 
             var place = new InstaPlaceShort
-                        {
-                            Address = SourceObject.Address,
-                            City = SourceObject.City,
-                            ExternalSource = SourceObject.ExternalSource,
-                            FacebookPlacesId = SourceObject.FacebookPlacesId,
-                            Lat = SourceObject.Lat,
-                            Lng = SourceObject.Lng,
-                            Name = SourceObject.Name,
-                            Pk = SourceObject.Pk,
-                            ShortName = SourceObject.ShortName
-                        };
+            {
+                Address = SourceObject.Address,
+                City = SourceObject.City,
+                ExternalSource = SourceObject.ExternalSource,
+                FacebookPlacesId = SourceObject.FacebookPlacesId,
+                Lat = SourceObject.Lat,
+                Lng = SourceObject.Lng,
+                Name = SourceObject.Name,
+                Pk = SourceObject.Pk,
+                ShortName = SourceObject.ShortName
+            };
             return place;
         }
     }

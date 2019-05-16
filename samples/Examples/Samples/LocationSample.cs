@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using InstagramApiSharp;
-using InstagramApiSharp.API;
-using InstagramApiSharp.Classes;
+using Wikiled.Instagram.Api.Logic;
+
 /////////////////////////////////////////////////////////////////////
 ////////////////////// IMPORTANT NOTE ///////////////////////////////
 // Please check wiki pages for more information:
@@ -12,32 +11,35 @@ using InstagramApiSharp.Classes;
 /////////////////////////////////////////////////////////////////////
 namespace Examples.Samples
 {
-    internal class LocationSample : IDemoSample
+    internal class InstaLocationSample : IDemoSample
     {
-        private readonly IInstaApi InstaApi;
+        private readonly IInstaApi api;
 
-        public LocationSample(IInstaApi instaApi)
+        public InstaLocationSample(IInstaApi instaApi)
         {
-            InstaApi = instaApi;
+            api = instaApi;
         }
 
         public async Task DoShow()
         {
             // search for related locations near location with latitude = 55.753923, logitude = 37.620940
             // additionaly you can specify search query or just empty string
-            var result = await InstaApi.LocationProcessor.SearchLocationAsync(55.753923, 37.620940, "square");
+            var result = await api.LocationProcessor.SearchLocationAsync(55.753923, 37.620940, "square");
             Console.WriteLine($"Loaded {result.Value.Count} locations");
             var firstLocation = result.Value?.FirstOrDefault();
-            if(firstLocation == null)
+            if (firstLocation == null)
+            {
                 return;
+            }
+
             Console.WriteLine($"Loading feed for location: name={firstLocation.Name}; id={firstLocation.ExternalId}.");
 
             var locationStories =
-                await InstaApi.LocationProcessor.GetLocationStoriesAsync(long.Parse(firstLocation.ExternalId));
+                await api.LocationProcessor.GetLocationStoriesAsync(long.Parse(firstLocation.ExternalId));
 
             Console.WriteLine(locationStories.Succeeded
-                ? $"Loaded {locationStories.Value.Items?.Count} stoires for location"
-                : $"Unable to load location '{firstLocation.Name}' stories");
+                                  ? $"Loaded {locationStories.Value.Items?.Count} stoires for location"
+                                  : $"Unable to load location '{firstLocation.Name}' stories");
         }
     }
 }

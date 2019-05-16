@@ -1,7 +1,7 @@
 ﻿namespace Wikiled.Instagram.Api.Classes.Models.TV
 {
-    public class InstaTVSelfChannel : InstaTVChannel
+    public class InstaTvSelfChannel : InstaTvChannel
     {
-        public InstaTVUser User { get; set; }
+        public InstaTvUser User { get; set; }
     }
 }

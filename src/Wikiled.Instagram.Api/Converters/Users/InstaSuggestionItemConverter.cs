@@ -1,4 +1,7 @@
-﻿namespace Wikiled.Instagram.Api.Converters.Users
+﻿using Wikiled.Instagram.Api.Classes.Models.User;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
+
+namespace Wikiled.Instagram.Api.Converters.Users
 {
     internal class InstaSuggestionItemConverter : IObjectConverter<InstaSuggestionItem, InstaSuggestionItemResponse>
     {
@@ -7,16 +10,16 @@
         public InstaSuggestionItem Convert()
         {
             var suggestion = new InstaSuggestionItem
-                             {
-                                 Caption = SourceObject.Caption ?? string.Empty,
-                                 IsNewSuggestion = SourceObject.IsNewSuggestion,
-                                 SocialContext = SourceObject.SocialContext ?? string.Empty,
-                                 User = ConvertersFabric.Instance.GetUserShortConverter(SourceObject.User).Convert(),
-                                 Algorithm = SourceObject.Algorithm ?? string.Empty,
-                                 Icon = SourceObject.Icon ?? string.Empty,
-                                 Value = SourceObject.Value ?? 0,
-                                 Uuid = SourceObject.Uuid
-                             };
+            {
+                Caption = SourceObject.Caption ?? string.Empty,
+                IsNewSuggestion = SourceObject.IsNewSuggestion,
+                SocialContext = SourceObject.SocialContext ?? string.Empty,
+                User = InstaConvertersFabric.Instance.GetUserShortConverter(SourceObject.User).Convert(),
+                Algorithm = SourceObject.Algorithm ?? string.Empty,
+                Icon = SourceObject.Icon ?? string.Empty,
+                Value = SourceObject.Value ?? 0,
+                Uuid = SourceObject.Uuid
+            };
             try
             {
                 if (SourceObject.LargeUrls != null && SourceObject.LargeUrls?.Length > 0)
@@ -49,7 +52,7 @@
                     {
                         try
                         {
-                            var converted = ConvertersFabric.Instance.GetSingleMediaConverter(item).Convert();
+                            var converted = InstaConvertersFabric.Instance.GetSingleMediaConverter(item).Convert();
                             suggestion.MediaInfos.Add(converted);
                         }
                         catch

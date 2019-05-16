@@ -1,8 +1,11 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
 
 namespace Wikiled.Instagram.Api.Converters.Stories
 {
-    internal class InstaStoryQuestionStickerItemConverter : IObjectConverter<InstaStoryQuestionStickerItem, InstaStoryQuestionStickerItemResponse>
+    internal class InstaStoryQuestionStickerItemConverter : IObjectConverter<InstaStoryQuestionStickerItem,
+        InstaStoryQuestionStickerItemResponse>
     {
         public InstaStoryQuestionStickerItemResponse SourceObject { get; set; }
 
@@ -14,15 +17,15 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             }
 
             return new InstaStoryQuestionStickerItem
-                   {
-                       BackgroundColor = SourceObject.BackgroundColor,
-                       ProfilePicUrl = SourceObject.ProfilePicUrl,
-                       Question = SourceObject.Question,
-                       QuestionId = SourceObject.QuestionId,
-                       QuestionType = SourceObject.QuestionType,
-                       TextColor = SourceObject.TextColor,
-                       ViewerCanInteract = SourceObject.ViewerCanInteract
-                   };
+            {
+                BackgroundColor = SourceObject.BackgroundColor,
+                ProfilePicUrl = SourceObject.ProfilePicUrl,
+                Question = SourceObject.Question,
+                QuestionId = SourceObject.QuestionId,
+                QuestionType = SourceObject.QuestionType,
+                TextColor = SourceObject.TextColor,
+                ViewerCanInteract = SourceObject.ViewerCanInteract
+            };
         }
     }
 }

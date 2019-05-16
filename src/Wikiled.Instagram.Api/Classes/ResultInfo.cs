@@ -1,40 +1,42 @@
 using System;
 using System.Text.RegularExpressions;
+using Wikiled.Instagram.Api.Classes.Models.Challenge;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Errors;
 
 namespace Wikiled.Instagram.Api.Classes
 {
-    public class ResultInfo
+    public class InstaResultInfo
     {
-        public ResultInfo(string message)
+        public InstaResultInfo(string message)
         {
             Message = message;
             HandleMessages(message);
         }
 
-        public ResultInfo(Exception exception)
+        public InstaResultInfo(Exception exception)
         {
-            System.Exception = exception;
+            Exception = exception;
             Message = exception?.Message;
-            ResponseType = ResponseType.InternalException;
+            ResponseType = InstaResponseType.InternalException;
             HandleMessages(Message);
         }
 
-        public ResultInfo(Exception exception, ResponseType responseType)
+        public InstaResultInfo(Exception exception, InstaResponseType responseType)
         {
-            System.Exception = exception;
+            Exception = exception;
             Message = exception?.Message;
             ResponseType = responseType;
             HandleMessages(Message);
         }
 
-        public ResultInfo(ResponseType responseType, string errorMessage)
+        public InstaResultInfo(InstaResponseType responseType, string errorMessage)
         {
             ResponseType = responseType;
             Message = errorMessage;
             HandleMessages(errorMessage);
         }
 
-        public ResultInfo(ResponseType responseType, BadStatusResponse status)
+        public InstaResultInfo(InstaResponseType responseType, InstaBadStatusResponse status)
         {
             Message = status?.Message;
             Challenge = status?.Challenge;
@@ -42,9 +44,11 @@ namespace Wikiled.Instagram.Api.Classes
             HandleMessages(Message);
             switch (ResponseType)
             {
-                case ResponseType.ActionBlocked:
-                case ResponseType.Spam:
-                    if (status != null && !string.IsNullOrEmpty(status.FeedbackMessage) && status.FeedbackMessage.ToLower().Contains("this block will expire on"))
+                case InstaResponseType.ActionBlocked:
+                case InstaResponseType.Spam:
+                    if (status != null &&
+                        !string.IsNullOrEmpty(status.FeedbackMessage) &&
+                        status.FeedbackMessage.ToLower().Contains("this block will expire on"))
                     {
                         var dateRegex = new Regex(@"(\d+)[-.\/](\d+)[-.\/](\d+)");
                         var dateMatch = dateRegex.Match(status.FeedbackMessage);
@@ -75,7 +79,7 @@ namespace Wikiled.Instagram.Api.Classes
 
         public bool NeedsChallenge { get; internal set; }
 
-        public ResponseType ResponseType { get; }
+        public InstaResponseType ResponseType { get; }
 
         public bool Timeout { get; internal set; }
 

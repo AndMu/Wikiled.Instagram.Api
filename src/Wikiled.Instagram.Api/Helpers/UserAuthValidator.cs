@@ -1,10 +1,11 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes;
 
 namespace Wikiled.Instagram.Api.Helpers
 {
-    public static class UserAuthValidator
+    public static class InstaUserAuthValidator
     {
-        public static void Validate(UserAuthValidate userAuthValidate)
+        public static void Validate(InstaUserAuthValidate userAuthValidate)
         {
             ValidateUser(userAuthValidate.User);
             ValidateLoggedIn(userAuthValidate.IsUserAuthenticated);

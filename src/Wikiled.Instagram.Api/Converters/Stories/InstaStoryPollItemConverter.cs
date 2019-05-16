@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
 
 namespace Wikiled.Instagram.Api.Converters.Stories
 {
@@ -14,19 +16,20 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             }
 
             var poll = new InstaStoryPollItem
-                       {
-                           Height = SourceObject.Height,
-                           IsHidden = SourceObject.IsHidden,
-                           IsPinned = SourceObject.IsPinned,
-                           Rotation = SourceObject.Rotation,
-                           Width = SourceObject.Width,
-                           X = SourceObject.X,
-                           Y = SourceObject.Y,
-                           Z = SourceObject.Z
-                       };
+            {
+                Height = SourceObject.Height,
+                IsHidden = SourceObject.IsHidden,
+                IsPinned = SourceObject.IsPinned,
+                Rotation = SourceObject.Rotation,
+                Width = SourceObject.Width,
+                X = SourceObject.X,
+                Y = SourceObject.Y,
+                Z = SourceObject.Z
+            };
             if (SourceObject.PollSticker != null)
             {
-                poll.PollSticker = ConvertersFabric.Instance.GetStoryPollStickerItemConverter(SourceObject.PollSticker).Convert();
+                poll.PollSticker = InstaConvertersFabric.Instance.GetStoryPollStickerItemConverter(SourceObject.PollSticker)
+                    .Convert();
             }
 
             return poll;

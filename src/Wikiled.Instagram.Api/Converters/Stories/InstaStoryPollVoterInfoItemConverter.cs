@@ -1,8 +1,13 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Stories
 {
-    internal class InstaStoryPollVoterInfoItemConverter : IObjectConverter<InstaStoryPollVoterInfoItem, InstaStoryPollVoterInfoItemResponse>
+    internal class
+        InstaStoryPollVoterInfoItemConverter : IObjectConverter<InstaStoryPollVoterInfoItem,
+            InstaStoryPollVoterInfoItemResponse>
     {
         public InstaStoryPollVoterInfoItemResponse SourceObject { get; set; }
 
@@ -14,18 +19,19 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             }
 
             var voterInfoItem = new InstaStoryPollVoterInfoItem
-                                {
-                                    LatestPollVoteTime = DateTimeHelper.FromUnixTimeSeconds(SourceObject.LatestPollVoteTime ?? DateTime.Now.ToUnixTime()),
-                                    MaxId = SourceObject.MaxId,
-                                    MoreAvailable = SourceObject.MoreAvailable,
-                                    PollId = SourceObject.PollId
-                                };
+            {
+                LatestPollVoteTime =
+                    (SourceObject.LatestPollVoteTime ?? DateTime.Now.ToUnixTime()).FromUnixTimeSeconds(),
+                MaxId = SourceObject.MaxId,
+                MoreAvailable = SourceObject.MoreAvailable,
+                PollId = SourceObject.PollId
+            };
 
             if (SourceObject.Voters?.Count > 0)
             {
                 foreach (var voter in SourceObject.Voters)
                 {
-                    voterInfoItem.Voters.Add(ConvertersFabric.Instance.GetStoryPollVoterItemConverter(voter).Convert());
+                    voterInfoItem.Voters.Add(InstaConvertersFabric.Instance.GetStoryPollVoterItemConverter(voter).Convert());
                 }
             }
 

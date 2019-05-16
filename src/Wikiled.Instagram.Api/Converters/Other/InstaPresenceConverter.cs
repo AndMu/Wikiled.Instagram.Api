@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Other;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Other;
 
 namespace Wikiled.Instagram.Api.Converters.Other
 {
@@ -14,10 +16,10 @@ namespace Wikiled.Instagram.Api.Converters.Other
             }
 
             var presence = new InstaPresence
-                           {
-                               PresenceDisabled = SourceObject.Disabled ?? false,
-                               ThreadPresenceDisabled = SourceObject.ThreadPresenceDisabled ?? false
-                           };
+            {
+                PresenceDisabled = SourceObject.Disabled ?? false,
+                ThreadPresenceDisabled = SourceObject.ThreadPresenceDisabled ?? false
+            };
 
             return presence;
         }

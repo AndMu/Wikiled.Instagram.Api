@@ -1,4 +1,6 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Hashtags;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Hashtags;
 
 namespace Wikiled.Instagram.Api.Converters.Hashtags
 {
@@ -13,15 +15,11 @@ namespace Wikiled.Instagram.Api.Converters.Hashtags
                 throw new ArgumentNullException("Source object");
             }
 
-            var hashtag = new InstaDirectHashtag
-                          {
-                              Name = SourceObject.Name,
-                              MediaCount = SourceObject.MediaCount
-                          };
+            var hashtag = new InstaDirectHashtag { Name = SourceObject.Name, MediaCount = SourceObject.MediaCount };
 
             if (SourceObject.Media != null)
             {
-                hashtag.Media = ConvertersFabric.Instance.GetSingleMediaConverter(SourceObject.Media).Convert();
+                hashtag.Media = InstaConvertersFabric.Instance.GetSingleMediaConverter(SourceObject.Media).Convert();
             }
 
             return hashtag;

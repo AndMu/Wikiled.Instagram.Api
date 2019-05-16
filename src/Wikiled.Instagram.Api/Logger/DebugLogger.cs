@@ -11,16 +11,16 @@ namespace Wikiled.Instagram.Api.Logger
 {
     public class DebugLogger : IInstaLogger
     {
-        private readonly LogLevel _logLevel;
+        private readonly LogLevel logLevel;
 
         public DebugLogger(LogLevel loglevel)
         {
-            _logLevel = loglevel;
+            logLevel = loglevel;
         }
 
         public void LogException(Exception ex)
         {
-            if (_logLevel < LogLevel.Exceptions)
+            if (logLevel < LogLevel.Exceptions)
             {
                 return;
             }
@@ -31,7 +31,7 @@ namespace Wikiled.Instagram.Api.Logger
 
         public void LogInfo(string info)
         {
-            if (_logLevel < LogLevel.Info)
+            if (logLevel < LogLevel.Info)
             {
                 return;
             }
@@ -41,7 +41,7 @@ namespace Wikiled.Instagram.Api.Logger
 
         public void LogRequest(HttpRequestMessage request)
         {
-            if (_logLevel < LogLevel.Request)
+            if (logLevel < LogLevel.Request)
             {
                 return;
             }
@@ -58,7 +58,7 @@ namespace Wikiled.Instagram.Api.Logger
 
         public void LogRequest(Uri uri)
         {
-            if (_logLevel < LogLevel.Request)
+            if (logLevel < LogLevel.Request)
             {
                 return;
             }
@@ -68,12 +68,13 @@ namespace Wikiled.Instagram.Api.Logger
 
         public void LogResponse(HttpResponseMessage response)
         {
-            if (_logLevel < LogLevel.Response)
+            if (logLevel < LogLevel.Response)
             {
                 return;
             }
 
-            Write($"Response: {response.RequestMessage.Method} {response.RequestMessage.RequestUri} [{response.StatusCode}]");
+            Write(
+                $"Response: {response.RequestMessage.Method} {response.RequestMessage.RequestUri} [{response.StatusCode}]");
             WriteContent(response.Content, Formatting.None);
         }
 

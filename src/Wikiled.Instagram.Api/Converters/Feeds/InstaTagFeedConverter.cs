@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Wikiled.Instagram.Api.Classes.Models.Feed;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Feed;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
 
 namespace Wikiled.Instagram.Api.Converters.Feeds
 {
@@ -26,8 +30,8 @@ namespace Wikiled.Instagram.Api.Converters.Feeds
                         continue;
                     }
 
-                    var feedItem = ConvertersFabric.Instance.GetSingleMediaConverter(instaUserFeedItemResponse)
-                                                   .Convert();
+                    var feedItem = InstaConvertersFabric.Instance.GetSingleMediaConverter(instaUserFeedItemResponse)
+                        .Convert();
                     medias.Add(feedItem);
                 }
 
@@ -39,7 +43,7 @@ namespace Wikiled.Instagram.Api.Converters.Feeds
             feed.NextMaxId = SourceObject.NextMaxId;
             foreach (var story in SourceObject.Stories)
             {
-                var feedItem = ConvertersFabric.Instance.GetStoryConverter(story).Convert();
+                var feedItem = InstaConvertersFabric.Instance.GetStoryConverter(story).Convert();
                 feed.Stories.Add(feedItem);
             }
 

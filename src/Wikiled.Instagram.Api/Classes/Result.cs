@@ -1,102 +1,101 @@
 ﻿using System;
 using System.Net.Http;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Errors;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Classes
 {
-    public class Result<T> : IResult<T>
+    public class InstaResult<T> : IResult<T>
     {
-        public Result(bool succeeded, T value, ResultInfo info)
+        public InstaResult(bool succeeded, T value, InstaResultInfo info)
         {
             Succeeded = succeeded;
             Value = value;
             Info = info;
         }
 
-        public Result(bool succeeded, ResultInfo info)
+        public InstaResult(bool succeeded, InstaResultInfo info)
         {
             Succeeded = succeeded;
             Info = info;
         }
 
-        public Result(bool succeeded, T value)
+        public InstaResult(bool succeeded, T value)
         {
             Succeeded = succeeded;
             Value = value;
         }
 
-        public ResultInfo Info { get; } = new ResultInfo("");
+        public InstaResultInfo Info { get; } = new InstaResultInfo("");
 
         public bool Succeeded { get; }
 
         public T Value { get; }
     }
 
-    public static class Result
+    public static class InstaResult
     {
         public static IResult<T> Fail<T>(Exception exception)
         {
-            return new Result<T>(false, default, new ResultInfo(exception));
+            return new InstaResult<T>(false, default, new InstaResultInfo(exception));
         }
 
         public static IResult<T> Fail<T>(string errMsg)
         {
-            return new Result<T>(false, default, new ResultInfo(errMsg));
+            return new InstaResult<T>(false, default, new InstaResultInfo(errMsg));
         }
 
         public static IResult<T> Fail<T>(string errMsg, T resValue)
         {
-            return new Result<T>(false, resValue, new ResultInfo(errMsg));
+            return new InstaResult<T>(false, resValue, new InstaResultInfo(errMsg));
         }
 
         public static IResult<T> Fail<T>(Exception exception, T resValue)
         {
-            return new Result<T>(false, resValue, new ResultInfo(exception));
+            return new InstaResult<T>(false, resValue, new InstaResultInfo(exception));
         }
 
-        public static IResult<T> Fail<T>(Exception exception, T resValue, ResponseType responseType)
+        public static IResult<T> Fail<T>(Exception exception, T resValue, InstaResponseType responseType)
         {
-            return new Result<T>(false, resValue, new ResultInfo(exception, responseType));
+            return new InstaResult<T>(false, resValue, new InstaResultInfo(exception, responseType));
         }
 
-        public static IResult<T> Fail<T>(ResultInfo info, T resValue)
+        public static IResult<T> Fail<T>(InstaResultInfo info, T resValue)
         {
-            return new Result<T>(false, resValue, info);
+            return new InstaResult<T>(false, resValue, info);
         }
 
-        public static IResult<T> Fail<T>(string errMsg, ResponseType responseType, T resValue)
+        public static IResult<T> Fail<T>(string errMsg, InstaResponseType responseType, T resValue)
         {
-            return new Result<T>(false, resValue, new ResultInfo(responseType, errMsg));
+            return new InstaResult<T>(false, resValue, new InstaResultInfo(responseType, errMsg));
         }
 
         public static IResult<T> Success<T>(T resValue)
         {
-            return new Result<T>(true, resValue, new ResultInfo(ResponseType.OK, "No errors detected"));
+            return new InstaResult<T>(true, resValue, new InstaResultInfo(InstaResponseType.Ok, "No errors detected"));
         }
 
         public static IResult<T> Success<T>(string successMsg, T resValue)
         {
-            return new Result<T>(true, resValue, new ResultInfo(ResponseType.OK, successMsg));
+            return new InstaResult<T>(true, resValue, new InstaResultInfo(InstaResponseType.Ok, successMsg));
         }
 
         public static IResult<T> UnExpectedResponse<T>(HttpResponseMessage response, string json)
         {
             if (string.IsNullOrEmpty(json))
             {
-                var resultInfo = new ResultInfo(
-                    ResponseType.UnExpectedResponse,
+                var resultInfo = new InstaResultInfo(
+                    InstaResponseType.UnExpectedResponse,
                     $"Unexpected response status: {response.StatusCode}");
-                return new Result<T>(false, default, resultInfo);
+                return new InstaResult<T>(false, default, resultInfo);
             }
             else
             {
-                var status = ErrorHandlingHelper.GetBadStatusFromJsonString(json);
+                var status = InstaErrorHandlingHelper.GetBadStatusFromJsonString(json);
                 var responseType = GetResponseType(status);
 
-                var resultInfo = new ResultInfo(responseType, status)
-                                 {
-                                     Challenge = status.Challenge
-                                 };
-                return new Result<T>(false, default, resultInfo);
+                var resultInfo = new InstaResultInfo(responseType, status) { Challenge = status.Challenge };
+                return new InstaResult<T>(false, default, resultInfo);
             }
         }
 
@@ -104,115 +103,117 @@ namespace Wikiled.Instagram.Api.Classes
         {
             if (string.IsNullOrEmpty(json))
             {
-                var resultInfo = new ResultInfo(
-                    ResponseType.UnExpectedResponse,
+                var resultInfo = new InstaResultInfo(
+                    InstaResponseType.UnExpectedResponse,
                     $"{message}\r\nUnexpected response status: {response.StatusCode}");
-                return new Result<T>(false, default, resultInfo);
+                return new InstaResult<T>(false, default, resultInfo);
             }
             else
             {
-                var status = ErrorHandlingHelper.GetBadStatusFromJsonString(json);
+                var status = InstaErrorHandlingHelper.GetBadStatusFromJsonString(json);
                 var responseType = GetResponseType(status);
 
-                var resultInfo = new ResultInfo(responseType, message)
-                                 {
-                                     Challenge = status.Challenge
-                                 };
+                var resultInfo = new InstaResultInfo(responseType, message) { Challenge = status.Challenge };
 
-                return new Result<T>(false, default, resultInfo);
+                return new InstaResult<T>(false, default, resultInfo);
             }
         }
 
-        private static ResponseType GetResponseType(BadStatusResponse status)
+        private static InstaResponseType GetResponseType(InstaBadStatusResponse status)
         {
-            var responseType = ResponseType.UnExpectedResponse;
+            var responseType = InstaResponseType.UnExpectedResponse;
             if (!string.IsNullOrWhiteSpace(status.ErrorType))
             {
                 switch (status.ErrorType)
                 {
                     case "checkpoint_logged_out":
-                        responseType = ResponseType.CheckPointRequired;
+                        responseType = InstaResponseType.CheckPointRequired;
                         break;
                     case "login_required":
-                        responseType = ResponseType.LoginRequired;
+                        responseType = InstaResponseType.LoginRequired;
                         break;
                     case "Sorry, too many requests.Please try again later":
-                        responseType = ResponseType.RequestsLimit;
+                        responseType = InstaResponseType.RequestsLimit;
                         break;
                     case "sentry_block":
-                        responseType = ResponseType.SentryBlock;
+                        responseType = InstaResponseType.SentryBlock;
                         break;
                     case "inactive user":
                     case "inactive_user":
-                        responseType = ResponseType.InactiveUser;
+                        responseType = InstaResponseType.InactiveUser;
                         break;
                     case "checkpoint_challenge_required":
-                        responseType = ResponseType.ChallengeRequired;
+                        responseType = InstaResponseType.ChallengeRequired;
                         break;
                 }
             }
 
             if (!status.IsOk() && status.Message.Contains("wait a few minutes"))
             {
-                responseType = ResponseType.RequestsLimit;
+                responseType = InstaResponseType.RequestsLimit;
             }
 
             if (!string.IsNullOrEmpty(status.Message) && status.Message.Contains("consent_required"))
             {
-                responseType = ResponseType.ConsentRequired;
+                responseType = InstaResponseType.ConsentRequired;
             }
 
-            if (!string.IsNullOrEmpty(status.FeedbackTitle) && status.FeedbackTitle.ToLower().Contains("action blocked"))
+            if (!string.IsNullOrEmpty(status.FeedbackTitle) &&
+                status.FeedbackTitle.ToLower().Contains("action blocked"))
             {
-                responseType = ResponseType.ActionBlocked;
+                responseType = InstaResponseType.ActionBlocked;
             }
 
             if (!string.IsNullOrEmpty(status.Message) && status.Message.Contains("login_required"))
             {
-                responseType = ResponseType.LoginRequired;
+                responseType = InstaResponseType.LoginRequired;
             }
 
-            if (!string.IsNullOrEmpty(status.Message) && status.Message.ToLower().Contains("media not found or unavailable"))
+            if (!string.IsNullOrEmpty(status.Message) &&
+                status.Message.ToLower().Contains("media not found or unavailable"))
             {
-                responseType = ResponseType.MediaNotFound;
+                responseType = InstaResponseType.MediaNotFound;
             }
 
-            if (!string.IsNullOrEmpty(status.FeedbackTitle) && status.FeedbackTitle.ToLower().Contains("commenting is Off"))
+            if (!string.IsNullOrEmpty(status.FeedbackTitle) &&
+                status.FeedbackTitle.ToLower().Contains("commenting is Off"))
             {
-                responseType = ResponseType.CommentingIsDisabled;
+                responseType = InstaResponseType.CommentingIsDisabled;
             }
 
             if (!string.IsNullOrEmpty(status.Message) && status.Message.ToLower().Contains("already liked"))
             {
-                responseType = ResponseType.AlreadyLiked;
+                responseType = InstaResponseType.AlreadyLiked;
             }
 
-            if (!string.IsNullOrEmpty(status.FeedbackMessage) && status.FeedbackMessage.ToLower().Contains("post you were viewing has been deleted"))
+            if (!string.IsNullOrEmpty(status.FeedbackMessage) &&
+                status.FeedbackMessage.ToLower().Contains("post you were viewing has been deleted"))
             {
-                responseType = ResponseType.DeletedPost;
+                responseType = InstaResponseType.DeletedPost;
             }
 
             if (!string.IsNullOrEmpty(status.Message) && status.Message.ToLower().Contains("you cannot like this"))
             {
-                responseType = ResponseType.CantLike;
+                responseType = InstaResponseType.CantLike;
             }
 
             if (status.Payload != null)
             {
-                if (!string.IsNullOrEmpty(status.Payload.Message) && status.Payload.Message.ToLower().Contains("media is not accessible"))
+                if (!string.IsNullOrEmpty(status.Payload.Message) &&
+                    status.Payload.Message.ToLower().Contains("media is not accessible"))
                 {
-                    responseType = ResponseType.DeletedPost;
+                    responseType = InstaResponseType.DeletedPost;
                 }
             }
 
             if (status.Spam)
             {
-                responseType = ResponseType.Spam;
+                responseType = InstaResponseType.Spam;
             }
 
             if (status?.Message?.IndexOf("challenge_required") != -1)
             {
-                responseType = ResponseType.ChallengeRequired;
+                responseType = InstaResponseType.ChallengeRequired;
             }
 
             return responseType;

@@ -6,7 +6,6 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Media
 {
     public class InstaMediaIdsResponse : InstaDefault
     {
-        [JsonProperty("media_ids")]
-        public InstaMediaIdList MediaIds = new InstaMediaIdList();
+        [JsonProperty("media_ids")] public InstaMediaIdList MediaIds = new InstaMediaIdList();
     }
 }

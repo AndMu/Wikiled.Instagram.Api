@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     public interface IPushProcessor
     {

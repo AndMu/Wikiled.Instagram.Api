@@ -1,4 +1,8 @@
-﻿namespace Wikiled.Instagram.Api.Converters.Highlights
+﻿using Wikiled.Instagram.Api.Classes.Models.Highlight;
+using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Highlight;
+
+namespace Wikiled.Instagram.Api.Converters.Highlights
 {
     internal class InstaHighlightConverter : IObjectConverter<InstaHighlightFeeds, InstaHighlightFeedsResponse>
     {
@@ -7,34 +11,32 @@
         public InstaHighlightFeeds Convert()
         {
             var highlight = new InstaHighlightFeeds
-                            {
-                                ShowEmptyState = SourceObject.ShowEmptyState ?? false,
-                                Status = SourceObject.Status
-                            };
+            {
+                ShowEmptyState = SourceObject.ShowEmptyState ?? false, Status = SourceObject.Status
+            };
             if (SourceObject.Items?.Count > 0)
             {
                 foreach (var item in SourceObject.Items)
                 {
                     var hLight = new InstaHighlightFeed
-                                 {
-                                     CanReply = item.CanReply,
-                                     CanReshare = item.CanReshare,
-                                     HighlightId = item.Id,
-                                     LatestReelMedia = item.LatestReelMedia,
-                                     MediaCount = item.MediaCount,
-                                     PrefetchCount = item.PrefetchCount,
-                                     RankedPosition = item.RankedPosition,
-                                     ReelType = item.ReelType,
-                                     Seen = item.Seen,
-                                     SeenRankedPosition = item.SeenRankedPosition,
-                                     Title = item.Title
-                                 };
+                    {
+                        CanReply = item.CanReply,
+                        CanReshare = item.CanReshare,
+                        HighlightId = item.Id,
+                        LatestReelMedia = item.LatestReelMedia,
+                        MediaCount = item.MediaCount,
+                        PrefetchCount = item.PrefetchCount,
+                        RankedPosition = item.RankedPosition,
+                        ReelType = item.ReelType,
+                        Seen = item.Seen,
+                        SeenRankedPosition = item.SeenRankedPosition,
+                        Title = item.Title
+                    };
 
                     hLight.CoverMedia = new InstaHighlightCoverMedia
-                                        {
-                                            CropRect = item.CoverMedia.CropRect,
-                                            MediaId = item.CoverMedia.MediaId
-                                        };
+                    {
+                        CropRect = item.CoverMedia.CropRect, MediaId = item.CoverMedia.MediaId
+                    };
                     if (item.CoverMedia.CroppedImageVersion != null)
                     {
                         hLight.CoverMedia.CroppedImage = new InstaImage(
@@ -51,7 +53,7 @@
                             int.Parse(item.CoverMedia.FullImageVersion.Height));
                     }
 
-                    var userConverter = ConvertersFabric.Instance.GetUserShortConverter(item.User);
+                    var userConverter = InstaConvertersFabric.Instance.GetUserShortConverter(item.User);
                     hLight.User = userConverter.Convert();
 
                     highlight.Items.Add(hLight);

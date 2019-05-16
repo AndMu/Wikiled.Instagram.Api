@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.Business;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Business;
 
 namespace Wikiled.Instagram.Api.Converters.Business
 {
@@ -13,17 +16,15 @@ namespace Wikiled.Instagram.Api.Converters.Business
                 throw new ArgumentNullException("SourceObject");
             }
 
-            var brandedContent = new InstaBrandedContent
-                                 {
-                                     RequireApproval = SourceObject.RequireApproval
-                                 };
+            var brandedContent = new InstaBrandedContent { RequireApproval = SourceObject.RequireApproval };
             if (SourceObject.WhitelistedUsers != null && SourceObject.WhitelistedUsers.Any())
             {
                 foreach (var item in SourceObject.WhitelistedUsers)
                 {
                     try
                     {
-                        brandedContent.WhitelistedUsers.Add(ConvertersFabric.Instance.GetUserShortConverter(item).Convert());
+                        brandedContent.WhitelistedUsers.Add(InstaConvertersFabric.Instance.GetUserShortConverter(item)
+                                                                .Convert());
                     }
                     catch
                     {

@@ -1,4 +1,6 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.Shopping
+﻿using Wikiled.Instagram.Api.Classes.Models.Media;
+
+namespace Wikiled.Instagram.Api.Classes.Models.Shopping
 {
     public class InstaProductTag
     {

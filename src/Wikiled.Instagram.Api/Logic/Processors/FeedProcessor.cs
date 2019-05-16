@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -15,45 +16,44 @@ using Wikiled.Instagram.Api.Converters;
 using Wikiled.Instagram.Api.Converters.Json;
 using Wikiled.Instagram.Api.Helpers;
 using Wikiled.Instagram.Api.Logger;
-using InstaRecentActivityConverter = InstagramApiSharp.Converters.Json.InstaRecentActivityConverter;
 
-namespace Wikiled.Instagram.Api.API.Processors
+namespace Wikiled.Instagram.Api.Logic.Processors
 {
     /// <summary>
     ///     Feed api functions.
     /// </summary>
-    internal class FeedProcessor : IFeedProcessor
+    internal class InstaFeedProcessor : IFeedProcessor
     {
-        private readonly AndroidDevice _deviceInfo;
+        private readonly InstaAndroidDevice deviceInfo;
 
-        private readonly HttpHelper _httpHelper;
+        private readonly InstaHttpHelper httpHelper;
 
-        private readonly IHttpRequestProcessor _httpRequestProcessor;
+        private readonly IHttpRequestProcessor httpRequestProcessor;
 
-        private readonly InstaApi _instaApi;
+        private readonly InstaApi instaApi;
 
-        private readonly IInstaLogger _logger;
+        private readonly IInstaLogger logger;
 
-        private readonly UserSessionData _user;
+        private readonly UserSessionData user;
 
-        private readonly UserAuthValidate _userAuthValidate;
+        private readonly InstaUserAuthValidate userAuthValidate;
 
-        public FeedProcessor(
-            AndroidDevice deviceInfo,
+        public InstaFeedProcessor(
+            InstaAndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             IInstaLogger logger,
-            UserAuthValidate userAuthValidate,
+            InstaUserAuthValidate userAuthValidate,
             InstaApi instaApi,
-            HttpHelper httpHelper)
+            InstaHttpHelper httpHelper)
         {
-            _deviceInfo = deviceInfo;
-            _user = user;
-            _httpRequestProcessor = httpRequestProcessor;
-            _logger = logger;
-            _userAuthValidate = userAuthValidate;
-            _instaApi = instaApi;
-            _httpHelper = httpHelper;
+            this.deviceInfo = deviceInfo;
+            this.user = user;
+            this.httpRequestProcessor = httpRequestProcessor;
+            this.logger = logger;
+            this.userAuthValidate = userAuthValidate;
+            this.instaApi = instaApi;
+            this.httpHelper = httpHelper;
         }
 
         /// <summary>
@@ -65,13 +65,13 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </returns>
         public async Task<IResult<InstaExploreFeed>> GetExploreFeedAsync(PaginationParameters paginationParameters)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             var exploreFeed = new InstaExploreFeed();
             try
             {
                 InstaExploreFeed Convert(InstaExploreFeedResponse exploreFeedResponse)
                 {
-                    return ConvertersFabric.Instance.GetExploreFeedConverter(exploreFeedResponse).Convert();
+                    return InstaConvertersFabric.Instance.GetExploreFeedConverter(exploreFeedResponse).Convert();
                 }
 
                 var feeds = await GetExploreFeed(paginationParameters);
@@ -79,24 +79,24 @@ namespace Wikiled.Instagram.Api.API.Processors
                 {
                     if (feeds.Value != null)
                     {
-                        return Result.Fail(feeds.Info, Convert(feeds.Value));
+                        return InstaResult.Fail(feeds.Info, Convert(feeds.Value));
                     }
 
-                    return Result.Fail(feeds.Info, (InstaExploreFeed)null);
+                    return InstaResult.Fail(feeds.Info, (InstaExploreFeed)null);
                 }
 
                 var feedResponse = feeds.Value;
                 paginationParameters.NextMaxId = feedResponse.MaxId;
                 paginationParameters.RankToken = feedResponse.RankToken;
 
-                while (feedResponse.MoreAvailable
-                       && !string.IsNullOrEmpty(paginationParameters.NextMaxId)
-                       && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
+                while (feedResponse.MoreAvailable &&
+                    !string.IsNullOrEmpty(paginationParameters.NextMaxId) &&
+                    paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var nextFeed = await GetExploreFeed(paginationParameters);
                     if (!nextFeed.Succeeded)
                     {
-                        return Result.Fail(nextFeed.Info, Convert(feeds.Value));
+                        return InstaResult.Fail(nextFeed.Info, Convert(feeds.Value));
                     }
 
                     feedResponse.NextMaxId = paginationParameters.NextMaxId = nextFeed.Value.MaxId;
@@ -123,8 +123,10 @@ namespace Wikiled.Instagram.Api.API.Processors
                         }
                         else
                         {
-                            feedResponse.Items.StoryTray.TopLive.RankedPosition = nextFeed.Value.Items.StoryTray.TopLive.RankedPosition;
-                            feedResponse.Items.StoryTray.TopLive.BroadcastOwners.AddRange(nextFeed.Value.Items.StoryTray.TopLive.BroadcastOwners);
+                            feedResponse.Items.StoryTray.TopLive.RankedPosition =
+                                nextFeed.Value.Items.StoryTray.TopLive.RankedPosition;
+                            feedResponse.Items.StoryTray.TopLive.BroadcastOwners.AddRange(
+                                nextFeed.Value.Items.StoryTray.TopLive.BroadcastOwners);
                         }
                     }
 
@@ -134,17 +136,17 @@ namespace Wikiled.Instagram.Api.API.Processors
                 exploreFeed = Convert(feedResponse);
                 exploreFeed.Medias.Pages = paginationParameters.PagesLoaded;
                 exploreFeed.Medias.PageSize = feedResponse.ResultsCount;
-                return Result.Success(exploreFeed);
+                return InstaResult.Success(exploreFeed);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaExploreFeed), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaExploreFeed), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, exploreFeed);
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, exploreFeed);
             }
         }
 
@@ -158,8 +160,8 @@ namespace Wikiled.Instagram.Api.API.Processors
         public async Task<IResult<InstaActivityFeed>> GetFollowingRecentActivityFeedAsync(
             PaginationParameters paginationParameters)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
-            var uri = UriCreator.GetFollowingRecentActivityUri();
+            InstaUserAuthValidator.Validate(userAuthValidate);
+            var uri = InstaUriCreator.GetFollowingRecentActivityUri();
             return await GetRecentActivityInternalAsync(uri, paginationParameters);
         }
 
@@ -172,7 +174,7 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </returns>
         public async Task<IResult<InstaMediaList>> GetLikedFeedAsync(PaginationParameters paginationParameters)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 if (paginationParameters == null)
@@ -182,32 +184,32 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 InstaMediaList Convert(InstaMediaListResponse mediaListResponse)
                 {
-                    return ConvertersFabric.Instance.GetMediaListConverter(mediaListResponse).Convert();
+                    return InstaConvertersFabric.Instance.GetMediaListConverter(mediaListResponse).Convert();
                 }
 
-                var mediaResult = await GetAnyFeeds(UriCreator.GetUserLikeFeedUri(paginationParameters.NextMaxId));
+                var mediaResult = await GetAnyFeeds(InstaUriCreator.GetUserLikeFeedUri(paginationParameters.NextMaxId));
                 if (!mediaResult.Succeeded)
                 {
                     if (mediaResult.Value != null)
                     {
-                        return Result.Fail(mediaResult.Info, Convert(mediaResult.Value));
+                        return InstaResult.Fail(mediaResult.Info, Convert(mediaResult.Value));
                     }
 
-                    return Result.Fail(mediaResult.Info, default(InstaMediaList));
+                    return InstaResult.Fail(mediaResult.Info, default(InstaMediaList));
                 }
 
                 var mediaResponse = mediaResult.Value;
                 var mediaList = Convert(mediaResponse);
                 mediaList.NextMaxId = paginationParameters.NextMaxId = mediaResponse.NextMaxId;
                 paginationParameters.PagesLoaded++;
-                while (mediaResponse.MoreAvailable
-                       && !string.IsNullOrEmpty(paginationParameters.NextMaxId)
-                       && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
+                while (mediaResponse.MoreAvailable &&
+                    !string.IsNullOrEmpty(paginationParameters.NextMaxId) &&
+                    paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
-                    var result = await GetAnyFeeds(UriCreator.GetUserLikeFeedUri(paginationParameters.NextMaxId));
+                    var result = await GetAnyFeeds(InstaUriCreator.GetUserLikeFeedUri(paginationParameters.NextMaxId));
                     if (!result.Succeeded)
                     {
-                        return Result.Fail(result.Info, mediaList);
+                        return InstaResult.Fail(result.Info, mediaList);
                     }
 
                     var convertedResult = Convert(result.Value);
@@ -221,17 +223,17 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 mediaList.PageSize = mediaResponse.ResultsCount;
                 mediaList.Pages = paginationParameters.PagesLoaded;
-                return Result.Success(mediaList);
+                return InstaResult.Success(mediaList);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaMediaList), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaMediaList), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaMediaList>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaMediaList>(exception);
             }
         }
 
@@ -245,8 +247,8 @@ namespace Wikiled.Instagram.Api.API.Processors
         public async Task<IResult<InstaActivityFeed>> GetRecentActivityFeedAsync(
             PaginationParameters paginationParameters)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
-            var uri = UriCreator.GetRecentActivityUri();
+            InstaUserAuthValidator.Validate(userAuthValidate);
+            var uri = InstaUriCreator.GetRecentActivityUri();
             return await GetRecentActivityInternalAsync(uri, paginationParameters);
         }
 
@@ -259,7 +261,7 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </returns>
         public async Task<IResult<InstaMediaList>> GetSavedFeedAsync(PaginationParameters paginationParameters)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
                 if (paginationParameters == null)
@@ -269,31 +271,31 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 InstaMediaList Convert(InstaMediaListResponse mediaListResponse)
                 {
-                    return ConvertersFabric.Instance.GetMediaListConverter(mediaListResponse).Convert();
+                    return InstaConvertersFabric.Instance.GetMediaListConverter(mediaListResponse).Convert();
                 }
 
-                var mediaFeedsResult = await GetAnyFeeds(UriCreator.GetSavedFeedUri(paginationParameters?.NextMaxId));
+                var mediaFeedsResult = await GetAnyFeeds(InstaUriCreator.GetSavedFeedUri(paginationParameters?.NextMaxId));
                 if (!mediaFeedsResult.Succeeded)
                 {
                     if (mediaFeedsResult.Value != null)
                     {
-                        return Result.Fail(mediaFeedsResult.Info, Convert(mediaFeedsResult.Value));
+                        return InstaResult.Fail(mediaFeedsResult.Info, Convert(mediaFeedsResult.Value));
                     }
 
-                    return Result.Fail(mediaFeedsResult.Info, default(InstaMediaList));
+                    return InstaResult.Fail(mediaFeedsResult.Info, default(InstaMediaList));
                 }
 
                 var mediaResponse = mediaFeedsResult.Value;
                 paginationParameters.NextMaxId = mediaResponse.NextMaxId;
                 paginationParameters.PagesLoaded++;
-                while (mediaResponse.MoreAvailable
-                       && !string.IsNullOrEmpty(paginationParameters.NextMaxId)
-                       && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
+                while (mediaResponse.MoreAvailable &&
+                    !string.IsNullOrEmpty(paginationParameters.NextMaxId) &&
+                    paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
-                    var result = await GetAnyFeeds(UriCreator.GetSavedFeedUri(paginationParameters?.NextMaxId));
+                    var result = await GetAnyFeeds(InstaUriCreator.GetSavedFeedUri(paginationParameters?.NextMaxId));
                     if (!result.Succeeded)
                     {
-                        return Result.Fail(result.Info, Convert(mediaResponse));
+                        return InstaResult.Fail(result.Info, Convert(mediaResponse));
                     }
 
                     mediaResponse.NextMaxId = paginationParameters.NextMaxId = result.Value.NextMaxId;
@@ -308,17 +310,17 @@ namespace Wikiled.Instagram.Api.API.Processors
                 var mediaList = Convert(mediaResponse);
                 mediaList.PageSize = mediaResponse.ResultsCount;
                 mediaList.Pages = paginationParameters.PagesLoaded;
-                return Result.Success(mediaList);
+                return InstaResult.Success(mediaList);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaMediaList), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaMediaList), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaMediaList>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaMediaList>(exception);
             }
         }
 
@@ -332,7 +334,7 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// </returns>
         public async Task<IResult<InstaTagFeed>> GetTagFeedAsync(string tag, PaginationParameters paginationParameters)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             var tagFeed = new InstaTagFeed();
             try
             {
@@ -343,7 +345,7 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 InstaTagFeed Convert(InstaTagFeedResponse instaTagFeedResponse)
                 {
-                    return ConvertersFabric.Instance.GetTagFeedConverter(instaTagFeedResponse).Convert();
+                    return InstaConvertersFabric.Instance.GetTagFeedConverter(instaTagFeedResponse).Convert();
                 }
 
                 var tags = await GetTagFeed(tag, paginationParameters);
@@ -351,10 +353,10 @@ namespace Wikiled.Instagram.Api.API.Processors
                 {
                     if (tags.Value != null)
                     {
-                        return Result.Fail(tags.Info, Convert(tags.Value));
+                        return InstaResult.Fail(tags.Info, Convert(tags.Value));
                     }
 
-                    return Result.Fail(tags.Info, default(InstaTagFeed));
+                    return InstaResult.Fail(tags.Info, default(InstaTagFeed));
                 }
 
                 var feedResponse = tags.Value;
@@ -364,14 +366,14 @@ namespace Wikiled.Instagram.Api.API.Processors
                 paginationParameters.NextMaxId = feedResponse.NextMaxId;
                 paginationParameters.PagesLoaded++;
 
-                while (feedResponse.MoreAvailable
-                       && !string.IsNullOrEmpty(paginationParameters.NextMaxId)
-                       && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
+                while (feedResponse.MoreAvailable &&
+                    !string.IsNullOrEmpty(paginationParameters.NextMaxId) &&
+                    paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var nextFeed = await GetTagFeed(tag, paginationParameters);
                     if (!nextFeed.Succeeded)
                     {
-                        return Result.Fail(nextFeed.Info, tagFeed);
+                        return InstaResult.Fail(nextFeed.Info, tagFeed);
                     }
 
                     var convertedFeeds = Convert(nextFeed.Value);
@@ -382,17 +384,17 @@ namespace Wikiled.Instagram.Api.API.Processors
                     paginationParameters.PagesLoaded++;
                 }
 
-                return Result.Success(tagFeed);
+                return InstaResult.Success(tagFeed);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaTagFeed), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaTagFeed), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, tagFeed);
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, tagFeed);
             }
         }
 
@@ -404,9 +406,11 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <returns>
         ///     <see cref="InstaTopicalExploreFeed" />
         /// </returns>
-        public async Task<IResult<InstaTopicalExploreFeed>> GetTopicalExploreFeedAsync(PaginationParameters paginationParameters, string clusterId = null)
+        public async Task<IResult<InstaTopicalExploreFeed>> GetTopicalExploreFeedAsync(
+            PaginationParameters paginationParameters,
+            string clusterId = null)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             var topicalExploreFeed = new InstaTopicalExploreFeed();
             try
             {
@@ -417,7 +421,8 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 InstaTopicalExploreFeed Convert(InstaTopicalExploreFeedResponse topicalExploreFeedResponse)
                 {
-                    return ConvertersFabric.Instance.GetTopicalExploreFeedConverter(topicalExploreFeedResponse).Convert();
+                    return InstaConvertersFabric.Instance.GetTopicalExploreFeedConverter(topicalExploreFeedResponse)
+                        .Convert();
                 }
 
                 var feeds = await GetTopicalExploreFeed(paginationParameters, clusterId);
@@ -425,24 +430,24 @@ namespace Wikiled.Instagram.Api.API.Processors
                 {
                     if (feeds.Value != null)
                     {
-                        return Result.Fail(feeds.Info, Convert(feeds.Value));
+                        return InstaResult.Fail(feeds.Info, Convert(feeds.Value));
                     }
 
-                    return Result.Fail(feeds.Info, (InstaTopicalExploreFeed)null);
+                    return InstaResult.Fail(feeds.Info, (InstaTopicalExploreFeed)null);
                 }
 
                 var feedResponse = feeds.Value;
                 paginationParameters.NextMaxId = feedResponse.MaxId;
                 paginationParameters.RankToken = feedResponse.RankToken;
 
-                while (feedResponse.MoreAvailable
-                       && !string.IsNullOrEmpty(paginationParameters.NextMaxId)
-                       && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
+                while (feedResponse.MoreAvailable &&
+                    !string.IsNullOrEmpty(paginationParameters.NextMaxId) &&
+                    paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var nextFeed = await GetTopicalExploreFeed(paginationParameters, clusterId);
                     if (!nextFeed.Succeeded)
                     {
-                        return Result.Fail(nextFeed.Info, Convert(feeds.Value));
+                        return InstaResult.Fail(nextFeed.Info, Convert(feeds.Value));
                     }
 
                     feedResponse.NextMaxId = paginationParameters.NextMaxId = nextFeed.Value.MaxId;
@@ -453,7 +458,7 @@ namespace Wikiled.Instagram.Api.API.Processors
                     feedResponse.ResultsCount = nextFeed.Value.ResultsCount;
                     feedResponse.Channel = nextFeed.Value.Channel;
                     feedResponse.Medias.AddRange(nextFeed.Value.Medias);
-                    feedResponse.TVChannels.AddRange(nextFeed.Value.TVChannels);
+                    feedResponse.TvChannels.AddRange(nextFeed.Value.TvChannels);
                     feedResponse.Clusters.AddRange(nextFeed.Value.Clusters);
                     feedResponse.MaxId = nextFeed.Value.MaxId;
                     feedResponse.HasShoppingChannelContent = nextFeed.Value.HasShoppingChannelContent;
@@ -463,17 +468,17 @@ namespace Wikiled.Instagram.Api.API.Processors
                 topicalExploreFeed = Convert(feedResponse);
                 topicalExploreFeed.Medias.Pages = paginationParameters.PagesLoaded;
                 topicalExploreFeed.Medias.PageSize = feedResponse.ResultsCount;
-                return Result.Success(topicalExploreFeed);
+                return InstaResult.Success(topicalExploreFeed);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaTopicalExploreFeed), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaTopicalExploreFeed), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, topicalExploreFeed);
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, topicalExploreFeed);
             }
         }
 
@@ -486,9 +491,11 @@ namespace Wikiled.Instagram.Api.API.Processors
         /// <returns>
         ///     <see cref="InstaFeed" />
         /// </returns>
-        public async Task<IResult<InstaFeed>> GetUserTimelineFeedAsync(PaginationParameters paginationParameters, string[] seenMediaIds = null, bool refreshRequest = false)
+        public async Task<IResult<InstaFeed>> GetUserTimelineFeedAsync(PaginationParameters paginationParameters,
+                                                                       string[] seenMediaIds = null,
+                                                                       bool refreshRequest = false)
         {
-            UserAuthValidator.Validate(_userAuthValidate);
+            InstaUserAuthValidator.Validate(userAuthValidate);
             var feed = new InstaFeed();
             try
             {
@@ -499,13 +506,13 @@ namespace Wikiled.Instagram.Api.API.Processors
 
                 InstaFeed Convert(InstaFeedResponse instaFeedResponse)
                 {
-                    return ConvertersFabric.Instance.GetFeedConverter(instaFeedResponse).Convert();
+                    return InstaConvertersFabric.Instance.GetFeedConverter(instaFeedResponse).Convert();
                 }
 
                 var timelineFeeds = await GetUserTimelineFeed(paginationParameters, seenMediaIds, refreshRequest);
                 if (!timelineFeeds.Succeeded)
                 {
-                    return Result.Fail(timelineFeeds.Info, feed);
+                    return InstaResult.Fail(timelineFeeds.Info, feed);
                 }
 
                 var feedResponse = timelineFeeds.Value;
@@ -514,14 +521,14 @@ namespace Wikiled.Instagram.Api.API.Processors
                 paginationParameters.NextMaxId = feed.NextMaxId;
                 paginationParameters.PagesLoaded++;
 
-                while (feedResponse.MoreAvailable
-                       && !string.IsNullOrEmpty(paginationParameters.NextMaxId)
-                       && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
+                while (feedResponse.MoreAvailable &&
+                    !string.IsNullOrEmpty(paginationParameters.NextMaxId) &&
+                    paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var nextFeed = await GetUserTimelineFeed(paginationParameters);
                     if (!nextFeed.Succeeded)
                     {
-                        return Result.Fail(nextFeed.Info, feed);
+                        return InstaResult.Fail(nextFeed.Info, feed);
                     }
 
                     var convertedFeed = Convert(nextFeed.Value);
@@ -532,17 +539,17 @@ namespace Wikiled.Instagram.Api.API.Processors
                     paginationParameters.PagesLoaded++;
                 }
 
-                return Result.Success(feed);
+                return InstaResult.Success(feed);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaFeed), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaFeed), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, feed);
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, feed);
             }
         }
 
@@ -550,29 +557,29 @@ namespace Wikiled.Instagram.Api.API.Processors
         {
             try
             {
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaMediaListResponse>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaMediaListResponse>(response, json);
                 }
 
                 var mediaResponse = JsonConvert.DeserializeObject<InstaMediaListResponse>(
                     json,
                     new InstaMediaListDataConverter());
 
-                return Result.Success(mediaResponse);
+                return InstaResult.Success(mediaResponse);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaMediaListResponse), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaMediaListResponse), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaMediaListResponse>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaMediaListResponse>(exception);
             }
         }
 
@@ -580,30 +587,31 @@ namespace Wikiled.Instagram.Api.API.Processors
         {
             try
             {
-                var exploreUri = UriCreator.GetExploreUri(paginationParameters.NextMaxId, paginationParameters.RankToken);
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, exploreUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var exploreUri =
+                    InstaUriCreator.GetExploreUri(paginationParameters.NextMaxId, paginationParameters.RankToken);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, exploreUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaExploreFeedResponse>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaExploreFeedResponse>(response, json);
                 }
 
                 var feedResponse = JsonConvert.DeserializeObject<InstaExploreFeedResponse>(
                     json,
                     new InstaExploreFeedDataConverter());
-                return Result.Success(feedResponse);
+                return InstaResult.Success(feedResponse);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaExploreFeedResponse), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaExploreFeedResponse), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaExploreFeedResponse>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaExploreFeedResponse>(exception);
             }
         }
 
@@ -611,29 +619,29 @@ namespace Wikiled.Instagram.Api.API.Processors
         {
             try
             {
-                var uri = UriCreator.GetFollowingRecentActivityUri(maxId);
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, uri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var uri = InstaUriCreator.GetFollowingRecentActivityUri(maxId);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, uri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaRecentActivityResponse>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaRecentActivityResponse>(response, json);
                 }
 
                 var followingActivity = JsonConvert.DeserializeObject<InstaRecentActivityResponse>(
                     json,
                     new InstaRecentActivityConverter());
-                return Result.Success(followingActivity);
+                return InstaResult.Success(followingActivity);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaRecentActivityResponse), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaRecentActivityResponse), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaRecentActivityResponse>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaRecentActivityResponse>(exception);
             }
         }
 
@@ -643,14 +651,14 @@ namespace Wikiled.Instagram.Api.API.Processors
         {
             try
             {
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, uri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request, HttpCompletionOption.ResponseContentRead);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, uri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request, HttpCompletionOption.ResponseContentRead);
                 var activityFeed = new InstaActivityFeed();
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaActivityFeed>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaActivityFeed>(response, json);
                 }
 
                 var feedPage = JsonConvert.DeserializeObject<InstaRecentActivityResponse>(
@@ -659,73 +667,76 @@ namespace Wikiled.Instagram.Api.API.Processors
                 activityFeed.IsOwnActivity = feedPage.IsOwnActivity;
                 var nextId = feedPage.NextMaxId;
                 activityFeed.Items.AddRange(
-                    feedPage.Stories.Select(ConvertersFabric.Instance.GetSingleRecentActivityConverter)
-                            .Select(converter => converter.Convert()));
+                    feedPage.Stories.Select(InstaConvertersFabric.Instance.GetSingleRecentActivityConverter)
+                        .Select(converter => converter.Convert()));
                 paginationParameters.PagesLoaded++;
                 activityFeed.NextMaxId = paginationParameters.NextMaxId = feedPage.NextMaxId;
-                while (!string.IsNullOrEmpty(nextId)
-                       && paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
+                while (!string.IsNullOrEmpty(nextId) &&
+                    paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var nextFollowingFeed = await GetFollowingActivityWithMaxIdAsync(nextId);
                     if (!nextFollowingFeed.Succeeded)
                     {
-                        return Result.Fail(nextFollowingFeed.Info, activityFeed);
+                        return InstaResult.Fail(nextFollowingFeed.Info, activityFeed);
                     }
 
                     nextId = nextFollowingFeed.Value.NextMaxId;
                     activityFeed.Items.AddRange(
-                        feedPage.Stories.Select(ConvertersFabric.Instance.GetSingleRecentActivityConverter)
-                                .Select(converter => converter.Convert()));
+                        feedPage.Stories.Select(InstaConvertersFabric.Instance.GetSingleRecentActivityConverter)
+                            .Select(converter => converter.Convert()));
                     paginationParameters.PagesLoaded++;
                     activityFeed.NextMaxId = paginationParameters.NextMaxId = nextId;
                 }
 
-                return Result.Success(activityFeed);
+                return InstaResult.Success(activityFeed);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaActivityFeed), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaActivityFeed), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaActivityFeed>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaActivityFeed>(exception);
             }
         }
 
-        private async Task<IResult<InstaTagFeedResponse>> GetTagFeed(string tag, PaginationParameters paginationParameters)
+        private async Task<IResult<InstaTagFeedResponse>> GetTagFeed(string tag,
+                                                                     PaginationParameters paginationParameters)
         {
             try
             {
-                var userFeedUri = UriCreator.GetTagFeedUri(tag, paginationParameters?.NextMaxId);
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, userFeedUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var userFeedUri = InstaUriCreator.GetTagFeedUri(tag, paginationParameters?.NextMaxId);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, userFeedUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaTagFeedResponse>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaTagFeedResponse>(response, json);
                 }
 
                 var feedResponse = JsonConvert.DeserializeObject<InstaTagFeedResponse>(
                     json,
                     new InstaTagFeedDataConverter());
-                return Result.Success(feedResponse);
+                return InstaResult.Success(feedResponse);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaTagFeedResponse), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaTagFeedResponse), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, default(InstaTagFeedResponse));
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, default(InstaTagFeedResponse));
             }
         }
 
-        private async Task<IResult<InstaTopicalExploreFeedResponse>> GetTopicalExploreFeed(PaginationParameters paginationParameters, string clusterId)
+        private async Task<IResult<InstaTopicalExploreFeedResponse>> GetTopicalExploreFeed(
+            PaginationParameters paginationParameters,
+            string clusterId)
         {
             try
             {
@@ -734,51 +745,59 @@ namespace Wikiled.Instagram.Api.API.Processors
                     clusterId = "explore_all:0";
                 }
 
-                var exploreUri = UriCreator.GetTopicalExploreUri(_deviceInfo.GoogleAdId.ToString(), paginationParameters?.NextMaxId, clusterId);
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Get, exploreUri, _deviceInfo);
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var exploreUri =
+                    InstaUriCreator.GetTopicalExploreUri(deviceInfo.GoogleAdId.ToString(),
+                                                    paginationParameters?.NextMaxId,
+                                                    clusterId);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Get, exploreUri, deviceInfo);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaTopicalExploreFeedResponse>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaTopicalExploreFeedResponse>(response, json);
                 }
 
                 var feedResponse = JsonConvert.DeserializeObject<InstaTopicalExploreFeedResponse>(
                     json,
                     new InstaTopicalExploreFeedDataConverter());
 
-                return Result.Success(feedResponse);
+                return InstaResult.Success(feedResponse);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaTopicalExploreFeedResponse), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException,
+                                   default(InstaTopicalExploreFeedResponse),
+                                   InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail<InstaTopicalExploreFeedResponse>(exception);
+                logger?.LogException(exception);
+                return InstaResult.Fail<InstaTopicalExploreFeedResponse>(exception);
             }
         }
 
-        private async Task<IResult<InstaFeedResponse>> GetUserTimelineFeed(PaginationParameters paginationParameters, string[] seenMediaIds = null, bool refreshRequest = false)
+        private async Task<IResult<InstaFeedResponse>> GetUserTimelineFeed(
+            PaginationParameters paginationParameters,
+            string[] seenMediaIds = null,
+            bool refreshRequest = false)
         {
             try
             {
-                var userFeedUri = UriCreator.GetUserFeedUri(paginationParameters?.NextMaxId);
+                var userFeedUri = InstaUriCreator.GetUserFeedUri(paginationParameters?.NextMaxId);
 
                 var data = new Dictionary<string, string>
-                           {
-                               {"is_prefetch", "0"},
-                               {"_csrftoken", _user.CsrfToken},
-                               {"_uuid", _deviceInfo.DeviceGuid.ToString()},
-                               {"device_id", _deviceInfo.PhoneGuid.ToString()},
-                               {"phone_id", _deviceInfo.RankToken.ToString()},
-                               {"client_session_id", Guid.NewGuid().ToString()},
-                               {"timezone_offset", _instaApi.GetTimezoneOffset().ToString()},
-                               {"rti_delivery_backend", "0"}
-                           };
+                {
+                    { "is_prefetch", "0" },
+                    { "_csrftoken", user.CsrfToken },
+                    { "_uuid", deviceInfo.DeviceGuid.ToString() },
+                    { "device_id", deviceInfo.PhoneGuid.ToString() },
+                    { "phone_id", deviceInfo.RankToken.ToString() },
+                    { "client_session_id", Guid.NewGuid().ToString() },
+                    { "timezone_offset", instaApi.GetTimezoneOffset().ToString() },
+                    { "rti_delivery_backend", "0" }
+                };
 
                 if (seenMediaIds != null)
                 {
@@ -795,33 +814,33 @@ namespace Wikiled.Instagram.Api.API.Processors
                     data.Add("reason", "warm_start_fetch");
                 }
 
-                var request = _httpHelper.GetDefaultRequest(HttpMethod.Post, userFeedUri, _deviceInfo, data);
+                var request = httpHelper.GetDefaultRequest(HttpMethod.Post, userFeedUri, deviceInfo, data);
                 request.Headers.Add("X-Ads-Opt-Out", "0");
-                request.Headers.Add("X-Google-AD-ID", _deviceInfo.GoogleAdId.ToString());
-                request.Headers.Add("X-DEVICE-ID", _deviceInfo.DeviceGuid.ToString());
+                request.Headers.Add("X-Google-AD-ID", deviceInfo.GoogleAdId.ToString());
+                request.Headers.Add("X-DEVICE-ID", deviceInfo.DeviceGuid.ToString());
 
-                var response = await _httpRequestProcessor.SendAsync(request);
+                var response = await httpRequestProcessor.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<InstaFeedResponse>(response, json);
+                    return InstaResult.UnExpectedResponse<InstaFeedResponse>(response, json);
                 }
 
                 var feedResponse = JsonConvert.DeserializeObject<InstaFeedResponse>(
                     json,
                     new InstaFeedResponseDataConverter());
-                return Result.Success(feedResponse);
+                return InstaResult.Success(feedResponse);
             }
             catch (HttpRequestException httpException)
             {
-                _logger?.LogException(httpException);
-                return Result.Fail(httpException, default(InstaFeedResponse), ResponseType.NetworkProblem);
+                logger?.LogException(httpException);
+                return InstaResult.Fail(httpException, default(InstaFeedResponse), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                _logger?.LogException(exception);
-                return Result.Fail(exception, default(InstaFeedResponse));
+                logger?.LogException(exception);
+                return InstaResult.Fail(exception, default(InstaFeedResponse));
             }
         }
     }

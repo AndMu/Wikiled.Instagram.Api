@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Wikiled.Instagram.Api.Classes.Android.DeviceInfo;
 
 namespace Wikiled.Instagram.Api.Classes
 {
@@ -12,7 +13,7 @@ namespace Wikiled.Instagram.Api.Classes
 
         HttpClientHandler HttpHandler { get; set; }
 
-        ApiRequestMessage RequestMessage { get; }
+        InstaApiRequestMessage RequestMessage { get; }
 
         Task<string> GeJsonAsync(Uri requestUri);
 

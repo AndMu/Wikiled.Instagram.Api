@@ -1,28 +1,27 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.TV;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.TV;
 
 namespace Wikiled.Instagram.Api.Converters.TV
 {
-    internal class InstaTVSearchResultConverter : IObjectConverter<InstaTVSearchResult, InstaTVSearchResultResponse>
+    internal class InstaTvSearchResultConverter : IObjectConverter<InstaTvSearchResult, InstaTvSearchResultResponse>
     {
-        public InstaTVSearchResultResponse SourceObject { get; set; }
+        public InstaTvSearchResultResponse SourceObject { get; set; }
 
-        public InstaTVSearchResult Convert()
+        public InstaTvSearchResult Convert()
         {
             if (SourceObject == null)
             {
                 throw new ArgumentNullException("SourceObject");
             }
 
-            var search = new InstaTVSearchResult
-                         {
-                             Type = SourceObject.Type
-                         };
+            var search = new InstaTvSearchResult { Type = SourceObject.Type };
 
             if (SourceObject.Channel != null)
             {
                 try
                 {
-                    search.Channel = ConvertersFabric.Instance.GetTVChannelConverter(SourceObject.Channel).Convert();
+                    search.Channel = InstaConvertersFabric.Instance.GetTvChannelConverter(SourceObject.Channel).Convert();
                 }
                 catch
                 {
@@ -33,7 +32,8 @@ namespace Wikiled.Instagram.Api.Converters.TV
             {
                 try
                 {
-                    search.User = ConvertersFabric.Instance.GetUserShortFriendshipConverter(SourceObject.User).Convert();
+                    search.User = InstaConvertersFabric.Instance.GetUserShortFriendshipConverter(SourceObject.User)
+                        .Convert();
                 }
                 catch
                 {

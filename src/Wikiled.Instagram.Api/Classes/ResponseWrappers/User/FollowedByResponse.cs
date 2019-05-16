@@ -2,8 +2,9 @@
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.User
 {
-    public class FollowedByResponse
+    public class InstaFollowedByResponse
     {
-        [JsonProperty("count")] public int Count { get; set; }
+        [JsonProperty("count")]
+        public int Count { get; set; }
     }
 }

@@ -1,4 +1,7 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.Location
+﻿using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+
+namespace Wikiled.Instagram.Api.Classes.Models.Location
 {
     public class InstaLocationFeed : InstaBaseFeed
     {

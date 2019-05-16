@@ -83,7 +83,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\InstagramApiSharp\Wikiled.Instagram.Api.csproj">
+    <ProjectReference Include="..\..\src\Wikiled.Instagram.Api\Wikiled.Instagram.Api.csproj">
       <Project>{2a588963-cebe-47ec-bfbb-2f3d405e4c80}</Project>
       <Name>Wikiled.Instagram.Api</Name>
     </ProjectReference>

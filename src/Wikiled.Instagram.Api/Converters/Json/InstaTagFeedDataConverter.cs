@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Feed;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
 
 namespace Wikiled.Instagram.Api.Converters.Json
 {
@@ -32,7 +35,8 @@ namespace Wikiled.Instagram.Api.Converters.Json
             List<InstaMediaItemResponse> GetMedias(JToken token)
             {
                 return token.Select(item => item?.ToObject<InstaMediaItemResponse>())
-                            .Where(media => !string.IsNullOrEmpty(media?.Pk)).ToList();
+                    .Where(media => !string.IsNullOrEmpty(media?.Pk))
+                    .ToList();
             }
 
             if (items != null)

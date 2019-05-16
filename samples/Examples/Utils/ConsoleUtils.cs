@@ -1,9 +1,9 @@
 ﻿using System;
-using InstagramApiSharp.Classes.Models;
+using Wikiled.Instagram.Api.Classes.Models.Media;
 
 namespace Examples.Utils
 {
-    public static class ConsoleUtils
+    public static class InstaConsoleUtils
     {
         public static void PrintMedia(string header, InstaMedia media, int maxDescriptionLength)
         {

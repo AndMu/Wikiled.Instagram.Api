@@ -19,14 +19,17 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Business
         [JsonProperty("followers_top_countries_graph")]
         public InstaStatisticsDataPointsResponse FollowersTopCountriesGraph { get; set; }
 
-        [JsonProperty("followers_unit_state")] public string FollowersUnitState { get; set; }
+        [JsonProperty("followers_unit_state")]
+        public string FollowersUnitState { get; set; }
 
-        [JsonProperty("gender_graph")] public InstaStatisticsDataPointsResponse GenderGraph { get; set; }
+        [JsonProperty("gender_graph")]
+        public InstaStatisticsDataPointsResponse GenderGraph { get; set; }
 
         [JsonProperty("men_followers_age_graph")]
         public InstaStatisticsDataPointsResponse MenFollowersAgeGraph { get; set; }
 
-        [JsonProperty("today_hourly_graph")] public InstaStatisticsDataPointsResponse TodayHourlyGraph { get; set; }
+        [JsonProperty("today_hourly_graph")]
+        public InstaStatisticsDataPointsResponse TodayHourlyGraph { get; set; }
 
         [JsonProperty("week_daily_followers_graph")]
         public InstaStatisticsDataPointsResponse WeekDailyFollowersGraph { get; set; }

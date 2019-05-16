@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using Wikiled.Instagram.Api.Classes.Models.Location;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Location;
 
 namespace Wikiled.Instagram.Api.Converters.Location
 {
@@ -17,7 +20,7 @@ namespace Wikiled.Instagram.Api.Converters.Location
             locations.AddRange(
                 SourceObject.Locations.Select(
                     location =>
-                        ConvertersFabric.Instance.GetLocationShortConverter(location).Convert()));
+                        InstaConvertersFabric.Instance.GetLocationShortConverter(location).Convert()));
             return locations;
         }
     }

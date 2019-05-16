@@ -1,4 +1,7 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Web;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Web;
+using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Web
 {
@@ -25,7 +28,8 @@ namespace Wikiled.Instagram.Api.Converters.Web
 
             if (SourceObject.SwitchedToBusiness?.Data?.Timestamp != null)
             {
-                info.SwitchedToBusinessDate = SourceObject.SwitchedToBusiness?.Data?.Timestamp.Value.FromUnixTimeSeconds();
+                info.SwitchedToBusinessDate =
+                    SourceObject.SwitchedToBusiness?.Data?.Timestamp.Value.FromUnixTimeSeconds();
             }
             else
             {

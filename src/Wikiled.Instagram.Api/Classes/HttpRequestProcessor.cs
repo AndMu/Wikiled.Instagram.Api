@@ -1,25 +1,27 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Wikiled.Instagram.Api.Classes.Android.DeviceInfo;
+using Wikiled.Instagram.Api.Logger;
 
 namespace Wikiled.Instagram.Api.Classes
 {
-    internal class HttpRequestProcessor : IHttpRequestProcessor
+    internal class InstaHttpRequestProcessor : IHttpRequestProcessor
     {
-        private readonly IInstaLogger _logger;
+        private readonly IInstaLogger logger;
 
-        public HttpRequestProcessor(
+        public InstaHttpRequestProcessor(
             IRequestDelay delay,
             HttpClient httpClient,
             HttpClientHandler httpHandler,
-            ApiRequestMessage requestMessage,
+            InstaApiRequestMessage requestMessage,
             IInstaLogger logger)
         {
             Delay = delay;
             Client = httpClient;
             HttpHandler = httpHandler;
             RequestMessage = requestMessage;
-            _logger = logger;
+            this.logger = logger;
         }
 
         public HttpClient Client { get; set; }
@@ -28,11 +30,11 @@ namespace Wikiled.Instagram.Api.Classes
 
         public HttpClientHandler HttpHandler { get; set; }
 
-        public ApiRequestMessage RequestMessage { get; }
+        public InstaApiRequestMessage RequestMessage { get; }
 
         public async Task<string> GeJsonAsync(Uri requestUri)
         {
-            _logger?.LogRequest(requestUri);
+            logger?.LogRequest(requestUri);
             if (Delay.Exist)
             {
                 await Task.Delay(Delay.Value);
@@ -45,7 +47,7 @@ namespace Wikiled.Instagram.Api.Classes
 
         public async Task<HttpResponseMessage> GetAsync(Uri requestUri)
         {
-            _logger?.LogRequest(requestUri);
+            logger?.LogRequest(requestUri);
             if (Delay.Exist)
             {
                 await Task.Delay(Delay.Value);
@@ -107,12 +109,12 @@ namespace Wikiled.Instagram.Api.Classes
 
         private void LogHttpRequest(HttpRequestMessage request)
         {
-            _logger?.LogRequest(request);
+            logger?.LogRequest(request);
         }
 
         private void LogHttpResponse(HttpResponseMessage request)
         {
-            _logger?.LogResponse(request);
+            logger?.LogResponse(request);
         }
     }
 }

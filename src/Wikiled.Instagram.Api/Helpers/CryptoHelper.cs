@@ -2,10 +2,11 @@
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Wikiled.Instagram.Api.Logic;
 
 namespace Wikiled.Instagram.Api.Helpers
 {
-    internal class CryptoHelper
+    internal class InstaCryptoHelper
     {
         public static string Base64Decode(string base64EncodedData)
         {
@@ -49,13 +50,13 @@ namespace Wikiled.Instagram.Api.Helpers
 
             //Reference http://en.wikipedia.org/wiki/Secure_Hash_Algorithm
             //SHA256 block size is 512 bits => 64 bytes.
-            const int HashBlockSize = 64;
+            const int hashBlockSize = 64;
 
             var keyBytes = encoding.GetBytes(key);
-            var opadKeySet = new byte[HashBlockSize];
-            var ipadKeySet = new byte[HashBlockSize];
+            var opadKeySet = new byte[hashBlockSize];
+            var ipadKeySet = new byte[hashBlockSize];
 
-            if (keyBytes.Length > HashBlockSize)
+            if (keyBytes.Length > hashBlockSize)
             {
                 keyBytes = GetHash(keyBytes);
             }
@@ -64,9 +65,9 @@ namespace Wikiled.Instagram.Api.Helpers
             // condition. If previous was true
             // we still need to execute this to make keyBytes same length
             // as blocksize with 0 padded if its less than block size
-            if (keyBytes.Length < HashBlockSize)
+            if (keyBytes.Length < hashBlockSize)
             {
-                var newKeyBytes = new byte[HashBlockSize];
+                var newKeyBytes = new byte[hashBlockSize];
                 keyBytes.CopyTo(newKeyBytes, 0);
                 keyBytes = newKeyBytes;
             }
@@ -84,7 +85,7 @@ namespace Wikiled.Instagram.Api.Helpers
 
             // Convert to standard hex string 
             return hash.Select(a => a.ToString("x2"))
-                       .Aggregate((a, b) => $"{a}{b}");
+                .Aggregate((a, b) => $"{a}{b}");
         }
 
         public static string CalculateMd5(string message)
@@ -101,9 +102,9 @@ namespace Wikiled.Instagram.Api.Helpers
 
         public static string GetCommentBreadCrumbEncoded(string text)
         {
-            const string key = InstaApiConstants.COMMENT_BREADCRUMB_KEY;
+            const string key = InstaApiConstants.CommentBreadcrumbKey;
 
-            var date = Convert.ToInt64(DateTimeHelper.GetUnixTimestampMilliseconds(DateTime.Now));
+            var date = Convert.ToInt64(InstaDateTimeHelper.GetUnixTimestampMilliseconds(DateTime.Now));
             var rnd = new Random(DateTime.Now.Millisecond);
             var msgSize = text.Length;
             var term = rnd.Next(2, 3) * 1000 + msgSize * rnd.Next(15, 20) * 100;

@@ -1,8 +1,11 @@
 ﻿using System;
+using Wikiled.Instagram.Api.Classes.Models.Story;
+using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
 
 namespace Wikiled.Instagram.Api.Converters.Stories
 {
-    internal class InstaStoryTalliesItemConverter : IObjectConverter<InstaStoryTalliesItem, InstaStoryTalliesItemResponse>
+    internal class
+        InstaStoryTalliesItemConverter : IObjectConverter<InstaStoryTalliesItem, InstaStoryTalliesItemResponse>
     {
         public InstaStoryTalliesItemResponse SourceObject { get; set; }
 
@@ -14,11 +17,9 @@ namespace Wikiled.Instagram.Api.Converters.Stories
             }
 
             var tallies = new InstaStoryTalliesItem
-                          {
-                              Count = SourceObject.Count,
-                              FontSize = SourceObject.FontSize,
-                              Text = SourceObject.Text
-                          };
+            {
+                Count = SourceObject.Count, FontSize = SourceObject.FontSize, Text = SourceObject.Text
+            };
             return tallies;
         }
     }

@@ -40,7 +40,7 @@ namespace Wikiled.Instagram.Api.Classes
 
         public static PaginationParameters MaxPagesToLoad(int maxPagesToLoad)
         {
-            return new PaginationParameters {MaximumPagesToLoad = maxPagesToLoad};
+            return new PaginationParameters { MaximumPagesToLoad = maxPagesToLoad };
         }
 
         public PaginationParameters StartFromMaxId(string maxId)
