@@ -59,11 +59,10 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="userId">User id (pk) => channel owner</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        public async Task<IResult<InstaTvChannel>> GetChannelByIdAsync(long userId,
-                                                                       PaginationParameters paginationParameters)
+        public Task<IResult<InstaTvChannel>> GetChannelByIdAsync(long userId, PaginationParameters paginationParameters)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
-            return await GetChannel(null, userId, paginationParameters).ConfigureAwait(false);
+            return GetChannel(null, userId, paginationParameters);
         }
 
         /// <summary>
@@ -71,12 +70,10 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="channelType">Channel type</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        public async Task<IResult<InstaTvChannel>> GetChannelByTypeAsync(
-            InstaTvChannelType channelType,
-            PaginationParameters paginationParameters)
+        public Task<IResult<InstaTvChannel>> GetChannelByTypeAsync(InstaTvChannelType channelType, PaginationParameters paginationParameters)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
-            return await GetChannel(channelType, null, paginationParameters).ConfigureAwait(false);
+            return GetChannel(channelType, null, paginationParameters);
         }
 
         /// <summary>
@@ -191,9 +188,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </param>
         /// <param name="title">Title</param>
         /// <param name="caption">Caption</param>
-        public async Task<IResult<InstaMedia>> UploadVideoAsync(InstaVideoUpload video, string title, string caption)
+        public Task<IResult<InstaMedia>> UploadVideoAsync(InstaVideoUpload video, string title, string caption)
         {
-            return await UploadVideoAsync(null, video, title, caption).ConfigureAwait(false);
+            return UploadVideoAsync(null, video, title, caption);
         }
 
         /// <summary>
@@ -206,13 +203,10 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </param>
         /// <param name="title">Title</param>
         /// <param name="caption">Caption</param>
-        public async Task<IResult<InstaMedia>> UploadVideoAsync(Action<InstaUploaderProgress> progress,
-                                                                InstaVideoUpload video,
-                                                                string title,
-                                                                string caption)
+        public Task<IResult<InstaMedia>> UploadVideoAsync(Action<InstaUploaderProgress> progress, InstaVideoUpload video, string title, string caption)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
-            return await instaApi.HelperProcessor.SendIgtvVideoAsync(progress, video, title, caption).ConfigureAwait(false);
+            return instaApi.HelperProcessor.SendIgtvVideoAsync(progress, video, title, caption);
         }
 
         private async Task<IResult<InstaTvChannel>> GetChannel(InstaTvChannelType? channelType,

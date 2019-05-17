@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -142,38 +143,38 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     Block user
         /// </summary>
         /// <param name="userId">User id</param>
-        public async Task<IResult<InstaFriendshipFullStatus>> BlockUserAsync(long userId)
+        public Task<IResult<InstaFriendshipFullStatus>> BlockUserAsync(long userId)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
-            return await BlockUnblockUserInternal(userId, InstaUriCreator.GetBlockUserUri(userId)).ConfigureAwait(false);
+            return BlockUnblockUserInternal(userId, InstaUriCreator.GetBlockUserUri(userId));
         }
 
         /// <summary>
         ///     Favorite user (user must be in your following list)
         /// </summary>
         /// <param name="userId">User id (pk)</param>
-        public async Task<IResult<bool>> FavoriteUserAsync(long userId)
+        public Task<IResult<bool>> FavoriteUserAsync(long userId)
         {
-            return await FavoriteUnfavoriteUser(InstaUriCreator.GetFavoriteUserUri(userId), userId).ConfigureAwait(false);
+            return FavoriteUnfavoriteUser(InstaUriCreator.GetFavoriteUserUri(userId), userId);
         }
 
         /// <summary>
         ///     Favorite user stories (user must be in your following list)
         /// </summary>
         /// <param name="userId">User id (pk)</param>
-        public async Task<IResult<bool>> FavoriteUserStoriesAsync(long userId)
+        public Task<IResult<bool>> FavoriteUserStoriesAsync(long userId)
         {
-            return await FavoriteUnfavoriteUser(InstaUriCreator.GetFavoriteForUserStoriesUri(userId), userId).ConfigureAwait(false);
+            return FavoriteUnfavoriteUser(InstaUriCreator.GetFavoriteForUserStoriesUri(userId), userId);
         }
 
         /// <summary>
         ///     Follow user
         /// </summary>
         /// <param name="userId">User id</param>
-        public async Task<IResult<InstaFriendshipFullStatus>> FollowUserAsync(long userId)
+        public Task<IResult<InstaFriendshipFullStatus>> FollowUserAsync(long userId)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
-            return await FollowUnfollowUserInternal(userId, InstaUriCreator.GetFollowUserUri(userId)).ConfigureAwait(false);
+            return FollowUnfollowUserInternal(userId, InstaUriCreator.GetFollowUserUri(userId));
         }
 
         /// <summary>
@@ -183,9 +184,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="InstaUserShortList" />
         /// </returns>
-        public async Task<IResult<InstaUserShortList>> GetBestFriendsAsync(PaginationParameters paginationParameters)
+        public Task<IResult<InstaUserShortList>> GetBestFriendsAsync(PaginationParameters paginationParameters)
         {
-            return await GetBesties(paginationParameters).ConfigureAwait(false);
+            return GetBesties(paginationParameters);
         }
 
         /// <summary>
@@ -195,10 +196,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="InstaUserShortList" />
         /// </returns>
-        public async Task<IResult<InstaUserShortList>> GetBestFriendsSuggestionsAsync(
-            PaginationParameters paginationParameters)
+        public Task<IResult<InstaUserShortList>> GetBestFriendsSuggestionsAsync(PaginationParameters paginationParameters)
         {
-            return await GetBesties(paginationParameters, true).ConfigureAwait(false);
+            return GetBesties(paginationParameters, true);
         }
 
         /// <summary>
@@ -326,18 +326,16 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="InstaUserShortList" />
         /// </returns>
-        public async Task<IResult<InstaUserShortList>> GetCurrentUserFollowersAsync(
-            PaginationParameters paginationParameters)
+        public Task<IResult<InstaUserShortList>> GetCurrentUserFollowersAsync(PaginationParameters paginationParameters)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
-            return await GetUserFollowersAsync(user.UserName, paginationParameters, string.Empty).ConfigureAwait(false);
+            return GetUserFollowersAsync(user.UserName, paginationParameters, string.Empty);
         }
 
-        public async Task<IResult<InstaActivityFeed>> GetFollowingRecentActivityFeedAsync(
-            PaginationParameters paginationParameters)
+        public Task<IResult<InstaActivityFeed>> GetFollowingRecentActivityFeedAsync(PaginationParameters paginationParameters)
         {
             var uri = InstaUriCreator.GetFollowingRecentActivityUri(paginationParameters.NextMaxId);
-            return await GetRecentActivityInternalAsync(uri, paginationParameters).ConfigureAwait(false);
+            return GetRecentActivityInternalAsync(uri, paginationParameters);
         }
 
         /// <summary>
@@ -504,11 +502,10 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
         }
 
-        public async Task<IResult<InstaActivityFeed>> GetRecentActivityFeedAsync(
-            PaginationParameters paginationParameters)
+        public Task<IResult<InstaActivityFeed>> GetRecentActivityFeedAsync(PaginationParameters paginationParameters)
         {
             var uri = InstaUriCreator.GetRecentActivityUri();
-            return await GetRecentActivityInternalAsync(uri, paginationParameters).ConfigureAwait(false);
+            return GetRecentActivityInternalAsync(uri, paginationParameters);
         }
 
         /// <summary>
@@ -1058,18 +1055,20 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="InstaMediaList" />
         /// </returns>
-        public async Task<IResult<InstaMediaList>> GetUserMediaAsync(
-            string username,
-            PaginationParameters paginationParameters)
+        public IObservable<InstaMedia> GetUserMedia(string username, PaginationParameters paginationParameters)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
-            var user = await GetUserAsync(username).ConfigureAwait(false);
-            if (!user.Succeeded)
-            {
-                return InstaResult.Fail<InstaMediaList>("Unable to get user to load media");
-            }
+            return Observable.Create<InstaMedia>(
+                async obs =>
+                {
+                    var user = await GetUserAsync(username).ConfigureAwait(false);
+                    if (!user.Succeeded)
+                    {
+                        obs.OnError(new Exception("Failed to load"));
+                    }
 
-            return await GetUserMediaByIdAsync(user.Value.Pk, paginationParameters).ConfigureAwait(false);
+                    return GetUserMediaById(user.Value.Pk, paginationParameters).Subscribe(obs);
+                });
         }
 
         /// <summary>
@@ -1080,72 +1079,63 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="InstaMediaList" />
         /// </returns>
-        public async Task<IResult<InstaMediaList>> GetUserMediaByIdAsync(
-            long userId,
-            PaginationParameters paginationParameters)
+        public IObservable<InstaMedia> GetUserMediaById(long userId, PaginationParameters paginationParameters)
         {
-            var mediaList = new InstaMediaList();
-            try
-            {
-                if (paginationParameters == null)
+            return Observable.Create<InstaMedia>(
+                async obs =>
                 {
-                    paginationParameters = PaginationParameters.MaxPagesToLoad(1);
-                }
-
-                InstaMediaList Convert(InstaMediaListResponse mediaListResponse)
-                {
-                    return InstaConvertersFabric.Instance.GetMediaListConverter(mediaListResponse).Convert();
-                }
-
-                var mediaResult = await GetUserMedia(userId, paginationParameters).ConfigureAwait(false);
-                if (!mediaResult.Succeeded)
-                {
-                    if (mediaResult.Value != null)
+                    try
                     {
-                        return InstaResult.Fail(mediaResult.Info, Convert(mediaResult.Value));
+                        if (paginationParameters == null)
+                        {
+                            paginationParameters = PaginationParameters.MaxPagesToLoad(1);
+                        }
+
+                        InstaMediaList Convert(InstaMediaListResponse mediaListResponse)
+                        {
+                            return InstaConvertersFabric.Instance.GetMediaListConverter(mediaListResponse).Convert();
+                        }
+
+                        var mediaResult = await GetUserMedia(userId, paginationParameters).ConfigureAwait(false);
+                        if (!mediaResult.Succeeded)
+                        {
+                            obs.OnError(new Exception("Failed to load"));
+                        }
+
+                        var mediaResponse = mediaResult.Value;
+
+                        paginationParameters.PagesLoaded++;
+                        paginationParameters.NextMaxId = mediaResponse.NextMaxId;
+                        while (mediaResponse.MoreAvailable &&
+                            !string.IsNullOrEmpty(paginationParameters.NextMaxId) &&
+                            paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
+                        {
+                            var nextMedia = await GetUserMedia(userId, paginationParameters).ConfigureAwait(false);
+                            if (!nextMedia.Succeeded)
+                            {
+                                obs.OnError(new Exception("Failed to load"));
+                            }
+
+                            paginationParameters.NextMaxId = nextMedia.Value.NextMaxId;
+                            mediaResponse.MoreAvailable = nextMedia.Value.MoreAvailable;
+                            mediaResponse.ResultsCount += nextMedia.Value.ResultsCount;
+                            var data = Convert(nextMedia.Value);
+                            foreach (var item in data)
+                            {
+                                obs.OnNext(item);
+                            }
+                          
+                            paginationParameters.PagesLoaded++;
+                        }
+
+                        obs.OnCompleted();
                     }
-
-                    return InstaResult.Fail(mediaResult.Info, default(InstaMediaList));
-                }
-
-                var mediaResponse = mediaResult.Value;
-
-                mediaList = Convert(mediaResponse);
-                mediaList.NextMaxId = paginationParameters.NextMaxId = mediaResponse.NextMaxId;
-                paginationParameters.PagesLoaded++;
-
-                while (mediaResponse.MoreAvailable &&
-                    !string.IsNullOrEmpty(paginationParameters.NextMaxId) &&
-                    paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
-                {
-                    var nextMedia = await GetUserMedia(userId, paginationParameters).ConfigureAwait(false);
-                    if (!nextMedia.Succeeded)
+                    catch (Exception exception)
                     {
-                        return InstaResult.Fail(nextMedia.Info, mediaList);
+                        logger?.LogError(exception, "Error");
+                        obs.OnError(exception);
                     }
-
-                    mediaResponse.MoreAvailable = nextMedia.Value.MoreAvailable;
-                    mediaResponse.ResultsCount += nextMedia.Value.ResultsCount;
-                    mediaList.NextMaxId = mediaResponse.NextMaxId =
-                        paginationParameters.NextMaxId = nextMedia.Value.NextMaxId;
-                    mediaList.AddRange(Convert(nextMedia.Value));
-                    paginationParameters.PagesLoaded++;
-                }
-
-                mediaList.Pages = paginationParameters.PagesLoaded;
-                mediaList.PageSize = mediaResponse.ResultsCount;
-                return InstaResult.Success(mediaList);
-            }
-            catch (HttpRequestException httpException)
-            {
-                logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaMediaList), InstaResponseType.NetworkProblem);
-            }
-            catch (Exception exception)
-            {
-                logger?.LogError(exception, "Error");
-                return InstaResult.Fail(exception, mediaList);
-            }
+                });
         }
 
         /// <summary>
@@ -1156,11 +1146,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="InstaMediaList" />
         /// </returns>
-        public async Task<IResult<InstaMediaList>> GetUserShoppableMediaAsync(
-            string username,
-            PaginationParameters paginationParameters)
+        public Task<IResult<InstaMediaList>> GetUserShoppableMediaAsync(string username, PaginationParameters paginationParameters)
         {
-            return await instaApi.ShoppingProcessor.GetUserShoppableMediaAsync(username, paginationParameters).ConfigureAwait(false);
+            return instaApi.ShoppingProcessor.GetUserShoppableMediaAsync(username, paginationParameters);
         }
 
         /// <summary>
@@ -1313,9 +1301,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     Hide my story from specific user
         /// </summary>
         /// <param name="userId">User id</param>
-        public async Task<IResult<InstaStoryFriendshipStatus>> HideMyStoryFromUserAsync(long userId)
+        public Task<IResult<InstaStoryFriendshipStatus>> HideMyStoryFromUserAsync(long userId)
         {
-            return await HideUnhideMyStoryFromUser(InstaUriCreator.GetHideMyStoryFromUserUri(userId)).ConfigureAwait(false);
+            return HideUnhideMyStoryFromUser(InstaUriCreator.GetHideMyStoryFromUserUri(userId));
         }
 
         /// <summary>
@@ -1366,9 +1354,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     Mute friend's stories, so you won't see their stories in latest stories tab
         /// </summary>
         /// <param name="userId">User id (pk)</param>
-        public async Task<IResult<InstaStoryFriendshipStatus>> MuteFriendStoryAsync(long userId)
+        public Task<IResult<InstaStoryFriendshipStatus>> MuteFriendStoryAsync(long userId)
         {
-            return await MuteUnMuteFriendStory(InstaUriCreator.GetMuteFriendStoryUri(userId)).ConfigureAwait(false);
+            return MuteUnMuteFriendStory(InstaUriCreator.GetMuteFriendStoryUri(userId));
         }
 
         /// <summary>
@@ -1376,11 +1364,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="userId">User id (pk)</param>
         /// <param name="unmuteOption">Unmute option</param>
-        public async Task<IResult<InstaStoryFriendshipStatus>> MuteUserMediaAsync(
-            long userId,
-            InstaMuteOption unmuteOption)
+        public Task<IResult<InstaStoryFriendshipStatus>> MuteUserMediaAsync(long userId, InstaMuteOption unmuteOption)
         {
-            return await MuteUnMuteUserMedia(InstaUriCreator.GetMuteUserMediaStoryUri(userId), userId, unmuteOption).ConfigureAwait(false);
+            return MuteUnMuteUserMedia(InstaUriCreator.GetMuteUserMediaStoryUri(userId), userId, unmuteOption);
         }
 
         /// <summary>
@@ -1427,56 +1413,56 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     Stop block user
         /// </summary>
         /// <param name="userId">User id</param>
-        public async Task<IResult<InstaFriendshipFullStatus>> UnBlockUserAsync(long userId)
+        public Task<IResult<InstaFriendshipFullStatus>> UnBlockUserAsync(long userId)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
-            return await BlockUnblockUserInternal(userId, InstaUriCreator.GetUnBlockUserUri(userId)).ConfigureAwait(false);
+            return BlockUnblockUserInternal(userId, InstaUriCreator.GetUnBlockUserUri(userId));
         }
 
         /// <summary>
         ///     Unfavorite user (user must be in your following list)
         /// </summary>
         /// <param name="userId">User id (pk)</param>
-        public async Task<IResult<bool>> UnFavoriteUserAsync(long userId)
+        public Task<IResult<bool>> UnFavoriteUserAsync(long userId)
         {
-            return await FavoriteUnfavoriteUser(InstaUriCreator.GetUnFavoriteUserUri(userId), userId).ConfigureAwait(false);
+            return FavoriteUnfavoriteUser(InstaUriCreator.GetUnFavoriteUserUri(userId), userId);
         }
 
         /// <summary>
         ///     Unfavorite user stories (user must be in your following list)
         /// </summary>
         /// <param name="userId">User id (pk)</param>
-        public async Task<IResult<bool>> UnFavoriteUserStoriesAsync(long userId)
+        public Task<IResult<bool>> UnFavoriteUserStoriesAsync(long userId)
         {
-            return await FavoriteUnfavoriteUser(InstaUriCreator.GetUnFavoriteForUserStoriesUri(userId), userId).ConfigureAwait(false);
+            return FavoriteUnfavoriteUser(InstaUriCreator.GetUnFavoriteForUserStoriesUri(userId), userId);
         }
 
         /// <summary>
         ///     Stop follow user
         /// </summary>
         /// <param name="userId">User id</param>
-        public async Task<IResult<InstaFriendshipFullStatus>> UnFollowUserAsync(long userId)
+        public Task<IResult<InstaFriendshipFullStatus>> UnFollowUserAsync(long userId)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
-            return await FollowUnfollowUserInternal(userId, InstaUriCreator.GetUnFollowUserUri(userId)).ConfigureAwait(false);
+            return FollowUnfollowUserInternal(userId, InstaUriCreator.GetUnFollowUserUri(userId));
         }
 
         /// <summary>
         ///     Unhide my story from specific user
         /// </summary>
         /// <param name="userId">User id</param>
-        public async Task<IResult<InstaStoryFriendshipStatus>> UnHideMyStoryFromUserAsync(long userId)
+        public Task<IResult<InstaStoryFriendshipStatus>> UnHideMyStoryFromUserAsync(long userId)
         {
-            return await HideUnhideMyStoryFromUser(InstaUriCreator.GetUnHideMyStoryFromUserUri(userId)).ConfigureAwait(false);
+            return HideUnhideMyStoryFromUser(InstaUriCreator.GetUnHideMyStoryFromUserUri(userId));
         }
 
         /// <summary>
         ///     Unmute friend's stories, so you will be able to see their stories in latest stories tab once again
         /// </summary>
         /// <param name="userId">User id (pk)</param>
-        public async Task<IResult<InstaStoryFriendshipStatus>> UnMuteFriendStoryAsync(long userId)
+        public Task<IResult<InstaStoryFriendshipStatus>> UnMuteFriendStoryAsync(long userId)
         {
-            return await MuteUnMuteFriendStory(InstaUriCreator.GetUnMuteFriendStoryUri(userId)).ConfigureAwait(false);
+            return MuteUnMuteFriendStory(InstaUriCreator.GetUnMuteFriendStoryUri(userId));
         }
 
         /// <summary>
@@ -1484,11 +1470,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="userId">User id (pk)</param>
         /// <param name="unmuteOption">Unmute option</param>
-        public async Task<IResult<InstaStoryFriendshipStatus>> UnMuteUserMediaAsync(
-            long userId,
-            InstaMuteOption unmuteOption)
+        public Task<IResult<InstaStoryFriendshipStatus>> UnMuteUserMediaAsync(long userId, InstaMuteOption unmuteOption)
         {
-            return await MuteUnMuteUserMedia(InstaUriCreator.GetUnMuteUserMediaStoryUri(userId), userId, unmuteOption).ConfigureAwait(false);
+            return MuteUnMuteUserMedia(InstaUriCreator.GetUnMuteUserMediaStoryUri(userId), userId, unmuteOption);
         }
 
         /// <summary>
@@ -2002,9 +1986,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
         }
 
-        private async Task<IResult<InstaMediaListResponse>> GetUserMedia(
-            long userId,
-            PaginationParameters paginationParameters)
+        private async Task<IResult<InstaMediaListResponse>> GetUserMedia(long userId, PaginationParameters paginationParameters)
         {
             try
             {
@@ -2018,10 +2000,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     return InstaResult.UnExpectedResponse<InstaMediaListResponse>(response, json);
                 }
 
-                var mediaResponse = JsonConvert.DeserializeObject<InstaMediaListResponse>(
-                    json,
-                    new InstaMediaListDataConverter());
-
+                var mediaResponse = JsonConvert.DeserializeObject<InstaMediaListResponse>(json, new InstaMediaListDataConverter());
                 return InstaResult.Success(mediaResponse);
             }
             catch (HttpRequestException httpException)

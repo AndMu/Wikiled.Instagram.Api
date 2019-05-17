@@ -2,7 +2,7 @@
 
 namespace Wikiled.Instagram.Api.Classes.Models.Account
 {
-    public class InstaAccountTwoFactorSms
+    public class AccountTwoFactorSms
     {
         [JsonProperty("obfuscated_phone_number")]
         public string ObfuscatedPhoneNumber { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Wikiled.Instagram.Api.Helpers;
 using Wikiled.Instagram.Api.Logic;
 
@@ -18,6 +19,11 @@ namespace Wikiled.Instagram.Api.Classes.SessionHandlers
         /// </summary>
         public void Load()
         {
+            if (Api == null)
+            {
+                throw new NullReferenceException("Api is null");
+            }
+
             if (File.Exists(FilePath))
             {
                 var data = File.ReadAllText(FilePath);

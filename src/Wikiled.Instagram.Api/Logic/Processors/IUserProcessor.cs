@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.Models.Direct;
 using Wikiled.Instagram.Api.Classes.Models.Feed;
@@ -215,10 +216,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="InstaUserShortList" />
         /// </returns>
-        Task<IResult<InstaUserShortList>> GetUserFollowingByIdAsync(
-            long userId,
-            PaginationParameters paginationParameters,
-            string searchQuery = "");
+        Task<IResult<InstaUserShortList>> GetUserFollowingByIdAsync(long userId, PaginationParameters paginationParameters, string searchQuery = "");
 
         /// <summary>
         ///     Get user from a nametag image
@@ -248,7 +246,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="InstaMediaList" />
         /// </returns>
-        Task<IResult<InstaMediaList>> GetUserMediaAsync(string username, PaginationParameters paginationParameters);
+        IObservable<InstaMedia> GetUserMedia(string username, PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Get all user media by user id (pk) asynchronously
@@ -258,7 +256,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="InstaMediaList" />
         /// </returns>
-        Task<IResult<InstaMediaList>> GetUserMediaByIdAsync(long userId, PaginationParameters paginationParameters);
+        IObservable<InstaMedia> GetUserMediaById(long userId, PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Get all user shoppable media by username

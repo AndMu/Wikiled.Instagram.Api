@@ -1,6 +1,6 @@
 ﻿namespace Wikiled.Instagram.Api.Enums
 {
-    public enum InstaLoginResult
+    public enum LoginResult
     {
         Success,
 

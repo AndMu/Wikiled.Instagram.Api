@@ -155,11 +155,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="locationId">Location identifier (location pk, external id, facebook id)</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        public async Task<IResult<InstaSectionMedia>> GetRecentLocationFeedsAsync(
-            long locationId,
-            PaginationParameters paginationParameters)
+        public Task<IResult<InstaSectionMedia>> GetRecentLocationFeedsAsync(long locationId, PaginationParameters paginationParameters)
         {
-            return await GetSectionAsync(locationId, paginationParameters, InstaSectionType.Recent).ConfigureAwait(false);
+            return GetSectionAsync(locationId, paginationParameters, InstaSectionType.Recent);
         }
 
         /// <summary>
@@ -168,11 +166,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="locationId">Location identifier (location pk, external id, facebook id)</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        public async Task<IResult<InstaSectionMedia>> GetTopLocationFeedsAsync(
-            long locationId,
-            PaginationParameters paginationParameters)
+        public Task<IResult<InstaSectionMedia>> GetTopLocationFeedsAsync(long locationId, PaginationParameters paginationParameters)
         {
-            return await GetSectionAsync(locationId, paginationParameters, InstaSectionType.Ranked).ConfigureAwait(false);
+            return GetSectionAsync(locationId, paginationParameters, InstaSectionType.Ranked);
         }
 
         /// <summary>
@@ -252,11 +248,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="InstaPlaceList" />
         /// </returns>
-        public async Task<IResult<InstaPlaceList>> SearchPlacesAsync(double latitude,
-                                                                     double longitude,
-                                                                     PaginationParameters paginationParameters)
+        public Task<IResult<InstaPlaceList>> SearchPlacesAsync(double latitude, double longitude, PaginationParameters paginationParameters)
         {
-            return await SearchPlacesAsync(latitude, longitude, null, paginationParameters).ConfigureAwait(false);
+            return SearchPlacesAsync(latitude, longitude, null, paginationParameters);
         }
 
         /// <summary>

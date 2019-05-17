@@ -5,7 +5,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Location
 {
     public class InstaLocationFeed : InstaBaseFeed
     {
-        public InstaLocation Location { get; set; }
+        public Location Location { get; set; }
 
         public long MediaCount { get; set; }
 

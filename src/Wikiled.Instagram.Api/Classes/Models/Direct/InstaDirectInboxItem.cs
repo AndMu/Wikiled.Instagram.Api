@@ -29,7 +29,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Direct
 
         public InstaDirectBroadcast LiveViewerInvite { get; set; }
 
-        public InstaLocation LocationMedia { get; set; }
+        public Location.Location LocationMedia { get; set; }
 
         public InstaInboxMedia Media { get; set; }
 

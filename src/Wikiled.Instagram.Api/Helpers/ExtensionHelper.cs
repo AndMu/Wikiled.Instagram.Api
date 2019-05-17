@@ -21,7 +21,7 @@ namespace Wikiled.Instagram.Api.Helpers
         private static readonly Random Rnd = new Random();
 
         public static InstaImageUpload ConvertToImageUpload(this InstaImage instaImage,
-                                                            InstaUserTagUpload[] userTags = null)
+                                                            UserTagUpload[] userTags = null)
         {
             return new InstaImageUpload
             {
@@ -323,7 +323,7 @@ namespace Wikiled.Instagram.Api.Helpers
             }
         }
 
-        public static string GetJson(this InstaLocationShort location)
+        public static string GetJson(this LocationShort location)
         {
             if (location == null)
             {

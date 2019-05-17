@@ -18,7 +18,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Media
         /// <summary>
         ///     User tags => Optional
         /// </summary>
-        public List<InstaUserTagVideoUpload> UserTags { get; set; } = new List<InstaUserTagVideoUpload>();
+        public List<UserTagVideoUpload> UserTags { get; set; } = new List<UserTagVideoUpload>();
 
         public InstaVideo Video { get; set; }
 

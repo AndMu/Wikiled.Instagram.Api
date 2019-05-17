@@ -158,12 +158,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="T:InstagramApiSharp.Classes.Models.InstaActivityFeed" />
         /// </returns>
-        public async Task<IResult<InstaActivityFeed>> GetFollowingRecentActivityFeedAsync(
+        public Task<IResult<InstaActivityFeed>> GetFollowingRecentActivityFeedAsync(
             PaginationParameters paginationParameters)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             var uri = InstaUriCreator.GetFollowingRecentActivityUri();
-            return await GetRecentActivityInternalAsync(uri, paginationParameters).ConfigureAwait(false);
+            return GetRecentActivityInternalAsync(uri, paginationParameters);
         }
 
         /// <summary>
@@ -245,12 +245,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="T:InstagramApiSharp.Classes.Models.InstaActivityFeed" />
         /// </returns>
-        public async Task<IResult<InstaActivityFeed>> GetRecentActivityFeedAsync(
+        public Task<IResult<InstaActivityFeed>> GetRecentActivityFeedAsync(
             PaginationParameters paginationParameters)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             var uri = InstaUriCreator.GetRecentActivityUri();
-            return await GetRecentActivityInternalAsync(uri, paginationParameters).ConfigureAwait(false);
+            return GetRecentActivityInternalAsync(uri, paginationParameters);
         }
 
         /// <summary>

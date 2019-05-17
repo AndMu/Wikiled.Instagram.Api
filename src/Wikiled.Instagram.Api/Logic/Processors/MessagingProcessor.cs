@@ -173,18 +173,18 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <summary>
         ///     Decline all direct pending requests
         /// </summary>
-        public async Task<IResult<bool>> DeclineAllDirectPendingRequestsAsync()
+        public Task<IResult<bool>> DeclineAllDirectPendingRequestsAsync()
         {
-            return await DeclineDirectPendingRequests(true).ConfigureAwait(false);
+            return DeclineDirectPendingRequests(true);
         }
 
         /// <summary>
         ///     Decline direct pending requests
         /// </summary>
         /// <param name="threadIds">Thread ids</param>
-        public async Task<IResult<bool>> DeclineDirectPendingRequestsAsync(params string[] threadIds)
+        public Task<IResult<bool>> DeclineDirectPendingRequestsAsync(params string[] threadIds)
         {
-            return await DeclineDirectPendingRequests(false, threadIds).ConfigureAwait(false);
+            return DeclineDirectPendingRequests(false, threadIds);
         }
 
         /// <summary>
@@ -501,9 +501,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="InstaRecipients" />
         /// </returns>
-        public async Task<IResult<InstaRecipients>> GetRankedRecipientsAsync()
+        public Task<IResult<InstaRecipients>> GetRankedRecipientsAsync()
         {
-            return await GetRankedRecipientsByUsernameAsync(null).ConfigureAwait(false);
+            return GetRankedRecipientsByUsernameAsync(null);
         }
 
         /// <summary>
@@ -814,12 +814,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="image">Image to upload</param>
         /// <param name="viewMode">View mode</param>
         /// <param name="threadIds">Thread ids</param>
-        public async Task<IResult<bool>> SendDirectDisappearingPhotoAsync(
-            InstaImage image,
-            InstaViewMode viewMode = InstaViewMode.Replayable,
-            params string[] threadIds)
+        public Task<IResult<bool>> SendDirectDisappearingPhotoAsync(InstaImage image, InstaViewMode viewMode = InstaViewMode.Replayable, params string[] threadIds)
         {
-            return await SendDirectDisappearingPhotoAsync(null, image, viewMode, threadIds).ConfigureAwait(false);
+            return SendDirectDisappearingPhotoAsync(null, image, viewMode, threadIds);
         }
 
         /// <summary>
@@ -853,12 +850,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="video">Video to upload</param>
         /// <param name="viewMode">View mode</param>
         /// <param name="threadIds">Thread ids</param>
-        public async Task<IResult<bool>> SendDirectDisappearingVideoAsync(
-            InstaVideoUpload video,
-            InstaViewMode viewMode = InstaViewMode.Replayable,
-            params string[] threadIds)
+        public Task<IResult<bool>> SendDirectDisappearingVideoAsync(InstaVideoUpload video, InstaViewMode viewMode = InstaViewMode.Replayable, params string[] threadIds)
         {
-            return await SendDirectDisappearingVideoAsync(null, video, viewMode, threadIds).ConfigureAwait(false);
+            return SendDirectDisappearingVideoAsync(null, video, viewMode, threadIds);
         }
 
         /// <summary>
@@ -893,9 +887,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="hashtag">Hashtag to send</param>
         /// <param name="threadIds">Thread ids</param>
         /// <returns>Returns True if hashtag sent</returns>
-        public async Task<IResult<bool>> SendDirectHashtagAsync(string text, string hashtag, params string[] threadIds)
+        public Task<IResult<bool>> SendDirectHashtagAsync(string text, string hashtag, params string[] threadIds)
         {
-            return await SendDirectHashtagAsync(text, hashtag, threadIds, null).ConfigureAwait(false);
+            return SendDirectHashtagAsync(text, hashtag, threadIds, null);
         }
 
         /// <summary>
@@ -969,12 +963,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="threadIds">Thread ids</param>
         /// <param name="recipients">Recipients ids</param>
         /// <returns>Returns True if hashtag sent</returns>
-        public async Task<IResult<bool>> SendDirectHashtagToRecipientsAsync(
-            string text,
-            string hashtag,
-            params string[] recipients)
+        public Task<IResult<bool>> SendDirectHashtagToRecipientsAsync(string text, string hashtag, params string[] recipients)
         {
-            return await SendDirectHashtagAsync(text, hashtag, null, recipients).ConfigureAwait(false);
+            return SendDirectHashtagAsync(text, hashtag, null, recipients);
         }
 
         /// <summary>
@@ -1028,9 +1019,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="text">Text to send</param>
         /// <param name="link">Link to send</param>
         /// <param name="threadIds">Thread ids</param>
-        public async Task<IResult<bool>> SendDirectLinkAsync(string text, string link, params string[] threadIds)
+        public Task<IResult<bool>> SendDirectLinkAsync(string text, string link, params string[] threadIds)
         {
-            return await SendDirectLinkAsync(text, link, threadIds, null).ConfigureAwait(false);
+            return SendDirectLinkAsync(text, link, threadIds, null);
         }
 
         /// <summary>
@@ -1101,12 +1092,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="text">Text to send</param>
         /// <param name="link">Link to send</param>
         /// <param name="recipients">Recipients ids</param>
-        public async Task<IResult<bool>> SendDirectLinkToRecipientsAsync(
-            string text,
-            string link,
-            params string[] recipients)
+        public Task<IResult<bool>> SendDirectLinkToRecipientsAsync(string text, string link, params string[] recipients)
         {
-            return await SendDirectLinkAsync(text, link, null, recipients).ConfigureAwait(false);
+            return SendDirectLinkAsync(text, link, null, recipients);
         }
 
         /// <summary>
@@ -1164,10 +1152,10 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="image">Image to upload</param>
         /// <param name="threadId">Thread id</param>
         /// <returns>Returns True is sent</returns>
-        public async Task<IResult<bool>> SendDirectPhotoAsync(InstaImage image, string threadId)
+        public Task<IResult<bool>> SendDirectPhotoAsync(InstaImage image, string threadId)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
-            return await SendDirectPhotoAsync(null, image, threadId).ConfigureAwait(false);
+            return SendDirectPhotoAsync(null, image, threadId);
         }
 
         /// <summary>
@@ -1177,12 +1165,10 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="image">Image to upload</param>
         /// <param name="threadId">Thread id</param>
         /// <returns>Returns True is sent</returns>
-        public async Task<IResult<bool>> SendDirectPhotoAsync(Action<InstaUploaderProgress> progress,
-                                                              InstaImage image,
-                                                              string threadId)
+        public Task<IResult<bool>> SendDirectPhotoAsync(Action<InstaUploaderProgress> progress, InstaImage image, string threadId)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
-            return await SendDirectPhoto(progress, null, threadId, image).ConfigureAwait(false);
+            return SendDirectPhoto(progress, null, threadId, image);
         }
 
         /// <summary>
@@ -1191,9 +1177,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="image">Image to upload</param>
         /// <param name="recipients">Recipients (user ids/pk)</param>
         /// <returns>Returns True is sent</returns>
-        public async Task<IResult<bool>> SendDirectPhotoToRecipientsAsync(InstaImage image, params string[] recipients)
+        public Task<IResult<bool>> SendDirectPhotoToRecipientsAsync(InstaImage image, params string[] recipients)
         {
-            return await SendDirectPhotoToRecipientsAsync(null, image, recipients).ConfigureAwait(false);
+            return SendDirectPhotoToRecipientsAsync(null, image, recipients);
         }
 
         /// <summary>
@@ -1203,13 +1189,10 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="image">Image to upload</param>
         /// <param name="recipients">Recipients (user ids/pk)</param>
         /// <returns>Returns True is sent</returns>
-        public async Task<IResult<bool>> SendDirectPhotoToRecipientsAsync(
-            Action<InstaUploaderProgress> progress,
-            InstaImage image,
-            params string[] recipients)
+        public Task<IResult<bool>> SendDirectPhotoToRecipientsAsync(Action<InstaUploaderProgress> progress, InstaImage image, params string[] recipients)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
-            return await SendDirectPhoto(progress, string.Join(",", recipients), null, image).ConfigureAwait(false);
+            return SendDirectPhoto(progress, string.Join(",", recipients), null, image);
         }
 
         /// <summary>
@@ -1377,9 +1360,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="video">Video to upload (no need to set thumbnail)</param>
         /// <param name="threadId">Thread id</param>
-        public async Task<IResult<bool>> SendDirectVideoAsync(InstaVideoUpload video, string threadId)
+        public Task<IResult<bool>> SendDirectVideoAsync(InstaVideoUpload video, string threadId)
         {
-            return await SendDirectVideoAsync(null, video, threadId).ConfigureAwait(false);
+            return SendDirectVideoAsync(null, video, threadId);
         }
 
         /// <summary>
@@ -1409,12 +1392,10 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="video">Video to upload (no need to set thumbnail)</param>
         /// <param name="recipients">Recipients (user ids/pk)</param>
-        public async Task<IResult<bool>> SendDirectVideoToRecipientsAsync(
-            InstaVideoUpload video,
-            params string[] recipients)
+        public Task<IResult<bool>> SendDirectVideoToRecipientsAsync(InstaVideoUpload video, params string[] recipients)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
-            return await SendDirectVideoToRecipientsAsync(null, video, recipients).ConfigureAwait(false);
+            return SendDirectVideoToRecipientsAsync(null, video, recipients);
         }
 
         /// <summary>
@@ -1447,10 +1428,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="mediaType">Media type</param>
         /// <param name="text">Text to send</param>
         /// <param name="threadIds">Thread ids</param>
-        public async Task<IResult<bool>> ShareMediaToThreadAsync(string mediaId,
-                                                                 InstaMediaType mediaType,
-                                                                 string text,
-                                                                 params string[] threadIds)
+        public async Task<IResult<bool>> ShareMediaToThreadAsync(string mediaId, InstaMediaType mediaType, string text, params string[] threadIds)
         {
             try
             {
@@ -1480,10 +1458,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="mediaType">Media type</param>
         /// <param name="text">Text to send</param>
         /// <param name="userIds">User ids (pk)</param>
-        public async Task<IResult<bool>> ShareMediaToUserAsync(string mediaId,
-                                                               InstaMediaType mediaType,
-                                                               string text,
-                                                               params long[] userIds)
+        public async Task<IResult<bool>> ShareMediaToUserAsync(string mediaId, InstaMediaType mediaType, string text, params long[] userIds)
         {
             try
             {

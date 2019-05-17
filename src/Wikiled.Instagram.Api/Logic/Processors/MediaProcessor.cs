@@ -66,9 +66,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="mediaId">Media id (<see cref="InstaMedia.Identifier" />)</param>
         /// <returns>Return true if the media is archived</returns>
-        public async Task<IResult<bool>> ArchiveMediaAsync(string mediaId)
+        public Task<IResult<bool>> ArchiveMediaAsync(string mediaId)
         {
-            return await LikeUnlikeArchiveUnArchiveMediaInternal(mediaId, InstaUriCreator.GetArchiveMediaUri(mediaId)).ConfigureAwait(false);
+            return LikeUnlikeArchiveUnArchiveMediaInternal(mediaId, InstaUriCreator.GetArchiveMediaUri(mediaId));
         }
 
         /// <summary>
@@ -127,10 +127,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </param>
         /// <param name="userTags">User tags => Optional</param>
         /// <returns>Return true if everything is ok</returns>
-        public async Task<IResult<InstaMedia>> EditMediaAsync(string mediaId,
-                                                              string caption,
-                                                              InstaLocationShort location = null,
-                                                              InstaUserTagUpload[] userTags = null)
+        public async Task<IResult<InstaMedia>> EditMediaAsync(string mediaId, string caption, LocationShort location = null, UserTagUpload[] userTags = null)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             try
@@ -536,9 +533,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     Like media (photo or video)
         /// </summary>
         /// <param name="mediaId">Media id</param>
-        public async Task<IResult<bool>> LikeMediaAsync(string mediaId)
+        public Task<IResult<bool>> LikeMediaAsync(string mediaId)
         {
-            return await LikeUnlikeArchiveUnArchiveMediaInternal(mediaId, InstaUriCreator.GetLikeMediaUri(mediaId)).ConfigureAwait(false);
+            return LikeUnlikeArchiveUnArchiveMediaInternal(mediaId, InstaUriCreator.GetLikeMediaUri(mediaId));
         }
 
         /// <summary>
@@ -620,18 +617,18 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="mediaId">Media id (<see cref="InstaMedia.Identifier" />)</param>
         /// <returns>Return true if the media is unarchived</returns>
-        public async Task<IResult<bool>> UnArchiveMediaAsync(string mediaId)
+        public Task<IResult<bool>> UnArchiveMediaAsync(string mediaId)
         {
-            return await LikeUnlikeArchiveUnArchiveMediaInternal(mediaId, InstaUriCreator.GetUnArchiveMediaUri(mediaId)).ConfigureAwait(false);
+            return LikeUnlikeArchiveUnArchiveMediaInternal(mediaId, InstaUriCreator.GetUnArchiveMediaUri(mediaId));
         }
 
         /// <summary>
         ///     Remove like from media (photo or video)
         /// </summary>
         /// <param name="mediaId">Media id</param>
-        public async Task<IResult<bool>> UnLikeMediaAsync(string mediaId)
+        public Task<IResult<bool>> UnLikeMediaAsync(string mediaId)
         {
-            return await LikeUnlikeArchiveUnArchiveMediaInternal(mediaId, InstaUriCreator.GetUnLikeMediaUri(mediaId)).ConfigureAwait(false);
+            return LikeUnlikeArchiveUnArchiveMediaInternal(mediaId, InstaUriCreator.GetUnLikeMediaUri(mediaId));
         }
 
         /// <summary>
@@ -678,12 +675,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="location">
         ///     Location => Optional (get it from <seealso cref="InstaLocationProcessor.SearchLocationAsync" />
         /// </param>
-        public async Task<IResult<InstaMedia>> UploadAlbumAsync(InstaImageUpload[] images,
-                                                                InstaVideoUpload[] videos,
-                                                                string caption,
-                                                                InstaLocationShort location = null)
+        public Task<IResult<InstaMedia>> UploadAlbumAsync(InstaImageUpload[] images, InstaVideoUpload[] videos, string caption, LocationShort location = null)
         {
-            return await UploadAlbumAsync(null, images, videos, caption, location).ConfigureAwait(false);
+            return UploadAlbumAsync(null, images, videos, caption, location);
         }
 
         /// <summary>
@@ -701,7 +695,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             InstaImageUpload[] images,
             InstaVideoUpload[] videos,
             string caption,
-            InstaLocationShort location = null)
+            LocationShort location = null)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             var upProgress = new InstaUploaderProgress
@@ -826,11 +820,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="location">
         ///     Location => Optional (get it from <seealso cref="InstaLocationProcessor.SearchLocationAsync" />
         /// </param>
-        public async Task<IResult<InstaMedia>> UploadAlbumAsync(InstaAlbumUpload[] album,
-                                                                string caption,
-                                                                InstaLocationShort location = null)
+        public Task<IResult<InstaMedia>> UploadAlbumAsync(InstaAlbumUpload[] album, string caption, LocationShort location = null)
         {
-            return await UploadAlbumAsync(null, album, caption, location).ConfigureAwait(false);
+            return UploadAlbumAsync(null, album, caption, location);
         }
 
         /// <summary>
@@ -845,7 +837,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         public async Task<IResult<InstaMedia>> UploadAlbumAsync(Action<InstaUploaderProgress> progress,
                                                                 InstaAlbumUpload[] album,
                                                                 string caption,
-                                                                InstaLocationShort location = null)
+                                                                LocationShort location = null)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             var upProgress = new InstaUploaderProgress
@@ -967,11 +959,11 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="location">
         ///     Location => Optional (get it from <seealso cref="InstaLocationProcessor.SearchLocationAsync" />
         /// </param>
-        public async Task<IResult<InstaMedia>> UploadPhotoAsync(InstaImageUpload image,
+        public Task<IResult<InstaMedia>> UploadPhotoAsync(InstaImageUpload image,
                                                                 string caption,
-                                                                InstaLocationShort location = null)
+                                                                LocationShort location = null)
         {
-            return await UploadPhotoAsync(null, image, caption, location).ConfigureAwait(false);
+            return UploadPhotoAsync(null, image, caption, location);
         }
 
         /// <summary>
@@ -983,14 +975,10 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="location">
         ///     Location => Optional (get it from <seealso cref="InstaLocationProcessor.SearchLocationAsync" />
         /// </param>
-        public async Task<IResult<InstaMedia>> UploadPhotoAsync(
-            Action<InstaUploaderProgress> progress,
-            InstaImageUpload image,
-            string caption,
-            InstaLocationShort location = null)
+        public Task<IResult<InstaMedia>> UploadPhotoAsync(Action<InstaUploaderProgress> progress, InstaImageUpload image, string caption, LocationShort location = null)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
-            return await instaApi.HelperProcessor.SendMediaPhotoAsync(progress, image, caption, location).ConfigureAwait(false);
+            return instaApi.HelperProcessor.SendMediaPhotoAsync(progress, image, caption, location);
         }
 
         /// <summary>
@@ -1001,11 +989,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="location">
         ///     Location => Optional (get it from <seealso cref="InstaLocationProcessor.SearchLocationAsync" />
         /// </param>
-        public async Task<IResult<InstaMedia>> UploadVideoAsync(InstaVideoUpload video,
-                                                                string caption,
-                                                                InstaLocationShort location = null)
+        public Task<IResult<InstaMedia>> UploadVideoAsync(InstaVideoUpload video, string caption, LocationShort location = null)
         {
-            return await UploadVideoAsync(null, video, caption, location).ConfigureAwait(false);
+            return UploadVideoAsync(null, video, caption, location);
         }
 
         /// <summary>
@@ -1020,7 +1006,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         public async Task<IResult<InstaMedia>> UploadVideoAsync(Action<InstaUploaderProgress> progress,
                                                                 InstaVideoUpload video,
                                                                 string caption,
-                                                                InstaLocationShort location = null)
+                                                                LocationShort location = null)
         {
             var upProgress = new InstaUploaderProgress
             {
@@ -1104,7 +1090,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             InstaUploaderProgress upProgress,
             Dictionary<string, InstaAlbumUpload> album,
             string caption,
-            InstaLocationShort location)
+            LocationShort location)
         {
             try
             {
@@ -1211,7 +1197,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             Dictionary<string, InstaImageUpload> imagesUploadIds,
             Dictionary<string, InstaVideoUpload> videos,
             string caption,
-            InstaLocationShort location)
+            LocationShort location)
         {
             try
             {
@@ -1317,7 +1303,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             InstaVideoUpload video,
             string uploadId,
             string caption,
-            InstaLocationShort location)
+            LocationShort location)
         {
             try
             {

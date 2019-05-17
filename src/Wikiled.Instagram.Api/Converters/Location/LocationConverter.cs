@@ -4,18 +4,18 @@ using Wikiled.Instagram.Api.Classes.ResponseWrappers.Location;
 
 namespace Wikiled.Instagram.Api.Converters.Location
 {
-    internal class LocationConverter : IObjectConverter<InstaLocation, LocationResponse>
+    internal class LocationConverter : IObjectConverter<Classes.Models.Location.Location, LocationResponse>
     {
         public LocationResponse SourceObject { get; set; }
 
-        public InstaLocation Convert()
+        public Classes.Models.Location.Location Convert()
         {
             if (SourceObject == null)
             {
                 throw new ArgumentNullException("Source object");
             }
 
-            var location = new InstaLocation
+            var location = new Classes.Models.Location.Location
             {
                 Name = SourceObject.Name,
                 Address = SourceObject.Address,

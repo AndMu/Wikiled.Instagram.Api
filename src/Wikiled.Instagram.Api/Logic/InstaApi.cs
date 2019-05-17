@@ -209,9 +209,9 @@ namespace Wikiled.Instagram.Api.Logic
         ///     Check email availability
         /// </summary>
         /// <param name="email">Email to check</param>
-        public async Task<IResult<InstaCheckEmailRegistration>> CheckEmailAsync(string email)
+        public Task<IResult<InstaCheckEmailRegistration>> CheckEmailAsync(string email)
         {
-            return await CheckEmail(email).ConfigureAwait(false);
+            return CheckEmail(email);
         }
 
         /// <summary>
@@ -415,9 +415,9 @@ namespace Wikiled.Instagram.Api.Logic
         ///     Get username suggestions
         /// </summary>
         /// <param name="name">Name</param>
-        public async Task<IResult<InstaRegistrationSuggestionResponse>> GetUsernameSuggestionsAsync(string name)
+        public Task<IResult<InstaRegistrationSuggestionResponse>> GetUsernameSuggestionsAsync(string name)
         {
-            return await GetUsernameSuggestions(name).ConfigureAwait(false);
+            return GetUsernameSuggestions(name);
         }
 
         /// <summary>
@@ -610,14 +610,14 @@ namespace Wikiled.Instagram.Api.Logic
         ///     Exception --> Something wrong happened
         ///     ChallengeRequired --> You need to pass Instagram challenge
         /// </returns>
-        public async Task<IResult<InstaLoginResult>> LoginAsync(bool isNewLogin = true)
+        public async Task<IResult<LoginResult>> LoginAsync(bool isNewLogin = true)
         {
             ValidateUser();
             ValidateRequestMessage();
             try
             {
                 var result =  await LoginInternal(isNewLogin).ConfigureAwait(false);
-                if (!result.Succeeded && result.Value == InstaLoginResult.CheckpointLoggedOut)
+                if (!result.Succeeded && result.Value == LoginResult.CheckpointLoggedOut)
                 {
                     logger.LogInformation("CheckpointLoggedOut detected, logging in again");
                     result = await LoginInternal(isNewLogin).ConfigureAwait(false);
@@ -628,12 +628,12 @@ namespace Wikiled.Instagram.Api.Logic
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, InstaLoginResult.Exception, InstaResponseType.NetworkProblem);
+                return InstaResult.Fail(httpException, LoginResult.Exception, InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 LogError(exception);
-                return InstaResult.Fail(exception, InstaLoginResult.Exception);
+                return InstaResult.Fail(exception, LoginResult.Exception);
             }
             finally
             {
@@ -641,7 +641,7 @@ namespace Wikiled.Instagram.Api.Logic
             }
         }
 
-        private async Task<IResult<InstaLoginResult>> LoginInternal(bool isNewLogin)
+        private async Task<IResult<LoginResult>> LoginInternal(bool isNewLogin)
         {
             if (isNewLogin)
             {
@@ -681,8 +681,8 @@ namespace Wikiled.Instagram.Api.Logic
                         return InstaResult.Fail(
                             "Invalid Credentials",
                             loginFailReason.ErrorType == "bad_password"
-                                ? InstaLoginResult.BadPassword
-                                : InstaLoginResult.InvalidUser);
+                                ? LoginResult.BadPassword
+                                : LoginResult.InvalidUser);
                 }
 
                 if (loginFailReason.TwoFactorRequired)
@@ -693,33 +693,33 @@ namespace Wikiled.Instagram.Api.Logic
                     }
 
                     twoFactorInfo = loginFailReason.TwoFactorLoginInfo;
-                     return InstaResult.Fail("Two Factor Authentication is required", InstaLoginResult.TwoFactorRequired);
+                     return InstaResult.Fail("Two Factor Authentication is required", LoginResult.TwoFactorRequired);
                 }
 
                 if (loginFailReason.ErrorType == "checkpoint_challenge_required")
                 {
                     challengeInfo = loginFailReason.Challenge;
-                    return InstaResult.Fail("Challenge is required", InstaLoginResult.ChallengeRequired);
+                    return InstaResult.Fail("Challenge is required", LoginResult.ChallengeRequired);
                 }
 
                 if (loginFailReason.ErrorType == "rate_limit_error")
                 {
                     return InstaResult.Fail("Please wait a few minutes before you try again.",
-                                            InstaLoginResult.LimitError);
+                                            LoginResult.LimitError);
                 }
 
                 if (loginFailReason.ErrorType == "inactive user" || loginFailReason.ErrorType == "inactive_user")
                 {
                     return InstaResult.Fail($"{loginFailReason.Message}\r\nHelp url: {loginFailReason.HelpUrl}",
-                                            InstaLoginResult.InactiveUser);
+                                            LoginResult.InactiveUser);
                 }
 
                 if (loginFailReason.ErrorType == "checkpoint_logged_out")
                 {
-                    return InstaResult.Fail($"{loginFailReason.ErrorType} {loginFailReason.CheckpointUrl}", InstaLoginResult.CheckpointLoggedOut);
+                    return InstaResult.Fail($"{loginFailReason.ErrorType} {loginFailReason.CheckpointUrl}", LoginResult.CheckpointLoggedOut);
                 }
 
-                return InstaResult.UnExpectedResponse<InstaLoginResult>(response, json);
+                return InstaResult.UnExpectedResponse<LoginResult>(response, json);
             }
 
             var loginInfo = JsonConvert.DeserializeObject<LoginResponse>(json);
@@ -739,7 +739,7 @@ namespace Wikiled.Instagram.Api.Logic
                 User.CsrfToken = cookies[InstaApiConstants.Csrftoken]?.Value ?? string.Empty;
             }
 
-            return InstaResult.Success(InstaLoginResult.Success);
+            return InstaResult.Success(LoginResult.Success);
         }
 
         /// <summary>
@@ -927,13 +927,13 @@ namespace Wikiled.Instagram.Api.Logic
         ///     A null reference if not success; in this case, do LoginAsync first and check if Two Factor Authentication is
         ///     required, if not, don't run this method
         /// </returns>
-        public async Task<IResult<TwoFactorLoginInfo>> GetTwoFactorInfoAsync()
+        public Task<IResult<TwoFactorLoginInfo>> GetTwoFactorInfoAsync()
         {
-            return await Task.Run(
+            return Task.Run(
                 () =>
                     twoFactorInfo != null
                         ? InstaResult.Success(twoFactorInfo)
-                        : InstaResult.Fail<TwoFactorLoginInfo>("No Two Factor info available.")).ConfigureAwait(false);
+                        : InstaResult.Fail<TwoFactorLoginInfo>("No Two Factor info available."));
         }
 
         /// <summary>
@@ -1039,9 +1039,9 @@ namespace Wikiled.Instagram.Api.Logic
         ///     Send recovery code by Username
         /// </summary>
         /// <param name="username">Username</param>
-        public async Task<IResult<InstaRecovery>> SendRecoveryByUsernameAsync(string username)
+        public Task<IResult<InstaRecovery>> SendRecoveryByUsernameAsync(string username)
         {
-            return await SendRecoveryByEmailAsync(username).ConfigureAwait(false);
+            return SendRecoveryByEmailAsync(username);
         }
 
         /// <summary>
@@ -1482,17 +1482,17 @@ namespace Wikiled.Instagram.Api.Logic
         ///     Verify verification code for challenge require (checkpoint required)
         /// </summary>
         /// <param name="verifyCode">Verification code</param>
-        public async Task<IResult<InstaLoginResult>> VerifyCodeForChallengeRequireAsync(string verifyCode)
+        public async Task<IResult<LoginResult>> VerifyCodeForChallengeRequireAsync(string verifyCode)
         {
             if (challengeInfo == null)
             {
                 return InstaResult.Fail("challenge require info is empty.\r\ntry to call LoginAsync function first.",
-                                   InstaLoginResult.Exception);
+                                   LoginResult.Exception);
             }
 
             if (verifyCode.Length != 6)
             {
-                return InstaResult.Fail("Verify code must be an 6 digit number.", InstaLoginResult.Exception);
+                return InstaResult.Fail("Verify code must be an 6 digit number.", LoginResult.Exception);
             }
 
             try
@@ -1528,7 +1528,7 @@ namespace Wikiled.Instagram.Api.Logic
                     {
                     }
 
-                    return InstaResult.Fail(msg, InstaLoginResult.Exception);
+                    return InstaResult.Fail(msg, LoginResult.Exception);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaChallengeRequireVerifyCode>(json);
@@ -1541,7 +1541,7 @@ namespace Wikiled.Instagram.Api.Logic
                         await MessagingProcessor.GetDirectInboxAsync(PaginationParameters.MaxPagesToLoad(1)).ConfigureAwait(false);
                         await FeedProcessor.GetRecentActivityFeedAsync(PaginationParameters.MaxPagesToLoad(1)).ConfigureAwait(false);
 
-                        return InstaResult.Success(InstaLoginResult.Success);
+                        return InstaResult.Success(LoginResult.Success);
                     }
 
                     if (!string.IsNullOrEmpty(obj.Action))
@@ -1552,17 +1552,17 @@ namespace Wikiled.Instagram.Api.Logic
                     }
                 }
 
-                return InstaResult.Fail(obj?.Message, InstaLoginResult.Exception);
+                return InstaResult.Fail(obj?.Message, LoginResult.Exception);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaLoginResult), InstaResponseType.NetworkProblem);
+                return InstaResult.Fail(httpException, default(LoginResult), InstaResponseType.NetworkProblem);
             }
             catch (Exception ex)
             {
                 LogError(ex);
-                return InstaResult.Fail(ex, InstaLoginResult.Exception);
+                return InstaResult.Fail(ex, LoginResult.Exception);
             }
         }
 
@@ -1579,11 +1579,9 @@ namespace Wikiled.Instagram.Api.Logic
         ///     Exception --> Something wrong happened
         ///     ChallengeRequired --> You need to pass Instagram challenge
         /// </returns>
-        public async Task<IResult<InstaLoginResult>> LoginWithFacebookAsync(
-            string fbAccessToken,
-            string cookiesContainer)
+        public Task<IResult<LoginResult>> LoginWithFacebookAsync(string fbAccessToken, string cookiesContainer)
         {
-            return await LoginWithFacebookAsync(fbAccessToken, cookiesContainer, true).ConfigureAwait(false);
+            return LoginWithFacebookAsync(fbAccessToken, cookiesContainer, true);
         }
 
         /// <summary>
@@ -1724,11 +1722,11 @@ namespace Wikiled.Instagram.Api.Logic
         /// <returns>
         ///     <see cref="T:InstagramApiSharp.Classes.Models.CurrentUser" />
         /// </returns>
-        public async Task<IResult<CurrentUser>> GetCurrentUserAsync()
+        public Task<IResult<CurrentUser>> GetCurrentUserAsync()
         {
             ValidateUser();
             ValidateLoggedIn();
-            return await UserProcessor.GetCurrentUserAsync().ConfigureAwait(false);
+            return UserProcessor.GetCurrentUserAsync();
         }
 
         /// <summary>
@@ -1906,9 +1904,9 @@ namespace Wikiled.Instagram.Api.Logic
         /// </summary>
         /// <param name="uri">Desire uri (must include https://i.instagram.com/api/v...) </param>
         /// <param name="data">Data to post</param>
-        public async Task<IResult<string>> SendSignedPostRequestAsync(Uri uri, Dictionary<string, string> data)
+        public Task<IResult<string>> SendSignedPostRequestAsync(Uri uri, Dictionary<string, string> data)
         {
-            return await SendSignedPostRequest(uri, null, data).ConfigureAwait(false);
+            return SendSignedPostRequest(uri, null, data);
         }
 
         /// <summary>
@@ -1916,9 +1914,9 @@ namespace Wikiled.Instagram.Api.Logic
         /// </summary>
         /// <param name="uri">Desire uri (must include https://i.instagram.com/api/v...) </param>
         /// <param name="data">Data to post</param>
-        public async Task<IResult<string>> SendSignedPostRequestAsync(Uri uri, JObject data)
+        public Task<IResult<string>> SendSignedPostRequestAsync(Uri uri, JObject data)
         {
-            return await SendSignedPostRequest(uri, data, null).ConfigureAwait(false);
+            return SendSignedPostRequest(uri, data, null);
         }
 
         /// <summary>
@@ -2457,7 +2455,7 @@ namespace Wikiled.Instagram.Api.Logic
             }
         }
 
-        public async Task<IResult<InstaLoginResult>> LoginWithFacebookAsync(
+        public async Task<IResult<LoginResult>> LoginWithFacebookAsync(
             string fbAccessToken,
             string cookiesContainer,
             bool dryrun = true,
@@ -2532,8 +2530,8 @@ namespace Wikiled.Instagram.Api.Logic
                         return InstaResult.Fail(
                             "Invalid Credentials",
                             loginFailReason.ErrorType == "bad_password"
-                                ? InstaLoginResult.BadPassword
-                                : InstaLoginResult.InvalidUser);
+                                ? LoginResult.BadPassword
+                                : LoginResult.InvalidUser);
                     }
 
                     if (loginFailReason.TwoFactorRequired)
@@ -2541,34 +2539,34 @@ namespace Wikiled.Instagram.Api.Logic
                         twoFactorInfo = loginFailReason.TwoFactorLoginInfo;
                         HttpRequestProcessor.RequestMessage.Username = twoFactorInfo.Username;
                         HttpRequestProcessor.RequestMessage.DeviceId = deviceInfo.DeviceId;
-                        return InstaResult.Fail("Two Factor Authentication is required", InstaLoginResult.TwoFactorRequired);
+                        return InstaResult.Fail("Two Factor Authentication is required", LoginResult.TwoFactorRequired);
                     }
 
                     if (loginFailReason.ErrorType == "checkpoint_challenge_required")
                     {
                         challengeInfo = loginFailReason.Challenge;
 
-                        return InstaResult.Fail("Challenge is required", InstaLoginResult.ChallengeRequired);
+                        return InstaResult.Fail("Challenge is required", LoginResult.ChallengeRequired);
                     }
 
                     if (loginFailReason.ErrorType == "rate_limit_error")
                     {
                         return InstaResult.Fail("Please wait a few minutes before you try again.",
-                                           InstaLoginResult.LimitError);
+                                           LoginResult.LimitError);
                     }
 
                     if (loginFailReason.ErrorType == "inactive user" || loginFailReason.ErrorType == "inactive_user")
                     {
                         return InstaResult.Fail($"{loginFailReason.Message}\r\nHelp url: {loginFailReason.HelpUrl}",
-                                           InstaLoginResult.InactiveUser);
+                                           LoginResult.InactiveUser);
                     }
 
                     if (loginFailReason.ErrorType == "checkpoint_logged_out")
                     {
-                        return InstaResult.Fail($"{loginFailReason.ErrorType} {loginFailReason.CheckpointUrl}", InstaLoginResult.CheckpointLoggedOut);
+                        return InstaResult.Fail($"{loginFailReason.ErrorType} {loginFailReason.CheckpointUrl}", LoginResult.CheckpointLoggedOut);
                     }
 
-                    return InstaResult.UnExpectedResponse<InstaLoginResult>(response, json);
+                    return InstaResult.UnExpectedResponse<LoginResult>(response, json);
                 }
 
                 var fbUserId = string.Empty;
@@ -2632,17 +2630,17 @@ namespace Wikiled.Instagram.Api.Logic
                     User.CsrfToken = cookies[InstaApiConstants.Csrftoken]?.Value ?? string.Empty;
                 }
 
-                return InstaResult.Success(InstaLoginResult.Success);
+                return InstaResult.Success(LoginResult.Success);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, InstaLoginResult.Exception, InstaResponseType.NetworkProblem);
+                return InstaResult.Fail(httpException, LoginResult.Exception, InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 LogError(exception);
-                return InstaResult.Fail(exception, InstaLoginResult.Exception);
+                return InstaResult.Fail(exception, LoginResult.Exception);
             }
         }
 

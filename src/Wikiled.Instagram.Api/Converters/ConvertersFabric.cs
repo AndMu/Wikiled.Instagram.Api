@@ -503,7 +503,7 @@ namespace Wikiled.Instagram.Api.Converters
             return new InstaInsightsDataNodeConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaLocation, LocationResponse> GetLocationConverter(
+        public IObjectConverter<Classes.Models.Location.Location, LocationResponse> GetLocationConverter(
             LocationResponse response)
         {
             return new LocationConverter { SourceObject = response };
@@ -515,7 +515,7 @@ namespace Wikiled.Instagram.Api.Converters
             return new InstaLocationFeedConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaLocationShort, LocationShortResponse> GetLocationShortConverter(
+        public IObjectConverter<LocationShort, LocationShortResponse> GetLocationShortConverter(
             LocationShortResponse response)
         {
             return new InstaLocationShortConverter { SourceObject = response };

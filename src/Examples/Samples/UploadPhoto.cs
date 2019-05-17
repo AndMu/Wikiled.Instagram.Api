@@ -30,7 +30,7 @@ namespace Examples.Samples
                 Height = 1080, Width = 1080, Uri = @"c:\someawesomepicture.jpg"
             };
             // Add user tag (tag people)
-            mediaImage.UserTags.Add(new InstaUserTagUpload { Username = "rmt4006", X = 0.5, Y = 0.5 });
+            mediaImage.UserTags.Add(new UserTagUpload { Username = "rmt4006", X = 0.5, Y = 0.5 });
             var result = await api.MediaProcessor.UploadPhotoAsync(mediaImage, "someawesomepicture");
             Console.WriteLine(result.Succeeded
                                   ? $"Media created: {result.Value.Pk}, {result.Value.Caption}"
@@ -45,7 +45,7 @@ namespace Examples.Samples
                 Height = 1080, Width = 1080, Uri = @"c:\someawesomepicture.jpg"
             };
             // Add user tag (tag people)
-            mediaImage.UserTags.Add(new InstaUserTagUpload { Username = "rmt4006", X = 0.5, Y = 0.5 });
+            mediaImage.UserTags.Add(new UserTagUpload { Username = "rmt4006", X = 0.5, Y = 0.5 });
             // Upload photo with progress
             var result =
                 await api.MediaProcessor.UploadPhotoAsync(UploadProgress, mediaImage, "someawesomepicture");

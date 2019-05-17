@@ -43,7 +43,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Media
         /// <summary>
         ///     User tags => Optional
         /// </summary>
-        public List<InstaUserTagUpload> UserTags { get; set; } = new List<InstaUserTagUpload>();
+        public List<UserTagUpload> UserTags { get; set; } = new List<UserTagUpload>();
 
         /// <summary>
         ///     Image width => Optional

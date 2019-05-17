@@ -248,7 +248,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             Action<InstaUploaderProgress> progress,
             InstaImageUpload image,
             string caption,
-            InstaLocationShort location,
+            LocationShort location,
             bool configureAsNameTag = false)
         {
             var upProgress = new InstaUploaderProgress
@@ -917,8 +917,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             InstaUploaderProgress upProgress,
             string uploadId,
             string caption,
-            InstaLocationShort location,
-            List<InstaUserTagUpload> userTags = null)
+            LocationShort location,
+            List<UserTagUpload> userTags = null)
         {
             try
             {

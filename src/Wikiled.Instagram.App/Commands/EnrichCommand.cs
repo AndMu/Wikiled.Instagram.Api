@@ -10,18 +10,15 @@ using Wikiled.Instagram.App.Commands.Config;
 
 namespace Wikiled.Instagram.App.Commands
 {
-    /// <summary>
-    /// Discover new tags
-    /// </summary>
-    public class DiscoveryCommand : Command
+    public class EnrichCommand : Command
     {
-        private readonly ILogger<DiscoveryCommand> log;
+        private readonly ILogger<EnrichCommand> log;
 
-        private readonly BasicConfig config;
+        private readonly EnrichConfig config;
 
         private readonly IInstaApi instagram;
 
-        public DiscoveryCommand(ILogger<DiscoveryCommand> log, IInstaApi insta, BasicConfig config)
+        public EnrichCommand(ILogger<EnrichCommand> log, IInstaApi insta, EnrichConfig config)
             : base(log)
         {
             this.log = log ?? throw new ArgumentNullException(nameof(log));
@@ -31,7 +28,7 @@ namespace Wikiled.Instagram.App.Commands
 
         protected override async Task Execute(CancellationToken token)
         {
-            log.LogInformation("Starting Discovery...");
+            log.LogInformation("Enriching Instagram media...");
             instagram.Delay.Disable();
             var logInResult = await instagram.LoginAsync().ConfigureAwait(false);
             instagram.Delay.Enable();
@@ -44,9 +41,9 @@ namespace Wikiled.Instagram.App.Commands
                     {
                         var data = item.Location;
                         log.LogInformation("[{0}] - [{1}] [{2}] with Tags: {3}",
-                                           item.Caption?.Text,
+                                           item.Caption.Text,
                                            item.DeviceTimeStamp,
-                                           item.Location?.ShortName,
+                                           item.Location.ShortName,
                                            item.UserTags.Count);
                         ;
                     }).ConfigureAwait(false);

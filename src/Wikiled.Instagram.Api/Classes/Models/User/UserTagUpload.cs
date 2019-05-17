@@ -1,6 +1,6 @@
 ﻿namespace Wikiled.Instagram.Api.Classes.Models.User
 {
-    public class InstaUserTagUpload : InstaUserTagVideoUpload
+    public class UserTagUpload : UserTagVideoUpload
     {
         public double X { get; set; } = 0.0;
 

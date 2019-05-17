@@ -2,7 +2,7 @@
 
 namespace Wikiled.Instagram.Api.Classes.Models.Account
 {
-    public class InstaAccountVerifySms
+    public class AccountVerifySms
     {
         [JsonProperty("errors")]
         public InstaAccountVerifySmsErrors Errors { get; set; }

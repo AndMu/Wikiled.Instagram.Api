@@ -101,7 +101,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Media
             }
         }
 
-        public InstaLocation Location { get; set; }
+        public Location.Location Location { get; set; }
 
         public int MaxNumVisiblePreviewComments { get; set; }
 

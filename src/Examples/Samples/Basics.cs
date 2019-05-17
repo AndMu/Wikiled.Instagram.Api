@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Examples.Utils;
 using Wikiled.Instagram.Api.Classes;
@@ -43,31 +44,22 @@ namespace Examples.Samples
             Console.WriteLine($"Next id will be: '{followers.Value.NextMaxId}'");
 
             // get self folling 
-            var following =
-                await api.UserProcessor.GetUserFollowingAsync(currentUser.Value.UserName,
-                                                                   PaginationParameters.MaxPagesToLoad(5));
+            var following = await api.UserProcessor.GetUserFollowingAsync(currentUser.Value.UserName, PaginationParameters.MaxPagesToLoad(5)).ConfigureAwait(false);
             Console.WriteLine($"Count of following [{currentUser.Value.UserName}]:{following.Value.Count}");
 
             // get self user's media, latest 5 pages
-            var currentUserMedia =
-                await api.UserProcessor.GetUserMediaAsync(currentUser.Value.UserName,
-                                                               PaginationParameters.MaxPagesToLoad(5));
-            if (currentUserMedia.Succeeded)
+            var currentUserMedia = await api.UserProcessor.GetUserMedia(currentUser.Value.UserName, PaginationParameters.MaxPagesToLoad(5)).ToArray();
+            Console.WriteLine($"Media count [{currentUser.Value.UserName}]: {currentUserMedia.Length}");
+            foreach (var media in currentUserMedia)
             {
-                Console.WriteLine($"Media count [{currentUser.Value.UserName}]: {currentUserMedia.Value.Count}");
-                foreach (var media in currentUserMedia.Value)
-                {
-                    InstaConsoleUtils.PrintMedia("Self media", media, MaxDescriptionLength);
-                }
+                InstaConsoleUtils.PrintMedia("Self media", media, MaxDescriptionLength);
             }
 
             //get user time line feed, latest 5 pages
-            var userFeed =
-                await api.FeedProcessor.GetUserTimelineFeedAsync(PaginationParameters.MaxPagesToLoad(5));
+            var userFeed = await api.FeedProcessor.GetUserTimelineFeedAsync(PaginationParameters.MaxPagesToLoad(5)).ConfigureAwait(false);
             if (userFeed.Succeeded)
             {
-                Console.WriteLine(
-                    $"Feed items (in {userFeed.Value.MediaItemsCount} pages) [{currentUser.Value.UserName}]: {userFeed.Value.Medias.Count}");
+                Console.WriteLine($"Feed items (in {userFeed.Value.MediaItemsCount} pages) [{currentUser.Value.UserName}]: {userFeed.Value.Medias.Count}");
                 foreach (var media in userFeed.Value.Medias)
                 {
                     InstaConsoleUtils.PrintMedia("Feed media", media, MaxDescriptionLength);

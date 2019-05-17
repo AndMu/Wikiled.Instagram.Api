@@ -44,10 +44,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     60*60 = 12600)
         /// </param>
         /// <returns></returns>
-        Task<IResult<InstaDiscoverTopSearches>> GetTopSearchesAsync(string querry = "",
-                                                                    InstaDiscoverSearchType searchType =
-                                                                        InstaDiscoverSearchType.Users,
-                                                                    int timezoneOffset = 12600);
+        Task<IResult<InstaDiscoverTopSearches>> GetTopSearchesAsync(string querry = "", InstaDiscoverSearchType searchType = InstaDiscoverSearchType.Users, int timezoneOffset = 12600);
 
         /// <summary>
         ///     Search user people
@@ -69,10 +66,5 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="instaContacts">Contact list</param>
         Task<IResult<InstaContactUserList>> SyncContactsAsync(InstaContactList instaContacts);
-
-        ///// <summary>
-        ///// NOT COMPLETE
-        ///// </summary>
-        //Task<IResult<object>> DiscoverPeopleAsync();
     }
 }

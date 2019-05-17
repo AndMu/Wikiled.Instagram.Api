@@ -37,9 +37,9 @@ namespace Examples.Samples
                     Width = 0,
                     Uri = @"c:\image1.jpg",
                     // add user tags to your images
-                    UserTags = new List<InstaUserTagUpload>
+                    UserTags = new List<UserTagUpload>
                     {
-                        new InstaUserTagUpload { Username = "rmt4006", X = 0.5, Y = 0.5 }
+                        new UserTagUpload { Username = "rmt4006", X = 0.5, Y = 0.5 }
                     }
                 },
                 new InstaImageUpload
@@ -57,9 +57,9 @@ namespace Examples.Samples
                     Video = new InstaVideo(@"c:\video1.mp4", 0, 0),
                     VideoThumbnail = new InstaImage(@"c:\video thumbnail 1.jpg", 0, 0),
                     // Add user tag (tag people)
-                    UserTags = new List<InstaUserTagVideoUpload>
+                    UserTags = new List<UserTagVideoUpload>
                     {
-                        new InstaUserTagVideoUpload { Username = "rmt4006" }
+                        new UserTagVideoUpload { Username = "rmt4006" }
                     }
                 },
                 new InstaVideoUpload
@@ -95,9 +95,9 @@ namespace Examples.Samples
                     Width = 0,
                     Uri = @"c:\image1.jpg",
                     // add user tags to your images
-                    UserTags = new List<InstaUserTagUpload>
+                    UserTags = new List<UserTagUpload>
                     {
-                        new InstaUserTagUpload { Username = "rmt4006", X = 0.5, Y = 0.5 }
+                        new UserTagUpload { Username = "rmt4006", X = 0.5, Y = 0.5 }
                     }
                 }
             });
@@ -111,9 +111,9 @@ namespace Examples.Samples
                     Video = new InstaVideo(@"c:\video1.mp4", 0, 0),
                     VideoThumbnail = new InstaImage(@"c:\video thumbnail 1.jpg", 0, 0),
                     // Add user tag (tag people)
-                    UserTags = new List<InstaUserTagVideoUpload>
+                    UserTags = new List<UserTagVideoUpload>
                     {
-                        new InstaUserTagVideoUpload { Username = "rmt4006" }
+                        new UserTagVideoUpload { Username = "rmt4006" }
                     }
                 }
             });

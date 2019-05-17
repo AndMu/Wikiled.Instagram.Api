@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Wikiled.Instagram.Api.Classes.Models.Account
 {
-    public class InstaAccountTwoFactor
+    public class AccountTwoFactor
     {
         [JsonProperty("backup_codes")]
         public List<string> BackupCodes { get; set; }

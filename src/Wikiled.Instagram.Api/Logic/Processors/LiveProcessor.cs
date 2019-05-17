@@ -901,12 +901,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="text">Text to send</param>
         /// <param name="broadcastId">Broadcast id to send ( <see cref="InstaBroadcast.Id" /> )</param>
         /// <param name="recipients">Recipients ids</param>
-        public async Task<IResult<bool>> ShareLiveToDirectRecipientAsync(
-            string text,
-            string broadcastId,
-            params string[] recipients)
+        public Task<IResult<bool>> ShareLiveToDirectRecipientAsync(string text, string broadcastId, params string[] recipients)
         {
-            return await ShareLiveToDirectThreadAsync(text, broadcastId, null, recipients).ConfigureAwait(false);
+            return ShareLiveToDirectThreadAsync(text, broadcastId, null, recipients);
         }
 
         /// <summary>
@@ -915,11 +912,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="text">Text to send</param>
         /// <param name="broadcastId">Broadcast id to send ( <see cref="InstaBroadcast.Id" /> )</param>
         /// <param name="threadIds">Thread ids</param>
-        public async Task<IResult<bool>> ShareLiveToDirectThreadAsync(string text,
-                                                                      string broadcastId,
-                                                                      params string[] threadIds)
+        public Task<IResult<bool>> ShareLiveToDirectThreadAsync(string text, string broadcastId, params string[] threadIds)
         {
-            return await ShareLiveToDirectThreadAsync(text, broadcastId, threadIds, null).ConfigureAwait(false);
+            return ShareLiveToDirectThreadAsync(text, broadcastId, threadIds, null);
         }
 
         /// <summary>

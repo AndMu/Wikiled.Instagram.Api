@@ -42,9 +42,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     New photo cover media Id (get it from <see cref="InstaMedia.Identifier" />) => Optional
         ///     <para>Important note: media id must be exists in giving collection!</para>
         /// </param>
-        Task<IResult<InstaCollectionItem>> EditCollectionAsync(long collectionId,
-                                                               string name,
-                                                               string photoCoverMediaId = null);
+        Task<IResult<InstaCollectionItem>> EditCollectionAsync(long collectionId, string name, string photoCoverMediaId = null);
 
         /// <summary>
         ///     Get your collections
@@ -63,8 +61,6 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="T:InstagramApiSharp.Classes.Models.InstaCollectionItem" />
         /// </returns>
-        Task<IResult<InstaCollectionItem>> GetSingleCollectionAsync(
-            long collectionId,
-            PaginationParameters paginationParameters);
+        Task<IResult<InstaCollectionItem>> GetSingleCollectionAsync(long collectionId, PaginationParameters paginationParameters);
     }
 }

@@ -64,9 +64,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     Block an user from commenting to medias
         /// </summary>
         /// <param name="userIds">User ids (pk)</param>
-        public async Task<IResult<bool>> BlockUserCommentingAsync(params long[] userIds)
+        public Task<IResult<bool>> BlockUserCommentingAsync(params long[] userIds)
         {
-            return await BlockUnblockCommenting(true, userIds).ConfigureAwait(false);
+            return BlockUnblockCommenting(true, userIds);
         }
 
         /// <summary>
@@ -708,9 +708,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     Unblock an user from commenting to medias
         /// </summary>
         /// <param name="userIds">User ids (pk)</param>
-        public async Task<IResult<bool>> UnblockUserCommentingAsync(params long[] userIds)
+        public Task<IResult<bool>> UnblockUserCommentingAsync(params long[] userIds)
         {
-            return await BlockUnblockCommenting(false, userIds).ConfigureAwait(false);
+            return BlockUnblockCommenting(false, userIds);
         }
 
         /// <summary>

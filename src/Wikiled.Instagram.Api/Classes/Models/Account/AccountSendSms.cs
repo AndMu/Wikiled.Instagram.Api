@@ -2,7 +2,7 @@
 
 namespace Wikiled.Instagram.Api.Classes.Models.Account
 {
-    public class InstaAccountSendSms
+    public class AccountSendSms
     {
         [JsonProperty("phone_number_valid")]
         public bool PhoneNumberValid { get; set; }

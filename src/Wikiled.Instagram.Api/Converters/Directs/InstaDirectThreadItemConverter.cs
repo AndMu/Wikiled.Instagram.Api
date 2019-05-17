@@ -177,7 +177,7 @@ namespace Wikiled.Instagram.Api.Converters.Directs
             {
                 try
                 {
-                    threadItem.LocationMedia = new InstaLocation();
+                    threadItem.LocationMedia = new Classes.Models.Location.Location();
                     if (!string.IsNullOrEmpty(SourceObject.LocationMedia.Address))
                     {
                         threadItem.LocationMedia.Address = SourceObject.LocationMedia.Address;

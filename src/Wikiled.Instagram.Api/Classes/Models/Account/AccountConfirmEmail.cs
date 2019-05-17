@@ -2,7 +2,7 @@
 
 namespace Wikiled.Instagram.Api.Classes.Models.Account
 {
-    public class InstaAccountConfirmEmail
+    public class AccountConfirmEmail
     {
         [JsonProperty("body")]
         public string Body { get; set; }

@@ -126,11 +126,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="InstaMediaList" />
         /// </returns>
-        public async Task<IResult<InstaMediaList>> GetUserShoppableMediaByIdAsync(
-            long userId,
-            PaginationParameters paginationParameters)
+        public Task<IResult<InstaMediaList>> GetUserShoppableMediaByIdAsync(long userId, PaginationParameters paginationParameters)
         {
-            return await GetUserShoppableMedia(userId, paginationParameters).ConfigureAwait(false);
+            return GetUserShoppableMedia(userId, paginationParameters);
         }
 
         public async Task<IResult<InstaProductInfo>> GetCatalogsAsync()

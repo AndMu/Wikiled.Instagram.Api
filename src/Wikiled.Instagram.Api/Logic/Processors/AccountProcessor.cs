@@ -507,9 +507,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     Change profile picture(only jpg and jpeg formats).
         /// </summary>
         /// <param name="pictureBytes">Picture(JPG,JPEG) bytes</param>
-        public async Task<IResult<InstaUserEdit>> ChangeProfilePictureAsync(byte[] pictureBytes)
+        public Task<IResult<InstaUserEdit>> ChangeProfilePictureAsync(byte[] pictureBytes)
         {
-            return await ChangeProfilePictureAsync(null, pictureBytes).ConfigureAwait(false);
+            return ChangeProfilePictureAsync(null, pictureBytes);
         }
 
         /// <summary>
@@ -587,9 +587,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     Get request for download backup account data.
         /// </summary>
         /// <param name="email">Email</param>
-        public async Task<IResult<InstaRequestDownloadData>> GetRequestForDownloadAccountDataAsync(string email)
+        public Task<IResult<InstaRequestDownloadData>> GetRequestForDownloadAccountDataAsync(string email)
         {
-            return await GetRequestForDownloadAccountDataAsync(email, null).ConfigureAwait(false);
+            return GetRequestForDownloadAccountDataAsync(email, null);
         }
 
         /// <summary>
@@ -1092,7 +1092,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     Send two factor enable sms.
         /// </summary>
         /// <param name="phoneNumber">Phone number</param>
-        public async Task<IResult<InstaAccountTwoFactorSms>> SendTwoFactorEnableSmsAsync(string phoneNumber)
+        public async Task<IResult<AccountTwoFactorSms>> SendTwoFactorEnableSmsAsync(string phoneNumber)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             try
@@ -1112,21 +1112,21 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<InstaAccountTwoFactorSms>(response, json);
+                    return InstaResult.UnExpectedResponse<AccountTwoFactorSms>(response, json);
                 }
 
-                var obj = JsonConvert.DeserializeObject<InstaAccountTwoFactorSms>(json);
+                var obj = JsonConvert.DeserializeObject<AccountTwoFactorSms>(json);
                 return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaAccountTwoFactorSms), InstaResponseType.NetworkProblem);
+                return InstaResult.Fail(httpException, default(AccountTwoFactorSms), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaAccountTwoFactorSms>(exception);
+                return InstaResult.Fail<AccountTwoFactorSms>(exception);
             }
         }
 
@@ -1135,7 +1135,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="phoneNumber">Phone number</param>
         /// <param name="verificationCode">Verification code</param>
-        public async Task<IResult<InstaAccountTwoFactor>> TwoFactorEnableAsync(
+        public async Task<IResult<AccountTwoFactor>> TwoFactorEnableAsync(
             string phoneNumber,
             string verificationCode)
         {
@@ -1158,28 +1158,28 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<InstaAccountTwoFactor>(response, json);
+                    return InstaResult.UnExpectedResponse<AccountTwoFactor>(response, json);
                 }
 
-                var obj = JsonConvert.DeserializeObject<InstaAccountTwoFactor>(json);
+                var obj = JsonConvert.DeserializeObject<AccountTwoFactor>(json);
                 return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaAccountTwoFactor), InstaResponseType.NetworkProblem);
+                return InstaResult.Fail(httpException, default(AccountTwoFactor), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaAccountTwoFactor>(exception);
+                return InstaResult.Fail<AccountTwoFactor>(exception);
             }
         }
 
         /// <summary>
         ///     Send confirm email.
         /// </summary>
-        public async Task<IResult<InstaAccountConfirmEmail>> SendConfirmEmailAsync()
+        public async Task<IResult<AccountConfirmEmail>> SendConfirmEmailAsync()
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             try
@@ -1197,21 +1197,21 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<InstaAccountConfirmEmail>(response, json);
+                    return InstaResult.UnExpectedResponse<AccountConfirmEmail>(response, json);
                 }
 
-                var obj = JsonConvert.DeserializeObject<InstaAccountConfirmEmail>(json);
+                var obj = JsonConvert.DeserializeObject<AccountConfirmEmail>(json);
                 return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaAccountConfirmEmail), InstaResponseType.NetworkProblem);
+                return InstaResult.Fail(httpException, default(AccountConfirmEmail), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaAccountConfirmEmail>(exception);
+                return InstaResult.Fail<AccountConfirmEmail>(exception);
             }
         }
 
@@ -1219,7 +1219,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     Send sms code.
         /// </summary>
         /// <param name="phoneNumber">Phone number</param>
-        public async Task<IResult<InstaAccountSendSms>> SendSmsCodeAsync(string phoneNumber)
+        public async Task<IResult<AccountSendSms>> SendSmsCodeAsync(string phoneNumber)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             try
@@ -1238,21 +1238,21 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<InstaAccountSendSms>(response, json);
+                    return InstaResult.UnExpectedResponse<AccountSendSms>(response, json);
                 }
 
-                var obj = JsonConvert.DeserializeObject<InstaAccountSendSms>(json);
+                var obj = JsonConvert.DeserializeObject<AccountSendSms>(json);
                 return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaAccountSendSms), InstaResponseType.NetworkProblem);
+                return InstaResult.Fail(httpException, default(AccountSendSms), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaAccountSendSms>(exception);
+                return InstaResult.Fail<AccountSendSms>(exception);
             }
         }
 
@@ -1281,7 +1281,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                var obj = JsonConvert.DeserializeObject<InstaAccountConfirmEmail>(json);
+                var obj = JsonConvert.DeserializeObject<AccountConfirmEmail>(json);
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -1307,7 +1307,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="phoneNumber">Phone number (ex: +9891234...)</param>
         /// <param name="verificationCode">Verification code</param>
-        public async Task<IResult<InstaAccountVerifySms>> VerifySmsCodeAsync(
+        public async Task<IResult<AccountVerifySms>> VerifySmsCodeAsync(
             string phoneNumber,
             string verificationCode)
         {
@@ -1329,21 +1329,21 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<InstaAccountVerifySms>(response, json);
+                    return InstaResult.UnExpectedResponse<AccountVerifySms>(response, json);
                 }
 
-                var obj = JsonConvert.DeserializeObject<InstaAccountVerifySms>(json);
+                var obj = JsonConvert.DeserializeObject<AccountVerifySms>(json);
                 return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaAccountVerifySms), InstaResponseType.NetworkProblem);
+                return InstaResult.Fail(httpException, default(AccountVerifySms), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaAccountVerifySms>(exception);
+                return InstaResult.Fail<AccountVerifySms>(exception);
             }
         }
 
@@ -1392,17 +1392,17 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <summary>
         ///     Enable presence (people can track your activities and you can see their activies too)
         /// </summary>
-        public async Task<IResult<bool>> EnablePresenceAsync()
+        public Task<IResult<bool>> EnablePresenceAsync()
         {
-            return await EnableDisablePresenceAsync(true).ConfigureAwait(false);
+            return EnableDisablePresenceAsync(true);
         }
 
         /// <summary>
         ///     Disable presence (people can't track your activities and you can't see their activies too)
         /// </summary>
-        public async Task<IResult<bool>> DisablePresenceAsync()
+        public Task<IResult<bool>> DisablePresenceAsync()
         {
-            return await EnableDisablePresenceAsync(false).ConfigureAwait(false);
+            return EnableDisablePresenceAsync(false);
         }
 
         /// <summary>

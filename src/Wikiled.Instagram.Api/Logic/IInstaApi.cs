@@ -354,7 +354,7 @@ namespace Wikiled.Instagram.Api.Logic
         ///     Verify verification code for challenge require (checkpoint required)
         /// </summary>
         /// <param name="verifyCode">Verification code</param>
-        Task<IResult<InstaLoginResult>> VerifyCodeForChallengeRequireAsync(string verifyCode);
+        Task<IResult<LoginResult>> VerifyCodeForChallengeRequireAsync(string verifyCode);
 
         /// <summary>
         ///     Check email availability
@@ -435,7 +435,7 @@ namespace Wikiled.Instagram.Api.Logic
         ///     Exception --> Something wrong happened
         ///     ChallengeRequired --> You need to pass Instagram challenge
         /// </returns>
-        Task<IResult<InstaLoginResult>> LoginAsync(bool isNewLogin = true);
+        Task<IResult<LoginResult>> LoginAsync(bool isNewLogin = true);
 
         /// <summary>
         ///     Login using cookies
@@ -460,7 +460,7 @@ namespace Wikiled.Instagram.Api.Logic
         ///     Exception --> Something wrong happened
         ///     ChallengeRequired --> You need to pass Instagram challenge
         /// </returns>
-        Task<IResult<InstaLoginResult>> LoginWithFacebookAsync(string fbAccessToken, string cookiesContainer);
+        Task<IResult<LoginResult>> LoginWithFacebookAsync(string fbAccessToken, string cookiesContainer);
 
         /// <summary>
         ///     2-Factor Authentication Login using a verification code

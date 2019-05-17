@@ -39,8 +39,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="progress">Progress action</param>
         /// <param name="pictureBytes">Picture(JPG,JPEG) bytes</param>
-        Task<IResult<InstaUserEdit>> ChangeProfilePictureAsync(Action<InstaUploaderProgress> progress,
-                                                               byte[] pictureBytes);
+        Task<IResult<InstaUserEdit>> ChangeProfilePictureAsync(Action<InstaUploaderProgress> progress, byte[] pictureBytes);
 
         /// <summary>
         ///     Edit profile
@@ -175,13 +174,13 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <summary>
         ///     Send confirm email.
         /// </summary>
-        Task<IResult<InstaAccountConfirmEmail>> SendConfirmEmailAsync();
+        Task<IResult<AccountConfirmEmail>> SendConfirmEmailAsync();
 
         /// <summary>
         ///     Send sms code.
         /// </summary>
         /// <param name="phoneNumber">Phone number</param>
-        Task<IResult<InstaAccountSendSms>> SendSmsCodeAsync(string phoneNumber);
+        Task<IResult<AccountSendSms>> SendSmsCodeAsync(string phoneNumber);
 
         /// <summary>
         ///     Verify email by verification url
@@ -193,21 +192,21 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     Send two factor enable sms.
         /// </summary>
         /// <param name="phoneNumber">Phone number</param>
-        Task<IResult<InstaAccountTwoFactorSms>> SendTwoFactorEnableSmsAsync(string phoneNumber);
+        Task<IResult<AccountTwoFactorSms>> SendTwoFactorEnableSmsAsync(string phoneNumber);
 
         /// <summary>
         ///     Verify enable two factor.
         /// </summary>
         /// <param name="phoneNumber">Phone number</param>
         /// <param name="verificationCode">Verification code</param>
-        Task<IResult<InstaAccountTwoFactor>> TwoFactorEnableAsync(string phoneNumber, string verificationCode);
+        Task<IResult<AccountTwoFactor>> TwoFactorEnableAsync(string phoneNumber, string verificationCode);
 
         /// <summary>
         ///     Verify sms code.
         /// </summary>
         /// <param name="phoneNumber">Phone number (ex: +9891234...)</param>
         /// <param name="verificationCode">Verification code</param>
-        Task<IResult<InstaAccountVerifySms>> VerifySmsCodeAsync(string phoneNumber, string verificationCode);
+        Task<IResult<AccountVerifySms>> VerifySmsCodeAsync(string phoneNumber, string verificationCode);
 
         /// <summary>
         ///     Enable presence (people can track your activities and you can see their activies too)
@@ -234,9 +233,5 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         Task<IResult<InstaBusinessUser>> SwitchToBusinessAccountAsync();
 
-        /// <summary>
-        ///     NOT COMPLETE dastrasi last activity
-        /// </summary>
-        //Task<IResult<object>> GetCommentFilterAsync();
     }
 }

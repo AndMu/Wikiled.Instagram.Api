@@ -199,17 +199,17 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <summary>
         ///     Disable branded content approval
         /// </summary>
-        public async Task<IResult<InstaBrandedContent>> DisbaleBrandedContentApprovalAsync()
+        public Task<IResult<InstaBrandedContent>> DisbaleBrandedContentApprovalAsync()
         {
-            return await UpdateBrandedContent(0).ConfigureAwait(false);
+            return UpdateBrandedContent(0);
         }
 
         /// <summary>
         ///     Enable branded content approval
         /// </summary>
-        public async Task<IResult<InstaBrandedContent>> EnableBrandedContentApprovalAsync()
+        public Task<IResult<InstaBrandedContent>> EnableBrandedContentApprovalAsync()
         {
-            return await UpdateBrandedContent(1).ConfigureAwait(false);
+            return UpdateBrandedContent(1);
         }
 
         /// <summary>
@@ -289,9 +289,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <summary>
         ///     Get logged in business account information
         /// </summary>
-        public async Task<IResult<InstaUserInfo>> GetBusinessAccountInformationAsync()
+        public Task<IResult<InstaUserInfo>> GetBusinessAccountInformationAsync()
         {
-            return await instaApi.UserProcessor.GetUserInfoByIdAsync(user.LoggedInUser.Pk).ConfigureAwait(false);
+            return instaApi.UserProcessor.GetUserInfoByIdAsync(user.LoggedInUser.Pk);
         }
 
         /// <summary>
@@ -717,9 +717,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <summary>
         ///     Remove business location
         /// </summary>
-        public async Task<IResult<InstaBusinessUser>> RemoveBusinessLocationAsync()
+        public Task<IResult<InstaBusinessUser>> RemoveBusinessLocationAsync()
         {
-            return await UpdateBusinessInfoAsync(null, null, null, null, null).ConfigureAwait(false);
+            return UpdateBusinessInfoAsync(null, null, null, null, null);
         }
 
         /// <summary>

@@ -184,9 +184,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="highlightId">Highlight id</param>
         /// <param name="mediaId">Media id (CoverMedia.MediaId)</param>
-        public async Task<IResult<bool>> DeleteHighlightFeedAsync(string highlightId, string mediaId)
+        public Task<IResult<bool>> DeleteHighlightFeedAsync(string highlightId, string mediaId)
         {
-            return await AppendOrDeleteHighlight(highlightId, mediaId, true).ConfigureAwait(false);
+            return AppendOrDeleteHighlight(highlightId, mediaId, true);
         }
 
         /// <summary>
@@ -240,9 +240,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     Follow countdown stories
         /// </summary>
         /// <param name="countdownId">Countdown id (<see cref="InstaStoryCountdownStickerItem.CountdownId" />)</param>
-        public async Task<IResult<bool>> FollowCountdownStoryAsync(long countdownId)
+        public Task<IResult<bool>> FollowCountdownStoryAsync(long countdownId)
         {
-            return await FollowUnfollowCountdown(InstaUriCreator.GetStoryFollowCountdownUri(countdownId)).ConfigureAwait(false);
+            return FollowUnfollowCountdown(InstaUriCreator.GetStoryFollowCountdownUri(countdownId));
         }
 
         /// <summary>
@@ -926,11 +926,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///         Note 2: Get media pk from <see cref="InstaMedia.Pk" />
         ///     </para>
         /// </param>
-        public async Task<IResult<InstaStoryMedia>> ShareMediaAsStoryAsync(
-            InstaImage image,
-            InstaMediaStoryUpload mediaStoryUpload)
+        public Task<IResult<InstaStoryMedia>> ShareMediaAsStoryAsync(InstaImage image, InstaMediaStoryUpload mediaStoryUpload)
         {
-            return await ShareMediaAsStoryAsync(null, image, mediaStoryUpload).ConfigureAwait(false);
+            return ShareMediaAsStoryAsync(null, image, mediaStoryUpload);
         }
 
         /// <summary>
@@ -1036,9 +1034,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     UnFollow countdown stories
         /// </summary>
         /// <param name="countdownId">Countdown id (<see cref="InstaStoryCountdownStickerItem.CountdownId" />)</param>
-        public async Task<IResult<bool>> UnFollowCountdownStoryAsync(long countdownId)
+        public Task<IResult<bool>> UnFollowCountdownStoryAsync(long countdownId)
         {
-            return await FollowUnfollowCountdown(InstaUriCreator.GetStoryUnFollowCountdownUri(countdownId)).ConfigureAwait(false);
+            return FollowUnfollowCountdown(InstaUriCreator.GetStoryUnFollowCountdownUri(countdownId));
         }
 
         /// <summary>
@@ -1048,12 +1046,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="caption">Caption</param>
         /// param name="uploadOptions">Upload options => Optional
         /// </param>
-        public async Task<IResult<InstaStoryMedia>> UploadStoryPhotoAsync(
-            InstaImage image,
-            string caption,
-            InstaStoryUploadOptions uploadOptions = null)
+        public Task<IResult<InstaStoryMedia>> UploadStoryPhotoAsync(InstaImage image, string caption, InstaStoryUploadOptions uploadOptions = null)
         {
-            return await UploadStoryPhotoAsync(null, image, caption, uploadOptions).ConfigureAwait(false);
+            return UploadStoryPhotoAsync(null, image, caption, uploadOptions);
         }
 
         /// <summary>
@@ -1063,13 +1058,13 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="image">Photo to upload</param>
         /// <param name="caption">Caption</param>
         /// <param name="uploadOptions">Upload options => Optional</param>
-        public async Task<IResult<InstaStoryMedia>> UploadStoryPhotoAsync(
+        public Task<IResult<InstaStoryMedia>> UploadStoryPhotoAsync(
             Action<InstaUploaderProgress> progress,
             InstaImage image,
             string caption,
             InstaStoryUploadOptions uploadOptions = null)
         {
-            return await UploadStoryPhotoWithUrlAsync(progress, image, caption, null, uploadOptions).ConfigureAwait(false);
+            return UploadStoryPhotoWithUrlAsync(progress, image, caption, null, uploadOptions);
         }
 
         /// <summary>
@@ -1080,13 +1075,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="caption">Caption</param>
         /// <param name="uri">Uri to add</param>
         /// <param name="uploadOptions">Upload options => Optional</param>
-        public async Task<IResult<InstaStoryMedia>> UploadStoryPhotoWithUrlAsync(
-            InstaImage image,
-            string caption,
-            Uri uri,
-            InstaStoryUploadOptions uploadOptions = null)
+        public Task<IResult<InstaStoryMedia>> UploadStoryPhotoWithUrlAsync(InstaImage image, string caption, Uri uri, InstaStoryUploadOptions uploadOptions = null)
         {
-            return await UploadStoryPhotoWithUrlAsync(null, image, caption, uri, uploadOptions).ConfigureAwait(false);
+            return UploadStoryPhotoWithUrlAsync(null, image, caption, uri, uploadOptions);
         }
 
         /// <summary>
@@ -1265,12 +1256,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="video">Video to upload</param>
         /// <param name="caption">Caption</param>
         /// <param name="uploadOptions">Upload options => Optional</param>
-        public async Task<IResult<InstaStoryMedia>> UploadStoryVideoAsync(
+        public Task<IResult<InstaStoryMedia>> UploadStoryVideoAsync(
             InstaVideoUpload video,
             string caption,
             InstaStoryUploadOptions uploadOptions = null)
         {
-            return await UploadStoryVideoAsync(null, video, caption, uploadOptions).ConfigureAwait(false);
+            return UploadStoryVideoAsync(null, video, caption, uploadOptions);
         }
 
         /// <summary>
@@ -1280,13 +1271,13 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="video">Video to upload</param>
         /// <param name="caption">Caption</param>
         /// <param name="uploadOptions">Upload options => Optional</param>
-        public async Task<IResult<InstaStoryMedia>> UploadStoryVideoAsync(
+        public Task<IResult<InstaStoryMedia>> UploadStoryVideoAsync(
             Action<InstaUploaderProgress> progress,
             InstaVideoUpload video,
             string caption,
             InstaStoryUploadOptions uploadOptions = null)
         {
-            return await UploadStoryVideoWithUrlAsync(progress, video, caption, null, uploadOptions).ConfigureAwait(false);
+            return UploadStoryVideoWithUrlAsync(progress, video, caption, null, uploadOptions);
         }
 
         /// <summary>
@@ -1349,13 +1340,13 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="caption">Caption</param>
         /// <param name="uri">Uri to add</param>
         /// <param name="uploadOptions">Upload options => Optional</param>
-        public async Task<IResult<InstaStoryMedia>> UploadStoryVideoWithUrlAsync(
+        public Task<IResult<InstaStoryMedia>> UploadStoryVideoWithUrlAsync(
             InstaVideoUpload video,
             string caption,
             Uri uri,
             InstaStoryUploadOptions uploadOptions = null)
         {
-            return await UploadStoryVideoWithUrlAsync(null, video, caption, uri, uploadOptions).ConfigureAwait(false);
+            return UploadStoryVideoWithUrlAsync(null, video, caption, uri, uploadOptions);
         }
 
         /// <summary>
@@ -1739,9 +1730,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="highlightId">Highlight id</param>
         /// <param name="mediaId">Media id (CoverMedia.MediaId)</param>
-        public async Task<IResult<bool>> AppendToHighlightFeedAsync(string highlightId, string mediaId)
+        public Task<IResult<bool>> AppendToHighlightFeedAsync(string highlightId, string mediaId)
         {
-            return await AppendOrDeleteHighlight(highlightId, mediaId, false).ConfigureAwait(false);
+            return AppendOrDeleteHighlight(highlightId, mediaId, false);
         }
 
         public async Task<IResult<bool>> FollowUnfollowCountdown(Uri instaUri)
@@ -2361,7 +2352,6 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     upProgress.UploadState = InstaUploadState.Uploaded;
                     progress?.Invoke(upProgress);
 
-                    //upProgress = progressContent?.UploaderProgress;
                     return await ConfigureStoryPhotoAsync(progress,
                                                           upProgress,
                                                           image,

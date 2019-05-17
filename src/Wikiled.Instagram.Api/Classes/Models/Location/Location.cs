@@ -1,6 +1,6 @@
 ﻿namespace Wikiled.Instagram.Api.Classes.Models.Location
 {
-    public class InstaLocation : InstaLocationShort
+    public class Location : LocationShort
     {
         public string City { get; set; }
 
