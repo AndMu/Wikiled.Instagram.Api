@@ -11,7 +11,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
 
         public string AndroidBootloader { get; set; }
 
-        public InstaAndroidVersion AndroidVer { get; set; } = InstaAndroidVersion.GetRandomAndriodVersion();
+        public AndroidVersion AndroidVer { get; set; } = AndroidVersion.GetRandomAndriodVersion();
 
         public string DeviceBrand { get; set; }
 

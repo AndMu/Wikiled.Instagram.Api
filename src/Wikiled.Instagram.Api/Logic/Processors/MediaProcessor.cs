@@ -18,6 +18,7 @@ using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
 using Wikiled.Instagram.Api.Converters;
 using Wikiled.Instagram.Api.Converters.Json;
 using Wikiled.Instagram.Api.Enums;
+using Wikiled.Instagram.Api.Extensions;
 using Wikiled.Instagram.Api.Helpers;
 using Wikiled.Instagram.Api.Logger;
 
@@ -171,28 +172,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
 
                     foreach (var tag in userTags)
                     {
-                        try
+                        var instaUser = await instaApi.UserProcessor.GetUserSafe(tag.Username, logger).ConfigureAwait(false);
+                        if (instaUser != null)
                         {
-                            var tried = false;
-                            TryLabel:
-                            var u = await instaApi.UserProcessor.GetUserAsync(tag.Username).ConfigureAwait(false);
-                            if (!u.Succeeded)
-                            {
-                                if (!tried)
-                                {
-                                    tried = true;
-                                    goto TryLabel;
-                                }
-                            }
-                            else
-                            {
-                                var position = new JArray(tag.X, tag.Y);
-                                var singleTag = new JObject { { "user_id", u.Value.Pk }, { "position", position } };
-                                tagArr.Add(singleTag);
-                            }
-                        }
-                        catch
-                        {
+                            var position = new JArray(tag.X, tag.Y);
+                            var singleTag = new JObject { { "user_id", instaUser.Pk }, { "position", position } };
+                            tagArr.Add(singleTag);
                         }
                     }
 
@@ -721,7 +706,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             InstaUserAuthValidator.Validate(userAuthValidate);
             var upProgress = new InstaUploaderProgress
             {
-                Caption = caption ?? string.Empty, UploadState = InstaUploadState.Preparing
+                Caption = caption ?? string.Empty,
+                UploadState = InstaUploadState.Preparing
             };
             try
             {
@@ -737,28 +723,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                         {
                             var currentDelay = instaApi.GetRequestDelay();
                             instaApi.SetRequestDelay(RequestDelay.FromSeconds(1, 2));
-                            foreach (var t in image.UserTags)
+                            foreach (var tag in image.UserTags)
                             {
-                                try
+                                var instaUser = await instaApi.UserProcessor.GetUserSafe(tag.Username, logger).ConfigureAwait(false);
+                                if (instaUser != null)
                                 {
-                                    var tried = false;
-                                    TryLabel:
-                                    var u = await instaApi.UserProcessor.GetUserAsync(t.Username).ConfigureAwait(false);
-                                    if (!u.Succeeded)
-                                    {
-                                        if (!tried)
-                                        {
-                                            tried = true;
-                                            goto TryLabel;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        t.Pk = u.Value.Pk;
-                                    }
-                                }
-                                catch
-                                {
+                                    tag.Pk = instaUser.Pk;
                                 }
                             }
 
@@ -795,32 +765,16 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 {
                     foreach (var video in videos)
                     {
-                        foreach (var t in video.UserTags)
+                        foreach (var tag in video.UserTags)
                         {
                             var currentDelay = instaApi.GetRequestDelay();
                             instaApi.SetRequestDelay(RequestDelay.FromSeconds(1, 2));
-                            if (t.Pk <= 0)
+                            if (tag.Pk <= 0)
                             {
-                                try
+                                var instaUser = await instaApi.UserProcessor.GetUserSafe(tag.Username, logger).ConfigureAwait(false);
+                                if (instaUser != null)
                                 {
-                                    var tried = false;
-                                    TryLabel:
-                                    var u = await instaApi.UserProcessor.GetUserAsync(t.Username).ConfigureAwait(false);
-                                    if (!u.Succeeded)
-                                    {
-                                        if (!tried)
-                                        {
-                                            tried = true;
-                                            goto TryLabel;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        t.Pk = u.Value.Pk;
-                                    }
-                                }
-                                catch
-                                {
+                                    tag.Pk = instaUser.Pk;
                                 }
                             }
 
@@ -896,7 +850,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             InstaUserAuthValidator.Validate(userAuthValidate);
             var upProgress = new InstaUploaderProgress
             {
-                Caption = caption ?? string.Empty, UploadState = InstaUploadState.Preparing
+                Caption = caption ?? string.Empty,
+                UploadState = InstaUploadState.Preparing
             };
             try
             {
@@ -914,30 +869,14 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                         {
                             var currentDelay = instaApi.GetRequestDelay();
                             instaApi.SetRequestDelay(RequestDelay.FromSeconds(1, 2));
-                            foreach (var t in image.UserTags)
+                            foreach (var tag in image.UserTags)
                             {
-                                if (t.Pk <= 0)
+                                if (tag.Pk <= 0)
                                 {
-                                    try
+                                    var instaUser = await instaApi.UserProcessor.GetUserSafe(tag.Username, logger).ConfigureAwait(false);
+                                    if (instaUser != null)
                                     {
-                                        var tried = false;
-                                        TryLabel:
-                                        var u = await instaApi.UserProcessor.GetUserAsync(t.Username).ConfigureAwait(false);
-                                        if (!u.Succeeded)
-                                        {
-                                            if (!tried)
-                                            {
-                                                tried = true;
-                                                goto TryLabel;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            t.Pk = u.Value.Pk;
-                                        }
-                                    }
-                                    catch
-                                    {
+                                        tag.Pk = instaUser.Pk;
                                     }
                                 }
                             }
@@ -952,31 +891,17 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                         {
                             var currentDelay = instaApi.GetRequestDelay();
                             instaApi.SetRequestDelay(RequestDelay.FromSeconds(1, 2));
-                            foreach (var t in video.UserTags)
+                            foreach (var tag in video.UserTags)
                             {
-                                if (t.Pk <= 0)
+                                if (tag.Pk > 0)
                                 {
-                                    try
-                                    {
-                                        var tried = false;
-                                        TryLabel:
-                                        var u = await instaApi.UserProcessor.GetUserAsync(t.Username).ConfigureAwait(false);
-                                        if (!u.Succeeded)
-                                        {
-                                            if (!tried)
-                                            {
-                                                tried = true;
-                                                goto TryLabel;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            t.Pk = u.Value.Pk;
-                                        }
-                                    }
-                                    catch
-                                    {
-                                    }
+                                    continue;
+                                }
+
+                                var instaUser = await instaApi.UserProcessor.GetUserSafe(tag.Username, logger).ConfigureAwait(false);
+                                if (instaUser != null)
+                                {
+                                    tag.Pk = instaUser.Pk;
                                 }
                             }
 
@@ -1099,7 +1024,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         {
             var upProgress = new InstaUploaderProgress
             {
-                Caption = caption ?? string.Empty, UploadState = InstaUploadState.Preparing
+                Caption = caption ?? string.Empty,
+                UploadState = InstaUploadState.Preparing
             };
             try
             {
@@ -1107,31 +1033,17 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 {
                     var currentDelay = instaApi.GetRequestDelay();
                     instaApi.SetRequestDelay(RequestDelay.FromSeconds(1, 2));
-                    foreach (var t in video.UserTags)
+                    foreach (var tag in video.UserTags)
                     {
-                        if (t.Pk <= 0)
+                        if (tag.Pk > 0)
                         {
-                            try
-                            {
-                                var tried = false;
-                                TryLabel:
-                                var u = await instaApi.UserProcessor.GetUserAsync(t.Username).ConfigureAwait(false);
-                                if (!u.Succeeded)
-                                {
-                                    if (!tried)
-                                    {
-                                        tried = true;
-                                        goto TryLabel;
-                                    }
-                                }
-                                else
-                                {
-                                    t.Pk = u.Value.Pk;
-                                }
-                            }
-                            catch
-                            {
-                            }
+                            continue;
+                        }
+
+                        var instaUser = await instaApi.UserProcessor.GetUserSafe(tag.Username, logger).ConfigureAwait(false);
+                        if (instaUser != null)
+                        {
+                            tag.Pk = instaUser.Pk;
                         }
                     }
 

@@ -1,9 +1,16 @@
-﻿namespace Wikiled.Instagram.Api.Classes.Models.User
+﻿using System;
+
+namespace Wikiled.Instagram.Api.Classes.Models.User
 {
     public class InstaUser : UserShortDescription
     {
         public InstaUser(UserShortDescription instaUserShortDescription)
         {
+            if (instaUserShortDescription == null)
+            {
+                throw new ArgumentNullException(nameof(instaUserShortDescription));
+            }
+
             Pk = instaUserShortDescription.Pk;
             UserName = instaUserShortDescription.UserName;
             FullName = instaUserShortDescription.FullName;

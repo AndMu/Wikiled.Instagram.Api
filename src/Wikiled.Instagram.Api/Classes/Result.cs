@@ -7,14 +7,14 @@ namespace Wikiled.Instagram.Api.Classes
 {
     public class InstaResult<T> : IResult<T>
     {
-        public InstaResult(bool succeeded, T value, InstaResultInfo info)
+        public InstaResult(bool succeeded, T value, ResultInfo info)
         {
             Succeeded = succeeded;
             Value = value;
             Info = info;
         }
 
-        public InstaResult(bool succeeded, InstaResultInfo info)
+        public InstaResult(bool succeeded, ResultInfo info)
         {
             Succeeded = succeeded;
             Info = info;
@@ -26,7 +26,7 @@ namespace Wikiled.Instagram.Api.Classes
             Value = value;
         }
 
-        public InstaResultInfo Info { get; } = new InstaResultInfo("");
+        public ResultInfo Info { get; } = new ResultInfo("");
 
         public bool Succeeded { get; }
 
@@ -37,54 +37,54 @@ namespace Wikiled.Instagram.Api.Classes
     {
         public static IResult<T> Fail<T>(Exception exception)
         {
-            return new InstaResult<T>(false, default, new InstaResultInfo(exception));
+            return new InstaResult<T>(false, default, new ResultInfo(exception));
         }
 
         public static IResult<T> Fail<T>(string errMsg)
         {
-            return new InstaResult<T>(false, default, new InstaResultInfo(errMsg));
+            return new InstaResult<T>(false, default, new ResultInfo(errMsg));
         }
 
         public static IResult<T> Fail<T>(string errMsg, T resValue)
         {
-            return new InstaResult<T>(false, resValue, new InstaResultInfo(errMsg));
+            return new InstaResult<T>(false, resValue, new ResultInfo(errMsg));
         }
 
         public static IResult<T> Fail<T>(Exception exception, T resValue)
         {
-            return new InstaResult<T>(false, resValue, new InstaResultInfo(exception));
+            return new InstaResult<T>(false, resValue, new ResultInfo(exception));
         }
 
         public static IResult<T> Fail<T>(Exception exception, T resValue, InstaResponseType responseType)
         {
-            return new InstaResult<T>(false, resValue, new InstaResultInfo(exception, responseType));
+            return new InstaResult<T>(false, resValue, new ResultInfo(exception, responseType));
         }
 
-        public static IResult<T> Fail<T>(InstaResultInfo info, T resValue)
+        public static IResult<T> Fail<T>(ResultInfo info, T resValue)
         {
             return new InstaResult<T>(false, resValue, info);
         }
 
         public static IResult<T> Fail<T>(string errMsg, InstaResponseType responseType, T resValue)
         {
-            return new InstaResult<T>(false, resValue, new InstaResultInfo(responseType, errMsg));
+            return new InstaResult<T>(false, resValue, new ResultInfo(responseType, errMsg));
         }
 
         public static IResult<T> Success<T>(T resValue)
         {
-            return new InstaResult<T>(true, resValue, new InstaResultInfo(InstaResponseType.Ok, "No errors detected"));
+            return new InstaResult<T>(true, resValue, new ResultInfo(InstaResponseType.Ok, "No errors detected"));
         }
 
         public static IResult<T> Success<T>(string successMsg, T resValue)
         {
-            return new InstaResult<T>(true, resValue, new InstaResultInfo(InstaResponseType.Ok, successMsg));
+            return new InstaResult<T>(true, resValue, new ResultInfo(InstaResponseType.Ok, successMsg));
         }
 
         public static IResult<T> UnExpectedResponse<T>(HttpResponseMessage response, string json)
         {
             if (string.IsNullOrEmpty(json))
             {
-                var resultInfo = new InstaResultInfo(
+                var resultInfo = new ResultInfo(
                     InstaResponseType.UnExpectedResponse,
                     $"Unexpected response status: {response.StatusCode}");
                 return new InstaResult<T>(false, default, resultInfo);
@@ -94,7 +94,7 @@ namespace Wikiled.Instagram.Api.Classes
                 var status = InstaErrorHandlingHelper.GetBadStatusFromJsonString(json);
                 var responseType = GetResponseType(status);
 
-                var resultInfo = new InstaResultInfo(responseType, status) { Challenge = status.Challenge };
+                var resultInfo = new ResultInfo(responseType, status) { Challenge = status.Challenge };
                 return new InstaResult<T>(false, default, resultInfo);
             }
         }
@@ -103,7 +103,7 @@ namespace Wikiled.Instagram.Api.Classes
         {
             if (string.IsNullOrEmpty(json))
             {
-                var resultInfo = new InstaResultInfo(
+                var resultInfo = new ResultInfo(
                     InstaResponseType.UnExpectedResponse,
                     $"{message}\r\nUnexpected response status: {response.StatusCode}");
                 return new InstaResult<T>(false, default, resultInfo);
@@ -113,7 +113,7 @@ namespace Wikiled.Instagram.Api.Classes
                 var status = InstaErrorHandlingHelper.GetBadStatusFromJsonString(json);
                 var responseType = GetResponseType(status);
 
-                var resultInfo = new InstaResultInfo(responseType, message) { Challenge = status.Challenge };
+                var resultInfo = new ResultInfo(responseType, message) { Challenge = status.Challenge };
 
                 return new InstaResult<T>(false, default, resultInfo);
             }

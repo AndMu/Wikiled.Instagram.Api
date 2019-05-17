@@ -4,15 +4,15 @@ using System.Linq;
 namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
 {
     [Serializable]
-    public class InstaAndroidVersion
+    public class AndroidVersion
     {
-        private static InstaAndroidVersion lastAndriodVersion =
-            InstaAndroidVersionList.GetVersionList().AndroidVersions()[
-                InstaAndroidVersionList.GetVersionList().AndroidVersions().Count - 2];
+        private static AndroidVersion lastAndriodVersion =
+            AndroidVersionList.GetVersionList().AndroidVersions()[
+                AndroidVersionList.GetVersionList().AndroidVersions().Count - 2];
 
         private static readonly Random Rnd = new Random();
 
-        internal InstaAndroidVersion()
+        internal AndroidVersion()
         {
         }
 
@@ -22,18 +22,18 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
 
         public string VersionNumber { get; set; }
 
-        public static InstaAndroidVersion FromString(string versionString)
+        public static AndroidVersion FromString(string versionString)
         {
             var version = new Version(versionString);
-            foreach (var androidVersion in InstaAndroidVersionList.GetVersionList().AndroidVersions())
+            foreach (var androidVersion in AndroidVersionList.GetVersionList().AndroidVersions())
             {
                 if (version.CompareTo(new Version(androidVersion.VersionNumber)) == 0 ||
                     version.CompareTo(new Version(androidVersion.VersionNumber)) > 0 &&
-                    androidVersion != InstaAndroidVersionList.GetVersionList().AndroidVersions().Last() &&
+                    androidVersion != AndroidVersionList.GetVersionList().AndroidVersions().Last() &&
                     version.CompareTo(
                         new Version(
-                            InstaAndroidVersionList.GetVersionList().AndroidVersions()[
-                                    InstaAndroidVersionList.GetVersionList().AndroidVersions().IndexOf(androidVersion) + 1]
+                            AndroidVersionList.GetVersionList().AndroidVersions()[
+                                    AndroidVersionList.GetVersionList().AndroidVersions().IndexOf(androidVersion) + 1]
                                 .VersionNumber)) <
                     0)
                 {
@@ -44,30 +44,27 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             return null;
         }
 
-        public static InstaAndroidVersion GetAndroidVersion(string apiLevel)
+        public static AndroidVersion GetAndroidVersion(string apiLevel)
         {
             if (string.IsNullOrEmpty(apiLevel))
             {
                 return null;
             }
 
-            return InstaAndroidVersionList.GetVersionList()
+            return AndroidVersionList.GetVersionList()
                 .AndroidVersions()
                 .FirstOrDefault(api => api.ApiLevel == apiLevel);
         }
 
-        public static InstaAndroidVersion GetRandomAndriodVersion()
+        public static AndroidVersion GetRandomAndriodVersion()
         {
-            TryLabel:
-            var randomDeviceIndex = Rnd.Next(0, InstaAndroidVersionList.GetVersionList().AndroidVersions().Count);
-            var androidVersion = InstaAndroidVersionList.GetVersionList().AndroidVersions().ElementAt(randomDeviceIndex);
-            if (lastAndriodVersion != null)
+            AndroidVersion androidVersion;
+            do
             {
-                if (androidVersion.ApiLevel == lastAndriodVersion.ApiLevel)
-                {
-                    goto TryLabel;
-                }
-            }
+                var randomDeviceIndex = Rnd.Next(0, AndroidVersionList.GetVersionList().AndroidVersions().Count);
+                androidVersion = AndroidVersionList.GetVersionList().AndroidVersions().ElementAt(randomDeviceIndex);
+
+            } while (lastAndriodVersion != null && androidVersion.ApiLevel == lastAndriodVersion.ApiLevel);
 
             lastAndriodVersion = androidVersion;
             return androidVersion;

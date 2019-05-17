@@ -616,133 +616,14 @@ namespace Wikiled.Instagram.Api.Logic
             ValidateRequestMessage();
             try
             {
-                var needsRelogin = false;
-                ReloginLabel:
-                if (isNewLogin)
+                var result =  await LoginInternal(isNewLogin).ConfigureAwait(false);
+                if (!result.Succeeded && result.Value == InstaLoginResult.CheckpointLoggedOut)
                 {
-                    var firstResponse = await HttpRequestProcessor.GetAsync(HttpRequestProcessor.Client.BaseAddress).ConfigureAwait(false);
-                    var html = await firstResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    logger?.LogResponse(firstResponse);
+                    logger.LogInformation("CheckpointLoggedOut detected, logging in again");
+                    result = await LoginInternal(isNewLogin).ConfigureAwait(false);
                 }
 
-                var cookies =
-                    HttpRequestProcessor.HttpHandler.CookieContainer.GetCookies(
-                        HttpRequestProcessor.Client
-                            .BaseAddress);
-
-                var csrftoken = cookies[InstaApiConstants.Csrftoken]?.Value ?? string.Empty;
-                User.CsrfToken = csrftoken;
-                var instaUri = InstaUriCreator.GetLoginUri();
-                var signature = string.Empty;
-                var devid = string.Empty;
-                if (isNewLogin)
-                {
-                    signature =
-                        $"{HttpRequestProcessor.RequestMessage.GenerateSignature(apiVersion, apiVersion.SignatureKey, out devid)}.{HttpRequestProcessor.RequestMessage.GetMessageString()}";
-                }
-                else
-                {
-                    signature =
-                        $"{HttpRequestProcessor.RequestMessage.GenerateChallengeSignature(apiVersion, apiVersion.SignatureKey, csrftoken, out devid)}.{HttpRequestProcessor.RequestMessage.GetChallengeMessageString(csrftoken)}";
-                }
-
-                deviceInfo.DeviceId = devid;
-                var fields = new Dictionary<string, string>
-                {
-                    { InstaApiConstants.HeaderIgSignature, signature },
-                    {
-                        InstaApiConstants.HeaderIgSignatureKeyVersion,
-                        InstaApiConstants.IgSignatureKeyVersion
-                    }
-                };
-                var request = HttpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, deviceInfo, fields);
-                request.Headers.Add("Host", "i.instagram.com");
-                var response = await HttpRequestProcessor.SendAsync(request).ConfigureAwait(false);
-                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                if (response.StatusCode != HttpStatusCode.OK)
-                {
-                    var loginFailReason = JsonConvert.DeserializeObject<InstaLoginBaseResponse>(json);
-
-                    if (loginFailReason.InvalidCredentials)
-                    {
-                        return InstaResult.Fail(
-                            "Invalid Credentials",
-                            loginFailReason.ErrorType == "bad_password"
-                                ? InstaLoginResult.BadPassword
-                                : InstaLoginResult.InvalidUser);
-                    }
-
-                    if (loginFailReason.TwoFactorRequired)
-                    {
-                        if (loginFailReason.TwoFactorLoginInfo != null)
-                        {
-                            HttpRequestProcessor.RequestMessage.Username = loginFailReason.TwoFactorLoginInfo.Username;
-                        }
-
-                        twoFactorInfo = loginFailReason.TwoFactorLoginInfo;
-
-                        //2FA is required!
-                        return InstaResult.Fail("Two Factor Authentication is required", InstaLoginResult.TwoFactorRequired);
-                    }
-
-                    if (loginFailReason.ErrorType == "checkpoint_challenge_required"
-                        /* || !string.IsNullOrEmpty(loginFailReason.Message) && loginFailReason.Message == "challenge_required"*/
-                    )
-                    {
-                        challengeInfo = loginFailReason.Challenge;
-
-                        return InstaResult.Fail("Challenge is required", InstaLoginResult.ChallengeRequired);
-                    }
-
-                    if (loginFailReason.ErrorType == "rate_limit_error")
-                    {
-                        return InstaResult.Fail("Please wait a few minutes before you try again.",
-                                           InstaLoginResult.LimitError);
-                    }
-
-                    if (loginFailReason.ErrorType == "inactive user" || loginFailReason.ErrorType == "inactive_user")
-                    {
-                        return InstaResult.Fail($"{loginFailReason.Message}\r\nHelp url: {loginFailReason.HelpUrl}",
-                                           InstaLoginResult.InactiveUser);
-                    }
-
-                    if (loginFailReason.ErrorType == "checkpoint_logged_out")
-                    {
-                        if (!needsRelogin)
-                        {
-                            needsRelogin = true;
-                            goto ReloginLabel;
-                        }
-
-                        return InstaResult.Fail($"{loginFailReason.ErrorType} {loginFailReason.CheckpointUrl}",
-                                           InstaLoginResult.CheckpointLoggedOut);
-                    }
-
-                    return InstaResult.UnExpectedResponse<InstaLoginResult>(response, json);
-                }
-
-                var loginInfo = JsonConvert.DeserializeObject<LoginResponse>(json);
-                User.UserName = loginInfo.User?.UserName;
-                IsUserAuthenticated = loginInfo.User != null;
-                if (loginInfo.User != null)
-                {
-                    HttpRequestProcessor.RequestMessage.Username = loginInfo.User.UserName;
-                }
-
-                var converter = InstaConvertersFabric.Instance.GetUserShortConverter(loginInfo.User);
-                User.LoggedInUser = converter.Convert();
-                User.RankToken = $"{User.LoggedInUser.Pk}_{HttpRequestProcessor.RequestMessage.PhoneId}";
-                if (string.IsNullOrEmpty(User.CsrfToken))
-                {
-                    cookies =
-                        HttpRequestProcessor.HttpHandler.CookieContainer.GetCookies(
-                            HttpRequestProcessor.Client
-                                .BaseAddress);
-                    User.CsrfToken = cookies[InstaApiConstants.Csrftoken]?.Value ?? string.Empty;
-                }
-
-                return InstaResult.Success(InstaLoginResult.Success);
+                return result;
             }
             catch (HttpRequestException httpException)
             {
@@ -758,6 +639,107 @@ namespace Wikiled.Instagram.Api.Logic
             {
                 InvalidateProcessors();
             }
+        }
+
+        private async Task<IResult<InstaLoginResult>> LoginInternal(bool isNewLogin)
+        {
+            if (isNewLogin)
+            {
+                var firstResponse = await HttpRequestProcessor.GetAsync(HttpRequestProcessor.Client.BaseAddress).ConfigureAwait(false);
+                await firstResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                logger?.LogResponse(firstResponse);
+            }
+
+            var cookies = HttpRequestProcessor.HttpHandler.CookieContainer.GetCookies(HttpRequestProcessor.Client.BaseAddress);
+            var csrfToken = cookies[InstaApiConstants.Csrftoken]?.Value ?? string.Empty;
+            User.CsrfToken = csrfToken;
+            var instaUri = InstaUriCreator.GetLoginUri();
+            var signature = string.Empty;
+            var devid = string.Empty;
+            signature = isNewLogin
+                ? $"{HttpRequestProcessor.RequestMessage.GenerateSignature(apiVersion, apiVersion.SignatureKey, out devid)}.{HttpRequestProcessor.RequestMessage.GetMessageString()}"
+                : $"{HttpRequestProcessor.RequestMessage.GenerateChallengeSignature(apiVersion, apiVersion.SignatureKey, csrfToken, out devid)}.{HttpRequestProcessor.RequestMessage.GetChallengeMessageString(csrfToken)}";
+
+            deviceInfo.DeviceId = devid;
+            var fields = new Dictionary<string, string>
+            {
+                { InstaApiConstants.HeaderIgSignature, signature },
+                { InstaApiConstants.HeaderIgSignatureKeyVersion, InstaApiConstants.IgSignatureKeyVersion }
+            };
+
+            var request = HttpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, deviceInfo, fields);
+            request.Headers.Add("Host", "i.instagram.com");
+            var response = await HttpRequestProcessor.SendAsync(request).ConfigureAwait(false);
+            var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                var loginFailReason = JsonConvert.DeserializeObject<InstaLoginBaseResponse>(json);
+
+                if (loginFailReason.InvalidCredentials)
+                {
+                        return InstaResult.Fail(
+                            "Invalid Credentials",
+                            loginFailReason.ErrorType == "bad_password"
+                                ? InstaLoginResult.BadPassword
+                                : InstaLoginResult.InvalidUser);
+                }
+
+                if (loginFailReason.TwoFactorRequired)
+                {
+                    if (loginFailReason.TwoFactorLoginInfo != null)
+                    {
+                        HttpRequestProcessor.RequestMessage.Username = loginFailReason.TwoFactorLoginInfo.Username;
+                    }
+
+                    twoFactorInfo = loginFailReason.TwoFactorLoginInfo;
+                     return InstaResult.Fail("Two Factor Authentication is required", InstaLoginResult.TwoFactorRequired);
+                }
+
+                if (loginFailReason.ErrorType == "checkpoint_challenge_required")
+                {
+                    challengeInfo = loginFailReason.Challenge;
+                    return InstaResult.Fail("Challenge is required", InstaLoginResult.ChallengeRequired);
+                }
+
+                if (loginFailReason.ErrorType == "rate_limit_error")
+                {
+                    return InstaResult.Fail("Please wait a few minutes before you try again.",
+                                            InstaLoginResult.LimitError);
+                }
+
+                if (loginFailReason.ErrorType == "inactive user" || loginFailReason.ErrorType == "inactive_user")
+                {
+                    return InstaResult.Fail($"{loginFailReason.Message}\r\nHelp url: {loginFailReason.HelpUrl}",
+                                            InstaLoginResult.InactiveUser);
+                }
+
+                if (loginFailReason.ErrorType == "checkpoint_logged_out")
+                {
+                    return InstaResult.Fail($"{loginFailReason.ErrorType} {loginFailReason.CheckpointUrl}", InstaLoginResult.CheckpointLoggedOut);
+                }
+
+                return InstaResult.UnExpectedResponse<InstaLoginResult>(response, json);
+            }
+
+            var loginInfo = JsonConvert.DeserializeObject<LoginResponse>(json);
+            User.UserName = loginInfo.User?.UserName;
+            IsUserAuthenticated = loginInfo.User != null;
+            if (loginInfo.User != null)
+            {
+                HttpRequestProcessor.RequestMessage.Username = loginInfo.User.UserName;
+            }
+
+            var converter = InstaConvertersFabric.Instance.GetUserShortConverter(loginInfo.User);
+            User.LoggedInUser = converter.Convert();
+            User.RankToken = $"{User.LoggedInUser.Pk}_{HttpRequestProcessor.RequestMessage.PhoneId}";
+            if (string.IsNullOrEmpty(User.CsrfToken))
+            {
+                cookies = HttpRequestProcessor.HttpHandler.CookieContainer.GetCookies(HttpRequestProcessor.Client.BaseAddress);
+                User.CsrfToken = cookies[InstaApiConstants.Csrftoken]?.Value ?? string.Empty;
+            }
+
+            return InstaResult.Success(InstaLoginResult.Success);
         }
 
         /// <summary>
@@ -1268,7 +1250,7 @@ namespace Wikiled.Instagram.Api.Logic
         ///     Accept challlenge, it is THIS IS ME feature!!!!
         ///     <para>
         ///         You must call <see cref="IInstaApi.GetLoggedInChallengeDataInfoAsync" /> first,
-        ///         if you across to <see cref="InstaResultInfo.ResponseType" /> equals to <see cref="InstaResponseType.ChallengeRequired" />
+        ///         if you across to <see cref="ResultInfo.ResponseType" /> equals to <see cref="InstaResponseType.ChallengeRequired" />
         ///         while you logged in!
         ///     </para>
         /// </summary>
@@ -1979,7 +1961,7 @@ namespace Wikiled.Instagram.Api.Logic
             }
         }
 
-       
+
 
         private async Task<IResult<InstaCheckEmailRegistration>> CheckEmail(string email, bool useNewWaterfall = true)
         {
@@ -2583,8 +2565,7 @@ namespace Wikiled.Instagram.Api.Logic
 
                     if (loginFailReason.ErrorType == "checkpoint_logged_out")
                     {
-                        return InstaResult.Fail($"{loginFailReason.ErrorType} {loginFailReason.CheckpointUrl}",
-                                           InstaLoginResult.CheckpointLoggedOut);
+                        return InstaResult.Fail($"{loginFailReason.ErrorType} {loginFailReason.CheckpointUrl}", InstaLoginResult.CheckpointLoggedOut);
                     }
 
                     return InstaResult.UnExpectedResponse<InstaLoginResult>(response, json);

@@ -30,7 +30,7 @@ namespace Wikiled.Instagram.App.Commands
             instagram.Delay.Disable();
             var logInResult = await instagram.LoginAsync().ConfigureAwait(false);
             instagram.Delay.Enable();
-            var currentUser = await instagram.GetCurrentUserAsync();
+            var currentUser = await instagram.GetCurrentUserAsync().ConfigureAwait(false);
             log.LogInformation("Started for user: {0}...", currentUser.Value.FullName);
         }
     }

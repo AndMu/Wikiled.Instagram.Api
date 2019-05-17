@@ -304,7 +304,7 @@ namespace Wikiled.Instagram.Api.Logic
         ///     Accept challlenge, it is THIS IS ME feature!!!!
         ///     <para>
         ///         You must call <see cref="GetLoggedInChallengeDataInfoAsync" /> first,
-        ///         if you across to <see cref="InstaResultInfo.ResponseType" /> equals to <see cref="InstaResponseType.ChallengeRequired" />
+        ///         if you across to <see cref="ResultInfo.ResponseType" /> equals to <see cref="InstaResponseType.ChallengeRequired" />
         ///         while you logged in!
         ///     </para>
         /// </summary>

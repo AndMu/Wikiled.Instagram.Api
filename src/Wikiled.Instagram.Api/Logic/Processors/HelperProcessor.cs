@@ -19,6 +19,7 @@ using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
 using Wikiled.Instagram.Api.Converters;
 using Wikiled.Instagram.Api.Converters.Json;
 using Wikiled.Instagram.Api.Enums;
+using Wikiled.Instagram.Api.Extensions;
 using Wikiled.Instagram.Api.Helpers;
 using Wikiled.Instagram.Api.Logger;
 
@@ -254,34 +255,29 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             {
                 Caption = caption ?? string.Empty, UploadState = InstaUploadState.Preparing
             };
+
             try
             {
                 if (image.UserTags != null && image.UserTags.Any())
                 {
                     var currentDelay = instaApi.GetRequestDelay();
                     instaApi.SetRequestDelay(RequestDelay.FromSeconds(1, 2));
-                    foreach (var t in image.UserTags)
+                    foreach (var tag in image.UserTags)
                     {
                         try
                         {
-                            var tried = false;
-                            TryLabel:
-                            var u = await instaApi.UserProcessor.GetUserAsync(t.Username).ConfigureAwait(false);
-                            if (!u.Succeeded)
+                            var result = await ResultExtension
+                                .Retry(() => instaApi.UserProcessor.GetUserAsync(tag.Username))
+                                .ConfigureAwait(false);
+                            
+                            if (result.Succeeded)
                             {
-                                if (!tried)
-                                {
-                                    tried = true;
-                                    goto TryLabel;
-                                }
-                            }
-                            else
-                            {
-                                t.Pk = u.Value.Pk;
+                                tag.Pk = result.Value.Pk;
                             }
                         }
-                        catch
+                        catch (Exception ex)
                         {
+                            logger.LogDebug(ex.Message);
                         }
                     }
 

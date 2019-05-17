@@ -5,15 +5,15 @@ using Wikiled.Instagram.Api.Classes.ResponseWrappers.Errors;
 
 namespace Wikiled.Instagram.Api.Classes
 {
-    public class InstaResultInfo
+    public class ResultInfo
     {
-        public InstaResultInfo(string message)
+        public ResultInfo(string message)
         {
             Message = message;
             HandleMessages(message);
         }
 
-        public InstaResultInfo(Exception exception)
+        public ResultInfo(Exception exception)
         {
             Exception = exception;
             Message = exception?.Message;
@@ -21,7 +21,7 @@ namespace Wikiled.Instagram.Api.Classes
             HandleMessages(Message);
         }
 
-        public InstaResultInfo(Exception exception, InstaResponseType responseType)
+        public ResultInfo(Exception exception, InstaResponseType responseType)
         {
             Exception = exception;
             Message = exception?.Message;
@@ -29,14 +29,14 @@ namespace Wikiled.Instagram.Api.Classes
             HandleMessages(Message);
         }
 
-        public InstaResultInfo(InstaResponseType responseType, string errorMessage)
+        public ResultInfo(InstaResponseType responseType, string errorMessage)
         {
             ResponseType = responseType;
             Message = errorMessage;
             HandleMessages(errorMessage);
         }
 
-        public InstaResultInfo(InstaResponseType responseType, InstaBadStatusResponse status)
+        public ResultInfo(InstaResponseType responseType, InstaBadStatusResponse status)
         {
             Message = status?.Message;
             Challenge = status?.Challenge;

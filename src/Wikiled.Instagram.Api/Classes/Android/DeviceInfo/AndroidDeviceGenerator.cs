@@ -6,7 +6,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
 {
     public class AndroidDeviceGenerator
     {
-        public static Dictionary<string, AndroidDevice> AndroidAndroidDeviceSets = new Dictionary<string, AndroidDevice>
+        public static Dictionary<string, AndroidDevice> AndroidDeviceSets = new Dictionary<string, AndroidDevice>
         {
             {
                 "lg-optimus-g",
@@ -548,34 +548,24 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
 
         public static AndroidDevice GetByName(string name)
         {
-            return AndroidAndroidDeviceSets[name];
+            return AndroidDeviceSets[name];
         }
 
         public static AndroidDevice GetRandomAndroidDevice()
         {
-            TryLabel:
-            var randomDeviceIndex = Rnd.Next(0, DevicesNames.Count);
-            var device = AndroidAndroidDeviceSets.ElementAt(randomDeviceIndex).Value;
-            device.PhoneGuid = Guid.NewGuid();
-            device.DeviceGuid = Guid.NewGuid();
-            device.DeviceId = ApiRequestMessage.GenerateDeviceIdFromGuid(device.DeviceGuid);
-            if (lastDevice != null)
+            AndroidDevice device;
+            do
             {
-                if (device.DeviceId == lastDevice.DeviceId)
-                {
-                    goto TryLabel;
-                }
-            }
+                var randomDeviceIndex = Rnd.Next(0, DevicesNames.Count);
+                device = AndroidDeviceSets.ElementAt(randomDeviceIndex).Value;
+                device.PhoneGuid = Guid.NewGuid();
+                device.DeviceGuid = Guid.NewGuid();
+                device.DeviceId = ApiRequestMessage.GenerateDeviceIdFromGuid(device.DeviceGuid);
+
+            } while (lastDevice != null && device.DeviceId == lastDevice.DeviceId);
 
             lastDevice = device;
             return device;
         }
-
-        //public static AndroidDevice GetById(string deviceId)
-        //{
-        //    return (from androidAndroidDeviceSet in AndroidAndroidDeviceSets
-        //            where androidAndroidDeviceSet.Value.DeviceId == deviceId
-        //            select androidAndroidDeviceSet.Value).FirstOrDefault();
-        //}
     }
 }

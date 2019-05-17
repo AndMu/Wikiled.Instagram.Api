@@ -7,7 +7,7 @@
     /// <typeparam name="T">Return type</typeparam>
     public interface IResult<out T>
     {
-        InstaResultInfo Info { get; }
+        ResultInfo Info { get; }
 
         bool Succeeded { get; }
 

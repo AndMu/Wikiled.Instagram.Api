@@ -283,7 +283,7 @@ namespace Wikiled.Instagram.Api.Helpers
 
             if (deviceInfo.AndroidVer == null)
             {
-                deviceInfo.AndroidVer = InstaAndroidVersion.GetRandomAndriodVersion();
+                deviceInfo.AndroidVer = AndroidVersion.GetRandomAndriodVersion();
             }
 
             return string.Format(
