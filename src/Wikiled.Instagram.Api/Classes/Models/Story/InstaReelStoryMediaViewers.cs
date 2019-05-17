@@ -15,6 +15,6 @@ namespace Wikiled.Instagram.Api.Classes.Models.Story
 
         public int UserCount { get; set; }
 
-        public List<InstaUserShort> Users { get; set; } = new List<InstaUserShort>();
+        public List<UserShortDescription> Users { get; set; } = new List<UserShortDescription>();
     }
 }

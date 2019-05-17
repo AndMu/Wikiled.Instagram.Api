@@ -31,14 +31,14 @@ namespace Examples.Samples
             }
 
             Console.WriteLine($"Got current user: {result.Value.UserName} using existing API instance");
-            var stream = api.GetStateDataAsStream();
+            var stream = api.GetStateData();
             //// for .net core you should use this method:
             // var json = _instaApi.GetStateDataAsString();
             var anotherInstance = InstaApiBuilder.CreateBuilder()
                 .SetUser(UserSessionData.Empty)
                 .SetRequestDelay(RequestDelay.FromSeconds(2, 2))
                 .Build();
-            anotherInstance.LoadStateDataFromStream(stream);
+            anotherInstance.SetStateData(stream);
             //// for .net core you should use this method:
             // anotherInstance.LoadStateDataFromString(json);
             var anotherResult = await anotherInstance.GetCurrentUserAsync();

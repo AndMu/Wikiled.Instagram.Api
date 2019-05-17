@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 #endif
 namespace Wikiled.Instagram.Api.Helpers
 {
-    internal class InstaSerializationHelper
+    internal class SerializationHelper
     {
         public static T DeserializeFromStream<T>(Stream stream)
         {

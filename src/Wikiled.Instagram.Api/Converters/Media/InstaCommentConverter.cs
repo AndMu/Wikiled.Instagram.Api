@@ -40,7 +40,7 @@ namespace Wikiled.Instagram.Api.Converters.Media
             {
                 if (comment.OtherPreviewUsers == null)
                 {
-                    comment.OtherPreviewUsers = new List<InstaUserShort>();
+                    comment.OtherPreviewUsers = new List<UserShortDescription>();
                 }
 
                 foreach (var user in SourceObject.OtherPreviewUsers)

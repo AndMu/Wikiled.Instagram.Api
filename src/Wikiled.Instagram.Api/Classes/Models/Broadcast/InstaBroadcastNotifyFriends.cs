@@ -5,7 +5,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Broadcast
 {
     public class InstaBroadcastNotifyFriends
     {
-        public List<InstaUserShortFriendshipFull> Friends { get; set; } = new List<InstaUserShortFriendshipFull>();
+        public List<InstaUserShortDescriptionFriendshipFull> Friends { get; set; } = new List<InstaUserShortDescriptionFriendshipFull>();
 
         public int OnlineFriendsCount { get; set; }
 

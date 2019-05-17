@@ -33,7 +33,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
     /// </summary>
     internal class InstaAccountProcessor : IAccountProcessor
     {
-        private readonly InstaAndroidDevice deviceInfo;
+        private readonly AndroidDevice deviceInfo;
 
         private readonly InstaHttpHelper httpHelper;
 
@@ -48,7 +48,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         private readonly InstaUserAuthValidate userAuthValidate;
 
         public InstaAccountProcessor(
-            InstaAndroidDevice deviceInfo,
+            AndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             ILogger logger,
@@ -68,7 +68,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <summary>
         ///     Set current account private
         /// </summary>
-        public async Task<IResult<InstaUserShort>> SetAccountPrivateAsync()
+        public async Task<IResult<UserShortDescription>> SetAccountPrivateAsync()
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             try
@@ -95,14 +95,14 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<InstaUserShort>(response, json);
+                    return InstaResult.UnExpectedResponse<UserShortDescription>(response, json);
                 }
 
                 var userInfoUpdated =
                     JsonConvert.DeserializeObject<InstaUserShortResponse>(json, new InstaUserShortDataConverter());
                 if (userInfoUpdated.Pk < 1)
                 {
-                    return InstaResult.Fail<InstaUserShort>("Pk is null or empty");
+                    return InstaResult.Fail<UserShortDescription>("Pk is null or empty");
                 }
 
                 var converter = InstaConvertersFabric.Instance.GetUserShortConverter(userInfoUpdated);
@@ -111,19 +111,19 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaUserShort), InstaResponseType.NetworkProblem);
+                return InstaResult.Fail(httpException, default(UserShortDescription), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaUserShort>(exception);
+                return InstaResult.Fail<UserShortDescription>(exception);
             }
         }
 
         /// <summary>
         ///     Set current account public
         /// </summary>
-        public async Task<IResult<InstaUserShort>> SetAccountPublicAsync()
+        public async Task<IResult<UserShortDescription>> SetAccountPublicAsync()
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             try
@@ -154,24 +154,24 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                         JsonConvert.DeserializeObject<InstaUserShortResponse>(json, new InstaUserShortDataConverter());
                     if (userInfoUpdated.Pk < 1)
                     {
-                        return InstaResult.Fail<InstaUserShort>("Pk is incorrect");
+                        return InstaResult.Fail<UserShortDescription>("Pk is incorrect");
                     }
 
                     var converter = InstaConvertersFabric.Instance.GetUserShortConverter(userInfoUpdated);
                     return InstaResult.Success(converter.Convert());
                 }
 
-                return InstaResult.UnExpectedResponse<InstaUserShort>(response, json);
+                return InstaResult.UnExpectedResponse<UserShortDescription>(response, json);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaUserShort), InstaResponseType.NetworkProblem);
+                return InstaResult.Fail(httpException, default(UserShortDescription), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaUserShort>(exception);
+                return InstaResult.Fail<UserShortDescription>(exception);
             }
         }
 
@@ -245,7 +245,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                                                                    string url,
                                                                    string email,
                                                                    string phone,
-                                                                   InstaGenderType? gender,
+                                                                   GenderType? gender,
                                                                    string newUsername = null)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
@@ -529,7 +529,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             try
             {
                 var instaUri = InstaUriCreator.GetChangeProfilePictureUri();
-                var uploadId = InstaApiRequestMessage.GenerateUploadId();
+                var uploadId = ApiRequestMessage.GenerateUploadId();
                 upProgress.UploadId = uploadId;
                 progress?.Invoke(upProgress);
                 var requestContent = new MultipartFormDataContent(uploadId)
@@ -539,7 +539,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     { new StringContent(user.CsrfToken), "\"_csrftoken\"" }
                 };
                 var imageContent = new ByteArrayContent(pictureBytes);
-                requestContent.Add(imageContent, "profile_pic", $"r{InstaApiRequestMessage.GenerateUploadId()}.jpg");
+                requestContent.Add(imageContent, "profile_pic", $"r{ApiRequestMessage.GenerateUploadId()}.jpg");
 
                 //var progressContent = new ProgressableStreamContent(requestContent, 4096, progress)
                 //{

@@ -2,7 +2,7 @@
 
 namespace Wikiled.Instagram.Api.Classes.Models.Discover
 {
-    public class InstaUserContact : InstaUserShort
+    public class InstaUserContact : UserShortDescription
     {
         public string ExtraDisplayName { get; set; }
 

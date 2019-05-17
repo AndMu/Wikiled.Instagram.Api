@@ -19,6 +19,6 @@ namespace Wikiled.Instagram.Api.Classes.Models.Broadcast
 
         public int Type { get; set; }
 
-        public InstaUserShortFriendshipFull User { get; set; }
+        public InstaUserShortDescriptionFriendshipFull User { get; set; }
     }
 }

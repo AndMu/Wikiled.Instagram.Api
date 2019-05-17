@@ -7,15 +7,15 @@ using Wikiled.Instagram.Api.Logger;
 
 namespace Wikiled.Instagram.Api.Classes
 {
-    internal class InstaHttpRequestProcessor : IHttpRequestProcessor
+    internal class HttpRequestProcessor : IHttpRequestProcessor
     {
         private readonly ILogger logger;
 
-        public InstaHttpRequestProcessor(
+        public HttpRequestProcessor(
             IRequestDelay delay,
             HttpClient httpClient,
             HttpClientHandler httpHandler,
-            InstaApiRequestMessage requestMessage,
+            ApiRequestMessage requestMessage,
             ILogger logger)
         {
             Delay = delay;
@@ -31,7 +31,7 @@ namespace Wikiled.Instagram.Api.Classes
 
         public HttpClientHandler HttpHandler { get; set; }
 
-        public InstaApiRequestMessage RequestMessage { get; }
+        public ApiRequestMessage RequestMessage { get; }
 
         public async Task<string> GeJsonAsync(Uri requestUri)
         {

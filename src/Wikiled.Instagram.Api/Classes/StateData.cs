@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using Wikiled.Instagram.Api.Classes.Android.DeviceInfo;
 using Wikiled.Instagram.Api.Enums;
 
 namespace Wikiled.Instagram.Api.Classes
 {
-    [Serializable]
-    public class InstaStateData
+    public class StateData
     {
         public CookieContainer Cookies { get; set; }
 
-        public InstaAndroidDevice DeviceInfo { get; set; }
+        public AndroidDevice DeviceInfo { get; set; }
 
-        public InstaApiVersionType? ApiVersion { get; set; }
+        public InstaApiVersionType ApiVersion { get; set; }
 
         public bool IsAuthenticated { get; set; }
 

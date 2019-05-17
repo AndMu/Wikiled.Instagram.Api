@@ -31,6 +31,6 @@ namespace Wikiled.Instagram.Api.Classes.Models.User
         /// <summary>
         ///     Note: This always is null except when <see cref="LookupSourceType" /> is Username
         /// </summary>
-        public InstaUserShort User { get; set; }
+        public UserShortDescription User { get; set; }
     }
 }

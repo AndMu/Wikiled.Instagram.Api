@@ -381,14 +381,6 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                                                   string text,
                                                   params long[] userIds);
 
-        [Obsolete("ShareUserAsync is deprecated. Use SendDirectProfileAsync instead.")]
-        /// <summary>
-        ///     Share an user
-        /// </summary>
-        /// <param name="userIdToSend">User id(PK)</param>
-        /// <param name="threadId">Thread id</param>
-        Task<IResult<InstaSharing>> ShareUserAsync(string userIdToSend, string threadId);
-
         /// <summary>
         ///     UnLike direct message in a thread
         /// </summary>

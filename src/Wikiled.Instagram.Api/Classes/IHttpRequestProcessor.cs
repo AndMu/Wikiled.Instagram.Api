@@ -13,7 +13,7 @@ namespace Wikiled.Instagram.Api.Classes
 
         HttpClientHandler HttpHandler { get; set; }
 
-        InstaApiRequestMessage RequestMessage { get; }
+        ApiRequestMessage RequestMessage { get; }
 
         Task<string> GeJsonAsync(Uri requestUri);
 

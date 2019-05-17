@@ -54,7 +54,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Story
 
         public long LikeCount { get; set; }
 
-        public List<InstaUserShort> Likers { get; set; } = new List<InstaUserShort>();
+        public List<UserShortDescription> Likers { get; set; } = new List<UserShortDescription>();
 
         public string LinkText { get; set; }
 
@@ -115,7 +115,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Story
 
         public double TotalViewerCount { get; set; }
 
-        public InstaUserShort User { get; set; }
+        public UserShortDescription User { get; set; }
 
         public string VideoDashManifest { get; set; }
 
@@ -127,6 +127,6 @@ namespace Wikiled.Instagram.Api.Classes.Models.Story
 
         public string ViewerCursor { get; set; }
 
-        public List<InstaUserShort> Viewers { get; set; } = new List<InstaUserShort>();
+        public List<UserShortDescription> Viewers { get; set; } = new List<UserShortDescription>();
     }
 }

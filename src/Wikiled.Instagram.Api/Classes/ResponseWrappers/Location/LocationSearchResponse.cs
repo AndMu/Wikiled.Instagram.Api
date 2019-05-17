@@ -3,10 +3,10 @@ using Newtonsoft.Json;
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Location
 {
-    public class InstaLocationSearchResponse
+    public class LocationSearchResponse
     {
         [JsonProperty("venues")]
-        public List<InstaLocationShortResponse> Locations { get; set; }
+        public List<LocationShortResponse> Locations { get; set; }
 
         [JsonProperty("request_id")]
         public string RequestId { get; set; }

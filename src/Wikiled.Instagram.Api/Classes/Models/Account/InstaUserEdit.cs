@@ -44,7 +44,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Account
         public string FullName { get; set; }
 
         [JsonIgnore]
-        public InstaGenderType Gender => (InstaGenderType)GenderNum;
+        public GenderType Gender => (GenderType)GenderNum;
 
         [JsonProperty("has_anonymous_profile_picture")]
         public bool HasAnonymousProfilePicture { get; set; }

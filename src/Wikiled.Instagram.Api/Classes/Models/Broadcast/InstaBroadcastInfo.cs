@@ -7,7 +7,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Broadcast
     {
         public string BroadcastMessage { get; set; }
 
-        public InstaUserShortFriendshipFull BroadcastOwner { get; set; }
+        public InstaUserShortDescriptionFriendshipFull BroadcastOwner { get; set; }
 
         public string BroadcastStatus { get; set; }
 

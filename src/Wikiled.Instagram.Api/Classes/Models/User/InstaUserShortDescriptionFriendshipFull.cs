@@ -1,6 +1,6 @@
 ﻿namespace Wikiled.Instagram.Api.Classes.Models.User
 {
-    public class InstaUserShortFriendshipFull : InstaUserShort
+    public class InstaUserShortDescriptionFriendshipFull : UserShortDescription
     {
         public InstaFriendshipFullStatus FriendshipStatus { get; set; }
     }

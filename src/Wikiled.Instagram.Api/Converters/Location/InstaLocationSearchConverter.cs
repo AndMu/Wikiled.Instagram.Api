@@ -5,9 +5,9 @@ using Wikiled.Instagram.Api.Classes.ResponseWrappers.Location;
 
 namespace Wikiled.Instagram.Api.Converters.Location
 {
-    internal class InstaLocationSearchConverter : IObjectConverter<InstaLocationShortList, InstaLocationSearchResponse>
+    internal class InstaLocationSearchConverter : IObjectConverter<InstaLocationShortList, LocationSearchResponse>
     {
-        public InstaLocationSearchResponse SourceObject { get; set; }
+        public LocationSearchResponse SourceObject { get; set; }
 
         public InstaLocationShortList Convert()
         {

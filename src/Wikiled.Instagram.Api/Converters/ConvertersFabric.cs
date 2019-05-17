@@ -298,7 +298,7 @@ namespace Wikiled.Instagram.Api.Converters
             return new InstaCoverMediaConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaCurrentUser, InstaCurrentUserResponse> GetCurrentUserConverter(
+        public IObjectConverter<CurrentUser, InstaCurrentUserResponse> GetCurrentUserConverter(
             InstaCurrentUserResponse instaresponse)
         {
             return new InstaCurrentUserConverter { SourceObject = instaresponse };
@@ -503,26 +503,26 @@ namespace Wikiled.Instagram.Api.Converters
             return new InstaInsightsDataNodeConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaLocation, InstaLocationResponse> GetLocationConverter(
-            InstaLocationResponse response)
+        public IObjectConverter<InstaLocation, LocationResponse> GetLocationConverter(
+            LocationResponse response)
         {
-            return new InstaLocationConverter { SourceObject = response };
+            return new LocationConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaLocationFeed, InstaLocationFeedResponse> GetLocationFeedConverter(
-            InstaLocationFeedResponse response)
+        public IObjectConverter<InstaLocationFeed, LocationFeedResponse> GetLocationFeedConverter(
+            LocationFeedResponse response)
         {
             return new InstaLocationFeedConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaLocationShort, InstaLocationShortResponse> GetLocationShortConverter(
-            InstaLocationShortResponse response)
+        public IObjectConverter<InstaLocationShort, LocationShortResponse> GetLocationShortConverter(
+            LocationShortResponse response)
         {
             return new InstaLocationShortConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaLocationShortList, InstaLocationSearchResponse> GetLocationsSearchConverter(
-            InstaLocationSearchResponse response)
+        public IObjectConverter<InstaLocationShortList, LocationSearchResponse> GetLocationsSearchConverter(
+            LocationSearchResponse response)
         {
             return new InstaLocationSearchConverter { SourceObject = response };
         }
@@ -551,20 +551,20 @@ namespace Wikiled.Instagram.Api.Converters
             return new InstaMerchantConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaPlace, InstaPlaceResponse> GetPlaceConverter(
-            InstaPlaceResponse response)
+        public IObjectConverter<InstaPlace, PlaceResponse> GetPlaceConverter(
+            PlaceResponse response)
         {
             return new InstaPlaceConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaPlaceList, InstaPlaceListResponse> GetPlaceListConverter(
-            InstaPlaceListResponse response)
+        public IObjectConverter<InstaPlaceList, PlaceListResponse> GetPlaceListConverter(
+            PlaceListResponse response)
         {
             return new InstaPlaceListConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaPlaceShort, InstaPlaceShortResponse> GetPlaceShortConverter(
-            InstaPlaceShortResponse response)
+        public IObjectConverter<InstaPlaceShort, PlaceShortResponse> GetPlaceShortConverter(
+            PlaceShortResponse response)
         {
             return new InstaPlaceShortConverter { SourceObject = response };
         }
@@ -993,20 +993,20 @@ namespace Wikiled.Instagram.Api.Converters
             return new InstaUserPresenceListConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaUserShort, InstaUserShortResponse> GetUserShortConverter(
+        public IObjectConverter<UserShortDescription, InstaUserShortResponse> GetUserShortConverter(
             InstaUserShortResponse instaresponse)
         {
             return new InstaUserShortConverter { SourceObject = instaresponse };
         }
 
-        public IObjectConverter<InstaUserShortFriendship, InstaUserShortFriendshipResponse>
+        public IObjectConverter<InstaUserShortDescriptionFriendship, InstaUserShortFriendshipResponse>
             GetUserShortFriendshipConverter(
                 InstaUserShortFriendshipResponse response)
         {
             return new InstaUserShortFriendshipConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaUserShortFriendshipFull, InstaUserShortFriendshipFullResponse>
+        public IObjectConverter<InstaUserShortDescriptionFriendshipFull, InstaUserShortFriendshipFullResponse>
             GetUserShortFriendshipFullConverter(
                 InstaUserShortFriendshipFullResponse response)
         {

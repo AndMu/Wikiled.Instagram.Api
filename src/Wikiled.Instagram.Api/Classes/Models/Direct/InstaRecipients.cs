@@ -15,6 +15,6 @@ namespace Wikiled.Instagram.Api.Classes.Models.Direct
 
         public List<InstaRankedRecipientThread> Threads { get; set; } = new List<InstaRankedRecipientThread>();
 
-        public List<InstaUserShort> Users { get; set; } = new List<InstaUserShort>();
+        public List<UserShortDescription> Users { get; set; } = new List<UserShortDescription>();
     }
 }

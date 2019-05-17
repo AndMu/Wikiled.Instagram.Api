@@ -7,9 +7,9 @@ using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
 
 namespace Wikiled.Instagram.Api.Converters.Location
 {
-    internal class InstaLocationFeedConverter : IObjectConverter<InstaLocationFeed, InstaLocationFeedResponse>
+    internal class InstaLocationFeedConverter : IObjectConverter<InstaLocationFeed, LocationFeedResponse>
     {
-        public InstaLocationFeedResponse SourceObject { get; set; }
+        public LocationFeedResponse SourceObject { get; set; }
 
         public InstaLocationFeed Convert()
         {

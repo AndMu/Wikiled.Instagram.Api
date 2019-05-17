@@ -4,9 +4,9 @@ using Wikiled.Instagram.Api.Classes.ResponseWrappers.Location;
 
 namespace Wikiled.Instagram.Api.Converters.Location
 {
-    internal class InstaPlaceConverter : IObjectConverter<InstaPlace, InstaPlaceResponse>
+    internal class InstaPlaceConverter : IObjectConverter<InstaPlace, PlaceResponse>
     {
-        public InstaPlaceResponse SourceObject { get; set; }
+        public PlaceResponse SourceObject { get; set; }
 
         public InstaPlace Convert()
         {

@@ -17,7 +17,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Direct
 
         public string ThreadType { get; set; }
 
-        public List<InstaUserShort> Users { get; set; } = new List<InstaUserShort>();
+        public List<UserShortDescription> Users { get; set; } = new List<UserShortDescription>();
 
         public long ViewerId { get; set; }
     }

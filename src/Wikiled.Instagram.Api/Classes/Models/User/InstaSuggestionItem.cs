@@ -23,7 +23,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.User
 
         public List<string> ThumbnailUrls { get; set; } = new List<string>();
 
-        public InstaUserShort User { get; set; }
+        public UserShortDescription User { get; set; }
 
         public string Uuid { get; set; }
 

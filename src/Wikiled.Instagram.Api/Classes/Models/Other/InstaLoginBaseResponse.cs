@@ -31,6 +31,6 @@ namespace Wikiled.Instagram.Api.Classes.Models.Other
         public bool TwoFactorRequired { get; set; }
 
         [JsonProperty("two_factor_info")]
-        public InstaTwoFactorLoginInfo TwoFactorLoginInfo { get; set; }
+        public TwoFactorLoginInfo TwoFactorLoginInfo { get; set; }
     }
 }

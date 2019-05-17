@@ -3,7 +3,7 @@ using Wikiled.Instagram.Api.Classes.Models.Account;
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Login
 {
-    internal class InstaFacebookRegistrationResponse
+    internal class FacebookRegistrationResponse
     {
         [JsonProperty("account_created")]
         public bool? AccountCreated { get; set; }

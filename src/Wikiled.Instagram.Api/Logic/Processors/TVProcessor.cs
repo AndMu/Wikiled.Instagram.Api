@@ -22,7 +22,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
     /// </summary>
     internal class InstaTvProcessor : ITvProcessor
     {
-        private readonly InstaAndroidDevice deviceInfo;
+        private readonly AndroidDevice deviceInfo;
 
         private readonly InstaHttpHelper httpHelper;
 
@@ -37,7 +37,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         private readonly InstaUserAuthValidate userAuthValidate;
 
         public InstaTvProcessor(
-            InstaAndroidDevice deviceInfo,
+            AndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             ILogger logger,

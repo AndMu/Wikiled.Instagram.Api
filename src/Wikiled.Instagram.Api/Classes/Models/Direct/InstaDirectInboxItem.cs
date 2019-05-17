@@ -37,7 +37,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Direct
 
         public InstaPlaceholder Placeholder { get; set; }
 
-        public InstaUserShort ProfileMedia { get; set; }
+        public UserShortDescription ProfileMedia { get; set; }
 
         public List<InstaMedia> ProfileMediasPreview { get; set; }
 

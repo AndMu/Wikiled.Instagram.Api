@@ -87,9 +87,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     Get currently logged in user info asynchronously
         /// </summary>
         /// <returns>
-        ///     <see cref="InstaCurrentUser" />
+        ///     <see cref="CurrentUser" />
         /// </returns>
-        Task<IResult<InstaCurrentUser>> GetCurrentUserAsync();
+        Task<IResult<CurrentUser>> GetCurrentUserAsync();
 
         /// <summary>
         ///     Get followers list for currently logged in user asynchronously

@@ -13,6 +13,6 @@ namespace Wikiled.Instagram.Api.Classes.Models.Story
 
         public DateTime Time { get; set; }
 
-        public InstaUserShort User { get; set; }
+        public UserShortDescription User { get; set; }
     }
 }

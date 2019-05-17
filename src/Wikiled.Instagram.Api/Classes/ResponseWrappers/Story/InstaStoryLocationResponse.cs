@@ -15,7 +15,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Story
         public double IsPinned { get; set; }
 
         [JsonProperty("location")]
-        public InstaPlaceShortResponse Location { get; set; }
+        public PlaceShortResponse Location { get; set; }
 
         [JsonProperty("rotation")]
         public double Rotation { get; set; }

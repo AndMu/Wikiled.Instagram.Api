@@ -1,16 +1,16 @@
 ﻿namespace Wikiled.Instagram.Api.Classes.Models.User
 {
-    public class InstaUser : InstaUserShort
+    public class InstaUser : UserShortDescription
     {
-        public InstaUser(InstaUserShort instaUserShort)
+        public InstaUser(UserShortDescription instaUserShortDescription)
         {
-            Pk = instaUserShort.Pk;
-            UserName = instaUserShort.UserName;
-            FullName = instaUserShort.FullName;
-            IsPrivate = instaUserShort.IsPrivate;
-            ProfilePicture = instaUserShort.ProfilePicture;
-            ProfilePictureId = instaUserShort.ProfilePictureId;
-            IsVerified = instaUserShort.IsVerified;
+            Pk = instaUserShortDescription.Pk;
+            UserName = instaUserShortDescription.UserName;
+            FullName = instaUserShortDescription.FullName;
+            IsPrivate = instaUserShortDescription.IsPrivate;
+            ProfilePicture = instaUserShortDescription.ProfilePicture;
+            ProfilePictureId = instaUserShortDescription.ProfilePictureId;
+            IsVerified = instaUserShortDescription.IsVerified;
         }
 
         public int FollowersCount { get; set; }

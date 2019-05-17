@@ -10,7 +10,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Direct
 
         public int PendingRequestsCount { get; set; }
 
-        public List<InstaUserShort> PendingUsers { get; set; } = new List<InstaUserShort>();
+        public List<UserShortDescription> PendingUsers { get; set; } = new List<UserShortDescription>();
 
         public int SeqId { get; set; }
 

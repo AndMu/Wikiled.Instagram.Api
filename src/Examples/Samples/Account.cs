@@ -55,7 +55,7 @@ VerifySmsCodeAsync");
         public async void EditProfile()
         {
             var name = "Ramtin Jokar"; // leave null if you don't want to change it
-            InstaGenderType? gender = InstaGenderType.Male; // leave null if you don't want to change it
+            GenderType? gender = GenderType.Male; // leave null if you don't want to change it
             var email = "Ramtinak@live.com"; // leave null if you don't want to change it
             var url = ""; // leave empty if you have no site/blog | leave null if you don't want to change it
             var phone = "+989171234567"; // leave null if you don't want to change it

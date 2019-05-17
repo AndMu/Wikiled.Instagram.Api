@@ -39,7 +39,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Comment
 
         public int Type { get; set; }
 
-        public InstaUserShort User { get; set; }
+        public UserShortDescription User { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void Update(string memberName)

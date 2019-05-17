@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Location
 {
-    public class InstaPlaceListResponse
+    public class PlaceListResponse
     {
         [JsonIgnore] public List<long> ExcludeList = new List<long>();
 
@@ -11,7 +11,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Location
         public bool? HasMore { get; set; }
 
         [JsonProperty("items")]
-        public List<InstaPlaceResponse> Items { get; set; }
+        public List<PlaceResponse> Items { get; set; }
 
         [JsonProperty("rank_token")]
         public string RankToken { get; set; }

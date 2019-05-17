@@ -26,6 +26,6 @@ namespace Wikiled.Instagram.Api.Classes.Models.User
 
         public long Seen { get; set; }
 
-        public InstaUserShort User { get; set; }
+        public UserShortDescription User { get; set; }
     }
 }

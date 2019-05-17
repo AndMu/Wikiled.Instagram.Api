@@ -3,7 +3,7 @@ using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Login
 {
-    internal class InstaFacebookLoginResponse
+    internal class FacebookLoginResponse
     {
         [JsonProperty("code")]
         public int? Code { get; set; }

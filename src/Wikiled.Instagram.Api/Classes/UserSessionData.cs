@@ -20,7 +20,7 @@ namespace Wikiled.Instagram.Api.Classes
         /// </summary>
         public string FacebookUserId { get; internal set; } = string.Empty;
 
-        public InstaUserShort LoggedInUser { get; set; }
+        public UserShortDescription LoggedInUser { get; set; }
 
         public string Password { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Wikiled.Instagram.Api.Helpers;
 using Wikiled.Instagram.Api.Logic;
 
 namespace Wikiled.Instagram.Api.Classes.SessionHandlers
@@ -19,10 +20,9 @@ namespace Wikiled.Instagram.Api.Classes.SessionHandlers
         {
             if (File.Exists(FilePath))
             {
-                using (var fs = File.OpenRead(FilePath))
-                {
-                    Api.LoadStateDataFromStream(fs);
-                }
+                var data = File.ReadAllText(FilePath);
+                var state = SerializationHelper.DeserializeFromString<StateData>(data);
+                Api.SetStateData(state);
             }
         }
 
@@ -31,14 +31,9 @@ namespace Wikiled.Instagram.Api.Classes.SessionHandlers
         /// </summary>
         public void Save()
         {
-            using (var state = Api.GetStateDataAsStream())
-            {
-                using (var fileStream = File.Create(FilePath))
-                {
-                    state.Seek(0, SeekOrigin.Begin);
-                    state.CopyTo(fileStream);
-                }
-            }
+            var state = Api.GetStateData();
+            var data = SerializationHelper.SerializeToString(state);
+            File.WriteAllText(FilePath, data);
         }
     }
 }

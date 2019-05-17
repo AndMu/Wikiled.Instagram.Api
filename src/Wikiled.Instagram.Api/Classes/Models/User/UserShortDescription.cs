@@ -3,9 +3,9 @@ using System;
 namespace Wikiled.Instagram.Api.Classes.Models.User
 {
     [Serializable]
-    public class InstaUserShort
+    public class UserShortDescription
     {
-        public static InstaUserShort Empty => new InstaUserShort { FullName = string.Empty, UserName = string.Empty };
+        public static UserShortDescription Empty => new UserShortDescription { FullName = string.Empty, UserName = string.Empty };
 
         public string FullName { get; set; }
 
@@ -25,7 +25,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.User
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as InstaUserShort);
+            return Equals(obj as UserShortDescription);
         }
 
         public override int GetHashCode()
@@ -33,7 +33,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.User
             return Pk.GetHashCode();
         }
 
-        public bool Equals(InstaUserShort user)
+        public bool Equals(UserShortDescription user)
         {
             return Pk == user?.Pk;
         }

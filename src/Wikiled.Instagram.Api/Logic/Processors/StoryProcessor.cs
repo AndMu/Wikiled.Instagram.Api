@@ -33,7 +33,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
     /// </summary>
     internal class InstaStoryProcessor : IStoryProcessor
     {
-        private readonly InstaAndroidDevice deviceInfo;
+        private readonly AndroidDevice deviceInfo;
 
         private readonly InstaHttpHelper httpHelper;
 
@@ -48,7 +48,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         private readonly InstaUserAuthValidate userAuthValidate;
 
         public InstaStoryProcessor(
-            InstaAndroidDevice deviceInfo,
+            AndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             ILogger logger,
@@ -1178,7 +1178,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     }
                 }
 
-                var uploadId = InstaApiRequestMessage.GenerateRandomUploadId();
+                var uploadId = ApiRequestMessage.GenerateRandomUploadId();
                 var photoHashCode = Path.GetFileName(image.Uri ?? $"C:\\{13.GenerateRandomString()}.jpg").GetHashCode();
 
                 var waterfallId = Guid.NewGuid().ToString();
@@ -1408,7 +1408,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             };
             try
             {
-                var uploadId = InstaApiRequestMessage.GenerateRandomUploadId();
+                var uploadId = ApiRequestMessage.GenerateRandomUploadId();
                 var videoHashCode = Path.GetFileName(video.Video.Uri ?? $"C:\\{13.GenerateRandomString()}.mp4")
                     .GetHashCode();
                 var photoHashCode = Path.GetFileName(video.VideoThumbnail.Uri ?? $"C:\\{13.GenerateRandomString()}.jpg")
@@ -2095,11 +2095,11 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     { "_csrftoken", user.CsrfToken },
                     {
                         "client_shared_at",
-                        (long.Parse(InstaApiRequestMessage.GenerateUploadId()) - rnd.Next(25, 55)).ToString()
+                        (long.Parse(ApiRequestMessage.GenerateUploadId()) - rnd.Next(25, 55)).ToString()
                     },
                     {
                         "story_media_creation_date",
-                        (long.Parse(InstaApiRequestMessage.GenerateUploadId()) - rnd.Next(50, 70)).ToString()
+                        (long.Parse(ApiRequestMessage.GenerateUploadId()) - rnd.Next(50, 70)).ToString()
                     },
                     { "media_folder", "Camera" },
                     { "configure_mode", "1" },
@@ -2112,7 +2112,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     { "capture_type", "normal" },
                     { "mas_opt_in", "NOT_PROMPTED" },
                     { "upload_id", uploadId },
-                    { "client_timestamp", InstaApiRequestMessage.GenerateUploadId() },
+                    { "client_timestamp", ApiRequestMessage.GenerateUploadId() },
                     {
                         "device",
                         new JObject
@@ -2359,7 +2359,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 }
 
                 var instaUri = InstaUriCreator.GetUploadPhotoUri();
-                var uploadId = InstaApiRequestMessage.GenerateUploadId();
+                var uploadId = ApiRequestMessage.GenerateUploadId();
                 upProgress.UploadId = uploadId;
                 progress?.Invoke(upProgress);
                 var requestContent = new MultipartFormDataContent(uploadId)
@@ -2393,7 +2393,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 //};
                 upProgress.UploadState = InstaUploadState.Uploading;
                 progress?.Invoke(upProgress);
-                requestContent.Add(imageContent, "photo", $"pending_media_{InstaApiRequestMessage.GenerateUploadId()}.jpg");
+                requestContent.Add(imageContent, "photo", $"pending_media_{ApiRequestMessage.GenerateUploadId()}.jpg");
                 var request = httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, deviceInfo);
                 request.Content = requestContent;
                 var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);

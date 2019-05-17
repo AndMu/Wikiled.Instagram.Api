@@ -18,7 +18,7 @@ namespace Wikiled.Instagram.Api.Helpers
             ApiVersion = apiVersionType;
         }
 
-        public HttpRequestMessage GetDefaultRequest(HttpMethod method, Uri uri, InstaAndroidDevice deviceInfo)
+        public HttpRequestMessage GetDefaultRequest(HttpMethod method, Uri uri, AndroidDevice deviceInfo)
         {
             var userAgent = deviceInfo.GenerateUserAgent(ApiVersion);
             var request = new HttpRequestMessage(method, uri);
@@ -36,7 +36,7 @@ namespace Wikiled.Instagram.Api.Helpers
 
         public HttpRequestMessage GetDefaultRequest(HttpMethod method,
                                                     Uri uri,
-                                                    InstaAndroidDevice deviceInfo,
+                                                    AndroidDevice deviceInfo,
                                                     Dictionary<string, string> data)
         {
             var request = GetDefaultRequest(HttpMethod.Post, uri, deviceInfo);
@@ -55,7 +55,7 @@ namespace Wikiled.Instagram.Api.Helpers
         public HttpRequestMessage GetSignedRequest(
             HttpMethod method,
             Uri uri,
-            InstaAndroidDevice deviceInfo,
+            AndroidDevice deviceInfo,
             Dictionary<string, string> data)
         {
             var hash = InstaCryptoHelper.CalculateHash(
@@ -81,7 +81,7 @@ namespace Wikiled.Instagram.Api.Helpers
         public HttpRequestMessage GetSignedRequest(
             HttpMethod method,
             Uri uri,
-            InstaAndroidDevice deviceInfo,
+            AndroidDevice deviceInfo,
             Dictionary<string, int> data)
         {
             var hash = InstaCryptoHelper.CalculateHash(
@@ -107,7 +107,7 @@ namespace Wikiled.Instagram.Api.Helpers
         public HttpRequestMessage GetSignedRequest(
             HttpMethod method,
             Uri uri,
-            InstaAndroidDevice deviceInfo,
+            AndroidDevice deviceInfo,
             Dictionary<string, object> data)
         {
             var hash = InstaCryptoHelper.CalculateHash(
@@ -133,7 +133,7 @@ namespace Wikiled.Instagram.Api.Helpers
         public HttpRequestMessage GetSignedRequest(
             HttpMethod method,
             Uri uri,
-            InstaAndroidDevice deviceInfo,
+            AndroidDevice deviceInfo,
             JObject data)
         {
             var hash = InstaCryptoHelper.CalculateHash(
@@ -158,7 +158,7 @@ namespace Wikiled.Instagram.Api.Helpers
         /// <summary>
         ///     This is only for https://instagram.com site
         /// </summary>
-        public HttpRequestMessage GetWebRequest(HttpMethod method, Uri uri, InstaAndroidDevice deviceInfo)
+        public HttpRequestMessage GetWebRequest(HttpMethod method, Uri uri, AndroidDevice deviceInfo)
         {
             var request = GetDefaultRequest(HttpMethod.Get, uri, deviceInfo);
             request.Headers.Remove(InstaApiConstants.HeaderUserAgent);

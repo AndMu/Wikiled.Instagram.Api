@@ -8,6 +8,6 @@ namespace Wikiled.Instagram.Api.Classes.Models.User
 
         public string TimeInVideo { get; set; }
 
-        public InstaUserShort User { get; set; }
+        public UserShortDescription User { get; set; }
     }
 }

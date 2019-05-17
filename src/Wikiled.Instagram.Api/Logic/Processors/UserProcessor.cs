@@ -33,7 +33,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
     /// </summary>
     internal class InstaUserProcessor : IUserProcessor
     {
-        private readonly InstaAndroidDevice deviceInfo;
+        private readonly AndroidDevice deviceInfo;
 
         private readonly InstaHttpHelper httpHelper;
 
@@ -48,7 +48,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         private readonly InstaUserAuthValidate userAuthValidate;
 
         public InstaUserProcessor(
-            InstaAndroidDevice deviceInfo,
+            AndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             ILogger logger,
@@ -271,9 +271,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     Get currently logged in user info asynchronously
         /// </summary>
         /// <returns>
-        ///     <see cref="InstaCurrentUser" />
+        ///     <see cref="CurrentUser" />
         /// </returns>
-        public async Task<IResult<InstaCurrentUser>> GetCurrentUserAsync()
+        public async Task<IResult<CurrentUser>> GetCurrentUserAsync()
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             try
@@ -292,7 +292,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<InstaCurrentUser>(response, json);
+                    return InstaResult.UnExpectedResponse<CurrentUser>(response, json);
                 }
 
                 var user = JsonConvert.DeserializeObject<InstaCurrentUserResponse>(
@@ -300,7 +300,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     new InstaCurrentUserDataConverter());
                 if (user.Pk < 1)
                 {
-                    InstaResult.Fail<InstaCurrentUser>("Pk is incorrect");
+                    InstaResult.Fail<CurrentUser>("Pk is incorrect");
                 }
 
                 var converter = InstaConvertersFabric.Instance.GetCurrentUserConverter(user);
@@ -310,12 +310,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaCurrentUser), InstaResponseType.NetworkProblem);
+                return InstaResult.Fail(httpException, default(CurrentUser), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaCurrentUser>(exception);
+                return InstaResult.Fail<CurrentUser>(exception);
             }
         }
 
@@ -688,7 +688,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             try
             {
                 var instaUri = InstaUriCreator.GetUsersNametagLookupUri();
-                var uploadId = InstaApiRequestMessage.GenerateUploadId();
+                var uploadId = ApiRequestMessage.GenerateUploadId();
                 var data = new JObject
                 {
                     { "_csrftoken", user.CsrfToken },

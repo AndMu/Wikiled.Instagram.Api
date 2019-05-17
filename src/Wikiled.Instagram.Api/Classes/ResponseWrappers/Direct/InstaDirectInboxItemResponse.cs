@@ -43,7 +43,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Direct
         public InstaDirectBroadcastResponse LiveViewerInvite { get; set; }
 
         [JsonProperty("location")]
-        public InstaLocationResponse LocationMedia { get; set; }
+        public LocationResponse LocationMedia { get; set; }
 
         [JsonProperty("media")]
         public InstaInboxMediaResponse Media { get; set; }

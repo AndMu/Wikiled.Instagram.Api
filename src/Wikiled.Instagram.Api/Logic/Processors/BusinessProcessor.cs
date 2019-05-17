@@ -32,7 +32,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
     /// </summary>
     internal class InstaBusinessProcessor : IBusinessProcessor
     {
-        private readonly InstaAndroidDevice deviceInfo;
+        private readonly AndroidDevice deviceInfo;
 
         private readonly InstaHttpHelper httpHelper;
 
@@ -47,7 +47,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         private readonly InstaUserAuthValidate userAuthValidate;
 
         public InstaBusinessProcessor(
-            InstaAndroidDevice deviceInfo,
+            AndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             ILogger logger,

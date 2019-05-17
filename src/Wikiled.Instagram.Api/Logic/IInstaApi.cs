@@ -25,6 +25,11 @@ namespace Wikiled.Instagram.Api.Logic
     public interface IInstaApi
     {
         /// <summary>
+        /// Delay
+        /// </summary>
+        IRequestDelay Delay { get; }
+
+        /// <summary>
         ///     Current <see cref="IHttpRequestProcessor" />
         /// </summary>
         IHttpRequestProcessor HttpRequestProcessor { get; }
@@ -127,68 +132,21 @@ namespace Wikiled.Instagram.Api.Logic
         ISessionHandler SessionHandler { get; set; }
 
         /// <summary>
-        ///     Get current state info as Memory stream
-        /// </summary>
-        /// <returns>State data</returns>
-        Stream GetStateDataAsStream();
-
-        /// <summary>
-        ///     Get current state info as Json string
-        /// </summary>
-        /// <returns>State data</returns>
-        string GetStateDataAsString();
-
-        /// <summary>
-        ///     Get current state info as Json string asynchronously
-        /// </summary>
-        /// <returns>
-        ///     State data
-        /// </returns>
-        /// <summary>
-        ///     Get current state as StateData object
-        /// </summary>
-        /// <returns>
-        ///     State data object
-        /// </returns>
-        InstaStateData GetStateDataAsObject();
-
-        Task<string> GetStateDataAsStringAsync();
-
-        /// <summary>
-        ///     Get current state info as Memory stream asynchronously
-        /// </summary>
-        /// <returns>State data</returns>
-        Task<Stream> GetStateDataAsStreamAsync();
-
-        /// <summary>
-        ///     Set state data from provided stream
-        /// </summary>
-        void LoadStateDataFromStream(Stream data);
-
-        /// <summary>
-        ///     Set state data from provided json string
-        /// </summary>
-        void LoadStateDataFromString(string data);
-
-        /// <summary>
-        ///     Set state data from provided stream asynchronously
-        /// </summary>
-        /// <summary>
-        ///     Set state data from object
-        /// </summary>
-        void LoadStateDataFromObject(InstaStateData stateData);
-
-        Task LoadStateDataFromStreamAsync(Stream stream);
-
-        /// <summary>
-        ///     Set state data from provided json string asynchronously
-        /// </summary>
-        Task LoadStateDataFromStringAsync(string json);
-
-        /// <summary>
         ///     Get current API version info (signature key, api version info, app id)
         /// </summary>
         InstaApiVersion GetApiVersionInfo();
+
+        /// <summary>
+        /// Set State data
+        /// </summary>
+        /// <param name="state"></param>
+        void SetStateData(StateData state);
+
+        /// <summary>
+        /// Get State
+        /// </summary>
+        /// <returns></returns>
+        StateData GetStateData( );
 
         /// <summary>
         ///     Get user agent of current <see cref="IInstaApi" />
@@ -223,7 +181,7 @@ namespace Wikiled.Instagram.Api.Logic
         /// <summary>
         ///     Gets current device
         /// </summary>
-        InstaAndroidDevice GetCurrentDevice();
+        AndroidDevice GetCurrentDevice();
 
         /// <summary>
         ///     Gets logged in user
@@ -274,7 +232,7 @@ namespace Wikiled.Instagram.Api.Logic
         ///     </para>
         /// </summary>
         /// <param name="device">Android device</param>
-        void SetDevice(InstaAndroidDevice device);
+        void SetDevice(AndroidDevice device);
 
         /// <summary>
         ///     Set Accept Language
@@ -525,7 +483,7 @@ namespace Wikiled.Instagram.Api.Logic
         ///     A null reference if not success; in this case, do LoginAsync first and check if Two Factor Authentication is
         ///     required, if not, don't run this method
         /// </returns>
-        Task<IResult<InstaTwoFactorLoginInfo>> GetTwoFactorInfoAsync();
+        Task<IResult<TwoFactorLoginInfo>> GetTwoFactorInfoAsync();
 
         /// <summary>
         ///     Get user lookup for recovery options
@@ -554,7 +512,7 @@ namespace Wikiled.Instagram.Api.Logic
         /// <summary>
         ///     Send Two Factor Login SMS Again
         /// </summary>
-        Task<IResult<InstaTwoFactorLoginSms>> SendTwoFactorLoginSmsAsync();
+        Task<IResult<TwoFactorLoginSms>> SendTwoFactorLoginSmsAsync();
 
         /// <summary>
         ///     Logout from instagram asynchronously
@@ -566,8 +524,8 @@ namespace Wikiled.Instagram.Api.Logic
         ///     Get currently logged in user info asynchronously
         /// </summary>
         /// <returns>
-        ///     <see cref="InstaCurrentUser" />
+        ///     <see cref="CurrentUser" />
         /// </returns>
-        Task<IResult<InstaCurrentUser>> GetCurrentUserAsync();
+        Task<IResult<CurrentUser>> GetCurrentUserAsync();
     }
 }

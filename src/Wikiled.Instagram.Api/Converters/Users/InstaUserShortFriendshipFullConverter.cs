@@ -5,19 +5,19 @@ using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
 namespace Wikiled.Instagram.Api.Converters.Users
 {
     internal class
-        InstaUserShortFriendshipFullConverter : IObjectConverter<InstaUserShortFriendshipFull,
+        InstaUserShortFriendshipFullConverter : IObjectConverter<InstaUserShortDescriptionFriendshipFull,
             InstaUserShortFriendshipFullResponse>
     {
         public InstaUserShortFriendshipFullResponse SourceObject { get; set; }
 
-        public InstaUserShortFriendshipFull Convert()
+        public InstaUserShortDescriptionFriendshipFull Convert()
         {
             if (SourceObject == null)
             {
                 throw new ArgumentNullException("Source object");
             }
 
-            var user = new InstaUserShortFriendshipFull
+            var user = new InstaUserShortDescriptionFriendshipFull
             {
                 Pk = SourceObject.Pk,
                 UserName = SourceObject.UserName,

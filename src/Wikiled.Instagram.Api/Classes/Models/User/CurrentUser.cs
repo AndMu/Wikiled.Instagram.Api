@@ -4,17 +4,17 @@ using Wikiled.Instagram.Api.Enums;
 
 namespace Wikiled.Instagram.Api.Classes.Models.User
 {
-    public class InstaCurrentUser : InstaUserShort
+    public class CurrentUser : UserShortDescription
     {
-        public InstaCurrentUser(InstaUserShort instaUserShort)
+        public CurrentUser(UserShortDescription instaUserShortDescription)
         {
-            Pk = instaUserShort.Pk;
-            UserName = instaUserShort.UserName;
-            FullName = instaUserShort.FullName;
-            IsPrivate = instaUserShort.IsPrivate;
-            ProfilePicture = instaUserShort.ProfilePicture;
-            ProfilePictureId = instaUserShort.ProfilePictureId;
-            IsVerified = instaUserShort.IsVerified;
+            Pk = instaUserShortDescription.Pk;
+            UserName = instaUserShortDescription.UserName;
+            FullName = instaUserShortDescription.FullName;
+            IsPrivate = instaUserShortDescription.IsPrivate;
+            ProfilePicture = instaUserShortDescription.ProfilePicture;
+            ProfilePictureId = instaUserShortDescription.ProfilePictureId;
+            IsVerified = instaUserShortDescription.IsVerified;
         }
 
         public string Biography { get; set; }
@@ -27,7 +27,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.User
 
         public string ExternalUrl { get; set; }
 
-        public InstaGenderType Gender { get; set; }
+        public GenderType Gender { get; set; }
 
         public bool HasAnonymousProfilePicture { get; set; }
 

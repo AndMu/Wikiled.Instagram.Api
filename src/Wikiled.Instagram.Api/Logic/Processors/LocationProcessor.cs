@@ -26,7 +26,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
     /// </summary>
     internal class InstaLocationProcessor : ILocationProcessor
     {
-        private readonly InstaAndroidDevice deviceInfo;
+        private readonly AndroidDevice deviceInfo;
 
         private readonly InstaHttpHelper httpHelper;
 
@@ -41,7 +41,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         private readonly InstaUserAuthValidate userAuthValidate;
 
         public InstaLocationProcessor(
-            InstaAndroidDevice deviceInfo,
+            AndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             ILogger logger,
@@ -95,7 +95,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     return InstaResult.UnExpectedResponse<InstaPlaceShort>(response, json);
                 }
 
-                var obj = JsonConvert.DeserializeObject<InstaPlaceResponse>(json);
+                var obj = JsonConvert.DeserializeObject<PlaceResponse>(json);
 
                 return InstaResult.Success(InstaConvertersFabric.Instance.GetPlaceShortConverter(obj.Location).Convert());
             }
@@ -132,7 +132,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     return InstaResult.UnExpectedResponse<InstaStory>(response, json);
                 }
 
-                var feedResponse = JsonConvert.DeserializeObject<InstaLocationFeedResponse>(json);
+                var feedResponse = JsonConvert.DeserializeObject<LocationFeedResponse>(json);
                 var feed = InstaConvertersFabric.Instance.GetLocationFeedConverter(feedResponse).Convert();
 
                 return InstaResult.Success(feed.Story);
@@ -226,7 +226,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     return InstaResult.UnExpectedResponse<InstaLocationShortList>(response, json);
                 }
 
-                var locations = JsonConvert.DeserializeObject<InstaLocationSearchResponse>(json);
+                var locations = JsonConvert.DeserializeObject<LocationSearchResponse>(json);
                 var converter = InstaConvertersFabric.Instance.GetLocationsSearchConverter(locations);
                 return InstaResult.Success(converter.Convert());
             }
@@ -283,7 +283,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     paginationParameters = PaginationParameters.MaxPagesToLoad(1);
                 }
 
-                InstaPlaceList Convert(InstaPlaceListResponse placelistResponse)
+                InstaPlaceList Convert(PlaceListResponse placelistResponse)
                 {
                     return InstaConvertersFabric.Instance.GetPlaceListConverter(placelistResponse).Convert();
                 }
@@ -546,7 +546,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
         }
 
-        private async Task<IResult<InstaPlaceListResponse>> SearchPlaces(
+        private async Task<IResult<PlaceListResponse>> SearchPlaces(
             double latitude,
             double longitude,
             string query,
@@ -570,11 +570,11 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 var request = httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
                 var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var obj = JsonConvert.DeserializeObject<InstaPlaceListResponse>(json);
+                var obj = JsonConvert.DeserializeObject<PlaceListResponse>(json);
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<InstaPlaceListResponse>(response, json);
+                    return InstaResult.UnExpectedResponse<PlaceListResponse>(response, json);
                 }
 
                 if (obj.Items?.Count > 0)
@@ -590,12 +590,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaPlaceListResponse), InstaResponseType.NetworkProblem);
+                return InstaResult.Fail(httpException, default(PlaceListResponse), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaPlaceListResponse>(exception);
+                return InstaResult.Fail<PlaceListResponse>(exception);
             }
         }
     }

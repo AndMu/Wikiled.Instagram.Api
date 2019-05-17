@@ -6,6 +6,6 @@
 
         public bool IsOutgoingRequest { get; set; }
 
-        public InstaUserShort User { get; set; }
+        public UserShortDescription User { get; set; }
     }
 }

@@ -18,7 +18,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Direct
 
         public bool HasUnreadMessage { get; set; }
 
-        public InstaUserShort Inviter { get; set; }
+        public UserShortDescription Inviter { get; set; }
 
         public bool IsGroup { get; set; }
 
@@ -34,7 +34,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Direct
 
         public List<InstaLastSeen> LastSeenAt { get; set; }
 
-        public List<InstaUserShortFriendship> LeftUsers { get; set; } = new List<InstaUserShortFriendship>();
+        public List<InstaUserShortDescriptionFriendship> LeftUsers { get; set; } = new List<InstaUserShortDescriptionFriendship>();
 
         public bool MentionsMuted { get; set; }
 
@@ -60,7 +60,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Direct
 
         public string Title { get; set; }
 
-        public List<InstaUserShortFriendship> Users { get; set; } = new List<InstaUserShortFriendship>();
+        public List<InstaUserShortDescriptionFriendship> Users { get; set; } = new List<InstaUserShortDescriptionFriendship>();
 
         public bool ValuedRequest { get; set; }
 

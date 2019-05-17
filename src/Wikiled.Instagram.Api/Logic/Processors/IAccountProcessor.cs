@@ -57,7 +57,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                                                       string url,
                                                       string email,
                                                       string phone,
-                                                      InstaGenderType? gender,
+                                                      GenderType? gender,
                                                       string newUsername = null);
 
         /// <summary>
@@ -86,12 +86,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <summary>
         ///     Set current account private
         /// </summary>
-        Task<IResult<InstaUserShort>> SetAccountPrivateAsync();
+        Task<IResult<UserShortDescription>> SetAccountPrivateAsync();
 
         /// <summary>
         ///     Set current account public
         /// </summary>
-        Task<IResult<InstaUserShort>> SetAccountPublicAsync();
+        Task<IResult<UserShortDescription>> SetAccountPublicAsync();
 
         /// <summary>
         ///     Set biography (support hashtags and user mentions)

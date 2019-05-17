@@ -83,7 +83,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Media
         public int LikesCount { get; set; }
 
         [JsonProperty("location")]
-        public InstaLocationResponse Location { get; set; }
+        public LocationResponse Location { get; set; }
 
         [JsonProperty("max_num_visible_preview_comments")]
         public int MaxNumVisiblePreviewComments { get; set; }

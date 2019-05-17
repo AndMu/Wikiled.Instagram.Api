@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Login
 {
     [Serializable]
-    public class InstaTwoFactorLogin
+    public class TwoFactorLogin
     {
         [JsonProperty("obfuscated_phone_number")]
         public short ObfuscatedPhoneNumber { get; set; }

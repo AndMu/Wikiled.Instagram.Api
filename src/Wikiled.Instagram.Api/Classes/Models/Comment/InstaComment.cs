@@ -40,7 +40,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Comment
 
         public int LikesCount { get; set; }
 
-        public List<InstaUserShort> OtherPreviewUsers { get; set; } = new List<InstaUserShort>();
+        public List<UserShortDescription> OtherPreviewUsers { get; set; } = new List<UserShortDescription>();
 
         public long Pk { get; set; }
 
@@ -53,7 +53,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Comment
 
         public int Type { get; set; }
 
-        public InstaUserShort User { get; set; }
+        public UserShortDescription User { get; set; }
 
         public long UserId { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;

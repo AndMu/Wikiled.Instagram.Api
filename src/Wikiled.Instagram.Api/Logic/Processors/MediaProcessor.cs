@@ -28,7 +28,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
     /// </summary>
     internal class InstaMediaProcessor : IMediaProcessor
     {
-        private readonly InstaAndroidDevice deviceInfo;
+        private readonly AndroidDevice deviceInfo;
 
         private readonly InstaHttpHelper httpHelper;
 
@@ -43,7 +43,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         private readonly InstaUserAuthValidate userAuthValidate;
 
         public InstaMediaProcessor(
-            InstaAndroidDevice deviceInfo,
+            AndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             ILogger logger,
@@ -1200,7 +1200,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 upProgress.UploadState = InstaUploadState.Configuring;
                 progress?.Invoke(upProgress);
                 var instaUri = InstaUriCreator.GetMediaAlbumConfigureUri();
-                var clientSidecarId = InstaApiRequestMessage.GenerateUploadId();
+                var clientSidecarId = ApiRequestMessage.GenerateUploadId();
                 var childrenArray = new JArray();
 
                 foreach (var al in album)
@@ -1307,7 +1307,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 upProgress.UploadState = InstaUploadState.Configuring;
                 progress?.Invoke(upProgress);
                 var instaUri = InstaUriCreator.GetMediaAlbumConfigureUri();
-                var clientSidecarId = InstaApiRequestMessage.GenerateUploadId();
+                var clientSidecarId = ApiRequestMessage.GenerateUploadId();
                 var childrenArray = new JArray();
                 if (imagesUploadIds != null && imagesUploadIds.Any())
                 {
@@ -1686,7 +1686,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         {
             if (string.IsNullOrEmpty(uploadId))
             {
-                uploadId = InstaApiRequestMessage.GenerateUploadId();
+                uploadId = ApiRequestMessage.GenerateUploadId();
             }
 
             var photoHashCode = Path.GetFileName(image.Uri ?? $"C:\\{13.GenerateRandomString()}.jpg").GetHashCode();
@@ -1741,7 +1741,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                                                               InstaUploaderProgress upProgress,
                                                               bool album = true)
         {
-            var uploadId = InstaApiRequestMessage.GenerateRandomUploadId();
+            var uploadId = ApiRequestMessage.GenerateRandomUploadId();
             var videoHashCode = Path.GetFileName(video.Video.Uri ?? $"C:\\{13.GenerateRandomString()}.mp4")
                 .GetHashCode();
             var waterfallId = Guid.NewGuid().ToString();

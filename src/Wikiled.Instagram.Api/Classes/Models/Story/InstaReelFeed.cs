@@ -24,6 +24,6 @@ namespace Wikiled.Instagram.Api.Classes.Models.Story
 
         public long Seen { get; set; }
 
-        public InstaUserShortFriendshipFull User { get; set; }
+        public InstaUserShortDescriptionFriendshipFull User { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
     /// </summary>
     internal class InstaHelperProcessor
     {
-        private readonly InstaAndroidDevice deviceInfo;
+        private readonly AndroidDevice deviceInfo;
 
         private readonly InstaHttpHelper httpHelper;
 
@@ -44,7 +44,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         private readonly InstaUserAuthValidate userAuthValidate;
 
         public InstaHelperProcessor(
-            InstaAndroidDevice deviceInfo,
+            AndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             ILogger logger,
@@ -77,7 +77,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             };
             try
             {
-                var uploadId = InstaApiRequestMessage.GenerateRandomUploadId();
+                var uploadId = ApiRequestMessage.GenerateRandomUploadId();
                 var videoHashCode = Path.GetFileName(video.Video.Uri ?? $"C:\\{13.GenerateRandomString()}.mp4")
                     .GetHashCode();
                 var waterfallId = Guid.NewGuid().ToString();
@@ -288,7 +288,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     instaApi.SetRequestDelay(currentDelay);
                 }
 
-                var uploadId = InstaApiRequestMessage.GenerateRandomUploadId();
+                var uploadId = ApiRequestMessage.GenerateRandomUploadId();
                 var photoHashCode = Path.GetFileName(image.Uri ?? $"C:\\{13.GenerateRandomString()}.jpg").GetHashCode();
                 var photoEntityName = $"{uploadId}_0_{photoHashCode}";
                 var photoUri = InstaUriCreator.GetStoryUploadPhotoUri(uploadId, photoHashCode);
@@ -396,7 +396,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             };
             try
             {
-                var uploadId = InstaApiRequestMessage.GenerateRandomUploadId();
+                var uploadId = ApiRequestMessage.GenerateRandomUploadId();
                 var photoHashCode = Path.GetFileName(image.Uri ?? $"C:\\{13.GenerateRandomString()}.jpg").GetHashCode();
                 var photoEntityName = $"{uploadId}_0_{photoHashCode}";
                 var photoUri = InstaUriCreator.GetStoryUploadPhotoUri(uploadId, photoHashCode);
@@ -531,7 +531,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             };
             try
             {
-                var uploadId = InstaApiRequestMessage.GenerateRandomUploadId();
+                var uploadId = ApiRequestMessage.GenerateRandomUploadId();
                 var videoHashCode = Path.GetFileName(video.Video.Uri ?? $"C:\\{13.GenerateRandomString()}.mp4")
                     .GetHashCode();
                 var waterfallId = Guid.NewGuid().ToString();

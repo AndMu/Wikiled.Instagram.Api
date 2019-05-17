@@ -8,6 +8,6 @@ namespace Wikiled.Instagram.Api.Classes.Models.TV
 
         public string Type { get; set; }
 
-        public InstaUserShortFriendship User { get; set; }
+        public InstaUserShortDescriptionFriendship User { get; set; }
     }
 }

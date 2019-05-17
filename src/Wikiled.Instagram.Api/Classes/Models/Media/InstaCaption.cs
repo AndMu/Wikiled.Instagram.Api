@@ -15,7 +15,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Media
 
         public string Text { get; set; }
 
-        public InstaUserShort User { get; set; }
+        public UserShortDescription User { get; set; }
 
         public long UserId { get; set; }
     }

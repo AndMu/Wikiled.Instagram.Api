@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Net.Http;
-using Microsoft.Extensions.Logging;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.Android.DeviceInfo;
 using Wikiled.Instagram.Api.Classes.SessionHandlers;
@@ -16,7 +16,7 @@ namespace Wikiled.Instagram.Api.Logic.Builder
 
         private IRequestDelay delay = RequestDelay.Empty();
 
-        private InstaAndroidDevice device;
+        private AndroidDevice device;
 
         private HttpClient httpClient;
 
@@ -24,7 +24,7 @@ namespace Wikiled.Instagram.Api.Logic.Builder
 
         private IHttpRequestProcessor httpRequestProcessor;
 
-        private InstaApiRequestMessage requestMessage;
+        private ApiRequestMessage requestMessage;
 
         private ISessionHandler sessionHandler;
 
@@ -62,16 +62,16 @@ namespace Wikiled.Instagram.Api.Logic.Builder
             {
                 if (device == null)
                 {
-                    device = InstaAndroidDeviceGenerator.GetRandomAndroidDevice();
+                    device = AndroidDeviceGenerator.GetRandomAndroidDevice();
                 }
 
-                requestMessage = new InstaApiRequestMessage
+                requestMessage = new ApiRequestMessage
                 {
                     PhoneId = device.PhoneGuid.ToString(),
                     Guid = device.DeviceGuid,
                     Password = user?.Password,
                     Username = user?.UserName,
-                    DeviceId = InstaApiRequestMessage.GenerateDeviceId(),
+                    DeviceId = ApiRequestMessage.GenerateDeviceId(),
                     AdId = device.AdId.ToString()
                 };
             }
@@ -88,7 +88,7 @@ namespace Wikiled.Instagram.Api.Logic.Builder
 
             try
             {
-                InstaApiConstants.TimezoneOffset = int.Parse(DateTimeOffset.Now.Offset.TotalSeconds.ToString());
+                InstaApiConstants.TimezoneOffset = (int)DateTimeOffset.Now.Offset.TotalSeconds;
             }
             catch
             {
@@ -96,7 +96,7 @@ namespace Wikiled.Instagram.Api.Logic.Builder
 
             if (httpRequestProcessor == null)
             {
-                httpRequestProcessor = new InstaHttpRequestProcessor(delay, httpClient, httpHandler, requestMessage, loggerFactory?.CreateLogger<InstaHttpRequestProcessor>());
+                httpRequestProcessor = new HttpRequestProcessor(delay, httpClient, httpHandler, requestMessage, loggerFactory?.CreateLogger<HttpRequestProcessor>());
             }
 
             if (apiVersionType == null)
@@ -104,7 +104,7 @@ namespace Wikiled.Instagram.Api.Logic.Builder
                 apiVersionType = InstaApiVersionType.Version86;
             }
 
-            var instaApi = new InstaApi(user, loggerFactory?.CreateLogger<InstaApi>(), device, httpRequestProcessor, apiVersionType.Value);
+            var instaApi = new InstaApi(loggerFactory?.CreateLogger<InstaApi>(), httpRequestProcessor, user, apiVersionType.Value, device);
             if (sessionHandler != null)
             {
                 sessionHandler.Api = instaApi;
@@ -124,36 +124,9 @@ namespace Wikiled.Instagram.Api.Logic.Builder
         /// <remarks>
         ///     Please, do not use if you don't know what you are doing
         /// </remarks>
-        public IInstaApiBuilder SetApiRequestMessage(InstaApiRequestMessage requestMessage)
+        public IInstaApiBuilder SetApiRequestMessage(ApiRequestMessage requestMessage)
         {
             this.requestMessage = requestMessage;
-            return this;
-        }
-
-        /// <summary>
-        ///     Set instagram api version (for user agent version)
-        /// </summary>
-        /// <param name="apiVersion">Api version</param>
-        /// <returns>
-        ///     API Builder
-        /// </returns>
-        public IInstaApiBuilder SetApiVersion(InstaApiVersionType apiVersion)
-        {
-            apiVersionType = apiVersion;
-            return this;
-        }
-
-        /// <summary>
-        ///     Set custom android device.
-        ///     <para>Note: this is optional, if you didn't set this, InstagramApiSharp will choose random device.</para>
-        /// </summary>
-        /// <param name="androidDevice">Android device</param>
-        /// <returns>
-        ///     API Builder
-        /// </returns>
-        public IInstaApiBuilder SetDevice(InstaAndroidDevice androidDevice)
-        {
-            device = androidDevice;
             return this;
         }
 

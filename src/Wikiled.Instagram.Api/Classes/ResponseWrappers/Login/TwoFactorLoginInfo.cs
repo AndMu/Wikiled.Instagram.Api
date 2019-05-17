@@ -3,9 +3,9 @@ using Wikiled.Instagram.Api.Classes.ResponseWrappers.Other;
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Login
 {
-    public class InstaTwoFactorLoginInfo
+    public class TwoFactorLoginInfo
     {
-        public static InstaTwoFactorLoginInfo Empty => new InstaTwoFactorLoginInfo();
+        public static TwoFactorLoginInfo Empty => new TwoFactorLoginInfo();
 
         [JsonProperty("obfuscated_phone_number")]
         public string ObfuscatedPhoneNumber { get; set; }

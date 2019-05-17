@@ -12,7 +12,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.User
         public InstaHashtagResponse Hashtag { get; set; }
 
         [JsonProperty("place")]
-        public InstaPlaceResponse Place { get; set; }
+        public PlaceResponse Place { get; set; }
 
         [JsonProperty("position")]
         public int Position { get; set; }

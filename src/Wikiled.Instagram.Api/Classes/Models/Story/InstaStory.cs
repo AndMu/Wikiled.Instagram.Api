@@ -34,7 +34,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Story
 
         public bool Muted { get; set; }
 
-        public InstaUserShort Owner { get; set; }
+        public UserShortDescription Owner { get; set; }
 
         public bool PhotoOfYou { get; set; }
 
@@ -58,7 +58,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Story
 
         public long TakenAtUnix { get; set; }
 
-        public InstaUserShortFriendshipFull User { get; set; }
+        public InstaUserShortDescriptionFriendshipFull User { get; set; }
 
         public double VideoDuration { get; set; }
     }

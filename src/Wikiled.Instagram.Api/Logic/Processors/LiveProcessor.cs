@@ -31,7 +31,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
     /// </summary>
     internal class InstaLiveProcessor : ILiveProcessor
     {
-        private readonly InstaAndroidDevice deviceInfo;
+        private readonly AndroidDevice deviceInfo;
 
         private readonly InstaHttpHelper httpHelper;
 
@@ -46,7 +46,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         private readonly InstaUserAuthValidate userAuthValidate;
 
         public InstaLiveProcessor(
-            InstaAndroidDevice deviceInfo,
+            AndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             ILogger logger,
@@ -523,7 +523,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             try
             {
                 var instaUri = InstaUriCreator.GetLiveHeartbeatAndViewerCountUri(broadcastId);
-                var uploadId = InstaApiRequestMessage.GenerateUploadId();
+                var uploadId = ApiRequestMessage.GenerateUploadId();
                 var requestContent = new MultipartFormDataContent(uploadId)
                 {
                     { new StringContent(user.CsrfToken), "\"_csrftoken\"" },

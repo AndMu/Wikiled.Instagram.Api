@@ -5,11 +5,11 @@ using Wikiled.Instagram.Api.Logic.Versions;
 
 namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
 {
-    public class InstaApiRequestMessage
+    public class ApiRequestMessage
     {
         private static readonly Random Rnd = new Random();
 
-        public static InstaApiRequestMessage CurrentDevice { get; private set; }
+        public static ApiRequestMessage CurrentDevice { get; private set; }
 
         [JsonProperty("adid")]
         public string AdId { get; set; }
@@ -38,9 +38,9 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
         [JsonProperty("_uuid")]
         public string Uuid => Guid.ToString();
 
-        public static InstaApiRequestMessage FromDevice(InstaAndroidDevice device)
+        public static ApiRequestMessage FromDevice(AndroidDevice device)
         {
-            var requestMessage = new InstaApiRequestMessage
+            var requestMessage = new ApiRequestMessage
             {
                 PhoneId = device.PhoneGuid.ToString(), Guid = device.DeviceGuid, DeviceId = device.DeviceId
             };

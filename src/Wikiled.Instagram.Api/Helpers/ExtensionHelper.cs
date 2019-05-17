@@ -255,7 +255,7 @@ namespace Wikiled.Instagram.Api.Helpers
 
         public static string GenerateFacebookUserAgent()
         {
-            var deviceInfo = InstaAndroidDeviceGenerator.GetRandomAndroidDevice();
+            var deviceInfo = AndroidDeviceGenerator.GetRandomAndroidDevice();
 
             //Mozilla/5.0 (Linux; Android 7.0; PRA-LA1 Build/HONORPRA-LA1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/69.0.3497.100 Mobile Safari/537.36
 
@@ -274,7 +274,7 @@ namespace Wikiled.Instagram.Api.Helpers
             return new string(chars.ToArray());
         }
 
-        public static string GenerateUserAgent(this InstaAndroidDevice deviceInfo, InstaApiVersion apiVersion)
+        public static string GenerateUserAgent(this AndroidDevice deviceInfo, InstaApiVersion apiVersion)
         {
             if (deviceInfo == null)
             {

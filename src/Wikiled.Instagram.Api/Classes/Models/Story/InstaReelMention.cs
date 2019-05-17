@@ -15,7 +15,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Story
 
         public double Rotation { get; set; }
 
-        public InstaUserShort User { get; set; }
+        public UserShortDescription User { get; set; }
 
         public double Width { get; set; }
 

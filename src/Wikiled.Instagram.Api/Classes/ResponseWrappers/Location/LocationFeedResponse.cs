@@ -6,13 +6,13 @@ using Wikiled.Instagram.Api.Classes.ResponseWrappers.Story;
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Location
 {
-    public class InstaLocationFeedResponse : InstaBaseLoadableResponse
+    public class LocationFeedResponse : InstaBaseLoadableResponse
     {
         [JsonProperty("items")]
         public List<InstaMediaItemResponse> Items { get; set; } = new List<InstaMediaItemResponse>();
 
         [JsonProperty("location")]
-        public InstaLocationResponse Location { get; set; }
+        public LocationResponse Location { get; set; }
 
         [JsonProperty("media_count")]
         public long MediaCount { get; set; }

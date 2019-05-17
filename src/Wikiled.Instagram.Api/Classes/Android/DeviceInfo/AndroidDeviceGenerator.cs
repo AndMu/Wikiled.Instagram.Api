@@ -4,13 +4,13 @@ using System.Linq;
 
 namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
 {
-    public class InstaAndroidDeviceGenerator
+    public class AndroidDeviceGenerator
     {
-        public static Dictionary<string, InstaAndroidDevice> AndroidAndroidDeviceSets = new Dictionary<string, InstaAndroidDevice>
+        public static Dictionary<string, AndroidDevice> AndroidAndroidDeviceSets = new Dictionary<string, AndroidDevice>
         {
             {
                 "lg-optimus-g",
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "geehrc",
                     AndroidBootloader = "MAKOZ10f",
@@ -32,7 +32,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 "nexus7gen2",
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "flo",
                     AndroidBootloader = "FLO-04.07",
@@ -54,7 +54,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 "nexus7gen1",
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "grouper",
                     AndroidBootloader = "4.23",
@@ -76,7 +76,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 "htc10",
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "msm8996",
                     AndroidBootloader = "1.0.0.0000",
@@ -98,7 +98,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 "galaxy6",
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "universal7420",
                     AndroidBootloader = "G920FXXU3DPEK",
@@ -120,7 +120,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 "galaxy-s5-gold",
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "MSM8974",
                     AndroidBootloader = "G900FXXU1CPEH",
@@ -142,7 +142,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 "lg-optimus-f6",
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "f6t",
                     AndroidBootloader = "1.0.0.0000",
@@ -164,7 +164,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 "nexus-5x",
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "bullhead",
                     AndroidBootloader = "BHZ10k",
@@ -185,7 +185,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
                 }
             },
             {
-                "galaxy-s7-edge", new InstaAndroidDevice
+                "galaxy-s7-edge", new AndroidDevice
                 {
                     AndroidBoardName = "msm8996",
                     AndroidBootloader = "G935TUVU3APG1",
@@ -208,7 +208,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 "xperia-z5",
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "msm8994",
                     AndroidBootloader = "s1",
@@ -230,7 +230,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 "galaxy-s4",
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "MSM8960",
                     AndroidBootloader = "I337MVLUGOH1",
@@ -252,7 +252,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 "nexus-6p",
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "angler",
                     AndroidBootloader = "angler-03.52",
@@ -274,7 +274,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 "sony-z3-compact",
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "MSM8974",
                     AndroidBootloader = "s1",
@@ -296,7 +296,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 "galaxy-tab3",
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "smdk4x12",
                     AndroidBootloader = "T310UEUCOI1",
@@ -319,7 +319,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 "nexus5",
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "hammerhead",
                     AndroidBootloader = "HHZ20b",
@@ -341,7 +341,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 "galaxy-note-edge",
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "APQ8084",
                     AndroidBootloader = "N915W8VLU1CPE2",
@@ -363,7 +363,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 "nexus4-chroma",
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "MAKO",
                     AndroidBootloader = "MAKOZ30f",
@@ -385,7 +385,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 InstaAndroidDevices.SamsungNote3,
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "MSM8974",
                     AndroidBootloader = "N900PVPUEOK2",
@@ -407,7 +407,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 InstaAndroidDevices.GalaxyTab,
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "universal5420",
                     AndroidBootloader = "T705XXU1BOL2",
@@ -429,7 +429,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 InstaAndroidDevices.Honor8Lite,
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "HONOR",
                     DeviceBrand = "HUAWEI",
@@ -451,7 +451,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 InstaAndroidDevices.XiaomiMi4W,
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "MI",
                     DeviceBrand = "Xiaomi",
@@ -473,7 +473,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 InstaAndroidDevices.XiaomiHm1Sw,
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "HM",
                     DeviceBrand = "Xiaomi",
@@ -495,7 +495,7 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             },
             {
                 InstaAndroidDevices.HtcOnePlus,
-                new InstaAndroidDevice
+                new AndroidDevice
                 {
                     AndroidBoardName = "One",
                     DeviceBrand = "Htc",
@@ -542,23 +542,23 @@ namespace Wikiled.Instagram.Api.Classes.Android.DeviceInfo
             InstaAndroidDevices.HtcOnePlus
         };
 
-        private static InstaAndroidDevice lastDevice;
+        private static AndroidDevice lastDevice;
 
         private static readonly Random Rnd = new Random();
 
-        public static InstaAndroidDevice GetByName(string name)
+        public static AndroidDevice GetByName(string name)
         {
             return AndroidAndroidDeviceSets[name];
         }
 
-        public static InstaAndroidDevice GetRandomAndroidDevice()
+        public static AndroidDevice GetRandomAndroidDevice()
         {
             TryLabel:
             var randomDeviceIndex = Rnd.Next(0, DevicesNames.Count);
             var device = AndroidAndroidDeviceSets.ElementAt(randomDeviceIndex).Value;
             device.PhoneGuid = Guid.NewGuid();
             device.DeviceGuid = Guid.NewGuid();
-            device.DeviceId = InstaApiRequestMessage.GenerateDeviceIdFromGuid(device.DeviceGuid);
+            device.DeviceId = ApiRequestMessage.GenerateDeviceIdFromGuid(device.DeviceGuid);
             if (lastDevice != null)
             {
                 if (device.DeviceId == lastDevice.DeviceId)

@@ -28,7 +28,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
     /// </summary>
     internal class InstaMessagingProcessor : IMessagingProcessor
     {
-        private readonly InstaAndroidDevice deviceInfo;
+        private readonly AndroidDevice deviceInfo;
 
         private readonly InstaHttpHelper httpHelper;
 
@@ -43,7 +43,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         private readonly InstaUserAuthValidate userAuthValidate;
 
         public InstaMessagingProcessor(
-            InstaAndroidDevice deviceInfo,
+            AndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             ILogger logger,
@@ -1507,54 +1507,6 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         }
 
         /// <summary>
-        ///     Share an user
-        /// </summary>
-        /// <param name="userIdToSend">User id(PK)</param>
-        /// <param name="threadId">Thread id</param>
-        public async Task<IResult<InstaSharing>> ShareUserAsync(string userIdToSend, string threadId)
-        {
-            InstaUserAuthValidator.Validate(userAuthValidate);
-            try
-            {
-                var instaUri = InstaUriCreator.GetShareUserUri();
-                var uploadId = InstaApiRequestMessage.GenerateUploadId();
-                var requestContent = new MultipartFormDataContent(uploadId)
-                {
-                    { new StringContent(userIdToSend), "\"profile_user_id\"" },
-                    { new StringContent("1"), "\"unified_broadcast_format\"" },
-                    { new StringContent("send_item"), "\"action\"" },
-                    { new StringContent($"[{threadId}]"), "\"thread_ids\"" },
-                    { new StringContent(deviceInfo.DeviceGuid.ToString()), "\"_uuid\"" },
-                    { new StringContent(user.LoggedInUser.Pk.ToString()), "\"_uid\"" },
-                    { new StringContent(user.CsrfToken), "\"_csrftoken\"" }
-                };
-                var request = httpHelper.GetDefaultRequest(HttpMethod.Post, instaUri, deviceInfo);
-                request.Content = requestContent;
-                request.Headers.Add("Host", "i.instagram.com");
-                var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
-                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                if (response.StatusCode != HttpStatusCode.OK)
-                {
-                    return InstaResult.UnExpectedResponse<InstaSharing>(response, json);
-                }
-
-                var obj = JsonConvert.DeserializeObject<InstaSharing>(json);
-
-                return InstaResult.Success(obj);
-            }
-            catch (HttpRequestException httpException)
-            {
-                logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaSharing), InstaResponseType.NetworkProblem);
-            }
-            catch (Exception exception)
-            {
-                logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaSharing>(exception);
-            }
-        }
-
-        /// <summary>
         ///     UnLike direct message in a thread
         /// </summary>
         /// <param name="threadId">Thread id</param>
@@ -1851,7 +1803,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             try
             {
                 var instaUri = InstaUriCreator.GetDirectSendPhotoUri();
-                var uploadId = InstaApiRequestMessage.GenerateRandomUploadId();
+                var uploadId = ApiRequestMessage.GenerateRandomUploadId();
                 var clientContext = Guid.NewGuid();
                 upProgress.UploadId = uploadId;
                 progress?.Invoke(upProgress);
@@ -1887,7 +1839,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 requestContent.Add(
                     imageContent,
                     "photo",
-                    $"direct_temp_photo_{InstaApiRequestMessage.GenerateUploadId()}.jpg");
+                    $"direct_temp_photo_{ApiRequestMessage.GenerateUploadId()}.jpg");
 
                 //var progressContent = new ProgressableStreamContent(requestContent, 4096, progress)
                 //{

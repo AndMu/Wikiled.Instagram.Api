@@ -2,7 +2,7 @@
 
 namespace Wikiled.Instagram.Api.Classes.Models.User
 {
-    public class InstaUserShortFriendshipList : List<InstaUserShortFriendship>
+    public class InstaUserShortFriendshipList : List<InstaUserShortDescriptionFriendship>
     {
     }
 }

@@ -3,7 +3,7 @@ using Wikiled.Instagram.Api.Classes.Models.Challenge;
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Login
 {
-    internal class InstaLoginTwoFactorBaseResponse
+    internal class LoginTwoFactorBaseResponse
     {
         [JsonProperty("challenge")]
         public InstaChallengeLoginInfo Challenge { get; set; }

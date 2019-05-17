@@ -1,6 +1,6 @@
 ﻿namespace Wikiled.Instagram.Api.Classes.Models.User
 {
-    public class InstaUserChaining : InstaUserShort
+    public class InstaUserChaining : UserShortDescription
     {
         public string ChainingInfo { get; set; }
 

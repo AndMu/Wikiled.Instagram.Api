@@ -6,6 +6,7 @@ using Examples.Samples;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.SessionHandlers;
 using Wikiled.Instagram.Api.Logger;
 using Wikiled.Instagram.Api.Logic;
 using Wikiled.Instagram.Api.Logic.Builder;
@@ -50,26 +51,16 @@ namespace Examples
                 api = InstaApiBuilder.CreateBuilder()
                     .SetUser(userSession)
                     .UseLogger(loggerFactory) // use logger for requests and debug messages
+                    .SetSessionHandler(new FileSessionHandler() {FilePath = "state.bin" })
                     .SetRequestDelay(delay)
                     .Build();
                 // create account
                 // to create new account please check this:
                 // https://github.com/ramtinak/InstagramApiSharp/wiki/Create-new-account
-                const string stateFile = "state.bin";
+                
                 try
                 {
-                    if (File.Exists(stateFile))
-                    {
-                        Console.WriteLine("Loading state from file");
-                        using (var fs = File.OpenRead(stateFile))
-                        {
-                            api.LoadStateDataFromStream(fs);
-                            // in .net core or uwp apps don't use LoadStateDataFromStream
-                            // use this one:
-                            // _instaApi.LoadStateDataFromString(new StreamReader(fs).ReadToEnd());
-                            // you should pass json string as parameter to this function.
-                        }
-                    }
+                    api.SessionHandler.Load();
                 }
                 catch (Exception e)
                 {
@@ -90,16 +81,7 @@ namespace Examples
                     }
                 }
 
-                var state = api.GetStateDataAsStream();
-                // in .net core or uwp apps don't use GetStateDataAsStream.
-                // use this one:
-                // var state = _instaApi.GetStateDataAsString();
-                // this returns you session as json string.
-                using (var fileStream = File.Create(stateFile))
-                {
-                    state.Seek(0, SeekOrigin.Begin);
-                    state.CopyTo(fileStream);
-                }
+                api.SessionHandler.Save();
 
                 Console.WriteLine("Press 1 to start basic demo samples");
                 Console.WriteLine("Press 2 to start upload photo demo sample");

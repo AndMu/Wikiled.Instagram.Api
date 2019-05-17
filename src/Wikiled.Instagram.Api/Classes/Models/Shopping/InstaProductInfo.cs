@@ -11,6 +11,6 @@ namespace Wikiled.Instagram.Api.Classes.Models.Shopping
 
         public InstaProduct Product { get; set; }
 
-        public InstaUserShort User { get; set; }
+        public UserShortDescription User { get; set; }
     }
 }

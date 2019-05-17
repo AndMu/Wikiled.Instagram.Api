@@ -28,6 +28,6 @@ namespace Wikiled.Instagram.Api.Classes.Models.Highlight
 
         public string Title { get; set; }
 
-        public InstaUserShort User { get; set; }
+        public UserShortDescription User { get; set; }
     }
 }

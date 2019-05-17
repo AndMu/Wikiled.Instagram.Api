@@ -2,7 +2,7 @@
 
 namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Location
 {
-    public class InstaPlaceShortResponse
+    public class PlaceShortResponse
     {
         [JsonProperty("address")]
         public string Address { get; set; }

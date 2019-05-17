@@ -5,11 +5,11 @@ using Wikiled.Instagram.Api.Enums;
 
 namespace Wikiled.Instagram.Api.Converters.Users
 {
-    internal class InstaCurrentUserConverter : IObjectConverter<InstaCurrentUser, InstaCurrentUserResponse>
+    internal class InstaCurrentUserConverter : IObjectConverter<CurrentUser, InstaCurrentUserResponse>
     {
         public InstaCurrentUserResponse SourceObject { get; set; }
 
-        public InstaCurrentUser Convert()
+        public CurrentUser Convert()
         {
             if (SourceObject == null)
             {
@@ -17,7 +17,7 @@ namespace Wikiled.Instagram.Api.Converters.Users
             }
 
             var shortConverter = InstaConvertersFabric.Instance.GetUserShortConverter(SourceObject);
-            var user = new InstaCurrentUser(shortConverter.Convert())
+            var user = new CurrentUser(shortConverter.Convert())
             {
                 HasAnonymousProfilePicture = SourceObject.HasAnonymousProfilePicture,
                 Biography = SourceObject.Biography,
@@ -27,7 +27,7 @@ namespace Wikiled.Instagram.Api.Converters.Users
                 Email = SourceObject.Email,
                 ExternalUrl = SourceObject.ExternalUrl,
                 ShowConversionEditEntry = SourceObject.ShowConversationEditEntry,
-                Gender = (InstaGenderType)SourceObject.Gender,
+                Gender = (GenderType)SourceObject.Gender,
                 PhoneNumber = SourceObject.PhoneNumber
             };
 
