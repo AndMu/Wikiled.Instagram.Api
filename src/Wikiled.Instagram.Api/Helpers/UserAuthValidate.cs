@@ -2,7 +2,7 @@
 
 namespace Wikiled.Instagram.Api.Helpers
 {
-    public class InstaUserAuthValidate
+    public class UserAuthValidate
     {
         public bool IsUserAuthenticated { get; internal set; }
 

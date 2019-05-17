@@ -31,15 +31,15 @@ namespace Examples.Samples
         public async Task DoShow()
         {
             // get currently logged in user
-            var currentUser = await api.GetCurrentUserAsync();
+            var currentUser = await api.GetCurrentUserAsync().ConfigureAwait(false);
             Console.WriteLine(
                 $"Logged in: username - {currentUser.Value.UserName}, full name - {currentUser.Value.FullName}");
 
             // get followers of user 'elonmusk'
             var followers = await api.UserProcessor.GetUserFollowersAsync("elonmusk",
-                                                                               PaginationParameters.MaxPagesToLoad(5)
-                                                                                   .StartFromMaxId(
-                                                                                       "AQAC8w90POWyM7zMjHWmO9vsZNL_TuLp6FR506_C_y3fUAjlCclrIDI2RdSGvur5UjLrq4Cq7NJN8QUhHG-vpbT6pCLB5X9crDxBOHUEuNJ4fA"));
+                                                                          PaginationParameters.MaxPagesToLoad(5)
+                                                                              .StartFromMaxId(
+                                                                                  "AQAC8w90POWyM7zMjHWmO9vsZNL_TuLp6FR506_C_y3fUAjlCclrIDI2RdSGvur5UjLrq4Cq7NJN8QUhHG-vpbT6pCLB5X9crDxBOHUEuNJ4fA")).ConfigureAwait(false);
             Console.WriteLine($"Count of followers [elonmusk]:{followers.Value.Count}");
             Console.WriteLine($"Next id will be: '{followers.Value.NextMaxId}'");
 
@@ -68,7 +68,7 @@ namespace Examples.Samples
                 //like first 10 medias from user timeline feed
                 foreach (var media in userFeed.Value.Medias.Take(10))
                 {
-                    var likeResult = await api.MediaProcessor.LikeMediaAsync(media.Identifier);
+                    var likeResult = await api.MediaProcessor.LikeMediaAsync(media.Identifier).ConfigureAwait(false);
                     var resultString = likeResult.Value ? "liked" : "not liked";
                     Console.WriteLine($"Media {media.Code} {resultString}");
                 }
@@ -76,7 +76,7 @@ namespace Examples.Samples
 
             // get tag feed, latest 5 pages
             var tagFeed =
-                await api.FeedProcessor.GetTagFeedAsync("quadcopter", PaginationParameters.MaxPagesToLoad(5));
+                await api.FeedProcessor.GetTagFeedAsync("quadcopter", PaginationParameters.MaxPagesToLoad(5)).ConfigureAwait(false);
             if (tagFeed.Succeeded)
             {
                 Console.WriteLine(

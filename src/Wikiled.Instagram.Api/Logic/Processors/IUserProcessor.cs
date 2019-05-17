@@ -266,8 +266,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="InstaMediaList" />
         /// </returns>
-        Task<IResult<InstaMediaList>> GetUserShoppableMediaAsync(string username,
-                                                                 PaginationParameters paginationParameters);
+        Task<IResult<InstaMediaList>> GetUserShoppableMediaAsync(string username, PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Get user tags by username asynchronously

@@ -24,7 +24,7 @@ namespace Examples.Samples
         public async Task DoShow()
         {
             // get currently logged in user
-            var currentUser = await api.GetCurrentUserAsync();
+            var currentUser = await api.GetCurrentUserAsync().ConfigureAwait(false);
             Console.WriteLine(
                 $"Logged in: username - {currentUser.Value.UserName}, full name - {currentUser.Value.FullName}");
 
@@ -38,7 +38,7 @@ SearchPeopleAsync");
 
         public async void RecentSearches()
         {
-            var result = await api.DiscoverProcessor.GetRecentSearchesAsync();
+            var result = await api.DiscoverProcessor.GetRecentSearchesAsync().ConfigureAwait(false);
             if (result.Succeeded)
             {
                 Console.WriteLine("Recent search count: " + result.Value.Recent?.Count);
@@ -55,7 +55,7 @@ SearchPeopleAsync");
 
         public async void ClearRecentSearches()
         {
-            var result = await api.DiscoverProcessor.ClearRecentSearchsAsync();
+            var result = await api.DiscoverProcessor.ClearRecentSearchsAsync().ConfigureAwait(false);
             if (result.Succeeded)
             {
                 Console.WriteLine("Recent search cleared.");
@@ -68,7 +68,7 @@ SearchPeopleAsync");
 
         public async void SuggestedSearches()
         {
-            var result = await api.DiscoverProcessor.GetSuggestedSearchesAsync(InstaDiscoverSearchType.Blended);
+            var result = await api.DiscoverProcessor.GetSuggestedSearchesAsync(InstaDiscoverSearchType.Blended).ConfigureAwait(false);
             if (result.Succeeded)
             {
                 Console.WriteLine("Suggested search count: " + result.Value.Suggested?.Count);
@@ -88,7 +88,7 @@ SearchPeopleAsync");
         {
             var search = "iran";
             var count = 30;
-            var result = await api.DiscoverProcessor.SearchPeopleAsync(search, count);
+            var result = await api.DiscoverProcessor.SearchPeopleAsync(search, count).ConfigureAwait(false);
             if (result.Succeeded)
             {
                 Console.WriteLine("User search count: " + result.Value.Users?.Count);

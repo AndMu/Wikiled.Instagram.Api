@@ -2,7 +2,10 @@
 using Autofac;
 using Microsoft.Extensions.Logging;
 using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.SessionHandlers;
+using Wikiled.Instagram.Api.Logic;
 using Wikiled.Instagram.Api.Logic.Builder;
+using Wikiled.Instagram.Api.Serialization;
 
 namespace Wikiled.Instagram.Api.Modules
 {
@@ -22,6 +25,10 @@ namespace Wikiled.Instagram.Api.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterType<PlainSerializer>().Named<ISerializer>("Plain");
+            builder.Register(ctx => new EncryptedSerializer(ctx.ResolveNamed<ISerializer>("Plain"), ctx.Resolve<IInstaApi>()))
+                .As<ISerializer>();
+            builder.RegisterType<FileSessionHandler>().As<ISessionHandler>();
             builder.RegisterInstance(new UserSessionData { UserName = user, Password = password });
             builder.Register(
                 ctx =>
@@ -29,7 +36,8 @@ namespace Wikiled.Instagram.Api.Modules
                                    .SetUser(ctx.Resolve<UserSessionData>())
                                    .UseLogger(ctx.Resolve<ILoggerFactory>())
                                    .SetRequestDelay(Delay)
-                                   .Build());
+                                   .Build())
+                .InstancePerLifetimeScope();
             base.Load(builder);
         }
     }

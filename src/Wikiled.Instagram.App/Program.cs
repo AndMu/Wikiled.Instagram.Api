@@ -23,7 +23,8 @@ namespace Wikiled.Instagram.App
             NLog.LogManager.LoadConfiguration("nlog.config");
             starter = new AutoStarter(ApplicationLogging.LoggerFactory, "Instagram Bot", args);
             starter.LoggerFactory.AddNLog();
-            starter.RegisterCommand<DiscoveryCommand, BasicConfig>("Discovery");
+            starter.RegisterCommand<DiscoveryCommand, BasicConfig>("discovery");
+            starter.RegisterCommand<EnrichCommand, EnrichConfig>("enrich");
             source = new CancellationTokenSource();
             task = starter.StartAsync(source.Token);
             System.Console.WriteLine("Please press CTRL+C to break...");

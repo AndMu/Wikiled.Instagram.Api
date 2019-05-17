@@ -14,11 +14,14 @@ namespace Wikiled.Instagram.Api.Helpers
         // This constant is used to determine the keysize of the encryption algorithm
         private const int keysize = 256;
 
+        private const string salt = "this is my random salt. Very complicated";
+
         public static string EncryptString(string plainText, string passPhrase)
         {
             var initVectorBytes = Encoding.UTF8.GetBytes(initVector);
             var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-            var password = new Rfc2898DeriveBytes(passPhrase, null);
+            byte[] saltArray = Encoding.ASCII.GetBytes(salt);
+            var password = new Rfc2898DeriveBytes(passPhrase, saltArray);
             var keyBytes = password.GetBytes(keysize / 8);
             var symmetricKey = new RijndaelManaged();
             symmetricKey.Mode = CipherMode.CBC;
@@ -43,7 +46,8 @@ namespace Wikiled.Instagram.Api.Helpers
         {
             var initVectorBytes = Encoding.UTF8.GetBytes(initVector);
             var cipherTextBytes = Convert.FromBase64String(cipherText);
-            var password = new Rfc2898DeriveBytes(passPhrase, null);
+            byte[] saltArray = Encoding.ASCII.GetBytes(salt);
+            var password = new Rfc2898DeriveBytes(passPhrase, saltArray);
             var keyBytes = password.GetBytes(keysize / 8);
             var symmetricKey = new RijndaelManaged();
             symmetricKey.Mode = CipherMode.CBC;

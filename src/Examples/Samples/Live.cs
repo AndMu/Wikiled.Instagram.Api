@@ -24,7 +24,7 @@ namespace Examples.Samples
         public async Task DoShow()
         {
             // get currently logged in user
-            var currentUser = await api.GetCurrentUserAsync();
+            var currentUser = await api.GetCurrentUserAsync().ConfigureAwait(false);
             Console.WriteLine(
                 $"Logged in: username - {currentUser.Value.UserName}, full name - {currentUser.Value.FullName}");
 
@@ -55,7 +55,7 @@ EndAsync");
 
         public async void SuggestedBroadcasts()
         {
-            var result = await api.LiveProcessor.GetSuggestedBroadcastsAsync();
+            var result = await api.LiveProcessor.GetSuggestedBroadcastsAsync().ConfigureAwait(false);
             if (result.Succeeded)
             {
                 Console.WriteLine("Suggested broadcast count: " + result.Value?.Count);
@@ -73,7 +73,7 @@ EndAsync");
 
         public async void DiscoverTopLive()
         {
-            var result = await api.LiveProcessor.GetDiscoverTopLiveAsync(PaginationParameters.MaxPagesToLoad(1));
+            var result = await api.LiveProcessor.GetDiscoverTopLiveAsync(PaginationParameters.MaxPagesToLoad(1)).ConfigureAwait(false);
             if (result.Succeeded)
             {
                 Console.WriteLine("Discover top lives count: " + result.Value.Broadcasts?.Count);
@@ -91,7 +91,7 @@ EndAsync");
 
         public async void TopLiveStatus()
         {
-            var result = await api.LiveProcessor.GetTopLiveStatusAsync("broadcastsID1", "broadcastID2");
+            var result = await api.LiveProcessor.GetTopLiveStatusAsync("broadcastsID1", "broadcastID2").ConfigureAwait(false);
             if (result.Succeeded)
             {
                 Console.WriteLine("Discover top lives count: " + result.Value?.Count);
@@ -109,7 +109,7 @@ EndAsync");
 
         public async void BroadcastInfo()
         {
-            var result = await api.LiveProcessor.GetInfoAsync("broadcastID");
+            var result = await api.LiveProcessor.GetInfoAsync("broadcastID").ConfigureAwait(false);
             if (result.Succeeded)
             {
                 Console.WriteLine($"Broadcast info for {result.Value.Id}");
@@ -128,7 +128,7 @@ EndAsync");
         public async void CommentBroadcast()
         {
             var commentText = "Ramtin your good! keep it up!";
-            var result = await api.LiveProcessor.CommentAsync("broadcastID", commentText);
+            var result = await api.LiveProcessor.CommentAsync("broadcastID", commentText).ConfigureAwait(false);
             if (result.Succeeded)
             {
                 Console.WriteLine("Send new comment to broadcast");
@@ -145,7 +145,7 @@ EndAsync");
         public async void LikeBroadcast()
         {
             var likeCount = 6; // from 1 to 6
-            var result = await api.LiveProcessor.LikeAsync("broadcastID", likeCount);
+            var result = await api.LiveProcessor.LikeAsync("broadcastID", likeCount).ConfigureAwait(false);
             if (result.Succeeded)
             {
                 Console.WriteLine("Like broadcast");
@@ -162,12 +162,12 @@ EndAsync");
             Console.WriteLine("Be aware some of this methods only works on your own broadcasts!!!!");
             // live broadcast
             // first you need to call CreateAsync
-            var result = await api.LiveProcessor.CreateAsync(720, 1184, "My new live broadcast");
+            var result = await api.LiveProcessor.CreateAsync(720, 1184, "My new live broadcast").ConfigureAwait(false);
             if (result.Succeeded)
             {
                 var broadcastId = result.Value.BroadcastId.ToString();
                 // second you need to call StartAsync to instagram know you start filming!
-                await api.LiveProcessor.StartAsync(broadcastId, true);
+                await api.LiveProcessor.StartAsync(broadcastId, true).ConfigureAwait(false);
                 Console.WriteLine("Broadcast " + result.Value.BroadcastId + " started");
                 // use uploadurl to stream your video to instagram
                 // note: I really don't know how RTMP server works, so there is no
@@ -178,48 +178,48 @@ EndAsync");
 
 
                 // get heart beat and viewer count (works if you are broadcast owner)
-                await api.LiveProcessor.GetHeartBeatAndViewerCountAsync(broadcastId);
+                await api.LiveProcessor.GetHeartBeatAndViewerCountAsync(broadcastId).ConfigureAwait(false);
 
 
                 // get viewer list
-                await api.LiveProcessor.GetViewerListAsync(broadcastId);
+                await api.LiveProcessor.GetViewerListAsync(broadcastId).ConfigureAwait(false);
 
 
                 // get post live viewer list
-                await api.LiveProcessor.GetPostLiveViewerListAsync(broadcastId, 10);
+                await api.LiveProcessor.GetPostLiveViewerListAsync(broadcastId, 10).ConfigureAwait(false);
 
 
                 // Pin comment from broadcast
-                await api.LiveProcessor.PinCommentAsync(broadcastId, "commentID");
+                await api.LiveProcessor.PinCommentAsync(broadcastId, "commentID").ConfigureAwait(false);
                 // UnPin comment from broadcast
-                await api.LiveProcessor.UnPinCommentAsync(broadcastId, "commentID");
+                await api.LiveProcessor.UnPinCommentAsync(broadcastId, "commentID").ConfigureAwait(false);
 
 
                 // get broadcast comments
-                await api.LiveProcessor.GetCommentsAsync(broadcastId);
+                await api.LiveProcessor.GetCommentsAsync(broadcastId).ConfigureAwait(false);
 
 
                 // enable broadcast comments
-                await api.LiveProcessor.EnableCommentsAsync(broadcastId);
+                await api.LiveProcessor.EnableCommentsAsync(broadcastId).ConfigureAwait(false);
                 // disable broadcast comments
-                await api.LiveProcessor.DisableCommentsAsync(broadcastId);
+                await api.LiveProcessor.DisableCommentsAsync(broadcastId).ConfigureAwait(false);
 
 
                 // get broadcast likes count
-                await api.LiveProcessor.GetLikeCountAsync(broadcastId);
+                await api.LiveProcessor.GetLikeCountAsync(broadcastId).ConfigureAwait(false);
 
 
                 // add broadcast to post live
-                await api.LiveProcessor.AddToPostLiveAsync(broadcastId);
+                await api.LiveProcessor.AddToPostLiveAsync(broadcastId).ConfigureAwait(false);
                 // delete broadcast from post live
-                await api.LiveProcessor.DeletePostLiveAsync(broadcastId);
+                await api.LiveProcessor.DeletePostLiveAsync(broadcastId).ConfigureAwait(false);
 
 
                 // end live broadcast
-                await api.LiveProcessor.EndAsync(broadcastId);
+                await api.LiveProcessor.EndAsync(broadcastId).ConfigureAwait(false);
 
                 // after you ended your live broadcast, you should call this
-                await api.LiveProcessor.GetFinalViewerListAsync(broadcastId);
+                await api.LiveProcessor.GetFinalViewerListAsync(broadcastId).ConfigureAwait(false);
             }
             else
             {

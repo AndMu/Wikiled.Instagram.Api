@@ -6,7 +6,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Login
     internal class LoginTwoFactorBaseResponse
     {
         [JsonProperty("challenge")]
-        public InstaChallengeLoginInfo Challenge { get; set; }
+        public ChallengeLoginInfo Challenge { get; set; }
 
         [JsonProperty("error_type")]
         public string ErrorType { get; set; }

@@ -37,14 +37,14 @@ namespace Wikiled.Instagram.Api.Logic.Processors
 
         private readonly UserSessionData user;
 
-        private readonly InstaUserAuthValidate userAuthValidate;
+        private readonly UserAuthValidate userAuthValidate;
 
         public InstaFeedProcessor(
             AndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             ILogger logger,
-            InstaUserAuthValidate userAuthValidate,
+            UserAuthValidate userAuthValidate,
             InstaApi instaApi,
             InstaHttpHelper httpHelper)
         {

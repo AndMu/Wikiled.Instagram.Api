@@ -2,7 +2,7 @@
 
 namespace Wikiled.Instagram.Api.Classes.Models.Account
 {
-    internal class InstaAccountRegistrationPhoneNumber
+    internal class AccountRegistrationPhoneNumber
     {
         [JsonProperty("gdpr_required")]
         public bool GdprRequired { get; set; }

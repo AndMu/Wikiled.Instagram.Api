@@ -46,14 +46,14 @@ namespace Wikiled.Instagram.Api.Logic.Processors
 
         private readonly UserSessionData user;
 
-        private readonly InstaUserAuthValidate userAuthValidate;
+        private readonly UserAuthValidate userAuthValidate;
 
         public InstaUserProcessor(
             AndroidDevice deviceInfo,
             UserSessionData user,
             IHttpRequestProcessor httpRequestProcessor,
             ILogger logger,
-            InstaUserAuthValidate userAuthValidate,
+            UserAuthValidate userAuthValidate,
             InstaApi instaApi,
             InstaHttpHelper httpHelper)
         {
@@ -1103,6 +1103,11 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                         }
 
                         var mediaResponse = mediaResult.Value;
+
+                        foreach (var item in Convert(mediaResult.Value))
+                        {
+                            obs.OnNext(item);
+                        }
 
                         paginationParameters.PagesLoaded++;
                         paginationParameters.NextMaxId = mediaResponse.NextMaxId;

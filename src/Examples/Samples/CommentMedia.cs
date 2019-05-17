@@ -21,7 +21,7 @@ namespace Examples.Samples
 
         public async Task DoShow()
         {
-            var commentResult = await api.CommentProcessor.CommentMediaAsync("", "Hi there!");
+            var commentResult = await api.CommentProcessor.CommentMediaAsync("", "Hi there!").ConfigureAwait(false);
             Console.WriteLine(commentResult.Succeeded
                                   ? $"Comment created: {commentResult.Value.Pk}, text: {commentResult.Value.Text}"
                                   : $"Unable to create comment: {commentResult.Info.Message}");

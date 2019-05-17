@@ -7,7 +7,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Other
     internal class InstaLoginBaseResponse
     {
         [JsonProperty("challenge")]
-        public InstaChallengeLoginInfo Challenge { get; set; }
+        public ChallengeLoginInfo Challenge { get; set; }
 
         [JsonProperty("checkpoint_url")]
         public string CheckpointUrl { get; set; }

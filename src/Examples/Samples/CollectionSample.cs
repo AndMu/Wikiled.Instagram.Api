@@ -23,13 +23,11 @@ namespace Examples.Samples
         public async Task DoShow()
         {
             // get all collections of current user
-            var collections =
-                await api.CollectionProcessor.GetCollectionsAsync(PaginationParameters.MaxPagesToLoad(1));
+            var collections = await api.CollectionProcessor.GetCollectionsAsync(PaginationParameters.MaxPagesToLoad(1)).ConfigureAwait(false);
             Console.WriteLine($"Loaded {collections.Value.Items.Count} collections for current user");
             foreach (var instaCollection in collections.Value.Items)
             {
-                Console.WriteLine(
-                    $"Collection: name={instaCollection.CollectionName}, id={instaCollection.CollectionId}");
+                Console.WriteLine($"Collection: name={instaCollection.CollectionName}, id={instaCollection.CollectionId}");
             }
         }
     }

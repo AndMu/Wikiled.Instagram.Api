@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using Examples.Samples;
+﻿using Examples.Samples;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.SessionHandlers;
-using Wikiled.Instagram.Api.Logger;
 using Wikiled.Instagram.Api.Logic;
 using Wikiled.Instagram.Api.Logic.Builder;
+using Wikiled.Instagram.Api.Serialization;
 
 namespace Examples
 {
@@ -51,16 +50,19 @@ namespace Examples
                 api = InstaApiBuilder.CreateBuilder()
                     .SetUser(userSession)
                     .UseLogger(loggerFactory) // use logger for requests and debug messages
-                    .SetSessionHandler(new FileSessionHandler() {FilePath = "state.bin" })
                     .SetRequestDelay(delay)
                     .Build();
+
+                var session = new FileSessionHandler(loggerFactory.CreateLogger<FileSessionHandler>(),
+                                                     api,
+                                                     new EncryptedSerializer(new PlainSerializer(), api));
                 // create account
                 // to create new account please check this:
                 // https://github.com/ramtinak/InstagramApiSharp/wiki/Create-new-account
-                
+
                 try
                 {
-                    api.SessionHandler.Load();
+                    session.Load("state.bin");
                 }
                 catch (Exception e)
                 {
@@ -81,7 +83,7 @@ namespace Examples
                     }
                 }
 
-                api.SessionHandler.Save();
+                session.Save("state.bin");
 
                 Console.WriteLine("Press 1 to start basic demo samples");
                 Console.WriteLine("Press 2 to start upload photo demo sample");

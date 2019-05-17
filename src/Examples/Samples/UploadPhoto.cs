@@ -31,7 +31,7 @@ namespace Examples.Samples
             };
             // Add user tag (tag people)
             mediaImage.UserTags.Add(new UserTagUpload { Username = "rmt4006", X = 0.5, Y = 0.5 });
-            var result = await api.MediaProcessor.UploadPhotoAsync(mediaImage, "someawesomepicture");
+            var result = await api.MediaProcessor.UploadPhotoAsync(mediaImage, "someawesomepicture").ConfigureAwait(false);
             Console.WriteLine(result.Succeeded
                                   ? $"Media created: {result.Value.Pk}, {result.Value.Caption}"
                                   : $"Unable to upload photo: {result.Info.Message}");
@@ -48,7 +48,7 @@ namespace Examples.Samples
             mediaImage.UserTags.Add(new UserTagUpload { Username = "rmt4006", X = 0.5, Y = 0.5 });
             // Upload photo with progress
             var result =
-                await api.MediaProcessor.UploadPhotoAsync(UploadProgress, mediaImage, "someawesomepicture");
+                await api.MediaProcessor.UploadPhotoAsync(UploadProgress, mediaImage, "someawesomepicture").ConfigureAwait(false);
             Console.WriteLine(result.Succeeded
                                   ? $"Media created: {result.Value.Pk}, {result.Value.Caption}"
                                   : $"Unable to upload photo: {result.Info.Message}");

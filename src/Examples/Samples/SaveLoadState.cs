@@ -23,7 +23,7 @@ namespace Examples.Samples
 
         public async Task DoShow()
         {
-            var result = await api.GetCurrentUserAsync();
+            var result = await api.GetCurrentUserAsync().ConfigureAwait(false);
             if (!result.Succeeded)
             {
                 Console.WriteLine($"Unable to get current user using current API instance: {result.Info}");
@@ -41,7 +41,7 @@ namespace Examples.Samples
             anotherInstance.SetStateData(stream);
             //// for .net core you should use this method:
             // anotherInstance.LoadStateDataFromString(json);
-            var anotherResult = await anotherInstance.GetCurrentUserAsync();
+            var anotherResult = await anotherInstance.GetCurrentUserAsync().ConfigureAwait(false);
             if (!anotherResult.Succeeded)
             {
                 Console.WriteLine($"Unable to get current user using current API instance: {result.Info}");

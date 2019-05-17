@@ -18,4 +18,10 @@
     <ProjectReference Include="..\Wikiled.Instagram.Api\Wikiled.Instagram.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Data\sample.session.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

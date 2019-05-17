@@ -51,8 +51,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="locationId">Location identifier (location pk, external id, facebook id)</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        Task<IResult<InstaSectionMedia>> GetRecentLocationFeedsAsync(long locationId,
-                                                                     PaginationParameters paginationParameters);
+        Task<IResult<InstaSectionMedia>> GetRecentLocationFeedsAsync(long locationId, PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Get top (ranked) location media feeds.
@@ -60,8 +59,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="locationId">Location identifier (location pk, external id, facebook id)</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        Task<IResult<InstaSectionMedia>> GetTopLocationFeedsAsync(long locationId,
-                                                                  PaginationParameters paginationParameters);
+        Task<IResult<InstaSectionMedia>> GetTopLocationFeedsAsync(long locationId, PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Searches for specific location by provided geo-data or search query.
@@ -84,9 +82,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="InstaPlaceList" />
         /// </returns>
-        Task<IResult<InstaPlaceList>> SearchPlacesAsync(double latitude,
-                                                        double longitude,
-                                                        PaginationParameters paginationParameters);
+        Task<IResult<InstaPlaceList>> SearchPlacesAsync(double latitude, double longitude, PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Search places in facebook

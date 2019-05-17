@@ -71,7 +71,7 @@ namespace Wikiled.Instagram.Api.Classes
 
         public DateTime? ActionBlockEnd { get; internal set; }
 
-        public InstaChallengeLoginInfo Challenge { get; internal set; }
+        public ChallengeLoginInfo Challenge { get; internal set; }
 
         public Exception Exception { get; }
 

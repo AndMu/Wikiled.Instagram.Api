@@ -127,11 +127,6 @@ namespace Wikiled.Instagram.Api.Logic
         IWebProcessor WebProcessor { get; }
 
         /// <summary>
-        ///     Session handler
-        /// </summary>
-        ISessionHandler SessionHandler { get; set; }
-
-        /// <summary>
         ///     Get current API version info (signature key, api version info, app id)
         /// </summary>
         InstaApiVersion GetApiVersionInfo();

@@ -1,34 +1,19 @@
 ﻿using Wikiled.Instagram.Api.Logic;
 
-#if WINDOWS_UWP
-using Windows.Storage;
-#endif
 namespace Wikiled.Instagram.Api.Classes.SessionHandlers
 {
     public interface ISessionHandler
     {
-        IInstaApi Api { get; set; }
-#if WINDOWS_UWP
-        /// <summary>
-        ///     File => Optional
-        ///     <para>If you didn't set this, InstagramApiSharp will choose it automatically based on <see cref="InstaApi"/> username!</para>
-        /// </summary>
-        StorageFile File { get; set; }
-#else
-        /// <summary>
-        ///     Path to file
-        /// </summary>
-        string FilePath { get; set; }
-#endif
-
+        IInstaApi Api { get; }
+        
         /// <summary>
         ///     Load and Set StateData to InstaApi
         /// </summary>
-        void Load();
+        bool Load(string path);
 
         /// <summary>
         ///     Save current StateData from InstaApi
         /// </summary>
-        void Save();
+        void Save(string path);
     }
 }

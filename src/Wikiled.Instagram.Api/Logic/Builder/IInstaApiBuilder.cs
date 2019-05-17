@@ -2,7 +2,6 @@ using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.Android.DeviceInfo;
-using Wikiled.Instagram.Api.Classes.SessionHandlers;
 
 namespace Wikiled.Instagram.Api.Logic.Builder
 {
@@ -35,13 +34,6 @@ namespace Wikiled.Instagram.Api.Logic.Builder
         /// <param name="delay">Timespan delay</param>
         /// <returns>API Builder</returns>
         IInstaApiBuilder SetRequestDelay(IRequestDelay delay);
-
-        /// <summary>
-        ///     Set session handler
-        /// </summary>
-        /// <param name="sessionHandler">Session handler</param>
-        /// <returns></returns>
-        IInstaApiBuilder SetSessionHandler(ISessionHandler sessionHandler);
 
         /// <summary>
         ///     Specify user login, password from here

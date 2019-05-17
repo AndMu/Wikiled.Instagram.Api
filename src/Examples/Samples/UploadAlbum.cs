@@ -70,8 +70,8 @@ namespace Examples.Samples
                 }
             };
             var result = await api.MediaProcessor.UploadAlbumAsync(images,
-                                                                        videos,
-                                                                        "Hey, this my first album upload via InstagramApiSharp library.");
+                                                                   videos,
+                                                                   "Hey, this my first album upload via InstagramApiSharp library.").ConfigureAwait(false);
 
             // Above result will be something like this: IMAGE1, IMAGE2, VIDEO1, VIDEO2
             Console.WriteLine(result.Succeeded
@@ -141,7 +141,7 @@ namespace Examples.Samples
 
 
             var result = await api.MediaProcessor.UploadAlbumAsync(album.ToArray(),
-                                                                        "Hey, this my first album upload via InstagramApiSharp library.");
+                                                                   "Hey, this my first album upload via InstagramApiSharp library.").ConfigureAwait(false);
 
             // Above result will be something like this: IMAGE1, VIDEO1, VIDEO2, IMAGE2 [You can mix photos and videos together]
 

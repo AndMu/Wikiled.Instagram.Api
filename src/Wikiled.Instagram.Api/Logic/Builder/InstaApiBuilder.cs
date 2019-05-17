@@ -3,7 +3,6 @@ using System;
 using System.Net.Http;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.Android.DeviceInfo;
-using Wikiled.Instagram.Api.Classes.SessionHandlers;
 using Wikiled.Instagram.Api.Enums;
 
 namespace Wikiled.Instagram.Api.Logic.Builder
@@ -25,8 +24,6 @@ namespace Wikiled.Instagram.Api.Logic.Builder
         private IHttpRequestProcessor httpRequestProcessor;
 
         private ApiRequestMessage requestMessage;
-
-        private ISessionHandler sessionHandler;
 
         private UserSessionData user;
 
@@ -105,12 +102,6 @@ namespace Wikiled.Instagram.Api.Logic.Builder
             }
 
             var instaApi = new InstaApi(loggerFactory?.CreateLogger<InstaApi>(), httpRequestProcessor, user, apiVersionType.Value, device);
-            if (sessionHandler != null)
-            {
-                sessionHandler.Api = instaApi;
-                instaApi.SessionHandler = sessionHandler;
-            }
-
             return instaApi;
         }
 
@@ -158,19 +149,6 @@ namespace Wikiled.Instagram.Api.Logic.Builder
             }
 
             this.delay = delay;
-            return this;
-        }
-
-        /// <summary>
-        ///     Set session handler
-        /// </summary>
-        /// <param name="sessionHandler">Session handler</param>
-        /// <returns>
-        ///     API Builder
-        /// </returns>
-        public IInstaApiBuilder SetSessionHandler(ISessionHandler sessionHandler)
-        {
-            this.sessionHandler = sessionHandler;
             return this;
         }
 

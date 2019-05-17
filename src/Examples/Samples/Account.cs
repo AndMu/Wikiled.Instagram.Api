@@ -24,7 +24,7 @@ namespace Examples.Samples
         public async Task DoShow()
         {
             // get currently logged in user
-            var currentUser = await api.GetCurrentUserAsync();
+            var currentUser = await api.GetCurrentUserAsync().ConfigureAwait(false);
             Console.WriteLine(
                 $"Logged in: username - {currentUser.Value.UserName}, full name - {currentUser.Value.FullName}");
 
@@ -64,12 +64,12 @@ VerifySmsCodeAsync");
 
             var result =
                 await api.AccountProcessor.EditProfileAsync(name,
-                                                                 biography,
-                                                                 url,
-                                                                 email,
-                                                                 phone,
-                                                                 gender,
-                                                                 newUsername);
+                                                            biography,
+                                                            url,
+                                                            email,
+                                                            phone,
+                                                            gender,
+                                                            newUsername).ConfigureAwait(false);
 
             if (result.Succeeded)
             {
@@ -95,7 +95,7 @@ VerifySmsCodeAsync");
             // note: only JPG and JPEG format will accept it in instagram!
             var pictureBytes = File.ReadAllBytes(picturePath);
 
-            var result = await api.AccountProcessor.ChangeProfilePictureAsync(pictureBytes);
+            var result = await api.AccountProcessor.ChangeProfilePictureAsync(pictureBytes).ConfigureAwait(false);
             if (result.Succeeded)
             {
                 Console.WriteLine("New profile picture: " + result.Value.ProfilePicUrl);
@@ -108,7 +108,7 @@ VerifySmsCodeAsync");
 
         public async void RemoveProfilePicture()
         {
-            var result = await api.AccountProcessor.RemoveProfilePictureAsync();
+            var result = await api.AccountProcessor.RemoveProfilePictureAsync().ConfigureAwait(false);
             if (result.Succeeded)
             {
                 Console.WriteLine("Profile picture removed.");
@@ -123,7 +123,7 @@ VerifySmsCodeAsync");
         {
             var name = "Ramtin Jokar";
             var phone = "+989171234567";
-            var result = await api.AccountProcessor.SetNameAndPhoneNumberAsync(name, phone);
+            var result = await api.AccountProcessor.SetNameAndPhoneNumberAsync(name, phone).ConfigureAwait(false);
             if (result.Succeeded)
             {
                 Console.WriteLine("Name and phone number changed");
@@ -136,7 +136,7 @@ VerifySmsCodeAsync");
 
         public async void StorySettings()
         {
-            var storySettings = await api.AccountProcessor.GetStorySettingsAsync();
+            var storySettings = await api.AccountProcessor.GetStorySettingsAsync().ConfigureAwait(false);
             if (storySettings.Succeeded)
             {
                 Console.WriteLine("Story settings");
@@ -146,19 +146,19 @@ VerifySmsCodeAsync");
                 Console.WriteLine("Allow sharing story: " + storySettings.Value.AllowStoryReshare);
 
                 // enable/disable save story to gallery(camera roll)
-                await api.AccountProcessor.EnableSaveStoryToGalleryAsync();
-                await api.AccountProcessor.DisableSaveStoryToGalleryAsync();
+                await api.AccountProcessor.EnableSaveStoryToGalleryAsync().ConfigureAwait(false);
+                await api.AccountProcessor.DisableSaveStoryToGalleryAsync().ConfigureAwait(false);
 
                 // enable/disable save story to archive
-                await api.AccountProcessor.EnableSaveStoryToArchiveAsync();
-                await api.AccountProcessor.DisableSaveStoryToArchiveAsync();
+                await api.AccountProcessor.EnableSaveStoryToArchiveAsync().ConfigureAwait(false);
+                await api.AccountProcessor.DisableSaveStoryToArchiveAsync().ConfigureAwait(false);
 
                 // allow/disallow sharing stories
-                await api.AccountProcessor.AllowStorySharingAsync();
+                await api.AccountProcessor.AllowStorySharingAsync().ConfigureAwait(false);
                 // await _instaApi.AccountProcessor.AllowStorySharingAsync(false);
 
                 // allow story message replies
-                await api.AccountProcessor.AllowStoryMessageRepliesAsync(InstaMessageRepliesType.Everyone);
+                await api.AccountProcessor.AllowStoryMessageRepliesAsync(InstaMessageRepliesType.Everyone).ConfigureAwait(false);
                 // await _instaApi.AccountProcessor.AllowStoryMessageRepliesAsync(InstaMessageRepliesType.Following);
                 // await _instaApi.AccountProcessor.AllowStoryMessageRepliesAsync(InstaMessageRepliesType.Off);
             }
@@ -168,7 +168,7 @@ VerifySmsCodeAsync");
         {
             var username = "rmt4006";
 
-            var result = await api.AccountProcessor.CheckUsernameAsync(username);
+            var result = await api.AccountProcessor.CheckUsernameAsync(username).ConfigureAwait(false);
             if (result.Succeeded)
             {
                 if (result.Value.Available)
@@ -188,7 +188,7 @@ VerifySmsCodeAsync");
 
         public async void SecuritySettingsAndTwoFactor()
         {
-            var result = await api.AccountProcessor.GetSecuritySettingsInfoAsync();
+            var result = await api.AccountProcessor.GetSecuritySettingsInfoAsync().ConfigureAwait(false);
             if (result.Succeeded)
             {
                 Console.WriteLine("Security settings information");
@@ -200,27 +200,27 @@ VerifySmsCodeAsync");
                 Console.WriteLine("BackupCodes: " + string.Join("\t", result.Value.BackupCodes));
 
                 // disable two factor authentication
-                await api.AccountProcessor.DisableTwoFactorAuthenticationAsync();
+                await api.AccountProcessor.DisableTwoFactorAuthenticationAsync().ConfigureAwait(false);
 
 
                 var phoneNumber = result.Value.PhoneNumber; // "+989171234567"
                 // send enable two factor sms authentication 
-                await api.AccountProcessor.SendTwoFactorEnableSmsAsync(phoneNumber);
+                await api.AccountProcessor.SendTwoFactorEnableSmsAsync(phoneNumber).ConfigureAwait(false);
 
                 // enable(verify) two factor authentication
                 var verificationCode = "40061373";
-                await api.AccountProcessor.TwoFactorEnableAsync(phoneNumber, verificationCode);
+                await api.AccountProcessor.TwoFactorEnableAsync(phoneNumber, verificationCode).ConfigureAwait(false);
 
 
                 // send sms code to verify account with sms
-                await api.AccountProcessor.SendSmsCodeAsync(phoneNumber);
+                await api.AccountProcessor.SendSmsCodeAsync(phoneNumber).ConfigureAwait(false);
 
                 // verify sms code for verify account with sms
-                await api.AccountProcessor.VerifySmsCodeAsync(phoneNumber, "13734006");
+                await api.AccountProcessor.VerifySmsCodeAsync(phoneNumber, "13734006").ConfigureAwait(false);
 
 
                 // send confirm email for verify account with email
-                await api.AccountProcessor.SendConfirmEmailAsync();
+                await api.AccountProcessor.SendConfirmEmailAsync().ConfigureAwait(false);
             }
         }
     }

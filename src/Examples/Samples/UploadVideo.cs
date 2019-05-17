@@ -31,7 +31,7 @@ namespace Examples.Samples
             };
             // Add user tag (tag people)
             video.UserTags.Add(new UserTagVideoUpload { Username = "rmt4006" });
-            var result = await api.MediaProcessor.UploadVideoAsync(video, "ramtinak");
+            var result = await api.MediaProcessor.UploadVideoAsync(video, "ramtinak").ConfigureAwait(false);
             Console.WriteLine(result.Succeeded
                                   ? $"Media created: {result.Value.Pk}, {result.Value.Caption}"
                                   : $"Unable to upload video: {result.Info.Message}");

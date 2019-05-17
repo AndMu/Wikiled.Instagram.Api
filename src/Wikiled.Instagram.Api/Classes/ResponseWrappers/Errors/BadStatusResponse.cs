@@ -8,7 +8,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Errors
     public class InstaBadStatusResponse : InstaBaseStatusResponse
     {
         [JsonProperty("challenge")]
-        public InstaChallengeLoginInfo Challenge { get; set; }
+        public ChallengeLoginInfo Challenge { get; set; }
 
         [JsonProperty("checkpoint_url")]
         public string CheckPointUrl { get; set; }

@@ -24,7 +24,7 @@ namespace Examples.Samples
 
         public async Task DoShow()
         {
-            var result = await api.StoryProcessor.GetStoryFeedAsync();
+            var result = await api.StoryProcessor.GetStoryFeedAsync().ConfigureAwait(false);
             if (!result.Succeeded)
             {
                 Console.WriteLine($"Unable to get story feed: {result.Info}");
@@ -48,7 +48,7 @@ namespace Examples.Samples
         {
             var image = new InstaImage { Uri = @"c:\someawesomepicture.jpg" };
 
-            var result = await api.StoryProcessor.UploadStoryPhotoAsync(image, "someawesomepicture");
+            var result = await api.StoryProcessor.UploadStoryPhotoAsync(image, "someawesomepicture").ConfigureAwait(false);
             Console.WriteLine(result.Succeeded
                                   ? $"Story created: {result.Value.Media.Pk}"
                                   : $"Unable to upload photo story: {result.Info.Message}");
@@ -61,7 +61,7 @@ namespace Examples.Samples
                 Video = new InstaVideo(@"c:\video1.mp4", 0, 0),
                 VideoThumbnail = new InstaImage(@"c:\video thumbnail 1.jpg", 0, 0)
             };
-            var result = await api.MediaProcessor.UploadVideoAsync(video, "ramtinak");
+            var result = await api.MediaProcessor.UploadVideoAsync(video, "ramtinak").ConfigureAwait(false);
             Console.WriteLine(result.Succeeded
                                   ? $"Story created: {result.Value.Pk}"
                                   : $"Unable to upload video story: {result.Info.Message}");
@@ -100,7 +100,7 @@ namespace Examples.Samples
             });
 
             // Add location
-            var locationsResult = await api.LocationProcessor.SearchLocationAsync(0, 0, "kazeroun");
+            var locationsResult = await api.LocationProcessor.SearchLocationAsync(0, 0, "kazeroun").ConfigureAwait(false);
             var firstLocation = locationsResult.Value.FirstOrDefault();
             var locationId = firstLocation.ExternalId;
 
@@ -144,7 +144,7 @@ namespace Examples.Samples
 
             var image = new InstaImage { Uri = @"c:\someawesomepicture.jpg" };
 
-            var result = await api.StoryProcessor.UploadStoryPhotoAsync(image, "someawesomepicture", storyOptions);
+            var result = await api.StoryProcessor.UploadStoryPhotoAsync(image, "someawesomepicture", storyOptions).ConfigureAwait(false);
             // upload video
             //var result = await InstaApi.MediaProcessor.UploadVideoAsync(video, "ramtinak", storyOptions);
             Console.WriteLine(result.Succeeded
@@ -173,7 +173,7 @@ namespace Examples.Samples
 
             var image = new InstaImage { Uri = @"c:\someawesomepicture.jpg" };
 
-            var result = await api.StoryProcessor.ShareMediaAsStoryAsync(image, mediaStory);
+            var result = await api.StoryProcessor.ShareMediaAsStoryAsync(image, mediaStory).ConfigureAwait(false);
 
             Console.WriteLine(result.Succeeded
                                   ? $"Story created from an media post: {result.Value.Media.Pk}"

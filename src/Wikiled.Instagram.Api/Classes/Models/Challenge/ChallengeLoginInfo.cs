@@ -2,7 +2,7 @@
 
 namespace Wikiled.Instagram.Api.Classes.Models.Challenge
 {
-    public class InstaChallengeLoginInfo
+    public class ChallengeLoginInfo
     {
         [JsonProperty("api_path")]
         public string ApiPath { get; set; }

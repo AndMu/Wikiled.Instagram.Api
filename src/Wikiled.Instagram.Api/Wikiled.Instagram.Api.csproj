@@ -4,7 +4,7 @@
     <TargetFrameworks>netstandard2.0;NET462</TargetFrameworks>
     <Version>1.5.0</Version>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <AssemblyName>InstagramApiSharp</AssemblyName>
+    <AssemblyName>Wikiled.Instagram.Api</AssemblyName>
     <PackageId>InstagramApiSharp</PackageId>
     <NetStandardImplicitPackageVersion>2.0</NetStandardImplicitPackageVersion>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>

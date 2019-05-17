@@ -17,7 +17,7 @@ namespace Examples.Samples
 
         public async Task DoShow()
         {
-            var recipientsResult = await api.MessagingProcessor.GetRankedRecipientsAsync();
+            var recipientsResult = await api.MessagingProcessor.GetRankedRecipientsAsync().ConfigureAwait(false);
             if (!recipientsResult.Succeeded)
             {
                 Console.WriteLine("Unable to get ranked recipients");
@@ -34,7 +34,7 @@ namespace Examples.Samples
             }
 
             var inboxThreads =
-                await api.MessagingProcessor.GetDirectInboxAsync(PaginationParameters.MaxPagesToLoad(1));
+                await api.MessagingProcessor.GetDirectInboxAsync(PaginationParameters.MaxPagesToLoad(1)).ConfigureAwait(false);
             if (!inboxThreads.Succeeded)
             {
                 Console.WriteLine("Unable to get inbox");
@@ -52,14 +52,14 @@ namespace Examples.Samples
             var sendMessageResult = await api.MessagingProcessor.SendDirectTextAsync(
                 $"{firstThread.Users.FirstOrDefault()?.Pk}",
                 firstThread.ThreadId,
-                "test");
+                "test").ConfigureAwait(false);
             Console.WriteLine(sendMessageResult.Succeeded ? "Message sent" : "Unable to send message");
 
             // just send message to user (thread not specified)
             sendMessageResult =
                 await api.MessagingProcessor.SendDirectTextAsync($"{firstThread.Users.FirstOrDefault()?.Pk}",
-                                                                      string.Empty,
-                                                                      "one more test");
+                                                                 string.Empty,
+                                                                 "one more test").ConfigureAwait(false);
             Console.WriteLine(sendMessageResult.Succeeded ? "Message sent" : "Unable to send message");
         }
     }

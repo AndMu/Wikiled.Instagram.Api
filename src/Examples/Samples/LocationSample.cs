@@ -24,7 +24,7 @@ namespace Examples.Samples
         {
             // search for related locations near location with latitude = 55.753923, logitude = 37.620940
             // additionaly you can specify search query or just empty string
-            var result = await api.LocationProcessor.SearchLocationAsync(55.753923, 37.620940, "square");
+            var result = await api.LocationProcessor.SearchLocationAsync(55.753923, 37.620940, "square").ConfigureAwait(false);
             Console.WriteLine($"Loaded {result.Value.Count} locations");
             var firstLocation = result.Value?.FirstOrDefault();
             if (firstLocation == null)
@@ -34,8 +34,7 @@ namespace Examples.Samples
 
             Console.WriteLine($"Loading feed for location: name={firstLocation.Name}; id={firstLocation.ExternalId}.");
 
-            var locationStories =
-                await api.LocationProcessor.GetLocationStoriesAsync(long.Parse(firstLocation.ExternalId));
+            var locationStories = await api.LocationProcessor.GetLocationStoriesAsync(long.Parse(firstLocation.ExternalId)).ConfigureAwait(false);
 
             Console.WriteLine(locationStories.Succeeded
                                   ? $"Loaded {locationStories.Value.Items?.Count} stoires for location"

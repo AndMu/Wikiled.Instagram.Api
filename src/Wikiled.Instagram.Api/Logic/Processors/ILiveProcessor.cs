@@ -32,9 +32,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="previewWidth">Preview width</param>
         /// <param name="previewHeight">Preview height</param>
         /// <param name="broadcastMessage">Broadcast start message</param>
-        Task<IResult<InstaBroadcastCreate>> CreateAsync(int previewWidth = 720,
-                                                        int previewHeight = 1184,
-                                                        string broadcastMessage = "");
+        Task<IResult<InstaBroadcastCreate>> CreateAsync(int previewWidth = 720, int previewHeight = 1184, string broadcastMessage = "");
 
         /// <summary>
         ///     Delete an broadcast from post live.
@@ -153,8 +151,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="text">Text to send</param>
         /// <param name="broadcastId">Broadcast id to send ( <see cref="InstaBroadcast.Id" /> )</param>
         /// <param name="recipients">Recipients ids</param>
-        Task<IResult<bool>>
-            ShareLiveToDirectRecipientAsync(string text, string broadcastId, params string[] recipients);
+        Task<IResult<bool>> ShareLiveToDirectRecipientAsync(string text, string broadcastId, params string[] recipients);
 
         /// <summary>
         ///     Share an live broadcast to direct thread
@@ -171,10 +168,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="broadcastId">Broadcast id to send ( <see cref="InstaBroadcast.Id" /> )</param>
         /// <param name="threadIds">Thread ids</param>
         /// <param name="recipients">Recipients ids</param>
-        Task<IResult<bool>> ShareLiveToDirectThreadAsync(string text,
-                                                         string broadcastId,
-                                                         string[] threadIds,
-                                                         string[] recipients);
+        Task<IResult<bool>> ShareLiveToDirectThreadAsync(string text, string broadcastId, string[] threadIds, string[] recipients);
 
         /// <summary>
         ///     Start live broadcast. NOTE: YOU MUST CREATE AN BROADCAST FIRST(CreateAsync) AND THEN CALL THIS METHOD.
@@ -190,26 +184,5 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="commentId"></param>
         Task<IResult<InstaBroadcastPinUnpin>> UnPinCommentAsync(string broadcastId, string commentId);
 
-        /*
-        /// <summary>
-        /// NOT COMPLETE
-        /// </summary>
-        /// <returns></returns>
-        Task<IResult<object>> GetPostLiveLikesAsync(string broadcastId, int startingOffset = 0, string encodingTag = "instagram_dash_remuxed");
-        /// <summary>
-        /// NOT COMPLETE
-        /// </summary>
-        /// <returns></returns>
-        Task<IResult<object>> GetPostLiveCommentsAsync(string broadcastId, int startingOffset = 0, string encodingTag = "instagram_dash_remuxed");
-        /// <summary>
-        /// NOT COMPLETE
-        /// </summary>
-        /// <returns></returns>
-        Task<IResult<object>> NotifyToFriendsAsync();
-        /// <summary>
-        /// NOT COMPLETE
-        /// </summary>
-        /// <returns></returns>
-        Task<IResult<object>> SeenBroadcastAsync(string broadcastId, string pk);*/
     }
 }

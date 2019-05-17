@@ -19,7 +19,6 @@ using Wikiled.Instagram.Api.Classes.ResponseWrappers.Errors;
 using Wikiled.Instagram.Api.Classes.ResponseWrappers.Login;
 using Wikiled.Instagram.Api.Classes.ResponseWrappers.Other;
 using Wikiled.Instagram.Api.Classes.ResponseWrappers.User;
-using Wikiled.Instagram.Api.Classes.SessionHandlers;
 using Wikiled.Instagram.Api.Converters;
 using Wikiled.Instagram.Api.Enums;
 using Wikiled.Instagram.Api.Helpers;
@@ -36,17 +35,17 @@ namespace Wikiled.Instagram.Api.Logic
     {
         private readonly ILogger logger;
 
-        private readonly InstaUserAuthValidate userAuthValidate;
+        private readonly UserAuthValidate userAuthValidate;
 
         private InstaApiVersion apiVersion;
 
         private string facebookToken;
 
-        private InstaChallengeLoginInfo challengeInfo;
+        private ChallengeLoginInfo challengeInfo;
 
         private bool isUserAuthenticated;
 
-        private InstaAccountRegistrationPhoneNumber signUpPhoneNumberInfo;
+        private AccountRegistrationPhoneNumber signUpPhoneNumberInfo;
 
         private TwoFactorLoginInfo twoFactorInfo;
 
@@ -68,7 +67,7 @@ namespace Wikiled.Instagram.Api.Logic
 
         public InstaApi(ILogger logger, IHttpRequestProcessor httpRequestProcessor, UserSessionData user, InstaApiVersionType version, AndroidDevice deviceInfo)
         {
-            userAuthValidate = new InstaUserAuthValidate();
+            userAuthValidate = new UserAuthValidate();
             User = user;
             this.deviceInfo = deviceInfo;
             this.logger = logger;
@@ -79,7 +78,6 @@ namespace Wikiled.Instagram.Api.Logic
         }
 
         public IRequestDelay Delay { get; private set; } = RequestDelay.Empty();
-
 
         private InstaHttpHelper HttpHelper { get; set; }
 
@@ -97,8 +95,6 @@ namespace Wikiled.Instagram.Api.Logic
         ///     Helper processor for other processors
         /// </summary>
         internal InstaHelperProcessor HelperProcessor { get; private set; }
-
-        public ISessionHandler SessionHandler { get; set; }
 
         /// <summary>
         ///     Indicates whether user authenticated or not
@@ -327,12 +323,12 @@ namespace Wikiled.Instagram.Api.Logic
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    var o = JsonConvert.DeserializeObject<InstaAccountRegistrationPhoneNumber>(json);
+                    var o = JsonConvert.DeserializeObject<AccountRegistrationPhoneNumber>(json);
 
                     return InstaResult.UnExpectedResponse<bool>(response, o.Message?.Errors?[0], json);
                 }
 
-                signUpPhoneNumberInfo = JsonConvert.DeserializeObject<InstaAccountRegistrationPhoneNumber>(json);
+                signUpPhoneNumberInfo = JsonConvert.DeserializeObject<AccountRegistrationPhoneNumber>(json);
                 return InstaResult.Success(true);
             }
             catch (HttpRequestException httpException)
@@ -2092,7 +2088,7 @@ namespace Wikiled.Instagram.Api.Logic
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    var o = JsonConvert.DeserializeObject<InstaAccountRegistrationPhoneNumber>(json);
+                    var o = JsonConvert.DeserializeObject<AccountRegistrationPhoneNumber>(json);
 
                     return InstaResult.Fail(o.Message?.Errors?[0], (InstaRegistrationSuggestionResponse)null);
                 }
@@ -2146,7 +2142,7 @@ namespace Wikiled.Instagram.Api.Logic
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    var o = JsonConvert.DeserializeObject<InstaAccountRegistrationPhoneNumber>(json);
+                    var o = JsonConvert.DeserializeObject<AccountRegistrationPhoneNumber>(json);
 
                     return InstaResult.Fail(o.Message?.Errors?[0], (InstaRegistrationSuggestionResponse)null);
                 }
@@ -2697,7 +2693,7 @@ namespace Wikiled.Instagram.Api.Logic
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    var o = JsonConvert.DeserializeObject<InstaAccountRegistrationPhoneNumber>(json);
+                    var o = JsonConvert.DeserializeObject<AccountRegistrationPhoneNumber>(json);
 
                     return InstaResult.Fail(o.Message?.Errors?[0], (InstaRegistrationSuggestionResponse)null);
                 }
