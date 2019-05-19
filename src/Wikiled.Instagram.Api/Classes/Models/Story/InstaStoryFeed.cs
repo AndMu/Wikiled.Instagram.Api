@@ -10,7 +10,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Story
 
         public int FaceFilterNuxVersion { get; set; }
 
-        public List<InstaHashtagStory> HashtagStories { get; set; } = new List<InstaHashtagStory>();
+        public List<HashtagStory> HashtagStories { get; set; } = new List<HashtagStory>();
 
         public bool HasNewNuxStory { get; set; }
 

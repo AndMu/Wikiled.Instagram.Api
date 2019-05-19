@@ -7,11 +7,11 @@ using Wikiled.Instagram.Api.Classes.ResponseWrappers.Media;
 
 namespace Wikiled.Instagram.Api.Converters.Location
 {
-    internal class InstaLocationFeedConverter : IObjectConverter<InstaLocationFeed, LocationFeedResponse>
+    internal class InstaLocationFeedConverter : IObjectConverter<LocationFeed, LocationFeedResponse>
     {
         public LocationFeedResponse SourceObject { get; set; }
 
-        public InstaLocationFeed Convert()
+        public LocationFeed Convert()
         {
             if (SourceObject == null)
             {
@@ -41,7 +41,7 @@ namespace Wikiled.Instagram.Api.Converters.Location
                 return medias;
             }
 
-            var feed = new InstaLocationFeed
+            var feed = new LocationFeed
             {
                 MediaCount = SourceObject.MediaCount,
                 NextMaxId = SourceObject.NextMaxId,

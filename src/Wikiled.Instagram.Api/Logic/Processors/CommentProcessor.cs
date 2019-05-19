@@ -665,7 +665,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
 
         /// <summary>
         ///     Translate comment or captions
-        ///     <para>Note: use this function to translate captions too! (i.e: <see cref="InstaCaption.Pk" />)</para>
+        ///     <para>Note: use this function to translate captions too! (i.e: <see cref="Caption.Pk" />)</para>
         /// </summary>
         /// <param name="commentIds">Comment id(s) (Array of <see cref="InstaComment.Pk" />)</param>
         public async Task<IResult<InstaTranslateList>> TranslateCommentAsync(params long[] commentIds)

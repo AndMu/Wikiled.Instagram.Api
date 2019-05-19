@@ -39,7 +39,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="progress">Progress action</param>
         /// <param name="pictureBytes">Picture(JPG,JPEG) bytes</param>
-        Task<IResult<InstaUserEdit>> ChangeProfilePictureAsync(Action<InstaUploaderProgress> progress, byte[] pictureBytes);
+        Task<IResult<InstaUserEdit>> ChangeProfilePictureAsync(Action<UploaderProgress> progress, byte[] pictureBytes);
 
         /// <summary>
         ///     Edit profile

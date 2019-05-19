@@ -188,7 +188,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </param>
         /// <param name="title">Title</param>
         /// <param name="caption">Caption</param>
-        public Task<IResult<InstaMedia>> UploadVideoAsync(InstaVideoUpload video, string title, string caption)
+        public Task<IResult<InstaMedia>> UploadVideoAsync(VideoUpload video, string title, string caption)
         {
             return UploadVideoAsync(null, video, title, caption);
         }
@@ -203,7 +203,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </param>
         /// <param name="title">Title</param>
         /// <param name="caption">Caption</param>
-        public Task<IResult<InstaMedia>> UploadVideoAsync(Action<InstaUploaderProgress> progress, InstaVideoUpload video, string title, string caption)
+        public Task<IResult<InstaMedia>> UploadVideoAsync(Action<UploaderProgress> progress, VideoUpload video, string title, string caption)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             return instaApi.HelperProcessor.SendIgtvVideoAsync(progress, video, title, caption);

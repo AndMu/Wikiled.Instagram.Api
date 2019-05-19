@@ -52,7 +52,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </param>
         /// <param name="title">Title</param>
         /// <param name="caption">Caption</param>
-        Task<IResult<InstaMedia>> UploadVideoAsync(InstaVideoUpload video, string title, string caption);
+        Task<IResult<InstaMedia>> UploadVideoAsync(VideoUpload video, string title, string caption);
 
         /// <summary>
         ///     Upload video to Instagram TV with progress
@@ -64,8 +64,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </param>
         /// <param name="title">Title</param>
         /// <param name="caption">Caption</param>
-        Task<IResult<InstaMedia>> UploadVideoAsync(Action<InstaUploaderProgress> progress,
-                                                   InstaVideoUpload video,
+        Task<IResult<InstaMedia>> UploadVideoAsync(Action<UploaderProgress> progress,
+                                                   VideoUpload video,
                                                    string title,
                                                    string caption);
     }

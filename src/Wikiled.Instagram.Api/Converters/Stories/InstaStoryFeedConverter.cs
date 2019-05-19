@@ -34,7 +34,7 @@ namespace Wikiled.Instagram.Api.Converters.Stories
                     {
                         feed.HashtagStories.Add(
                             InstaConvertersFabric.Instance
-                                .GetHashtagStoryConverter(itemResponse.ToObject<InstaHashtagStoryResponse>())
+                                .GetHashtagStoryConverter(itemResponse.ToObject<HashtagStoryResponse>())
                                 .Convert());
                     }
                     else

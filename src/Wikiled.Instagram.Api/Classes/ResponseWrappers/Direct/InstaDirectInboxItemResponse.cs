@@ -25,7 +25,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Direct
         public InstaFelixShareResponse FelixShareMedia { get; set; }
 
         [JsonProperty("hashtag")]
-        public InstaDirectHashtagResponse HashtagMedia { get; set; }
+        public DirectHashtagResponse HashtagMedia { get; set; }
 
         [JsonProperty("item_id")]
         public string ItemId { get; set; }

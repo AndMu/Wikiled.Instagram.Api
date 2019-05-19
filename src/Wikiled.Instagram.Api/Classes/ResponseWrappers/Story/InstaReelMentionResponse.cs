@@ -7,7 +7,7 @@ namespace Wikiled.Instagram.Api.Classes.ResponseWrappers.Story
     public class InstaReelMentionResponse
     {
         [JsonProperty("hashtag")]
-        public InstaHashtagResponse Hashtag { get; set; }
+        public HashtagResponse Hashtag { get; set; }
 
         [JsonProperty("height")]
         public double Height { get; set; }

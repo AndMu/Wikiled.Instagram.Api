@@ -10,7 +10,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Story
 
         public double IsPinned { get; set; }
 
-        public InstaPlaceShort Location { get; set; }
+        public PlaceShort Location { get; set; }
 
         public double Rotation { get; set; }
 

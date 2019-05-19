@@ -20,10 +20,10 @@ namespace Wikiled.Instagram.Api.Helpers
     {
         private static readonly Random Rnd = new Random();
 
-        public static InstaImageUpload ConvertToImageUpload(this InstaImage instaImage,
+        public static ImageUpload ConvertToImageUpload(this InstaImage instaImage,
                                                             UserTagUpload[] userTags = null)
         {
-            return new InstaImageUpload
+            return new ImageUpload
             {
                 Height = instaImage.Height,
                 ImageBytes = instaImage.ImageBytes,

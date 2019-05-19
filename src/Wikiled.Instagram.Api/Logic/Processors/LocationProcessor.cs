@@ -80,7 +80,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///         <see cref="ILocationProcessor.SearchPlacesAsync(double, double, string)(double, double, string)" />
         ///     </para>
         /// </param>
-        public async Task<IResult<InstaPlaceShort>> GetLocationInfoAsync(string externalIdOrFacebookPlacesId)
+        public async Task<IResult<PlaceShort>> GetLocationInfoAsync(string externalIdOrFacebookPlacesId)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<InstaPlaceShort>(response, json);
+                    return InstaResult.UnExpectedResponse<PlaceShort>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<PlaceResponse>(json);
@@ -102,12 +102,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaPlaceShort), InstaResponseType.NetworkProblem);
+                return InstaResult.Fail(httpException, default(PlaceShort), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaPlaceShort>(exception);
+                return InstaResult.Fail<PlaceShort>(exception);
             }
         }
 
@@ -155,7 +155,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="locationId">Location identifier (location pk, external id, facebook id)</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        public Task<IResult<InstaSectionMedia>> GetRecentLocationFeedsAsync(long locationId, PaginationParameters paginationParameters)
+        public Task<IResult<SectionMedia>> GetRecentLocationFeedsAsync(long locationId, PaginationParameters paginationParameters)
         {
             return GetSectionAsync(locationId, paginationParameters, InstaSectionType.Recent);
         }
@@ -166,7 +166,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="locationId">Location identifier (location pk, external id, facebook id)</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        public Task<IResult<InstaSectionMedia>> GetTopLocationFeedsAsync(long locationId, PaginationParameters paginationParameters)
+        public Task<IResult<SectionMedia>> GetTopLocationFeedsAsync(long locationId, PaginationParameters paginationParameters)
         {
             return GetSectionAsync(locationId, paginationParameters, InstaSectionType.Ranked);
         }
@@ -180,7 +180,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     List of locations (short format)
         /// </returns>
-        public async Task<IResult<InstaLocationShortList>> SearchLocationAsync(
+        public async Task<IResult<LocationShortList>> SearchLocationAsync(
             double latitude,
             double longitude,
             string query)
@@ -211,7 +211,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
 
                 if (!Uri.TryCreate(uri, fields.AsQueryString(), out var newuri))
                 {
-                    return InstaResult.Fail<InstaLocationShortList>("Unable to create uri for location search");
+                    return InstaResult.Fail<LocationShortList>("Unable to create uri for location search");
                 }
 
                 var request = httpHelper.GetDefaultRequest(HttpMethod.Get, newuri, deviceInfo);
@@ -219,7 +219,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<InstaLocationShortList>(response, json);
+                    return InstaResult.UnExpectedResponse<LocationShortList>(response, json);
                 }
 
                 var locations = JsonConvert.DeserializeObject<LocationSearchResponse>(json);
@@ -229,12 +229,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaLocationShortList), InstaResponseType.NetworkProblem);
+                return InstaResult.Fail(httpException, default(LocationShortList), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaLocationShortList>(exception);
+                return InstaResult.Fail<LocationShortList>(exception);
             }
         }
 
@@ -246,9 +246,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="longitude">Longitude</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
         /// <returns>
-        ///     <see cref="InstaPlaceList" />
+        ///     <see cref="PlaceList" />
         /// </returns>
-        public Task<IResult<InstaPlaceList>> SearchPlacesAsync(double latitude, double longitude, PaginationParameters paginationParameters)
+        public Task<IResult<PlaceList>> SearchPlacesAsync(double latitude, double longitude, PaginationParameters paginationParameters)
         {
             return SearchPlacesAsync(latitude, longitude, null, paginationParameters);
         }
@@ -262,9 +262,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="query">Query to search (city, country or ...)</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
         /// <returns>
-        ///     <see cref="InstaPlaceList" />
+        ///     <see cref="PlaceList" />
         /// </returns>
-        public async Task<IResult<InstaPlaceList>> SearchPlacesAsync(double latitude,
+        public async Task<IResult<PlaceList>> SearchPlacesAsync(double latitude,
                                                                      double longitude,
                                                                      string query,
                                                                      PaginationParameters paginationParameters)
@@ -277,7 +277,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     paginationParameters = PaginationParameters.MaxPagesToLoad(1);
                 }
 
-                InstaPlaceList Convert(PlaceListResponse placelistResponse)
+                PlaceList Convert(PlaceListResponse placelistResponse)
                 {
                     return InstaConvertersFabric.Instance.GetPlaceListConverter(placelistResponse).Convert();
                 }
@@ -285,7 +285,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 var places = await SearchPlaces(latitude, longitude, query, paginationParameters).ConfigureAwait(false);
                 if (!places.Succeeded)
                 {
-                    return InstaResult.Fail(places.Info, default(InstaPlaceList));
+                    return InstaResult.Fail(places.Info, default(PlaceList));
                 }
 
                 var placesResponse = places.Value;
@@ -317,12 +317,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaPlaceList), InstaResponseType.NetworkProblem);
+                return InstaResult.Fail(httpException, default(PlaceList), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaPlaceList>(exception);
+                return InstaResult.Fail<PlaceList>(exception);
             }
         }
 
@@ -388,7 +388,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
         }
 
-        private async Task<IResult<InstaSectionMedia>> GetSectionAsync(
+        private async Task<IResult<SectionMedia>> GetSectionAsync(
             long locationId,
             PaginationParameters paginationParameters,
             InstaSectionType sectionType)
@@ -401,7 +401,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     paginationParameters = PaginationParameters.MaxPagesToLoad(1);
                 }
 
-                InstaSectionMedia Convert(InstaSectionMediaListResponse sectionMediaListResponse)
+                SectionMedia Convert(SectionMediaListResponse sectionMediaListResponse)
                 {
                     return InstaConvertersFabric.Instance.GetHashtagMediaListConverter(sectionMediaListResponse).Convert();
                 }
@@ -421,7 +421,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     }
                     else
                     {
-                        InstaResult.Fail(mediaResponse.Info, default(InstaSectionMedia));
+                        InstaResult.Fail(mediaResponse.Info, default(SectionMedia));
                     }
                 }
 
@@ -464,16 +464,16 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaSectionMedia), InstaResponseType.NetworkProblem);
+                return InstaResult.Fail(httpException, default(SectionMedia), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaSectionMedia>(exception);
+                return InstaResult.Fail<SectionMedia>(exception);
             }
         }
 
-        private async Task<IResult<InstaSectionMediaListResponse>> GetSectionMedia(
+        private async Task<IResult<SectionMediaListResponse>> GetSectionMedia(
             InstaSectionType sectionType,
             long locationId,
             string maxId = null,
@@ -521,22 +521,22 @@ namespace Wikiled.Instagram.Api.Logic.Processors
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<InstaSectionMediaListResponse>(response, json);
+                    return InstaResult.UnExpectedResponse<SectionMediaListResponse>(response, json);
                 }
 
-                var obj = JsonConvert.DeserializeObject<InstaSectionMediaListResponse>(json);
+                var obj = JsonConvert.DeserializeObject<SectionMediaListResponse>(json);
 
                 return InstaResult.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaSectionMediaListResponse), InstaResponseType.NetworkProblem);
+                return InstaResult.Fail(httpException, default(SectionMediaListResponse), InstaResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaSectionMediaListResponse>(exception);
+                return InstaResult.Fail<SectionMediaListResponse>(exception);
             }
         }
 

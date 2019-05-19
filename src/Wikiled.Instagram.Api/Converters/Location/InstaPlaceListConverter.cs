@@ -5,18 +5,18 @@ using Wikiled.Instagram.Api.Classes.ResponseWrappers.Location;
 
 namespace Wikiled.Instagram.Api.Converters.Location
 {
-    internal class InstaPlaceListConverter : IObjectConverter<InstaPlaceList, PlaceListResponse>
+    internal class InstaPlaceListConverter : IObjectConverter<PlaceList, PlaceListResponse>
     {
         public PlaceListResponse SourceObject { get; set; }
 
-        public InstaPlaceList Convert()
+        public PlaceList Convert()
         {
             if (SourceObject == null)
             {
                 throw new ArgumentNullException("Source object");
             }
 
-            var list = new InstaPlaceList
+            var list = new PlaceList
             {
                 HasMore = SourceObject.HasMore ?? false,
                 RankToken = SourceObject.RankToken,

@@ -23,29 +23,27 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     List of hashtags
         /// </returns>
-        Task<IResult<InstaHashtagSearch>> GetFollowingHashtagsInfoAsync(long userId);
+        Task<IResult<HashtagSearch>> GetFollowingHashtagsInfoAsync(long userId);
 
         /// <summary>
         ///     Gets the hashtag information by user tagname.
         /// </summary>
         /// <param name="tagname">Tagname</param>
         /// <returns>Hashtag information</returns>
-        Task<IResult<InstaHashtag>> GetHashtagInfoAsync(string tagname);
+        Task<IResult<Hashtag>> GetHashtagInfoAsync(string tagname);
 
         /// <summary>
         ///     Get stories of an hashtag
         /// </summary>
         /// <param name="tagname">Tag name</param>
-        Task<IResult<InstaHashtagStory>> GetHashtagStoriesAsync(string tagname);
+        Task<IResult<HashtagStory>> GetHashtagStoriesAsync(string tagname);
 
         /// <summary>
         ///     Get recent hashtag media list
         /// </summary>
         /// <param name="tagname">Tag name</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        Task<IResult<InstaSectionMedia>> GetRecentHashtagMediaListAsync(
-            string tagname,
-            PaginationParameters paginationParameters);
+        Task<IResult<SectionMedia>> GetRecentHashtagMediaListAsync(string tagname, PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Get suggested hashtags
@@ -53,14 +51,14 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     List of hashtags
         /// </returns>
-        Task<IResult<InstaHashtagSearch>> GetSuggestedHashtagsAsync();
+        Task<IResult<HashtagSearch>> GetSuggestedHashtagsAsync();
 
         /// <summary>
         ///     Get top (ranked) hashtag media list
         /// </summary>
         /// <param name="tagname">Tag name</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        Task<IResult<InstaSectionMedia>> GetTopHashtagMediaListAsync(string tagname, PaginationParameters paginationParameters);
+        Task<IResult<SectionMedia>> GetTopHashtagMediaListAsync(string tagname, PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Searches for specific hashtag by search query.
@@ -74,7 +72,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     List of hashtags
         /// </returns>
-        Task<IResult<InstaHashtagSearch>> SearchHashtagAsync(string query, IEnumerable<long> excludeList = null, string rankToken = null);
+        Task<IResult<HashtagSearch>> SearchHashtagAsync(string query, IEnumerable<long> excludeList = null, string rankToken = null);
 
         /// <summary>
         ///     Unfollow a hashtag

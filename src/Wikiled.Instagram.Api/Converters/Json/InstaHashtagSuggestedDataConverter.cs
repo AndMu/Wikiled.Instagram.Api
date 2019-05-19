@@ -10,7 +10,7 @@ namespace Wikiled.Instagram.Api.Converters.Json
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(InstaHashtagSearchResponse);
+            return objectType == typeof(HashtagSearchResponse);
         }
 
         public override object ReadJson(
@@ -21,14 +21,14 @@ namespace Wikiled.Instagram.Api.Converters.Json
         {
             var token = JToken.Load(reader);
             var container = token["tags"];
-            var tags = token.ToObject<InstaHashtagSearchResponse>();
+            var tags = token.ToObject<HashtagSearchResponse>();
             if (container != null && container.Any())
             {
                 foreach (var item in container)
                 {
                     try
                     {
-                        tags.Tags.Add(item.ToObject<InstaHashtagResponse>());
+                        tags.Tags.Add(item.ToObject<HashtagResponse>());
                     }
                     catch
                     {

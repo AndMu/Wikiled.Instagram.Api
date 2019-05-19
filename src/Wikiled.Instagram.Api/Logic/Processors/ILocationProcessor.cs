@@ -34,7 +34,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///         <see cref="ILocationProcessor.SearchPlacesAsync(double, double, string)(double, double, string)" />
         ///     </para>
         /// </param>
-        Task<IResult<InstaPlaceShort>> GetLocationInfoAsync(string externalIdOrFacebookPlacesId);
+        Task<IResult<PlaceShort>> GetLocationInfoAsync(string externalIdOrFacebookPlacesId);
 
         /// <summary>
         ///     Gets the stories of particular location.
@@ -51,7 +51,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="locationId">Location identifier (location pk, external id, facebook id)</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        Task<IResult<InstaSectionMedia>> GetRecentLocationFeedsAsync(long locationId, PaginationParameters paginationParameters);
+        Task<IResult<SectionMedia>> GetRecentLocationFeedsAsync(long locationId, PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Get top (ranked) location media feeds.
@@ -59,7 +59,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="locationId">Location identifier (location pk, external id, facebook id)</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        Task<IResult<InstaSectionMedia>> GetTopLocationFeedsAsync(long locationId, PaginationParameters paginationParameters);
+        Task<IResult<SectionMedia>> GetTopLocationFeedsAsync(long locationId, PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Searches for specific location by provided geo-data or search query.
@@ -70,7 +70,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     List of locations (short format)
         /// </returns>
-        Task<IResult<InstaLocationShortList>> SearchLocationAsync(double latitude, double longitude, string query);
+        Task<IResult<LocationShortList>> SearchLocationAsync(double latitude, double longitude, string query);
 
         /// <summary>
         ///     Search places in facebook
@@ -80,9 +80,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="longitude">Longitude</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
         /// <returns>
-        ///     <see cref="InstaPlaceList" />
+        ///     <see cref="PlaceList" />
         /// </returns>
-        Task<IResult<InstaPlaceList>> SearchPlacesAsync(double latitude, double longitude, PaginationParameters paginationParameters);
+        Task<IResult<PlaceList>> SearchPlacesAsync(double latitude, double longitude, PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Search places in facebook
@@ -93,12 +93,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="query">Query to search (city, country or ...)</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
         /// <returns>
-        ///     <see cref="InstaPlaceList" />
+        ///     <see cref="PlaceList" />
         /// </returns>
-        Task<IResult<InstaPlaceList>> SearchPlacesAsync(double latitude,
-                                                        double longitude,
-                                                        string query,
-                                                        PaginationParameters paginationParameters);
+        Task<IResult<PlaceList>> SearchPlacesAsync(double latitude, double longitude, string query, PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Search user by location
@@ -107,10 +104,6 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="longitude">Longitude</param>
         /// <param name="desireUsername">Desire username</param>
         /// <param name="count">Maximum user count</param>
-        Task<IResult<InstaUserSearchLocation>> SearchUserByLocationAsync(
-            double latitude,
-            double longitude,
-            string desireUsername,
-            int count = 50);
+        Task<IResult<InstaUserSearchLocation>> SearchUserByLocationAsync(double latitude, double longitude, string desireUsername, int count = 50);
     }
 }

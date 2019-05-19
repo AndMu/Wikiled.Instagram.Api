@@ -156,7 +156,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="viewMode">View mode</param>
         /// <param name="threadIds">Thread ids</param>
         Task<IResult<bool>> SendDirectDisappearingPhotoAsync(
-            Action<InstaUploaderProgress> progress,
+            Action<UploaderProgress> progress,
             InstaImage image,
             InstaViewMode viewMode = InstaViewMode.Replayable,
             params string[] threadIds);
@@ -169,7 +169,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="threadIds">Thread ids</param>
         /// <returns></returns>
         Task<IResult<bool>> SendDirectDisappearingVideoAsync(
-            InstaVideoUpload video,
+            VideoUpload video,
             InstaViewMode viewMode = InstaViewMode.Replayable,
             params string[] threadIds);
 
@@ -182,8 +182,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="threadIds">Thread ids</param>
         /// <returns></returns>
         Task<IResult<bool>> SendDirectDisappearingVideoAsync(
-            Action<InstaUploaderProgress> progress,
-            InstaVideoUpload video,
+            Action<UploaderProgress> progress,
+            VideoUpload video,
             InstaViewMode viewMode = InstaViewMode.Replayable,
             params string[] threadIds);
 
@@ -273,7 +273,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="image">Image to upload</param>
         /// <param name="threadId">Thread id</param>
         /// <returns>Returns True is sent</returns>
-        Task<IResult<bool>> SendDirectPhotoAsync(Action<InstaUploaderProgress> progress,
+        Task<IResult<bool>> SendDirectPhotoAsync(Action<UploaderProgress> progress,
                                                  InstaImage image,
                                                  string threadId);
 
@@ -292,7 +292,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="image">Image to upload</param>
         /// <param name="recipients">Recipients (user ids/pk)</param>
         /// <returns>Returns True is sent</returns>
-        Task<IResult<bool>> SendDirectPhotoToRecipientsAsync(Action<InstaUploaderProgress> progress,
+        Task<IResult<bool>> SendDirectPhotoToRecipientsAsync(Action<UploaderProgress> progress,
                                                              InstaImage image,
                                                              params string[] recipients);
 
@@ -328,7 +328,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="video">Video to upload (no need to set thumbnail)</param>
         /// <param name="threadId">Thread id</param>
-        Task<IResult<bool>> SendDirectVideoAsync(InstaVideoUpload video, string threadId);
+        Task<IResult<bool>> SendDirectVideoAsync(VideoUpload video, string threadId);
 
         /// <summary>
         ///     Send video to direct thread (single) with progress
@@ -336,8 +336,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="progress">Progress action</param>
         /// <param name="video">Video to upload (no need to set thumbnail)</param>
         /// <param name="threadId">Thread id</param>
-        Task<IResult<bool>> SendDirectVideoAsync(Action<InstaUploaderProgress> progress,
-                                                 InstaVideoUpload video,
+        Task<IResult<bool>> SendDirectVideoAsync(Action<UploaderProgress> progress,
+                                                 VideoUpload video,
                                                  string threadId);
 
         /// <summary>
@@ -345,7 +345,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="video">Video to upload (no need to set thumbnail)</param>
         /// <param name="recipients">Recipients (user ids/pk)</param>
-        Task<IResult<bool>> SendDirectVideoToRecipientsAsync(InstaVideoUpload video, params string[] recipients);
+        Task<IResult<bool>> SendDirectVideoToRecipientsAsync(VideoUpload video, params string[] recipients);
 
         /// <summary>
         ///     Send video to multiple recipients (multiple user) with progress
@@ -353,8 +353,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="progress">Progress action</param>
         /// <param name="video">Video to upload (no need to set thumbnail)</param>
         /// <param name="recipients">Recipients (user ids/pk)</param>
-        Task<IResult<bool>> SendDirectVideoToRecipientsAsync(Action<InstaUploaderProgress> progress,
-                                                             InstaVideoUpload video,
+        Task<IResult<bool>> SendDirectVideoToRecipientsAsync(Action<UploaderProgress> progress,
+                                                             VideoUpload video,
                                                              params string[] recipients);
 
         /// <summary>

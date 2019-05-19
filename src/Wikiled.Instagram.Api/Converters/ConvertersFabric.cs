@@ -238,7 +238,7 @@ namespace Wikiled.Instagram.Api.Converters
             return new InstaBusinessUserConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaCaption, InstaCaptionResponse> GetCaptionConverter(
+        public IObjectConverter<Caption, InstaCaptionResponse> GetCaptionConverter(
             InstaCaptionResponse captionResponse)
         {
             return new InstaCaptionConverter { SourceObject = captionResponse };
@@ -310,10 +310,10 @@ namespace Wikiled.Instagram.Api.Converters
             return new InstaDirectBroadcastConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaDirectHashtag, InstaDirectHashtagResponse> GetDirectHashtagConverter(
-            InstaDirectHashtagResponse response)
+        public IObjectConverter<DirectHashtag, DirectHashtagResponse> GetDirectHashtagConverter(
+            DirectHashtagResponse response)
         {
-            return new InstaDirectHashtagConverter { SourceObject = response };
+            return new DirectHashtagConverter { SourceObject = response };
         }
 
         public IObjectConverter<InstaDirectInboxContainer, InstaDirectInboxContainerResponse>
@@ -431,34 +431,34 @@ namespace Wikiled.Instagram.Api.Converters
             return new InstaFullUserInfoConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaHashtag, InstaHashtagResponse> GetHashTagConverter(
-            InstaHashtagResponse response)
+        public IObjectConverter<Hashtag, HashtagResponse> GetHashTagConverter(
+            HashtagResponse response)
         {
-            return new InstaHashtagConverter { SourceObject = response };
+            return new HashtagConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaSectionMedia, InstaSectionMediaListResponse> GetHashtagMediaListConverter(
-            InstaSectionMediaListResponse response)
+        public IObjectConverter<SectionMedia, SectionMediaListResponse> GetHashtagMediaListConverter(
+            SectionMediaListResponse response)
         {
-            return new InstaHashtagMediaConverter { SourceObject = response };
+            return new HashtagMediaConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaHashtagOwner, InstaHashtagOwnerResponse> GetHashtagOwnerConverter(
-            InstaHashtagOwnerResponse response)
+        public IObjectConverter<HashtagOwner, HashtagOwnerResponse> GetHashtagOwnerConverter(
+            HashtagOwnerResponse response)
         {
-            return new InstaHashtagOwnerConverter { SourceObject = response };
+            return new HashtagOwnerConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaHashtagSearch, InstaHashtagSearchResponse> GetHashTagsSearchConverter(
-            InstaHashtagSearchResponse response)
+        public IObjectConverter<HashtagSearch, HashtagSearchResponse> GetHashTagsSearchConverter(
+            HashtagSearchResponse response)
         {
-            return new InstaHashtagSearchConverter { SourceObject = response };
+            return new HashtagSearchConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaHashtagStory, InstaHashtagStoryResponse> GetHashtagStoryConverter(
-            InstaHashtagStoryResponse response)
+        public IObjectConverter<HashtagStory, HashtagStoryResponse> GetHashtagStoryConverter(
+            HashtagStoryResponse response)
         {
-            return new InstaHashtagStoryConverter { SourceObject = response };
+            return new HashtagStoryConverter { SourceObject = response };
         }
 
         public IObjectConverter<InstaHighlightFeeds, InstaHighlightFeedsResponse> GetHighlightFeedsConverter(
@@ -509,7 +509,7 @@ namespace Wikiled.Instagram.Api.Converters
             return new LocationConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaLocationFeed, LocationFeedResponse> GetLocationFeedConverter(
+        public IObjectConverter<LocationFeed, LocationFeedResponse> GetLocationFeedConverter(
             LocationFeedResponse response)
         {
             return new InstaLocationFeedConverter { SourceObject = response };
@@ -521,7 +521,7 @@ namespace Wikiled.Instagram.Api.Converters
             return new InstaLocationShortConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaLocationShortList, LocationSearchResponse> GetLocationsSearchConverter(
+        public IObjectConverter<LocationShortList, LocationSearchResponse> GetLocationsSearchConverter(
             LocationSearchResponse response)
         {
             return new InstaLocationSearchConverter { SourceObject = response };
@@ -551,19 +551,19 @@ namespace Wikiled.Instagram.Api.Converters
             return new InstaMerchantConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaPlace, PlaceResponse> GetPlaceConverter(
+        public IObjectConverter<Place, PlaceResponse> GetPlaceConverter(
             PlaceResponse response)
         {
             return new InstaPlaceConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaPlaceList, PlaceListResponse> GetPlaceListConverter(
+        public IObjectConverter<PlaceList, PlaceListResponse> GetPlaceListConverter(
             PlaceListResponse response)
         {
             return new InstaPlaceListConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaPlaceShort, PlaceShortResponse> GetPlaceShortConverter(
+        public IObjectConverter<PlaceShort, PlaceShortResponse> GetPlaceShortConverter(
             PlaceShortResponse response)
         {
             return new InstaPlaceShortConverter { SourceObject = response };
@@ -631,10 +631,10 @@ namespace Wikiled.Instagram.Api.Converters
             return new InstaReelStoryMediaViewersConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaRelatedHashtag, InstaRelatedHashtagResponse> GetRelatedHashtagConverter(
-            InstaRelatedHashtagResponse response)
+        public IObjectConverter<RelatedHashtag, RelatedHashtagResponse> GetRelatedHashtagConverter(
+            RelatedHashtagResponse response)
         {
-            return new InstaRelatedHashtagConverter { SourceObject = response };
+            return new RelatedHashtagConverter { SourceObject = response };
         }
 
         public IObjectConverter<InstaFriendshipShortStatus, InstaFriendshipShortStatusResponse>

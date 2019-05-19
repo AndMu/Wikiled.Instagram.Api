@@ -4,13 +4,13 @@ using Wikiled.Instagram.Api.Helpers;
 
 namespace Wikiled.Instagram.Api.Converters.Media
 {
-    internal class InstaCaptionConverter : IObjectConverter<InstaCaption, InstaCaptionResponse>
+    internal class InstaCaptionConverter : IObjectConverter<Caption, InstaCaptionResponse>
     {
         public InstaCaptionResponse SourceObject { get; set; }
 
-        public InstaCaption Convert()
+        public Caption Convert()
         {
-            var caption = new InstaCaption
+            var caption = new Caption
             {
                 Pk = SourceObject.Pk,
                 CreatedAt = InstaDateTimeHelper.UnixTimestampToDateTime(SourceObject.CreatedAtUnixLike),

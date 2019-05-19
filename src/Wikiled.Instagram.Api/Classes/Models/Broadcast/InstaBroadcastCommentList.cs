@@ -5,7 +5,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Broadcast
 {
     public class InstaBroadcastCommentList
     {
-        public InstaCaption Caption { get; set; }
+        public Caption Caption { get; set; }
 
         public bool CaptionIsEdited { get; set; }
 

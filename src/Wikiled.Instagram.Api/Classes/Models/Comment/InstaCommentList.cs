@@ -7,7 +7,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Comment
     {
         public bool CanViewMorePreviewComments { get; set; }
 
-        public InstaCaption Caption { get; set; }
+        public Caption Caption { get; set; }
 
         public bool CaptionIsEdited { get; set; }
 

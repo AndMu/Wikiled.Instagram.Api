@@ -19,7 +19,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Direct
 
         public InstaMedia FelixShareMedia { get; set; }
 
-        public InstaDirectHashtag HashtagMedia { get; set; }
+        public DirectHashtag HashtagMedia { get; set; }
 
         public string ItemId { get; set; }
 

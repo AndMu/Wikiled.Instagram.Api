@@ -67,12 +67,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public async Task<IResult<InstaMedia>> SendIgtvVideoAsync(Action<InstaUploaderProgress> progress,
-                                                                  InstaVideoUpload video,
+        public async Task<IResult<InstaMedia>> SendIgtvVideoAsync(Action<UploaderProgress> progress,
+                                                                  VideoUpload video,
                                                                   string title,
                                                                   string caption)
         {
-            var upProgress = new InstaUploaderProgress
+            var upProgress = new UploaderProgress
             {
                 Caption = caption ?? string.Empty, UploadState = InstaUploadState.Preparing
             };
@@ -245,13 +245,13 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         }
 
         public async Task<IResult<InstaMedia>> SendMediaPhotoAsync(
-            Action<InstaUploaderProgress> progress,
-            InstaImageUpload image,
+            Action<UploaderProgress> progress,
+            ImageUpload image,
             string caption,
             LocationShort location,
             bool configureAsNameTag = false)
         {
-            var upProgress = new InstaUploaderProgress
+            var upProgress = new UploaderProgress
             {
                 Caption = caption ?? string.Empty, UploadState = InstaUploadState.Preparing
             };
@@ -376,7 +376,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         }
 
         public async Task<IResult<bool>> SendPhotoAsync(
-            Action<InstaUploaderProgress> progress,
+            Action<UploaderProgress> progress,
             bool isDirectPhoto,
             bool isDisappearingPhoto,
             string caption,
@@ -386,7 +386,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             string threadId,
             InstaImage image)
         {
-            var upProgress = new InstaUploaderProgress
+            var upProgress = new UploaderProgress
             {
                 Caption = caption ?? string.Empty, UploadState = InstaUploadState.Preparing
             };
@@ -509,7 +509,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="isDirectVideo">Direct video</param>
         /// <param name="isDisappearingVideo">Disappearing video</param>
         public async Task<IResult<bool>> SendVideoAsync(
-            Action<InstaUploaderProgress> progress,
+            Action<UploaderProgress> progress,
             bool isDirectVideo,
             bool isDisappearingVideo,
             string caption,
@@ -517,11 +517,11 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             InstaStoryType storyType,
             string recipients,
             string threadId,
-            InstaVideoUpload video,
+            VideoUpload video,
             Uri uri = null,
             InstaStoryUploadOptions uploadOptions = null)
         {
-            var upProgress = new InstaUploaderProgress
+            var upProgress = new UploaderProgress
             {
                 Caption = caption ?? string.Empty, UploadState = InstaUploadState.Preparing
             };
@@ -773,8 +773,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 .ToString(Formatting.None);
         }
 
-        private async Task<IResult<InstaMedia>> ConfigureIgtvVideo(Action<InstaUploaderProgress> progress,
-                                                                   InstaUploaderProgress upProgress,
+        private async Task<IResult<InstaMedia>> ConfigureIgtvVideo(Action<UploaderProgress> progress,
+                                                                   UploaderProgress upProgress,
                                                                    string uploadId,
                                                                    string title,
                                                                    string caption)
@@ -855,8 +855,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         }
 
         private async Task<IResult<InstaMedia>> ConfigureMediaPhotoAsNametagAsync(
-            Action<InstaUploaderProgress> progress,
-            InstaUploaderProgress upProgress,
+            Action<UploaderProgress> progress,
+            UploaderProgress upProgress,
             string uploadId)
         {
             try
@@ -913,8 +913,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         }
 
         private async Task<IResult<InstaMedia>> ConfigureMediaPhotoAsync(
-            Action<InstaUploaderProgress> progress,
-            InstaUploaderProgress upProgress,
+            Action<UploaderProgress> progress,
+            UploaderProgress upProgress,
             string uploadId,
             string caption,
             LocationShort location,
@@ -1019,8 +1019,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         }
 
         private async Task<IResult<bool>> ConfigurePhoto(
-            Action<InstaUploaderProgress> progress,
-            InstaUploaderProgress upProgress,
+            Action<UploaderProgress> progress,
+            UploaderProgress upProgress,
             string uploadId,
             bool isDirectPhoto,
             bool isDisappearingPhoto,
@@ -1176,8 +1176,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         }
 
         private async Task<IResult<bool>> ConfigureVideo(
-            Action<InstaUploaderProgress> progress,
-            InstaUploaderProgress upProgress,
+            Action<UploaderProgress> progress,
+            UploaderProgress upProgress,
             string uploadId,
             bool isDirectVideo,
             bool isDisappearingVideo,

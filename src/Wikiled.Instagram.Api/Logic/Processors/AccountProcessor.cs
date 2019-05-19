@@ -518,11 +518,11 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="progress">Progress action</param>
         /// <param name="pictureBytes">Picture(JPG,JPEG) bytes</param>
         public async Task<IResult<InstaUserEdit>> ChangeProfilePictureAsync(
-            Action<InstaUploaderProgress> progress,
+            Action<UploaderProgress> progress,
             byte[] pictureBytes)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
-            var upProgress = new InstaUploaderProgress
+            var upProgress = new UploaderProgress
             {
                 Caption = string.Empty, UploadState = InstaUploadState.Preparing
             };

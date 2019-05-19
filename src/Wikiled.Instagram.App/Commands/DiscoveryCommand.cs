@@ -46,6 +46,11 @@ namespace Wikiled.Instagram.App.Commands
             if (!api.IsUserAuthenticated)
             {
                 var logInResult = await api.LoginAsync().ConfigureAwait(false);
+                if (!logInResult.Succeeded)
+                {
+                    log.LogError("Authentication failed: [{0}]", logInResult.Info.Message);
+                    return;
+                }
             }
             else
             {

@@ -210,7 +210,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     </para>
         /// </param>
         Task<IResult<InstaStoryMedia>> ShareMediaAsStoryAsync(
-            Action<InstaUploaderProgress> progress,
+            Action<UploaderProgress> progress,
             InstaImage image,
             InstaMediaStoryUpload mediaStoryUpload);
 
@@ -251,7 +251,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="caption">Caption</param>
         /// <param name="uploadOptions">Upload options => Optional</param>
         Task<IResult<InstaStoryMedia>> UploadStoryPhotoAsync(
-            Action<InstaUploaderProgress> progress,
+            Action<UploaderProgress> progress,
             InstaImage image,
             string caption,
             InstaStoryUploadOptions uploadOptions = null);
@@ -280,7 +280,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="uri">Uri to add</param>
         /// <param name="uploadOptions">Upload options => Optional</param>
         Task<IResult<InstaStoryMedia>> UploadStoryPhotoWithUrlAsync(
-            Action<InstaUploaderProgress> progress,
+            Action<UploaderProgress> progress,
             InstaImage image,
             string caption,
             Uri uri,
@@ -291,7 +291,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="video">Video to upload</param>
         /// <param name="caption">Caption</param>
-        Task<IResult<InstaStoryMedia>> UploadStoryVideoAsync(InstaVideoUpload video,
+        Task<IResult<InstaStoryMedia>> UploadStoryVideoAsync(VideoUpload video,
                                                              string caption,
                                                              InstaStoryUploadOptions uploadOptions = null);
 
@@ -301,8 +301,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="progress">Progress action</param>
         /// <param name="video">Video to upload</param>
         /// <param name="caption">Caption</param>
-        Task<IResult<InstaStoryMedia>> UploadStoryVideoAsync(Action<InstaUploaderProgress> progress,
-                                                             InstaVideoUpload video,
+        Task<IResult<InstaStoryMedia>> UploadStoryVideoAsync(Action<UploaderProgress> progress,
+                                                             VideoUpload video,
                                                              string caption,
                                                              InstaStoryUploadOptions uploadOptions = null);
 
@@ -313,7 +313,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="storyType">Story type</param>
         /// <param name="threadIds">Thread ids</param>
         Task<IResult<bool>> UploadStoryVideoAsync(
-            InstaVideoUpload video,
+            VideoUpload video,
             InstaStoryType storyType = InstaStoryType.SelfStory,
             InstaStoryUploadOptions uploadOptions = null,
             params string[] threadIds);
@@ -326,8 +326,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="storyType">Story type</param>
         /// <param name="threadIds">Thread ids</param>
         Task<IResult<bool>> UploadStoryVideoAsync(
-            Action<InstaUploaderProgress> progress,
-            InstaVideoUpload video,
+            Action<UploaderProgress> progress,
+            VideoUpload video,
             InstaStoryType storyType = InstaStoryType.SelfStory,
             InstaStoryUploadOptions uploadOptions = null,
             params string[] threadIds);
@@ -340,7 +340,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="video">Video to upload</param>
         /// <param name="caption">Caption</param>
         /// <param name="uri">Uri to add</param>
-        Task<IResult<InstaStoryMedia>> UploadStoryVideoWithUrlAsync(InstaVideoUpload video,
+        Task<IResult<InstaStoryMedia>> UploadStoryVideoWithUrlAsync(VideoUpload video,
                                                                     string caption,
                                                                     Uri uri,
                                                                     InstaStoryUploadOptions uploadOptions = null);
@@ -354,8 +354,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="caption">Caption</param>
         /// <param name="uri">Uri to add</param>
         Task<IResult<InstaStoryMedia>> UploadStoryVideoWithUrlAsync(
-            Action<InstaUploaderProgress> progress,
-            InstaVideoUpload video,
+            Action<UploaderProgress> progress,
+            VideoUpload video,
             string caption,
             Uri uri,
             InstaStoryUploadOptions uploadOptions = null);
@@ -369,7 +369,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="storyType">Story type</param>
         /// <param name="threadIds">Thread ids</param>
         Task<IResult<bool>> UploadStoryVideoWithUrlAsync(
-            InstaVideoUpload video,
+            VideoUpload video,
             Uri uri,
             InstaStoryType storyType = InstaStoryType.SelfStory,
             InstaStoryUploadOptions uploadOptions = null,
@@ -384,8 +384,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="storyType">Story type</param>
         /// <param name="threadIds">Thread ids</param>
         Task<IResult<bool>> UploadStoryVideoWithUrlAsync(
-            Action<InstaUploaderProgress> progress,
-            InstaVideoUpload video,
+            Action<UploaderProgress> progress,
+            VideoUpload video,
             Uri uri,
             InstaStoryType storyType = InstaStoryType.SelfStory,
             InstaStoryUploadOptions uploadOptions = null,

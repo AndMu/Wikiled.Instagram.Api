@@ -23,7 +23,7 @@ namespace Examples.Samples
 
         public async Task DoShow()
         {
-            var video = new InstaVideoUpload
+            var video = new VideoUpload
             {
                 // leave zero, if you don't know how height and width is it.
                 Video = new InstaVideo(@"c:\video1.mp4", 0, 0),

@@ -24,7 +24,7 @@ namespace Examples.Samples
 
         public async Task DoShow()
         {
-            var mediaImage = new InstaImageUpload
+            var mediaImage = new ImageUpload
             {
                 // leave zero, if you don't know how height and width is it.
                 Height = 1080, Width = 1080, Uri = @"c:\someawesomepicture.jpg"
@@ -39,7 +39,7 @@ namespace Examples.Samples
 
         public async Task DoShowWithProgress()
         {
-            var mediaImage = new InstaImageUpload
+            var mediaImage = new ImageUpload
             {
                 // leave zero, if you don't know how height and width is it.
                 Height = 1080, Width = 1080, Uri = @"c:\someawesomepicture.jpg"
@@ -54,7 +54,7 @@ namespace Examples.Samples
                                   : $"Unable to upload photo: {result.Info.Message}");
         }
 
-        private void UploadProgress(InstaUploaderProgress progress)
+        private void UploadProgress(UploaderProgress progress)
         {
             if (progress == null)
             {

@@ -56,7 +56,7 @@ namespace Examples.Samples
 
         public async void UploadVideo()
         {
-            var video = new InstaVideoUpload
+            var video = new VideoUpload
             {
                 Video = new InstaVideo(@"c:\video1.mp4", 0, 0),
                 VideoThumbnail = new InstaImage(@"c:\video thumbnail 1.jpg", 0, 0)

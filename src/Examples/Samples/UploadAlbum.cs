@@ -30,7 +30,7 @@ namespace Examples.Samples
         {
             var images = new[]
             {
-                new InstaImageUpload
+                new ImageUpload
                 {
                     // leave zero, if you don't know how height and width is it.
                     Height = 0,
@@ -42,7 +42,7 @@ namespace Examples.Samples
                         new UserTagUpload { Username = "rmt4006", X = 0.5, Y = 0.5 }
                     }
                 },
-                new InstaImageUpload
+                new ImageUpload
                 {
                     // leave zero, if you don't know how height and width is it.
                     Height = 0, Width = 0, Uri = @"c:\image2.jpg"
@@ -51,7 +51,7 @@ namespace Examples.Samples
 
             var videos = new[]
             {
-                new InstaVideoUpload
+                new VideoUpload
                 {
                     // leave zero, if you don't know how height and width is it.
                     Video = new InstaVideo(@"c:\video1.mp4", 0, 0),
@@ -62,16 +62,15 @@ namespace Examples.Samples
                         new UserTagVideoUpload { Username = "rmt4006" }
                     }
                 },
-                new InstaVideoUpload
+                new VideoUpload
                 {
                     // leave zero, if you don't know how height and width is it.
                     Video = new InstaVideo(@"c:\video2.mp4", 0, 0),
                     VideoThumbnail = new InstaImage(@"c:\video thumbnail 2.jpg", 0, 0)
                 }
             };
-            var result = await api.MediaProcessor.UploadAlbumAsync(images,
-                                                                   videos,
-                                                                   "Hey, this my first album upload via InstagramApiSharp library.").ConfigureAwait(false);
+
+            var result = await api.MediaProcessor.UploadAlbumAsync(images, videos, "Hey, this my first album upload via InstagramApiSharp library.").ConfigureAwait(false);
 
             // Above result will be something like this: IMAGE1, IMAGE2, VIDEO1, VIDEO2
             Console.WriteLine(result.Succeeded
@@ -81,14 +80,14 @@ namespace Examples.Samples
 
         public async Task NewAlbumUpload()
         {
-            var album = new List<InstaAlbumUpload>();
-            // IMPORTANT NOTE: only set one of ImageToUpload or VideoToUpload in InstaAlbumUpload class!
+            var album = new List<AlbumUpload>();
+            // IMPORTANT NOTE: only set one of ImageToUpload or VideoToUpload in AlbumUpload class!
             // unless it will choose ImageToUpload automatically!.
 
             // IMAGE 1
-            album.Add(new InstaAlbumUpload
+            album.Add(new AlbumUpload
             {
-                ImageToUpload = new InstaImageUpload
+                ImageToUpload = new ImageUpload
                 {
                     // leave zero, if you don't know how height and width is it.
                     Height = 0,
@@ -103,9 +102,9 @@ namespace Examples.Samples
             });
 
             // VIDEO 1
-            album.Add(new InstaAlbumUpload
+            album.Add(new AlbumUpload
             {
-                VideoToUpload = new InstaVideoUpload
+                VideoToUpload = new VideoUpload
                 {
                     // leave zero, if you don't know how height and width is it.
                     Video = new InstaVideo(@"c:\video1.mp4", 0, 0),
@@ -119,9 +118,9 @@ namespace Examples.Samples
             });
 
             // VIDEO 2
-            album.Add(new InstaAlbumUpload
+            album.Add(new AlbumUpload
             {
-                VideoToUpload = new InstaVideoUpload
+                VideoToUpload = new VideoUpload
                 {
                     // leave zero, if you don't know how height and width is it.
                     Video = new InstaVideo(@"c:\video2.mp4", 0, 0),
@@ -130,9 +129,9 @@ namespace Examples.Samples
             });
 
             // IMAGE 2
-            album.Add(new InstaAlbumUpload
+            album.Add(new AlbumUpload
             {
-                ImageToUpload = new InstaImageUpload
+                ImageToUpload = new ImageUpload
                 {
                     // leave zero, if you don't know how height and width is it.
                     Height = 0, Width = 0, Uri = @"c:\image2.jpg"

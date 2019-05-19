@@ -14,7 +14,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Story
 
         public bool CanViewerSave { get; set; }
 
-        public InstaCaption Caption { get; set; }
+        public Caption Caption { get; set; }
 
         public bool CaptionIsEdited { get; set; }
 

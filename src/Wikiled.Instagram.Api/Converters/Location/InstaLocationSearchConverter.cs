@@ -5,18 +5,18 @@ using Wikiled.Instagram.Api.Classes.ResponseWrappers.Location;
 
 namespace Wikiled.Instagram.Api.Converters.Location
 {
-    internal class InstaLocationSearchConverter : IObjectConverter<InstaLocationShortList, LocationSearchResponse>
+    internal class InstaLocationSearchConverter : IObjectConverter<LocationShortList, LocationSearchResponse>
     {
         public LocationSearchResponse SourceObject { get; set; }
 
-        public InstaLocationShortList Convert()
+        public LocationShortList Convert()
         {
             if (SourceObject == null)
             {
                 throw new ArgumentNullException("Source object");
             }
 
-            var locations = new InstaLocationShortList();
+            var locations = new LocationShortList();
             locations.AddRange(
                 SourceObject.Locations.Select(
                     location =>

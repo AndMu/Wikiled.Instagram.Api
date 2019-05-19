@@ -827,7 +827,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="viewMode">View mode</param>
         /// <param name="threadIds">Thread ids</param>
         public async Task<IResult<bool>> SendDirectDisappearingPhotoAsync(
-            Action<InstaUploaderProgress> progress,
+            Action<UploaderProgress> progress,
             InstaImage image,
             InstaViewMode viewMode = InstaViewMode.Replayable,
             params string[] threadIds)
@@ -850,7 +850,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="video">Video to upload</param>
         /// <param name="viewMode">View mode</param>
         /// <param name="threadIds">Thread ids</param>
-        public Task<IResult<bool>> SendDirectDisappearingVideoAsync(InstaVideoUpload video, InstaViewMode viewMode = InstaViewMode.Replayable, params string[] threadIds)
+        public Task<IResult<bool>> SendDirectDisappearingVideoAsync(VideoUpload video, InstaViewMode viewMode = InstaViewMode.Replayable, params string[] threadIds)
         {
             return SendDirectDisappearingVideoAsync(null, video, viewMode, threadIds);
         }
@@ -863,8 +863,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="viewMode">View mode</param>
         /// <param name="threadIds">Thread ids</param>
         public async Task<IResult<bool>> SendDirectDisappearingVideoAsync(
-            Action<InstaUploaderProgress> progress,
-            InstaVideoUpload video,
+            Action<UploaderProgress> progress,
+            VideoUpload video,
             InstaViewMode viewMode = InstaViewMode.Replayable,
             params string[] threadIds)
         {
@@ -1165,7 +1165,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="image">Image to upload</param>
         /// <param name="threadId">Thread id</param>
         /// <returns>Returns True is sent</returns>
-        public Task<IResult<bool>> SendDirectPhotoAsync(Action<InstaUploaderProgress> progress, InstaImage image, string threadId)
+        public Task<IResult<bool>> SendDirectPhotoAsync(Action<UploaderProgress> progress, InstaImage image, string threadId)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             return SendDirectPhoto(progress, null, threadId, image);
@@ -1189,7 +1189,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="image">Image to upload</param>
         /// <param name="recipients">Recipients (user ids/pk)</param>
         /// <returns>Returns True is sent</returns>
-        public Task<IResult<bool>> SendDirectPhotoToRecipientsAsync(Action<InstaUploaderProgress> progress, InstaImage image, params string[] recipients)
+        public Task<IResult<bool>> SendDirectPhotoToRecipientsAsync(Action<UploaderProgress> progress, InstaImage image, params string[] recipients)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             return SendDirectPhoto(progress, string.Join(",", recipients), null, image);
@@ -1360,7 +1360,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="video">Video to upload (no need to set thumbnail)</param>
         /// <param name="threadId">Thread id</param>
-        public Task<IResult<bool>> SendDirectVideoAsync(InstaVideoUpload video, string threadId)
+        public Task<IResult<bool>> SendDirectVideoAsync(VideoUpload video, string threadId)
         {
             return SendDirectVideoAsync(null, video, threadId);
         }
@@ -1371,8 +1371,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="progress">Progress action</param>
         /// <param name="video">Video to upload (no need to set thumbnail)</param>
         /// <param name="threadId">Thread id</param>
-        public async Task<IResult<bool>> SendDirectVideoAsync(Action<InstaUploaderProgress> progress,
-                                                              InstaVideoUpload video,
+        public async Task<IResult<bool>> SendDirectVideoAsync(Action<UploaderProgress> progress,
+                                                              VideoUpload video,
                                                               string threadId)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
@@ -1392,7 +1392,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="video">Video to upload (no need to set thumbnail)</param>
         /// <param name="recipients">Recipients (user ids/pk)</param>
-        public Task<IResult<bool>> SendDirectVideoToRecipientsAsync(InstaVideoUpload video, params string[] recipients)
+        public Task<IResult<bool>> SendDirectVideoToRecipientsAsync(VideoUpload video, params string[] recipients)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             return SendDirectVideoToRecipientsAsync(null, video, recipients);
@@ -1405,8 +1405,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <param name="video">Video to upload (no need to set thumbnail)</param>
         /// <param name="recipients">Recipients (user ids/pk)</param>
         public async Task<IResult<bool>> SendDirectVideoToRecipientsAsync(
-            Action<InstaUploaderProgress> progress,
-            InstaVideoUpload video,
+            Action<UploaderProgress> progress,
+            VideoUpload video,
             params string[] recipients)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
@@ -1766,12 +1766,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             }
         }
 
-        private async Task<IResult<bool>> SendDirectPhoto(Action<InstaUploaderProgress> progress,
+        private async Task<IResult<bool>> SendDirectPhoto(Action<UploaderProgress> progress,
                                                           string recipients,
                                                           string threadId,
                                                           InstaImage image)
         {
-            var upProgress = new InstaUploaderProgress
+            var upProgress = new UploaderProgress
             {
                 Caption = string.Empty, UploadState = InstaUploadState.Preparing
             };
