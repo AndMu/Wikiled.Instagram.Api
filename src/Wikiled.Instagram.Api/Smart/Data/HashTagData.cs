@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace Wikiled.Instagram.Api.Hashtags.Data
+namespace Wikiled.Instagram.Api.Smart.Data
 {
     public class HashTagData
     {
@@ -14,6 +14,12 @@ namespace Wikiled.Instagram.Api.Hashtags.Data
         public string Tag { get; }
 
         public string Text { get; }
+
+        public int? MediaCount { get; set; }
+
+        public int? Relevance { get; set; }
+
+        public int? Rank { get; set; }
 
         public static HashTagData FromTag(string tag)
         {
@@ -36,6 +42,11 @@ namespace Wikiled.Instagram.Api.Hashtags.Data
             }
 
             return new HashTagData("#" + text, text);
+        }
+
+        public override string ToString()
+        {
+            return Tag;
         }
     }
 }

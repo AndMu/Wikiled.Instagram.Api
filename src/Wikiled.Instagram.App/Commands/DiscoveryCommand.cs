@@ -51,6 +51,8 @@ namespace Wikiled.Instagram.App.Commands
                     log.LogError("Authentication failed: [{0}]", logInResult.Info.Message);
                     return;
                 }
+
+                session.Save(sessionFile);
             }
             else
             {
@@ -59,6 +61,12 @@ namespace Wikiled.Instagram.App.Commands
 
             api.Delay.Enable();
             var currentUser = await api.GetCurrentUserAsync().ConfigureAwait(false);
+            if (!currentUser.Succeeded)
+            {
+                log.LogError("Failed to retrieve user: {0}", currentUser.Info.Message);
+                return;
+            }
+
             log.LogInformation("Started for user: {0}...", currentUser.Value.FullName);
             await Internal(currentUser.Value, token).ConfigureAwait(false);
             session.Save(sessionFile);

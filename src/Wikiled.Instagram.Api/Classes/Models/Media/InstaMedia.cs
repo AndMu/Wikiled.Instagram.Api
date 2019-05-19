@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Wikiled.Instagram.Api.Classes.Models.Comment;
-using Wikiled.Instagram.Api.Classes.Models.Location;
 using Wikiled.Instagram.Api.Classes.Models.Shopping;
 using Wikiled.Instagram.Api.Classes.Models.User;
 using Wikiled.Instagram.Api.Enums;
@@ -11,11 +10,11 @@ namespace Wikiled.Instagram.Api.Classes.Models.Media
 {
     public class InstaMedia : INotifyPropertyChanged
     {
-        private string cmcount;
+        private string cmCount;
 
-        private bool hasviewersaved;
+        private bool hasViewerSaved;
 
-        private int likecount;
+        private int likeCount;
 
         private bool play;
 
@@ -39,10 +38,10 @@ namespace Wikiled.Instagram.Api.Classes.Models.Media
 
         public string CommentsCount
         {
-            get => cmcount;
+            get => cmCount;
             set
             {
-                cmcount = value;
+                cmCount = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CommentsCount"));
             }
         }
@@ -71,10 +70,10 @@ namespace Wikiled.Instagram.Api.Classes.Models.Media
 
         public bool HasViewerSaved
         {
-            get => hasviewersaved;
+            get => hasViewerSaved;
             set
             {
-                hasviewersaved = value;
+                hasViewerSaved = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("HasViewerSaved"));
             }
         }
@@ -93,10 +92,10 @@ namespace Wikiled.Instagram.Api.Classes.Models.Media
 
         public int LikesCount
         {
-            get => likecount;
+            get => likeCount;
             set
             {
-                likecount = value;
+                likeCount = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("LikesCount"));
             }
         }

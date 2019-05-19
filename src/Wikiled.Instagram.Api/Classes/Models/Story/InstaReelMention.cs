@@ -5,7 +5,7 @@ namespace Wikiled.Instagram.Api.Classes.Models.Story
 {
     public class InstaReelMention
     {
-        public Hashtag Hashtag { get; set; }
+        public ApiHashtag Hashtag { get; set; }
 
         public double Height { get; set; }
 

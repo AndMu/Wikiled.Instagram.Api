@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
-namespace Wikiled.Instagram.Api.Hashtags.Data
+namespace Wikiled.Instagram.Api.Smart.Data
 {
     public class LocationTagResult
     {

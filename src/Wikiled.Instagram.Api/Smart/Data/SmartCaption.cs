@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Wikiled.Common.Extensions;
 
-namespace Wikiled.Instagram.Api.Hashtags.Data
+namespace Wikiled.Instagram.Api.Smart.Data
 {
     public class SmartCaption
     {
@@ -19,6 +19,8 @@ namespace Wikiled.Instagram.Api.Hashtags.Data
         public string WithoutTags { get; set; }
 
         public IEnumerable<HashTagData> Tags => tags.Values;
+
+        public int TotalTags => tags.Count;
 
         public string Generate()
         {

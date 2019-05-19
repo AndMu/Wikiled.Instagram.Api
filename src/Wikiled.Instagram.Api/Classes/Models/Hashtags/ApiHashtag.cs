@@ -1,6 +1,6 @@
 ﻿namespace Wikiled.Instagram.Api.Classes.Models.Hashtags
 {
-    public class Hashtag
+    public class ApiHashtag
     {
         public long Id { get; set; }
 

@@ -3,10 +3,10 @@ using Autofac;
 using Microsoft.Extensions.Logging;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.SessionHandlers;
-using Wikiled.Instagram.Api.Hashtags;
 using Wikiled.Instagram.Api.Logic;
 using Wikiled.Instagram.Api.Logic.Builder;
 using Wikiled.Instagram.Api.Serialization;
+using Wikiled.Instagram.Api.Smart;
 
 namespace Wikiled.Instagram.Api.Modules
 {
@@ -27,7 +27,11 @@ namespace Wikiled.Instagram.Api.Modules
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<CaptionHandler>().As<ICaptionHandler>();
-            builder.RegisterType<SmartTagsManager>().As<ISmartTagsManager>();
+            builder.RegisterType<WebSmartTags>().Named<ISmartTags>("Web");
+            builder.Register(ctx => new MediaSmartTags(ctx.Resolve<ILogger<MediaSmartTags>>(), ctx.Resolve<ICaptionHandler>(), ctx.ResolveNamed<ISmartTags>("Web"))).As<IMediaSmartTags>();
+            builder.RegisterType<InstaSmartTags>().As<ISmartTags>();
+            builder.RegisterType<TagEnricher>().As<ITagEnricher>();
+            builder.RegisterType<InstaSmartTagsByLocation>().As<ISmartTagsByLocation>();
             builder.RegisterType<PlainSerializer>().Named<ISerializer>("Plain");
             builder.Register(ctx => new EncryptedSerializer(ctx.ResolveNamed<ISerializer>("Plain"), ctx.Resolve<IInstaApi>()))
                 .As<ISerializer>();

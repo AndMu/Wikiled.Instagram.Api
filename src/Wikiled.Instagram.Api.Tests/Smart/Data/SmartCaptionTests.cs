@@ -1,7 +1,7 @@
 using NUnit.Framework;
-using Wikiled.Instagram.Api.Hashtags.Data;
+using Wikiled.Instagram.Api.Smart.Data;
 
-namespace Wikiled.Instagram.Api.Tests.Hashtags.Data
+namespace Wikiled.Instagram.Api.Tests.Smart.Data
 {
     [TestFixture]
     public class SmartCaptionTests

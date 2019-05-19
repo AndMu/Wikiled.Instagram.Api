@@ -1,6 +1,6 @@
-﻿using Wikiled.Instagram.Api.Hashtags.Data;
+﻿using Wikiled.Instagram.Api.Smart.Data;
 
-namespace Wikiled.Instagram.Api.Hashtags
+namespace Wikiled.Instagram.Api.Smart
 {
     public interface ICaptionHandler
     {

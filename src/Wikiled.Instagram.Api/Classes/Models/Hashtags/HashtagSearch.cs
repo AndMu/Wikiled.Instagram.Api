@@ -2,7 +2,7 @@
 
 namespace Wikiled.Instagram.Api.Classes.Models.Hashtags
 {
-    public class HashtagSearch : List<Hashtag>
+    public class HashtagSearch : List<ApiHashtag>
     {
         public bool MoreAvailable { get; set; }
 

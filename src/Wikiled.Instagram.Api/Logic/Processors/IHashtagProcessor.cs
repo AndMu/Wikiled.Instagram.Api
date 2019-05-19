@@ -30,7 +30,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="tagname">Tagname</param>
         /// <returns>Hashtag information</returns>
-        Task<IResult<Hashtag>> GetHashtagInfoAsync(string tagname);
+        Task<IResult<ApiHashtag>> GetHashtagInfoAsync(string tagname);
 
         /// <summary>
         ///     Get stories of an hashtag

@@ -145,7 +145,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// </summary>
         /// <param name="tagname">Tagname</param>
         /// <returns>Hashtag information</returns>
-        public async Task<IResult<Hashtag>> GetHashtagInfoAsync(string tagname)
+        public async Task<IResult<ApiHashtag>> GetHashtagInfoAsync(string tagname)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             try
@@ -157,7 +157,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return Result.UnExpectedResponse<Hashtag>(response, json);
+                    return Result.UnExpectedResponse<ApiHashtag>(response, json);
                 }
 
                 var tagInfoResponse = JsonConvert.DeserializeObject<HashtagResponse>(json);
@@ -168,12 +168,12 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return Result.Fail(httpException, default(Hashtag), ResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(ApiHashtag), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return Result.Fail<Hashtag>(exception);
+                return Result.Fail<ApiHashtag>(exception);
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging.Abstractions;
 using Wikiled.Instagram.Api.Classes.Models.Broadcast;
 using Wikiled.Instagram.Api.Classes.Models.Business;
 using Wikiled.Instagram.Api.Classes.Models.Collection;
@@ -67,134 +68,107 @@ namespace Wikiled.Instagram.Api.Converters
             return new InstaAccountDetailsConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaBroadcastAddToPostLive, InstaBroadcastAddToPostLiveResponse>
-            GetAddToPostLiveConverter(
-                InstaBroadcastAddToPostLiveResponse response)
+        public IObjectConverter<InstaBroadcastAddToPostLive, InstaBroadcastAddToPostLiveResponse> GetAddToPostLiveConverter(InstaBroadcastAddToPostLiveResponse response)
         {
             return new InstaBroadcastAddToPostLiveConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaAdsInfo, InstaAdsInfoResponse> GetAdsInfoConverter(
-            InstaAdsInfoResponse response)
+        public IObjectConverter<InstaAdsInfo, InstaAdsInfoResponse> GetAdsInfoConverter(InstaAdsInfoResponse response)
         {
             return new InstaAdsInfoConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaAnimatedImage, InstaAnimatedImageResponse> GetAnimatedImageConverter(
-            InstaAnimatedImageResponse response)
+        public IObjectConverter<InstaAnimatedImage, InstaAnimatedImageResponse> GetAnimatedImageConverter(InstaAnimatedImageResponse response)
         {
             return new InstaAnimatedImageConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaAnimatedImageMedia, InstaAnimatedImageMediaResponse>
-            GetAnimatedImageMediaConverter(
-                InstaAnimatedImageMediaResponse response)
+        public IObjectConverter<InstaAnimatedImageMedia, InstaAnimatedImageMediaResponse> GetAnimatedImageMediaConverter(InstaAnimatedImageMediaResponse response)
         {
             return new InstaAnimatedImageMediaConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaAnimatedImageUser, InstaAnimatedImageUserResponse> GetAnimatedImageUserConverter(
-            InstaAnimatedImageUserResponse response)
+        public IObjectConverter<InstaAnimatedImageUser, InstaAnimatedImageUserResponse> GetAnimatedImageUserConverter(InstaAnimatedImageUserResponse response)
         {
             return new InstaAnimatedImageUserConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaAudio, InstaAudioResponse> GetAudioConverter(
-            InstaAudioResponse response)
+        public IObjectConverter<InstaAudio, InstaAudioResponse> GetAudioConverter(InstaAudioResponse response)
         {
             return new InstaAudioConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaUserShortList, InstaBlockedCommentersResponse> GetBlockedCommentersConverter(
-            InstaBlockedCommentersResponse response)
+        public IObjectConverter<InstaUserShortList, InstaBlockedCommentersResponse> GetBlockedCommentersConverter(InstaBlockedCommentersResponse response)
         {
             return new InstaBlockedCommentersConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaBlockedUserInfo, InstaBlockedUserInfoResponse> GetBlockedUserInfoConverter(
-            InstaBlockedUserInfoResponse instaresponse)
+        public IObjectConverter<InstaBlockedUserInfo, InstaBlockedUserInfoResponse> GetBlockedUserInfoConverter(InstaBlockedUserInfoResponse instaresponse)
         {
             return new InstaBlockedUserInfoConverter { SourceObject = instaresponse };
         }
 
-        public IObjectConverter<InstaBlockedUsers, InstaBlockedUsersResponse> GetBlockedUsersConverter(
-            InstaBlockedUsersResponse response)
+        public IObjectConverter<InstaBlockedUsers, InstaBlockedUsersResponse> GetBlockedUsersConverter(InstaBlockedUsersResponse response)
         {
             return new InstaBlockedUsersConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaBrandedContent, InstaBrandedContentResponse> GetBrandedContentConverter(
-            InstaBrandedContentResponse response)
+        public IObjectConverter<InstaBrandedContent, InstaBrandedContentResponse> GetBrandedContentConverter(InstaBrandedContentResponse response)
         {
             return new InstaBrandedContentConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaBroadcastComment, InstaBroadcastCommentResponse> GetBroadcastCommentConverter(
-            InstaBroadcastCommentResponse response)
+        public IObjectConverter<InstaBroadcastComment, InstaBroadcastCommentResponse> GetBroadcastCommentConverter(InstaBroadcastCommentResponse response)
         {
             return new InstaBroadcastCommentConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaBroadcastCommentEnableDisable, InstaBroadcastCommentEnableDisableResponse>
-            GetBroadcastCommentEnableDisableConverter(
-                InstaBroadcastCommentEnableDisableResponse response)
+        public IObjectConverter<InstaBroadcastCommentEnableDisable, InstaBroadcastCommentEnableDisableResponse> GetBroadcastCommentEnableDisableConverter(InstaBroadcastCommentEnableDisableResponse response)
         {
             return new InstaBroadcastCommentEnableDisableConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaBroadcastCommentList, InstaBroadcastCommentListResponse>
-            GetBroadcastCommentListConverter(
-                InstaBroadcastCommentListResponse response)
+        public IObjectConverter<InstaBroadcastCommentList, InstaBroadcastCommentListResponse> GetBroadcastCommentListConverter(InstaBroadcastCommentListResponse response)
         {
             return new InstaBroadcastCommentListConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaBroadcast, InstaBroadcastResponse> GetBroadcastConverter(
-            InstaBroadcastResponse response)
+        public IObjectConverter<InstaBroadcast, InstaBroadcastResponse> GetBroadcastConverter(InstaBroadcastResponse response)
         {
             return new InstaBroadcastConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaBroadcastCreate, InstaBroadcastCreateResponse> GetBroadcastCreateConverter(
-            InstaBroadcastCreateResponse response)
+        public IObjectConverter<InstaBroadcastCreate, InstaBroadcastCreateResponse> GetBroadcastCreateConverter(InstaBroadcastCreateResponse response)
         {
             return new InstaBroadcastCreateConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaBroadcastInfo, InstaBroadcastInfoResponse> GetBroadcastInfoConverter(
-            InstaBroadcastInfoResponse response)
+        public IObjectConverter<InstaBroadcastInfo, InstaBroadcastInfoResponse> GetBroadcastInfoConverter(InstaBroadcastInfoResponse response)
         {
             return new InstaBroadcastInfoConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaBroadcastLike, InstaBroadcastLikeResponse> GetBroadcastLikeConverter(
-            InstaBroadcastLikeResponse response)
+        public IObjectConverter<InstaBroadcastLike, InstaBroadcastLikeResponse> GetBroadcastLikeConverter(InstaBroadcastLikeResponse response)
         {
             return new InstaBroadcastLikeConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaBroadcastList, List<InstaBroadcastResponse>> GetBroadcastListConverter(
-            List<InstaBroadcastResponse> response)
+        public IObjectConverter<InstaBroadcastList, List<InstaBroadcastResponse>> GetBroadcastListConverter(List<InstaBroadcastResponse> response)
         {
             return new InstaBroadcastListConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaBroadcastLiveHeartBeatViewerCount, InstaBroadcastLiveHeartBeatViewerCountResponse>
-            GetBroadcastLiveHeartBeatViewerCountConverter(
-                InstaBroadcastLiveHeartBeatViewerCountResponse response)
+        public IObjectConverter<InstaBroadcastLiveHeartBeatViewerCount, InstaBroadcastLiveHeartBeatViewerCountResponse>GetBroadcastLiveHeartBeatViewerCountConverter(InstaBroadcastLiveHeartBeatViewerCountResponse response)
         {
             return new InstaBroadcastLiveHeartBeatViewerCountConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaBroadcastNotifyFriends, InstaBroadcastNotifyFriendsResponse>
-            GetBroadcastNotifyFriendsConverter(
-                InstaBroadcastNotifyFriendsResponse response)
+        public IObjectConverter<InstaBroadcastNotifyFriends, InstaBroadcastNotifyFriendsResponse> GetBroadcastNotifyFriendsConverter(InstaBroadcastNotifyFriendsResponse response)
         {
             return new InstaBroadcastNotifyFriendsConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaBroadcastPinUnpin, InstaBroadcastPinUnpinResponse> GetBroadcastPinUnpinConverter(
-            InstaBroadcastPinUnpinResponse response)
+        public IObjectConverter<InstaBroadcastPinUnpin, InstaBroadcastPinUnpinResponse> GetBroadcastPinUnpinConverter(InstaBroadcastPinUnpinResponse response)
         {
             return new InstaBroadcastPinUnpinConverter { SourceObject = response };
         }
@@ -431,7 +405,7 @@ namespace Wikiled.Instagram.Api.Converters
             return new InstaFullUserInfoConverter { SourceObject = response };
         }
 
-        public IObjectConverter<Hashtag, HashtagResponse> GetHashTagConverter(
+        public IObjectConverter<ApiHashtag, HashtagResponse> GetHashTagConverter(
             HashtagResponse response)
         {
             return new HashtagConverter { SourceObject = response };
@@ -440,7 +414,7 @@ namespace Wikiled.Instagram.Api.Converters
         public IObjectConverter<SectionMedia, SectionMediaListResponse> GetHashtagMediaListConverter(
             SectionMediaListResponse response)
         {
-            return new HashtagMediaConverter { SourceObject = response };
+            return new HashtagMediaConverter(new NullLogger<HashtagMediaConverter>()) { SourceObject = response };
         }
 
         public IObjectConverter<HashtagOwner, HashtagOwnerResponse> GetHashtagOwnerConverter(
