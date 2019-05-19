@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
 
 namespace Wikiled.Instagram.Api.Hashtags.Data
 {
-    public class LocationTag
+    public class LocationTagResult
     {
         [JsonProperty("centroid")]
         public List<double> Centroid { get; set; }

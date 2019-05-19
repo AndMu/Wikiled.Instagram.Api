@@ -1,8 +1,10 @@
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using NUnit.Framework;
 using System.Threading.Tasks;
 using Wikiled.Instagram.Api.Classes.Models.Location;
 using Wikiled.Instagram.Api.Hashtags;
+using Wikiled.Instagram.Api.Logic;
 
 namespace Wikiled.Instagram.Api.Tests.Hashtags
 {
@@ -11,9 +13,12 @@ namespace Wikiled.Instagram.Api.Tests.Hashtags
     {
         private SmartTagsManager instance;
 
+        private Mock<IInstaApi> api;
+
         [SetUp]
         public void SetUp()
         {
+            api = new Mock<IInstaApi>();
             instance = CreateManager();
         }
 
@@ -47,7 +52,7 @@ namespace Wikiled.Instagram.Api.Tests.Hashtags
 
         private SmartTagsManager CreateManager()
         {
-            return new SmartTagsManager(new NullLogger<SmartTagsManager>());
+            return new SmartTagsManager(new NullLogger<SmartTagsManager>(), api.Object);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Wikiled.Instagram.Api.Hashtags.Data
         public int Rank { get; set; }
 
         [JsonProperty("results")]
-        public List<SmartHashtag> Results { get; set; }
+        public List<SmartHashtagResult> Results { get; set; }
 
         [JsonProperty("tag")]
         public string Tag { get; set; }

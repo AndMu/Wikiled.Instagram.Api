@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;NET462</TargetFrameworks>
     <Version>1.5.0</Version>
+    <LangVersion>Latest</LangVersion>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <AssemblyName>Wikiled.Instagram.Api</AssemblyName>
     <PackageId>InstagramApiSharp</PackageId>

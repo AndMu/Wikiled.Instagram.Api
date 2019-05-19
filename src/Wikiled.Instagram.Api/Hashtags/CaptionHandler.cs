@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Wikiled.Common.Extensions;
 using Wikiled.Instagram.Api.Hashtags.Data;
 
@@ -25,14 +24,13 @@ namespace Wikiled.Instagram.Api.Hashtags
             }
 
             var captionTags = caption.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-            log.LogInformation("Adding [{0}] caption tags", captionTags.Length);
+            log.LogDebug("Adding [{0}] caption tags", captionTags.Length);
             var words = new List<string>();
             foreach (var tag in captionTags)
             {
                 if (tag.StartsWith("#"))
                 {
-                    var tagWithoutImages = Regex.Replace(tag, @"[^\u0020-\u007E]", string.Empty);
-                    result.AddTag(tagWithoutImages);
+                    result.AddTag(HashTagData.FromTag(tag));
                 }
                 else
                 {

@@ -1,21 +1,22 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using Microsoft.Extensions.Logging;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Wikiled.Common.Extensions;
 using Wikiled.Instagram.Api.Classes;
+using Wikiled.Instagram.Api.Classes.Models.Hashtags;
 using Wikiled.Instagram.Api.Classes.Models.Location;
 using Wikiled.Instagram.Api.Classes.Models.Media;
 using Wikiled.Instagram.Api.Classes.Models.User;
 using Wikiled.Instagram.Api.Classes.SessionHandlers;
 using Wikiled.Instagram.Api.Hashtags;
+using Wikiled.Instagram.Api.Hashtags.Data;
 using Wikiled.Instagram.Api.Logic;
 using Wikiled.Instagram.App.Commands.Config;
 
@@ -57,10 +58,10 @@ namespace Wikiled.Instagram.App.Commands
         {
             do
             {
-                var media = await instagram.UserProcessor
+                InstaMedia[] media = await instagram.UserProcessor
                     .GetUserMediaById(currentUser.Pk, PaginationParameters.MaxPagesToLoad(1))
                     .ToArray();
-                foreach (var item in media)
+                foreach (InstaMedia item in media)
                 {
                     log.LogInformation("Processing post - <{0}>", item.Identifier);
                     if (item.TakenAt.Date != DateTime.Today)
@@ -93,7 +94,7 @@ namespace Wikiled.Instagram.App.Commands
                 item.Location?.ShortName,
                 item.UserTags.Count);
 
-            var image = item.Images.OrderByDescending(x => x.Height).FirstOrDefault();
+            InstaImage image = item.Images.OrderByDescending(x => x.Height).FirstOrDefault();
             if (image == null)
             {
                 log.LogWarning("Image not found");
@@ -134,34 +135,89 @@ namespace Wikiled.Instagram.App.Commands
         private async Task<string> GenerateCaption(InstaMedia item)
         {
             log.LogInformation("Generating caption...");
-            var captionHolder = captionHandler.Extract(item.Caption?.Text);
+            SmartCaption captionHolder = captionHandler.Extract(item.Caption?.Text);
             log.LogInformation("Adding [{0}] caption tags", captionHolder.Tags.Count());
-            var tags = new HashSet<string>(captionHolder.Tags, StringComparer.OrdinalIgnoreCase);
-            
+            var tags = new HashSet<string>(captionHolder.Tags.Select(x => x.Text), StringComparer.OrdinalIgnoreCase);
+
             if (tags.Count > 20)
             {
                 log.LogInformation("Found more than 20 tags on photo - ignoring it");
                 return null;
             }
 
-            if (item.Location != null)
+            await ProcessLocation(item, tags).ConfigureAwait(false);
+
+            var popularTags = await ExtractPopularTagsByLocation(item).ConfigureAwait(false);
+            log.LogInformation("Retrieved {0} popular location tags", popularTags.Length);
+            foreach (var tag in popularTags)
             {
-                var locationTags = await tagsManager.GetByLocationSmart(item.Location).ConfigureAwait(false);
-                log.LogInformation("Adding [{0}] location tags", locationTags.Length);
-                foreach (var tag in locationTags)
-                {
-                    tags.Add(tag);
-                }
+                tags.Add(tag.Text);
+                captionHolder.AddTag(tag);
             }
 
             if (tags.Count == 0)
             {
-                log.LogInformation("No tags found return original", captionHolder.Original);
+                log.LogInformation("No tags found return original caption", captionHolder.Original);
             }
 
             var newTags = await tagsManager.GetSmart(27, tags.ToArray()).ConfigureAwait(false);
-            captionHolder.AddTags(newTags);
+            captionHolder.AddTags(newTags.Select(HashTagData.FromText));
             return captionHolder.Generate();
+        }
+
+        private async Task ProcessLocation(InstaMedia item, HashSet<string> tags)
+        {
+            log.LogInformation("Processing location");
+            if (item.Location == null)
+            {
+                return;
+            }
+
+            var locationTags = await tagsManager.GetByLocationSmart(item.Location, 1).ConfigureAwait(false);
+            log.LogInformation("Adding [{0}] location tags", locationTags.Length);
+            foreach (var tag in locationTags)
+            {
+                tags.Add(tag);
+            }
+        }
+
+        private async Task<HashTagData[]> ExtractPopularTagsByLocation(InstaMedia item)
+        {
+            log.LogInformation("Extracting popular tags...");
+            IResult<SectionMedia> topMedia = await instagram.LocationProcessor.GetTopLocationFeedsAsync(item.Location.Pk, PaginationParameters.MaxPagesToLoad(1)).ConfigureAwait(false);
+            instagram.HashtagProcessor.GetTopHashtagMediaListAsync()
+            var result = new List<HashTagData>();
+            if (!topMedia.Succeeded)
+            {
+                return result.ToArray();
+            }
+
+            var table = new Dictionary<string, HashTagData>(StringComparer.OrdinalIgnoreCase);
+            foreach (InstaMedia media in topMedia.Value.Medias)
+            {
+                var text = media.Caption?.Text;
+                if (!string.IsNullOrEmpty(text))
+                {
+                    SmartCaption smart = captionHandler.Extract(text);
+                    foreach (HashTagData tag in smart.Tags.Where(x => !string.IsNullOrEmpty(x.Text)))
+                    {
+                        table[tag.Tag] = tag;
+                    }
+                }
+            }
+
+            IEnumerable<HashTagData> randomTags = table.Values.OrderBy(x => Guid.NewGuid()).Take(3);
+            foreach (var randomTag in randomTags)
+            {
+                var tagResult = await instagram.HashtagProcessor.GetHashtagInfoAsync(randomTag.Text).ConfigureAwait(false);
+                if (tagResult.Succeeded &&
+                    tagResult.Value.MediaCount > 1000)
+                {
+                    result.Add(randomTag);
+                }
+            }
+
+            return result.ToArray();
         }
 
         private Task UploadImage(string image, string caption, Location location)

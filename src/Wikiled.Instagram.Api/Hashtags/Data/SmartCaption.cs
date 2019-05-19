@@ -7,7 +7,7 @@ namespace Wikiled.Instagram.Api.Hashtags.Data
 {
     public class SmartCaption
     {
-        private HashSet<string> tags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, HashTagData> tags = new Dictionary<string, HashTagData>(StringComparer.OrdinalIgnoreCase);
 
         public SmartCaption(string original)
         {
@@ -18,11 +18,11 @@ namespace Wikiled.Instagram.Api.Hashtags.Data
 
         public string WithoutTags { get; set; }
 
-        public IEnumerable<string> Tags => tags;
+        public IEnumerable<HashTagData> Tags => tags.Values;
 
         public string Generate()
         {
-            var tagsText = Tags.Select(item => "#" + item.ToLower()).AccumulateItems(" ");
+            var tagsText = Tags.Select(item => item.Tag).AccumulateItems(" ");
             if (WithoutTags.Length == 0)
             {
                 return tagsText;
@@ -31,7 +31,7 @@ namespace Wikiled.Instagram.Api.Hashtags.Data
             return $"{WithoutTags} {tagsText}";
         }
 
-        public void AddTags(IEnumerable<string> tags)
+        public void AddTags(IEnumerable<HashTagData> tags)
         {
             foreach (var tag in tags)
             {
@@ -39,14 +39,12 @@ namespace Wikiled.Instagram.Api.Hashtags.Data
             }
         }
 
-        public void AddTag(string tag)
+        public void AddTag(HashTagData tag)
         {
-            if (string.IsNullOrEmpty(tag))
+            if (!tags.ContainsKey(tag.Tag))
             {
-                return;
+                tags.Add(tag.Tag, tag);
             }
-
-            tags.Add(tag.StartsWith("#") ? tag.Substring(1) : tag);
         }
     }
 }

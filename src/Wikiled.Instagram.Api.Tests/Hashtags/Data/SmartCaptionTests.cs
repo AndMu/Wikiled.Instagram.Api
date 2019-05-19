@@ -11,7 +11,7 @@ namespace Wikiled.Instagram.Api.Tests.Hashtags.Data
         {
             var instance = new SmartCaption("Message Conto #love");
             instance.WithoutTags = "Message Conto";
-            instance.AddTag("Lovex");
+            instance.AddTag(HashTagData.FromText("Lovex"));
             Assert.AreEqual("Message Conto #lovex", instance.Generate());
         }
     }

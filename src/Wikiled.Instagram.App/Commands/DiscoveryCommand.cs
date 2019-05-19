@@ -67,7 +67,7 @@ namespace Wikiled.Instagram.App.Commands
 
         protected virtual async Task Internal(CurrentUser currentUser, CancellationToken token)
         {
-            await api.UserProcessor.GetUserMediaById(currentUser.Pk, PaginationParameters.Empty)
+            await api.UserProcessor.GetUserMediaById(currentUser.Pk, PaginationParameters.MaxPagesToLoad(1))
                 .ForEachAsync(
                     item =>
                     {

@@ -18,7 +18,7 @@ namespace Wikiled.Instagram.Api.Tests.Extensions
             var task = (Func<Task<IResult<InstaUser>>>)(() =>
             {
                 total++;
-                return Task.FromResult((IResult<InstaUser>)new InstaResult<InstaUser>(succeeded, (InstaUser)null));
+                return Task.FromResult((IResult<InstaUser>)new Result<InstaUser>(succeeded, (InstaUser)null));
             });
 
             await task.Retry().ConfigureAwait(false);

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace Wikiled.Instagram.Api.Hashtags.Data
 {
-    public class LocationResults
+    public class LocationResult
     {
         [JsonProperty("count")]
         public int Count { get; set; }
 
         [JsonProperty("tags")]
-        public List<LocationTag> Tags { get; set; }
+        public List<LocationTagResult> Tags { get; set; }
     }
 }

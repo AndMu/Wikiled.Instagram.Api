@@ -17,11 +17,11 @@ namespace Wikiled.Instagram.Api.Classes
         {
             Exception = exception;
             Message = exception?.Message;
-            ResponseType = InstaResponseType.InternalException;
+            ResponseType = ResponseType.InternalException;
             HandleMessages(Message);
         }
 
-        public ResultInfo(Exception exception, InstaResponseType responseType)
+        public ResultInfo(Exception exception, ResponseType responseType)
         {
             Exception = exception;
             Message = exception?.Message;
@@ -29,14 +29,14 @@ namespace Wikiled.Instagram.Api.Classes
             HandleMessages(Message);
         }
 
-        public ResultInfo(InstaResponseType responseType, string errorMessage)
+        public ResultInfo(ResponseType responseType, string errorMessage)
         {
             ResponseType = responseType;
             Message = errorMessage;
             HandleMessages(errorMessage);
         }
 
-        public ResultInfo(InstaResponseType responseType, InstaBadStatusResponse status)
+        public ResultInfo(ResponseType responseType, InstaBadStatusResponse status)
         {
             Message = status?.Message;
             Challenge = status?.Challenge;
@@ -44,8 +44,8 @@ namespace Wikiled.Instagram.Api.Classes
             HandleMessages(Message);
             switch (ResponseType)
             {
-                case InstaResponseType.ActionBlocked:
-                case InstaResponseType.Spam:
+                case ResponseType.ActionBlocked:
+                case ResponseType.Spam:
                     if (status != null &&
                         !string.IsNullOrEmpty(status.FeedbackMessage) &&
                         status.FeedbackMessage.ToLower().Contains("this block will expire on"))
@@ -79,7 +79,7 @@ namespace Wikiled.Instagram.Api.Classes
 
         public bool NeedsChallenge { get; internal set; }
 
-        public InstaResponseType ResponseType { get; }
+        public ResponseType ResponseType { get; }
 
         public bool Timeout { get; internal set; }
 

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Wikiled.Instagram.Api.Hashtags.Data
 {
-    public class SmartHashtag
+    public class SmartHashtagResult
     {
         [JsonProperty("absRelevance")]
         public double AbsRelevance { get; set; }

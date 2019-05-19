@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System;
 using System.Linq;
 using Microsoft.Extensions.Logging.Abstractions;
+using NUnit.Framework.Constraints;
 using Wikiled.Instagram.Api.Hashtags;
 
 namespace Wikiled.Instagram.Api.Tests.Hashtags
@@ -32,8 +33,9 @@ namespace Wikiled.Instagram.Api.Tests.Hashtags
             Assert.AreEqual("My tags are here #tags #london", result.Original);
             Assert.AreEqual("My tags are here", result.WithoutTags);
             Assert.AreEqual(2, result.Tags.Count());
-            Assert.IsTrue(result.Tags.Contains("tags"));
-            Assert.IsTrue(result.Tags.Contains("london"));
+            var lookup = result.Tags.ToLookup(item => item.Text);
+            Assert.IsTrue(lookup.Contains("tags"));
+            Assert.IsTrue(lookup.Contains("london"));
         }
 
         private CaptionHandler CreateCaptionHandler()

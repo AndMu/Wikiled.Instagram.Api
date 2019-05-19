@@ -8,7 +8,7 @@ namespace Wikiled.Instagram.Api.Hashtags
     {
         Task<SmartResults[]> GetAll(string[] tags);
 
-        Task<LocationResults> GetByLocation(Location location, int radius);
+        Task<LocationResult> GetByLocation(Location location, int radius);
 
         Task<string[]> GetByLocationSmart(Location location, int total = 3);
 

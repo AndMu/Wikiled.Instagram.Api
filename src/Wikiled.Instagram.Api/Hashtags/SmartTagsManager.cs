@@ -53,7 +53,7 @@ namespace Wikiled.Instagram.Api.Hashtags
             return new string[] { };
         }
 
-        public async Task<LocationResults> GetByLocation(Location location, int radius)
+        public async Task<LocationResult> GetByLocation(Location location, int radius)
         {
             var boundaries = new CoordinateBoundaries(location.Lat, location.Lng, radius);
 
@@ -61,7 +61,7 @@ namespace Wikiled.Instagram.Api.Hashtags
             var query = await client.GetAsync($"https://query.displaypurposes.com/local/?bbox={boundaries.MinLongitude},{boundaries.MinLatitude},{boundaries.MaxLongitude},{boundaries.MaxLatitude}&zoom=10")
                                     .ConfigureAwait(false);
             var text = await query.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var results = SerializationHelper.DeserializeFromString<LocationResults>(text);
+            var results = SerializationHelper.DeserializeFromString<LocationResult>(text);
             return results;
         }
 
@@ -73,7 +73,7 @@ namespace Wikiled.Instagram.Api.Hashtags
             }
 
             var retrieved = await GetAll(tags).ConfigureAwait(false);
-            var tagsResults = new List<List<SmartHashtag>>();
+            var tagsResults = new List<List<SmartHashtagResult>>();
             for (var i = 0; i < retrieved.Length; i++)
             {
                 tagsResults.Add(retrieved[i].Results.OrderBy(item => item.Rank).ToList());
@@ -166,7 +166,7 @@ namespace Wikiled.Instagram.Api.Hashtags
                 }
             }
 
-            return finalResults.ToArray();
+            return finalResults.Where(item => item.Results.Count > 0).ToArray();
         }
     }
 }

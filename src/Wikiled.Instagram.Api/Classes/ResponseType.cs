@@ -1,6 +1,6 @@
 namespace Wikiled.Instagram.Api.Classes
 {
-    public enum InstaResponseType
+    public enum ResponseType
     {
         /// <summary>
         ///     Unknown type:|

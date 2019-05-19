@@ -242,20 +242,20 @@ namespace Wikiled.Instagram.Api.Logic
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<bool>(response, json);
+                    return Result.UnExpectedResponse<bool>(response, json);
                 }
 
-                return InstaResult.Success(true);
+                return Result.Success(true);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<bool>(exception);
+                return Result.Fail<bool>(exception);
             }
         }
 
@@ -273,17 +273,17 @@ namespace Wikiled.Instagram.Api.Logic
                 var response = await HttpRequestProcessor.SendAsync(request).ConfigureAwait(false);
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var obj = JsonConvert.DeserializeObject<InstaAccountCheck>(json);
-                return InstaResult.Success(obj);
+                return Result.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaAccountCheck), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(InstaAccountCheck), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaAccountCheck>(exception);
+                return Result.Fail<InstaAccountCheck>(exception);
             }
         }
 
@@ -325,21 +325,21 @@ namespace Wikiled.Instagram.Api.Logic
                 {
                     var o = JsonConvert.DeserializeObject<AccountRegistrationPhoneNumber>(json);
 
-                    return InstaResult.UnExpectedResponse<bool>(response, o.Message?.Errors?[0], json);
+                    return Result.UnExpectedResponse<bool>(response, o.Message?.Errors?[0], json);
                 }
 
                 signUpPhoneNumberInfo = JsonConvert.DeserializeObject<AccountRegistrationPhoneNumber>(json);
-                return InstaResult.Success(true);
+                return Result.Success(true);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<bool>(exception);
+                return Result.Fail<bool>(exception);
             }
         }
 
@@ -382,28 +382,28 @@ namespace Wikiled.Instagram.Api.Logic
                 {
                     var o = JsonConvert.DeserializeObject<InstaAccountRegistrationPhoneNumberVerifySms>(json);
 
-                    return InstaResult.Fail(o.Errors?.Nonce?[0], (InstaPhoneNumberRegistration)null);
+                    return Result.Fail(o.Errors?.Nonce?[0], (InstaPhoneNumberRegistration)null);
                 }
 
                 var r = JsonConvert.DeserializeObject<InstaAccountRegistrationPhoneNumberVerifySms>(json);
                 if (r.ErrorType == "invalid_nonce")
                 {
-                    return InstaResult.Fail(r.Errors?.Nonce?[0], (InstaPhoneNumberRegistration)null);
+                    return Result.Fail(r.Errors?.Nonce?[0], (InstaPhoneNumberRegistration)null);
                 }
 
                 await GetRegistrationStepsAsync().ConfigureAwait(false);
                 var obj = JsonConvert.DeserializeObject<InstaPhoneNumberRegistration>(json);
-                return InstaResult.Success(obj);
+                return Result.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaPhoneNumberRegistration), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(InstaPhoneNumberRegistration), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaPhoneNumberRegistration>(exception);
+                return Result.Fail<InstaPhoneNumberRegistration>(exception);
             }
         }
 
@@ -443,7 +443,7 @@ namespace Wikiled.Instagram.Api.Logic
                     var acceptGdpr = await AcceptConsentRequiredAsync(null, phoneNumber).ConfigureAwait(false);
                     if (!acceptGdpr.Succeeded)
                     {
-                        return InstaResult.Fail(acceptGdpr.Info.Message, (InstaAccountCreation)null);
+                        return Result.Fail(acceptGdpr.Info.Message, (InstaAccountCreation)null);
                     }
                 }
 
@@ -487,13 +487,13 @@ namespace Wikiled.Instagram.Api.Logic
                 {
                     var o = JsonConvert.DeserializeObject<InstaAccountCreationResponse>(json);
 
-                    return InstaResult.Fail(o.Errors?.Username?[0], (InstaAccountCreation)null);
+                    return Result.Fail(o.Errors?.Username?[0], (InstaAccountCreation)null);
                 }
 
                 var r = JsonConvert.DeserializeObject<InstaAccountCreationResponse>(json);
                 if (r.ErrorType == "username_is_taken")
                 {
-                    return InstaResult.Fail(r.Errors?.Username?[0], (InstaAccountCreation)null);
+                    return Result.Fail(r.Errors?.Username?[0], (InstaAccountCreation)null);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaAccountCreation>(json);
@@ -502,17 +502,17 @@ namespace Wikiled.Instagram.Api.Logic
                     ValidateUserAsync(obj.CreatedUser, csrftoken, true, password);
                 }
 
-                return InstaResult.Success(obj);
+                return Result.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaAccountCreation), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(InstaAccountCreation), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaAccountCreation>(exception);
+                return Result.Fail<InstaAccountCreation>(exception);
             }
         }
 
@@ -571,7 +571,7 @@ namespace Wikiled.Instagram.Api.Logic
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<InstaAccountCreation>(response, json);
+                    return Result.UnExpectedResponse<InstaAccountCreation>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaAccountCreation>(json);
@@ -580,17 +580,17 @@ namespace Wikiled.Instagram.Api.Logic
                     ValidateUserAsync(obj.CreatedUser, csrftoken, true, password);
                 }
 
-                return InstaResult.Success(obj);
+                return Result.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaAccountCreation), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(InstaAccountCreation), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaAccountCreation>(exception);
+                return Result.Fail<InstaAccountCreation>(exception);
             }
         }
 
@@ -624,12 +624,12 @@ namespace Wikiled.Instagram.Api.Logic
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, LoginResult.Exception, InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, LoginResult.Exception, ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 LogError(exception);
-                return InstaResult.Fail(exception, LoginResult.Exception);
+                return Result.Fail(exception, LoginResult.Exception);
             }
             finally
             {
@@ -674,7 +674,7 @@ namespace Wikiled.Instagram.Api.Logic
 
                 if (loginFailReason.InvalidCredentials)
                 {
-                        return InstaResult.Fail(
+                        return Result.Fail(
                             "Invalid Credentials",
                             loginFailReason.ErrorType == "bad_password"
                                 ? LoginResult.BadPassword
@@ -689,33 +689,33 @@ namespace Wikiled.Instagram.Api.Logic
                     }
 
                     twoFactorInfo = loginFailReason.TwoFactorLoginInfo;
-                     return InstaResult.Fail("Two Factor Authentication is required", LoginResult.TwoFactorRequired);
+                     return Result.Fail("Two Factor Authentication is required", LoginResult.TwoFactorRequired);
                 }
 
                 if (loginFailReason.ErrorType == "checkpoint_challenge_required")
                 {
                     challengeInfo = loginFailReason.Challenge;
-                    return InstaResult.Fail("Challenge is required", LoginResult.ChallengeRequired);
+                    return Result.Fail("Challenge is required", LoginResult.ChallengeRequired);
                 }
 
                 if (loginFailReason.ErrorType == "rate_limit_error")
                 {
-                    return InstaResult.Fail("Please wait a few minutes before you try again.",
+                    return Result.Fail("Please wait a few minutes before you try again.",
                                             LoginResult.LimitError);
                 }
 
                 if (loginFailReason.ErrorType == "inactive user" || loginFailReason.ErrorType == "inactive_user")
                 {
-                    return InstaResult.Fail($"{loginFailReason.Message}\r\nHelp url: {loginFailReason.HelpUrl}",
+                    return Result.Fail($"{loginFailReason.Message}\r\nHelp url: {loginFailReason.HelpUrl}",
                                             LoginResult.InactiveUser);
                 }
 
                 if (loginFailReason.ErrorType == "checkpoint_logged_out")
                 {
-                    return InstaResult.Fail($"{loginFailReason.ErrorType} {loginFailReason.CheckpointUrl}", LoginResult.CheckpointLoggedOut);
+                    return Result.Fail($"{loginFailReason.ErrorType} {loginFailReason.CheckpointUrl}", LoginResult.CheckpointLoggedOut);
                 }
 
-                return InstaResult.UnExpectedResponse<LoginResult>(response, json);
+                return Result.UnExpectedResponse<LoginResult>(response, json);
             }
 
             var loginInfo = JsonConvert.DeserializeObject<LoginResponse>(json);
@@ -735,7 +735,7 @@ namespace Wikiled.Instagram.Api.Logic
                 User.CsrfToken = cookies[InstaApiConstants.Csrftoken]?.Value ?? string.Empty;
             }
 
-            return InstaResult.Success(LoginResult.Success);
+            return Result.Success(LoginResult.Success);
         }
 
         /// <summary>
@@ -766,12 +766,12 @@ namespace Wikiled.Instagram.Api.Logic
 
                 if (string.IsNullOrEmpty(csrfToken))
                 {
-                    return InstaResult.Fail<bool>("Cannot find 'csrftoken' in cookies!");
+                    return Result.Fail<bool>("Cannot find 'csrftoken' in cookies!");
                 }
 
                 if (string.IsNullOrEmpty(userId))
                 {
-                    return InstaResult.Fail<bool>("Cannot find 'ds_user_id' in cookies!");
+                    return Result.Fail<bool>("Cannot find 'ds_user_id' in cookies!");
                 }
 
                 var uri = new Uri(InstaApiConstants.InstagramUrl);
@@ -800,7 +800,7 @@ namespace Wikiled.Instagram.Api.Logic
                 if (!us.Succeeded)
                 {
                     IsUserAuthenticated = false;
-                    return InstaResult.Fail(us.Info, false);
+                    return Result.Fail(us.Info, false);
                 }
 
                 User.UserName = HttpRequestProcessor.RequestMessage.Username =
@@ -811,17 +811,17 @@ namespace Wikiled.Instagram.Api.Logic
                 User.LoggedInUser.ProfilePicture = us.Value.ProfilePicUrl;
                 User.LoggedInUser.ProfilePicUrl = us.Value.ProfilePicUrl;
 
-                return InstaResult.Success(true);
+                return Result.Success(true);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 LogError(exception);
-                return InstaResult.Fail(exception, false);
+                return Result.Fail(exception, false);
             }
         }
 
@@ -840,7 +840,7 @@ namespace Wikiled.Instagram.Api.Logic
         {
             if (twoFactorInfo == null)
             {
-                return InstaResult.Fail<InstaLoginTwoFactorResult>("Run LoginAsync first");
+                return Result.Fail<InstaLoginTwoFactorResult>("Run LoginAsync first");
             }
 
             try
@@ -882,36 +882,36 @@ namespace Wikiled.Instagram.Api.Logic
                     User.LoggedInUser = converter.Convert();
                     User.RankToken = $"{User.LoggedInUser.Pk}_{HttpRequestProcessor.RequestMessage.PhoneId}";
 
-                    return InstaResult.Success(InstaLoginTwoFactorResult.Success);
+                    return Result.Success(InstaLoginTwoFactorResult.Success);
                 }
 
                 var loginFailReason = JsonConvert.DeserializeObject<LoginTwoFactorBaseResponse>(json);
 
                 if (loginFailReason.ErrorType == "sms_code_validation_code_invalid")
                 {
-                    return InstaResult.Fail("Please check the security code.", InstaLoginTwoFactorResult.InvalidCode);
+                    return Result.Fail("Please check the security code.", InstaLoginTwoFactorResult.InvalidCode);
                 }
 
                 if (loginFailReason.Message.ToLower().Contains("challenge"))
                 {
                     challengeInfo = loginFailReason.Challenge;
 
-                    return InstaResult.Fail("Challenge is required", InstaLoginTwoFactorResult.ChallengeRequired);
+                    return Result.Fail("Challenge is required", InstaLoginTwoFactorResult.ChallengeRequired);
                 }
 
-                return InstaResult.Fail(
+                return Result.Fail(
                     "This code is no longer valid, please, call LoginAsync again to request a new one",
                     InstaLoginTwoFactorResult.CodeExpired);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaLoginTwoFactorResult), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(InstaLoginTwoFactorResult), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 LogError(exception);
-                return InstaResult.Fail(exception, InstaLoginTwoFactorResult.Exception);
+                return Result.Fail(exception, InstaLoginTwoFactorResult.Exception);
             }
         }
 
@@ -928,8 +928,8 @@ namespace Wikiled.Instagram.Api.Logic
             return Task.Run(
                 () =>
                     twoFactorInfo != null
-                        ? InstaResult.Success(twoFactorInfo)
-                        : InstaResult.Fail<TwoFactorLoginInfo>("No Two Factor info available."));
+                        ? Result.Success(twoFactorInfo)
+                        : Result.Fail<TwoFactorLoginInfo>("No Two Factor info available."));
         }
 
         /// <summary>
@@ -950,7 +950,7 @@ namespace Wikiled.Instagram.Api.Logic
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<bool>(response, json);
+                    return Result.UnExpectedResponse<bool>(response, json);
                 }
 
                 var logoutInfo = JsonConvert.DeserializeObject<InstaBaseStatusResponse>(json);
@@ -959,17 +959,17 @@ namespace Wikiled.Instagram.Api.Logic
                     IsUserAuthenticated = false;
                 }
 
-                return InstaResult.Success(!IsUserAuthenticated);
+                return Result.Success(!IsUserAuthenticated);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 LogError(exception);
-                return InstaResult.Fail(exception, false);
+                return Result.Fail(exception, false);
             }
         }
 
@@ -1015,19 +1015,19 @@ namespace Wikiled.Instagram.Api.Logic
                 var obj = JsonConvert.DeserializeObject<InstaUserLookupResponse>(json);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.Fail<InstaUserLookup>(obj.Message);
+                    return Result.Fail<InstaUserLookup>(obj.Message);
                 }
 
-                return InstaResult.Success(InstaConvertersFabric.Instance.GetUserLookupConverter(obj).Convert());
+                return Result.Success(InstaConvertersFabric.Instance.GetUserLookupConverter(obj).Convert());
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaUserLookup), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(InstaUserLookup), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                return InstaResult.Fail<InstaUserLookup>(exception);
+                return Result.Fail<InstaUserLookup>(exception);
             }
         }
 
@@ -1082,19 +1082,19 @@ namespace Wikiled.Instagram.Api.Logic
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     var error = JsonConvert.DeserializeObject<InstaMessageErrorsResponseRecoveryEmail>(result);
-                    return InstaResult.Fail<InstaRecovery>(error.Message);
+                    return Result.Fail<InstaRecovery>(error.Message);
                 }
 
-                return InstaResult.Success(JsonConvert.DeserializeObject<InstaRecovery>(result));
+                return Result.Success(JsonConvert.DeserializeObject<InstaRecovery>(result));
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaRecovery), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(InstaRecovery), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                return InstaResult.Fail<InstaRecovery>(exception);
+                return Result.Fail<InstaRecovery>(exception);
             }
         }
 
@@ -1135,7 +1135,7 @@ namespace Wikiled.Instagram.Api.Logic
                     var error = JsonConvert.DeserializeObject<InstaBadStatusErrorsResponse>(result);
                     var errors = "";
                     error.Message.Errors.ForEach(errorContent => errors += errorContent + "\n");
-                    return InstaResult.Fail<InstaRecovery>(errors);
+                    return Result.Fail<InstaRecovery>(errors);
                 }
 
                 if (result.Contains("errors"))
@@ -1144,19 +1144,19 @@ namespace Wikiled.Instagram.Api.Logic
                     var errors = "";
                     error.PhoneNumber.Errors.ForEach(errorContent => errors += errorContent + "\n");
 
-                    return InstaResult.Fail<InstaRecovery>(errors);
+                    return Result.Fail<InstaRecovery>(errors);
                 }
 
-                return InstaResult.Success(JsonConvert.DeserializeObject<InstaRecovery>(result));
+                return Result.Success(JsonConvert.DeserializeObject<InstaRecovery>(result));
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaRecovery), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(InstaRecovery), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
-                return InstaResult.Fail<InstaRecovery>(exception);
+                return Result.Fail<InstaRecovery>(exception);
             }
         }
 
@@ -1169,7 +1169,7 @@ namespace Wikiled.Instagram.Api.Logic
             {
                 if (twoFactorInfo == null)
                 {
-                    return InstaResult.Fail<TwoFactorLoginSms>("Run LoginAsync first");
+                    return Result.Fail<TwoFactorLoginSms>("Run LoginAsync first");
                 }
 
                 var postData = new Dictionary<string, string>
@@ -1192,17 +1192,17 @@ namespace Wikiled.Instagram.Api.Logic
                     twoFactorInfo.TwoFactorIdentifier = T.TwoFactorInfo.TwoFactorIdentifier;
                 }
 
-                return InstaResult.Success(T);
+                return Result.Success(T);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(TwoFactorLoginSms), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(TwoFactorLoginSms), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<TwoFactorLoginSms>(exception);
+                return Result.Fail<TwoFactorLoginSms>(exception);
             }
         }
 
@@ -1225,20 +1225,20 @@ namespace Wikiled.Instagram.Api.Logic
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<InstaLoggedInChallengeDataInfo>(response, json);
+                    return Result.UnExpectedResponse<InstaLoggedInChallengeDataInfo>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaLoggedInChallengeDataInfoContainer>(json);
-                return InstaResult.Success(obj?.StepData);
+                return Result.Success(obj?.StepData);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaLoggedInChallengeDataInfo), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(InstaLoggedInChallengeDataInfo), ResponseType.NetworkProblem);
             }
             catch (Exception ex)
             {
-                return InstaResult.Fail(ex, (InstaLoggedInChallengeDataInfo)null);
+                return Result.Fail(ex, (InstaLoggedInChallengeDataInfo)null);
             }
         }
 
@@ -1272,20 +1272,20 @@ namespace Wikiled.Instagram.Api.Logic
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<bool>(response, json);
+                    return Result.UnExpectedResponse<bool>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaChallengeRequireVerifyCode>(json);
-                return obj.Action.ToLower() == "close" ? InstaResult.Success(true) : InstaResult.Success(false);
+                return obj.Action.ToLower() == "close" ? Result.Success(true) : Result.Success(false);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, false, InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, false, ResponseType.NetworkProblem);
             }
             catch (Exception ex)
             {
-                return InstaResult.Fail<bool>(ex);
+                return Result.Fail<bool>(ex);
             }
         }
 
@@ -1296,7 +1296,7 @@ namespace Wikiled.Instagram.Api.Logic
         {
             if (challengeInfo == null)
             {
-                return InstaResult.Fail("challenge require info is empty.\r\ntry to call LoginAsync function first.",
+                return Result.Fail("challenge require info is empty.\r\ntry to call LoginAsync function first.",
                                    (InstaChallengeRequireVerifyMethod)null);
             }
 
@@ -1311,20 +1311,20 @@ namespace Wikiled.Instagram.Api.Logic
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<InstaChallengeRequireVerifyMethod>(response, json);
+                    return Result.UnExpectedResponse<InstaChallengeRequireVerifyMethod>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaChallengeRequireVerifyMethod>(json);
-                return InstaResult.Success(obj);
+                return Result.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaChallengeRequireVerifyMethod), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(InstaChallengeRequireVerifyMethod), ResponseType.NetworkProblem);
             }
             catch (Exception ex)
             {
-                return InstaResult.Fail(ex, (InstaChallengeRequireVerifyMethod)null);
+                return Result.Fail(ex, (InstaChallengeRequireVerifyMethod)null);
             }
         }
 
@@ -1335,7 +1335,7 @@ namespace Wikiled.Instagram.Api.Logic
         {
             if (challengeInfo == null)
             {
-                return InstaResult.Fail("challenge require info is empty.\r\ntry to call LoginAsync function first.",
+                return Result.Fail("challenge require info is empty.\r\ntry to call LoginAsync function first.",
                                    (InstaChallengeRequireVerifyMethod)null);
             }
 
@@ -1363,22 +1363,22 @@ namespace Wikiled.Instagram.Api.Logic
                     {
                     }
 
-                    return InstaResult.UnExpectedResponse<InstaChallengeRequireVerifyMethod>(response, json);
+                    return Result.UnExpectedResponse<InstaChallengeRequireVerifyMethod>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaChallengeRequireVerifyMethod>(json);
-                return InstaResult.Success(obj);
+                return Result.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException,
+                return Result.Fail(httpException,
                                    default(InstaChallengeRequireVerifyMethod),
-                                   InstaResponseType.NetworkProblem);
+                                   ResponseType.NetworkProblem);
             }
             catch (Exception ex)
             {
-                return InstaResult.Fail(ex, (InstaChallengeRequireVerifyMethod)null);
+                return Result.Fail(ex, (InstaChallengeRequireVerifyMethod)null);
             }
         }
 
@@ -1415,7 +1415,7 @@ namespace Wikiled.Instagram.Api.Logic
         {
             if (challengeInfo == null)
             {
-                return InstaResult.Fail("challenge require info is empty.\r\ntry to call LoginAsync function first.",
+                return Result.Fail("challenge require info is empty.\r\ntry to call LoginAsync function first.",
                                    (InstaChallengeRequireEmailVerify)null);
             }
 
@@ -1455,22 +1455,22 @@ namespace Wikiled.Instagram.Api.Logic
                     {
                     }
 
-                    return InstaResult.Fail(msg, (InstaChallengeRequireEmailVerify)null);
+                    return Result.Fail(msg, (InstaChallengeRequireEmailVerify)null);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaChallengeRequireEmailVerify>(json);
-                return InstaResult.Success(obj);
+                return Result.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException,
+                return Result.Fail(httpException,
                                    default(InstaChallengeRequireEmailVerify),
-                                   InstaResponseType.NetworkProblem);
+                                   ResponseType.NetworkProblem);
             }
             catch (Exception ex)
             {
-                return InstaResult.Fail(ex, (InstaChallengeRequireEmailVerify)null);
+                return Result.Fail(ex, (InstaChallengeRequireEmailVerify)null);
             }
         }
 
@@ -1482,13 +1482,13 @@ namespace Wikiled.Instagram.Api.Logic
         {
             if (challengeInfo == null)
             {
-                return InstaResult.Fail("challenge require info is empty.\r\ntry to call LoginAsync function first.",
+                return Result.Fail("challenge require info is empty.\r\ntry to call LoginAsync function first.",
                                    LoginResult.Exception);
             }
 
             if (verifyCode.Length != 6)
             {
-                return InstaResult.Fail("Verify code must be an 6 digit number.", LoginResult.Exception);
+                return Result.Fail("Verify code must be an 6 digit number.", LoginResult.Exception);
             }
 
             try
@@ -1524,7 +1524,7 @@ namespace Wikiled.Instagram.Api.Logic
                     {
                     }
 
-                    return InstaResult.Fail(msg, LoginResult.Exception);
+                    return Result.Fail(msg, LoginResult.Exception);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaChallengeRequireVerifyCode>(json);
@@ -1537,7 +1537,7 @@ namespace Wikiled.Instagram.Api.Logic
                         await MessagingProcessor.GetDirectInboxAsync(PaginationParameters.MaxPagesToLoad(1)).ConfigureAwait(false);
                         await FeedProcessor.GetRecentActivityFeedAsync(PaginationParameters.MaxPagesToLoad(1)).ConfigureAwait(false);
 
-                        return InstaResult.Success(LoginResult.Success);
+                        return Result.Success(LoginResult.Success);
                     }
 
                     if (!string.IsNullOrEmpty(obj.Action))
@@ -1548,17 +1548,17 @@ namespace Wikiled.Instagram.Api.Logic
                     }
                 }
 
-                return InstaResult.Fail(obj?.Message, LoginResult.Exception);
+                return Result.Fail(obj?.Message, LoginResult.Exception);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(LoginResult), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(LoginResult), ResponseType.NetworkProblem);
             }
             catch (Exception ex)
             {
                 LogError(ex);
-                return InstaResult.Fail(ex, LoginResult.Exception);
+                return Result.Fail(ex, LoginResult.Exception);
             }
         }
 
@@ -1736,7 +1736,7 @@ namespace Wikiled.Instagram.Api.Logic
             }
             catch (Exception exception)
             {
-                return InstaResult.Fail<string>(exception).Value;
+                return Result.Fail<string>(exception).Value;
             }
         }
 
@@ -1824,7 +1824,7 @@ namespace Wikiled.Instagram.Api.Logic
             }
             catch (Exception exception)
             {
-                return InstaResult.Fail<bool>(exception).Value;
+                return Result.Fail<bool>(exception).Value;
             }
         }
 
@@ -1869,7 +1869,7 @@ namespace Wikiled.Instagram.Api.Logic
             {
                 if (uri == null)
                 {
-                    return InstaResult.Fail("Uri cannot be null!", default(string));
+                    return Result.Fail("Uri cannot be null!", default(string));
                 }
 
                 var request = HttpHelper.GetDefaultRequest(HttpMethod.Get, uri, deviceInfo);
@@ -1878,20 +1878,20 @@ namespace Wikiled.Instagram.Api.Logic
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<string>(response, json);
+                    return Result.UnExpectedResponse<string>(response, json);
                 }
 
-                return InstaResult.Success(json);
+                return Result.Success(json);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(string), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(string), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail(exception, default(string));
+                return Result.Fail(exception, default(string));
             }
         }
 
@@ -1926,7 +1926,7 @@ namespace Wikiled.Instagram.Api.Logic
             {
                 if (uri == null)
                 {
-                    return InstaResult.Fail("Uri cannot be null!", default(string));
+                    return Result.Fail("Uri cannot be null!", default(string));
                 }
 
                 data.Add("_uuid", deviceInfo.DeviceGuid.ToString());
@@ -1938,20 +1938,20 @@ namespace Wikiled.Instagram.Api.Logic
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<string>(response, json);
+                    return Result.UnExpectedResponse<string>(response, json);
                 }
 
-                return InstaResult.Success(json);
+                return Result.Success(json);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(string), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(string), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail(exception, default(string));
+                return Result.Fail(exception, default(string));
             }
         }
 
@@ -1991,51 +1991,51 @@ namespace Wikiled.Instagram.Api.Logic
                     var obj = JsonConvert.DeserializeObject<InstaCheckEmailRegistration>(json);
                     if (obj.ErrorType == "fail")
                     {
-                        return InstaResult.UnExpectedResponse<InstaCheckEmailRegistration>(response, json);
+                        return Result.UnExpectedResponse<InstaCheckEmailRegistration>(response, json);
                     }
 
                     if (obj.ErrorType == "email_is_taken")
                     {
-                        return InstaResult.Fail("Email is taken.", (InstaCheckEmailRegistration)null);
+                        return Result.Fail("Email is taken.", (InstaCheckEmailRegistration)null);
                     }
 
                     if (obj.ErrorType == "invalid_email")
                     {
-                        return InstaResult.Fail("Please enter a valid email address.", (InstaCheckEmailRegistration)null);
+                        return Result.Fail("Please enter a valid email address.", (InstaCheckEmailRegistration)null);
                     }
 
-                    return InstaResult.UnExpectedResponse<InstaCheckEmailRegistration>(response, json);
+                    return Result.UnExpectedResponse<InstaCheckEmailRegistration>(response, json);
                 }
                 else
                 {
                     var obj = JsonConvert.DeserializeObject<InstaCheckEmailRegistration>(json);
                     if (obj.ErrorType == "fail")
                     {
-                        return InstaResult.UnExpectedResponse<InstaCheckEmailRegistration>(response, json);
+                        return Result.UnExpectedResponse<InstaCheckEmailRegistration>(response, json);
                     }
 
                     if (obj.ErrorType == "email_is_taken")
                     {
-                        return InstaResult.Fail("Email is taken.", (InstaCheckEmailRegistration)null);
+                        return Result.Fail("Email is taken.", (InstaCheckEmailRegistration)null);
                     }
 
                     if (obj.ErrorType == "invalid_email")
                     {
-                        return InstaResult.Fail("Please enter a valid email address.", (InstaCheckEmailRegistration)null);
+                        return Result.Fail("Please enter a valid email address.", (InstaCheckEmailRegistration)null);
                     }
 
-                    return InstaResult.Success(obj);
+                    return Result.Success(obj);
                 }
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaCheckEmailRegistration), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(InstaCheckEmailRegistration), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaCheckEmailRegistration>(exception);
+                return Result.Fail<InstaCheckEmailRegistration>(exception);
             }
         }
 
@@ -2090,23 +2090,23 @@ namespace Wikiled.Instagram.Api.Logic
                 {
                     var o = JsonConvert.DeserializeObject<AccountRegistrationPhoneNumber>(json);
 
-                    return InstaResult.Fail(o.Message?.Errors?[0], (InstaRegistrationSuggestionResponse)null);
+                    return Result.Fail(o.Message?.Errors?[0], (InstaRegistrationSuggestionResponse)null);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaRegistrationSuggestionResponse>(json);
-                return InstaResult.Success(obj);
+                return Result.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException,
+                return Result.Fail(httpException,
                                    default(InstaRegistrationSuggestionResponse),
-                                   InstaResponseType.NetworkProblem);
+                                   ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaRegistrationSuggestionResponse>(exception);
+                return Result.Fail<InstaRegistrationSuggestionResponse>(exception);
             }
         }
 
@@ -2144,23 +2144,23 @@ namespace Wikiled.Instagram.Api.Logic
                 {
                     var o = JsonConvert.DeserializeObject<AccountRegistrationPhoneNumber>(json);
 
-                    return InstaResult.Fail(o.Message?.Errors?[0], (InstaRegistrationSuggestionResponse)null);
+                    return Result.Fail(o.Message?.Errors?[0], (InstaRegistrationSuggestionResponse)null);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaRegistrationSuggestionResponse>(json);
-                return InstaResult.Success(obj);
+                return Result.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException,
+                return Result.Fail(httpException,
                                    default(InstaRegistrationSuggestionResponse),
-                                   InstaResponseType.NetworkProblem);
+                                   ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaRegistrationSuggestionResponse>(exception);
+                return Result.Fail<InstaRegistrationSuggestionResponse>(exception);
             }
         }
 
@@ -2197,7 +2197,7 @@ namespace Wikiled.Instagram.Api.Logic
                 var checkEmail = await CheckEmail(email, false).ConfigureAwait(false);
                 if (!checkEmail.Succeeded)
                 {
-                    return InstaResult.Fail(checkEmail.Info.Message, (InstaAccountCreation)null);
+                    return Result.Fail(checkEmail.Info.Message, (InstaAccountCreation)null);
                 }
 
                 await Task.Delay((int)delay.Value.TotalMilliseconds).ConfigureAwait(false);
@@ -2206,7 +2206,7 @@ namespace Wikiled.Instagram.Api.Logic
                     var acceptGdpr = await AcceptConsentRequiredAsync(email).ConfigureAwait(false);
                     if (!acceptGdpr.Succeeded)
                     {
-                        return InstaResult.Fail(acceptGdpr.Info.Message, (InstaAccountCreation)null);
+                        return Result.Fail(acceptGdpr.Info.Message, (InstaAccountCreation)null);
                     }
                 }
 
@@ -2255,7 +2255,7 @@ namespace Wikiled.Instagram.Api.Logic
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<InstaAccountCreation>(response, json);
+                    return Result.UnExpectedResponse<InstaAccountCreation>(response, json);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaAccountCreation>(json);
@@ -2268,17 +2268,17 @@ namespace Wikiled.Instagram.Api.Logic
                     ValidateUserAsync(obj.CreatedUser, csrftoken, true, password);
                 }
 
-                return InstaResult.Success(obj);
+                return Result.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaAccountCreation), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(InstaAccountCreation), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaAccountCreation>(exception);
+                return Result.Fail<InstaAccountCreation>(exception);
             }
         }
 
@@ -2304,7 +2304,7 @@ namespace Wikiled.Instagram.Api.Logic
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<bool>(response, json);
+                    return Result.UnExpectedResponse<bool>(response, json);
                 }
 
                 await Task.Delay((int)delay.TotalMilliseconds).ConfigureAwait(false);
@@ -2343,7 +2343,7 @@ namespace Wikiled.Instagram.Api.Logic
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<bool>(response, json);
+                    return Result.UnExpectedResponse<bool>(response, json);
                 }
 
                 await Task.Delay((int)delay.TotalMilliseconds).ConfigureAwait(false);
@@ -2364,19 +2364,19 @@ namespace Wikiled.Instagram.Api.Logic
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<bool>(response, json);
+                    return Result.UnExpectedResponse<bool>(response, json);
                 }
 
-                return InstaResult.Success(true);
+                return Result.Success(true);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
             }
             catch (Exception ex)
             {
-                return InstaResult.Fail(ex, false);
+                return Result.Fail(ex, false);
             }
         }
 
@@ -2386,7 +2386,7 @@ namespace Wikiled.Instagram.Api.Logic
         {
             if (challengeInfo == null)
             {
-                return InstaResult.Fail("challenge require info is empty.\r\ntry to call LoginAsync function first.",
+                return Result.Fail("challenge require info is empty.\r\ntry to call LoginAsync function first.",
                                    (InstaChallengeRequireSmsVerify)null);
             }
 
@@ -2434,20 +2434,20 @@ namespace Wikiled.Instagram.Api.Logic
                     {
                     }
 
-                    return InstaResult.Fail(msg, (InstaChallengeRequireSmsVerify)null);
+                    return Result.Fail(msg, (InstaChallengeRequireSmsVerify)null);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaChallengeRequireSmsVerify>(json);
-                return InstaResult.Success(obj);
+                return Result.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(InstaChallengeRequireSmsVerify), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(InstaChallengeRequireSmsVerify), ResponseType.NetworkProblem);
             }
             catch (Exception ex)
             {
-                return InstaResult.Fail(ex, (InstaChallengeRequireSmsVerify)null);
+                return Result.Fail(ex, (InstaChallengeRequireSmsVerify)null);
             }
         }
 
@@ -2523,7 +2523,7 @@ namespace Wikiled.Instagram.Api.Logic
 
                     if (loginFailReason.InvalidCredentials)
                     {
-                        return InstaResult.Fail(
+                        return Result.Fail(
                             "Invalid Credentials",
                             loginFailReason.ErrorType == "bad_password"
                                 ? LoginResult.BadPassword
@@ -2535,34 +2535,34 @@ namespace Wikiled.Instagram.Api.Logic
                         twoFactorInfo = loginFailReason.TwoFactorLoginInfo;
                         HttpRequestProcessor.RequestMessage.Username = twoFactorInfo.Username;
                         HttpRequestProcessor.RequestMessage.DeviceId = deviceInfo.DeviceId;
-                        return InstaResult.Fail("Two Factor Authentication is required", LoginResult.TwoFactorRequired);
+                        return Result.Fail("Two Factor Authentication is required", LoginResult.TwoFactorRequired);
                     }
 
                     if (loginFailReason.ErrorType == "checkpoint_challenge_required")
                     {
                         challengeInfo = loginFailReason.Challenge;
 
-                        return InstaResult.Fail("Challenge is required", LoginResult.ChallengeRequired);
+                        return Result.Fail("Challenge is required", LoginResult.ChallengeRequired);
                     }
 
                     if (loginFailReason.ErrorType == "rate_limit_error")
                     {
-                        return InstaResult.Fail("Please wait a few minutes before you try again.",
+                        return Result.Fail("Please wait a few minutes before you try again.",
                                            LoginResult.LimitError);
                     }
 
                     if (loginFailReason.ErrorType == "inactive user" || loginFailReason.ErrorType == "inactive_user")
                     {
-                        return InstaResult.Fail($"{loginFailReason.Message}\r\nHelp url: {loginFailReason.HelpUrl}",
+                        return Result.Fail($"{loginFailReason.Message}\r\nHelp url: {loginFailReason.HelpUrl}",
                                            LoginResult.InactiveUser);
                     }
 
                     if (loginFailReason.ErrorType == "checkpoint_logged_out")
                     {
-                        return InstaResult.Fail($"{loginFailReason.ErrorType} {loginFailReason.CheckpointUrl}", LoginResult.CheckpointLoggedOut);
+                        return Result.Fail($"{loginFailReason.ErrorType} {loginFailReason.CheckpointUrl}", LoginResult.CheckpointLoggedOut);
                     }
 
-                    return InstaResult.UnExpectedResponse<LoginResult>(response, json);
+                    return Result.UnExpectedResponse<LoginResult>(response, json);
                 }
 
                 var fbUserId = string.Empty;
@@ -2626,17 +2626,17 @@ namespace Wikiled.Instagram.Api.Logic
                     User.CsrfToken = cookies[InstaApiConstants.Csrftoken]?.Value ?? string.Empty;
                 }
 
-                return InstaResult.Success(LoginResult.Success);
+                return Result.Success(LoginResult.Success);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, LoginResult.Exception, InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, LoginResult.Exception, ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 LogError(exception);
-                return InstaResult.Fail(exception, LoginResult.Exception);
+                return Result.Fail(exception, LoginResult.Exception);
             }
         }
 
@@ -2695,23 +2695,23 @@ namespace Wikiled.Instagram.Api.Logic
                 {
                     var o = JsonConvert.DeserializeObject<AccountRegistrationPhoneNumber>(json);
 
-                    return InstaResult.Fail(o.Message?.Errors?[0], (InstaRegistrationSuggestionResponse)null);
+                    return Result.Fail(o.Message?.Errors?[0], (InstaRegistrationSuggestionResponse)null);
                 }
 
                 var obj = JsonConvert.DeserializeObject<InstaRegistrationSuggestionResponse>(json);
-                return InstaResult.Success(obj);
+                return Result.Success(obj);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException,
+                return Result.Fail(httpException,
                                    default(InstaRegistrationSuggestionResponse),
-                                   InstaResponseType.NetworkProblem);
+                                   ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail<InstaRegistrationSuggestionResponse>(exception);
+                return Result.Fail<InstaRegistrationSuggestionResponse>(exception);
             }
         }
 
@@ -2731,7 +2731,7 @@ namespace Wikiled.Instagram.Api.Logic
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<bool>(response, json);
+                    return Result.UnExpectedResponse<bool>(response, json);
                 }
 
                 await Task.Delay((int)delay.TotalMilliseconds).ConfigureAwait(false);
@@ -2770,7 +2770,7 @@ namespace Wikiled.Instagram.Api.Logic
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<bool>(response, json);
+                    return Result.UnExpectedResponse<bool>(response, json);
                 }
 
                 await Task.Delay((int)delay.TotalMilliseconds).ConfigureAwait(false);
@@ -2791,19 +2791,19 @@ namespace Wikiled.Instagram.Api.Logic
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<bool>(response, json);
+                    return Result.UnExpectedResponse<bool>(response, json);
                 }
 
-                return InstaResult.Success(true);
+                return Result.Success(true);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(bool), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(bool), ResponseType.NetworkProblem);
             }
             catch (Exception ex)
             {
-                return InstaResult.Fail(ex, false);
+                return Result.Fail(ex, false);
             }
         }
 
@@ -2820,7 +2820,7 @@ namespace Wikiled.Instagram.Api.Logic
             {
                 if (uri == null)
                 {
-                    return InstaResult.Fail("Uri cannot be null!", default(string));
+                    return Result.Fail("Uri cannot be null!", default(string));
                 }
 
                 HttpRequestMessage request;
@@ -2844,20 +2844,20 @@ namespace Wikiled.Instagram.Api.Logic
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return InstaResult.UnExpectedResponse<string>(response, json);
+                    return Result.UnExpectedResponse<string>(response, json);
                 }
 
-                return InstaResult.Success(json);
+                return Result.Success(json);
             }
             catch (HttpRequestException httpException)
             {
                 logger?.LogError(httpException, "Error");
-                return InstaResult.Fail(httpException, default(string), InstaResponseType.NetworkProblem);
+                return Result.Fail(httpException, default(string), ResponseType.NetworkProblem);
             }
             catch (Exception exception)
             {
                 logger?.LogError(exception, "Error");
-                return InstaResult.Fail(exception, default(string));
+                return Result.Fail(exception, default(string));
             }
         }
 
