@@ -18,7 +18,7 @@ namespace Wikiled.Instagram.Api.Smart
 
         public DpSmartTagsByLocation(ILogger<DpSmartTagsByLocation> logger)
         {
-            this.logger = logger;
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<HashTagData[]> Get(Location location)

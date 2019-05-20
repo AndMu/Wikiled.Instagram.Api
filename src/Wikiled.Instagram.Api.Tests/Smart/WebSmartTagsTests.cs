@@ -21,7 +21,7 @@ namespace Wikiled.Instagram.Api.Tests.Smart
         public async Task GetSmart()
         {
             var result = await instance.Get(HashTagData.FromText("london")).ConfigureAwait(false);
-            Assert.AreEqual(27, result.Length);
+            Assert.Greater(result.Length, 20);
         }
 
         private WebSmartTags CreateManager()

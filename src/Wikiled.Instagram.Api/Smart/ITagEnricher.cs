@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Wikiled.Instagram.Api.Classes.Models.Media;
+using Wikiled.Instagram.Api.Smart.Caption;
 using Wikiled.Instagram.Api.Smart.Data;
 
 namespace Wikiled.Instagram.Api.Smart

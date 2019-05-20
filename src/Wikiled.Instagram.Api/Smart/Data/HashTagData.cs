@@ -1,10 +1,12 @@
 ﻿using System;
-using System.Text.RegularExpressions;
+using Wikiled.Text.Analysis.Emojis;
 
 namespace Wikiled.Instagram.Api.Smart.Data
 {
     public class HashTagData
     {
+        private static readonly EmojyCleanup cleanup = new EmojyCleanup();
+
         private HashTagData(string tag, string text)
         {
             Tag = tag?.ToLower() ?? throw new ArgumentNullException(nameof(tag));
@@ -29,7 +31,8 @@ namespace Wikiled.Instagram.Api.Smart.Data
                 throw new ArgumentOutOfRangeException(nameof(tag));
             }
 
-            var text = Regex.Replace(tag, @"[^\u0020-\u007E]", string.Empty);
+            var result = cleanup.Extract(tag);
+            var text = result.Cleaned;
             return new HashTagData(tag, text.Substring(1));
         }
 

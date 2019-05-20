@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Logging;
 using Wikiled.Instagram.Api.Smart.Data;
 
-namespace Wikiled.Instagram.Api.Smart
+namespace Wikiled.Instagram.Api.Smart.Caption
 {
     public class CaptionHandler : ICaptionHandler
     {
@@ -16,14 +17,13 @@ namespace Wikiled.Instagram.Api.Smart
 
         public SmartCaption Extract(string caption)
         {
-            var result = new SmartCaption(caption);
             if (caption == null)
             {
-                return result;
+                return new SmartCaption(caption, new HashTagData[]{});
             }
 
+            var table = new Dictionary<string, HashTagData>(StringComparer.OrdinalIgnoreCase);
             int? begin = null;
-            var builder = new StringBuilder();
             for (int i = 0; i < caption.Length; i++)
             {
                 var current = caption[i];
@@ -31,32 +31,27 @@ namespace Wikiled.Instagram.Api.Smart
                 {
                     if (begin != null)
                     {
-                        result.AddTag(HashTagData.FromTag(caption.Substring(begin.Value, i - begin.Value)));
+                        var tag = HashTagData.FromTag(caption.Substring(begin.Value, i - begin.Value));
+                        table[tag.Tag] = tag;
                     }
 
                     begin = i;
-                    builder.Append(' ');
                 }
-                else if (!char.IsLetterOrDigit(current) && begin != null)
+                else if (!char.IsLetterOrDigit(current) && current != '_' && begin != null)
                 {
-                    result.AddTag(HashTagData.FromTag(caption.Substring(begin.Value, i - begin.Value)));
+                    var tag = HashTagData.FromTag(caption.Substring(begin.Value, i - begin.Value));
+                    table[tag.Tag] = tag;
                     begin = null;
-                }
-
-                if (begin == null)
-                {
-                    builder.Append(current);
                 }
             }
 
             if (begin != null)
             {
-                result.AddTag(HashTagData.FromTag(caption.Substring(begin.Value, caption.Length - begin.Value)));
+                var tag = HashTagData.FromTag(caption.Substring(begin.Value, caption.Length - begin.Value));
+                table[tag.Tag] = tag;
             }
 
-            result.WithoutTags = builder.ToString().Trim();
-            return result;
+            return new SmartCaption(caption, table.Values.ToArray());
         }
-
     }
 }

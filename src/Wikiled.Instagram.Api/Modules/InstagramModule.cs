@@ -7,6 +7,7 @@ using Wikiled.Instagram.Api.Logic;
 using Wikiled.Instagram.Api.Logic.Builder;
 using Wikiled.Instagram.Api.Serialization;
 using Wikiled.Instagram.Api.Smart;
+using Wikiled.Instagram.Api.Smart.Caption;
 
 namespace Wikiled.Instagram.Api.Modules
 {
