@@ -325,11 +325,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 imageContent.Headers.Add("Content-Transfer-Encoding", "binary");
                 imageContent.Headers.Add("Content-Type", "application/octet-stream");
                 request = httpHelper.GetDefaultRequest(HttpMethod.Post, photoUri, deviceInfo);
-
-                //var progressContent = new ProgressableStreamContent(imageContent, 4096, progress)
-                //{
-                //    UploaderProgress = upProgress
-                //};
+            
                 request.Content = imageContent;
                 request.Headers.Add("X-Entity-Type", "image/jpeg");
                 request.Headers.Add("Offset", "0");
@@ -341,7 +337,6 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
                 {
-                    //upProgress = progressContent.UploaderProgress;
                     upProgress.UploadState = InstaUploadState.Uploaded;
                     progress?.Invoke(upProgress);
                     if (configureAsNameTag)
@@ -349,12 +344,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                         return await ConfigureMediaPhotoAsNametagAsync(progress, upProgress, uploadId).ConfigureAwait(false);
                     }
 
-                    return await ConfigureMediaPhotoAsync(progress,
-                                                          upProgress,
-                                                          uploadId,
-                                                          caption,
-                                                          location,
-                                                          image.UserTags).ConfigureAwait(false);
+                    return await ConfigureMediaPhotoAsync(progress, upProgress, uploadId, caption, location, image.UserTags)
+                        .ConfigureAwait(false);
                 }
 
                 upProgress.UploadState = InstaUploadState.Error;

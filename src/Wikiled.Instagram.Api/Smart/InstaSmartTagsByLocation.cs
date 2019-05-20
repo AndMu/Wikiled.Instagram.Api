@@ -28,7 +28,8 @@ namespace Wikiled.Instagram.Api.Smart
         {
             if (location == null)
             {
-                throw new ArgumentNullException(nameof(location));
+                log.LogInformation("Location is not set.");
+                return new HashTagData[] { };
             }
 
             log.LogInformation("Extracting popular tags...");

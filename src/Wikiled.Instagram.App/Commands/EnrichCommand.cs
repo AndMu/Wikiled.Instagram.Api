@@ -19,7 +19,6 @@ using Wikiled.Instagram.App.Commands.Config;
 
 namespace Wikiled.Instagram.App.Commands
 {
-    //Memories from Barcelona 🥰 #barcelona🇪🇸 #Spain #weekendgetaway #trip #travel
     public class EnrichCommand : DiscoveryCommand
     {
         private readonly ILogger<EnrichCommand> log;
@@ -30,7 +29,7 @@ namespace Wikiled.Instagram.App.Commands
 
         private readonly ITagEnricher tagsManager;
 
-        private readonly string location;
+        private readonly string fileLocation;
 
         private readonly ConcurrentDictionary<string, string> processed = new ConcurrentDictionary<string, string>();
 
@@ -42,7 +41,7 @@ namespace Wikiled.Instagram.App.Commands
                 throw new ArgumentNullException(nameof(session));
             }
 
-            location = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
+            fileLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
             this.log = log ?? throw new ArgumentNullException(nameof(log));
             this.instagram = instagram ?? throw new ArgumentNullException(nameof(instagram));
             this.config = config ?? throw new ArgumentNullException(nameof(config));
@@ -113,7 +112,7 @@ namespace Wikiled.Instagram.App.Commands
         private async Task<string> DownloadImage(InstaMedia item, InstaImage image)
         {
             var request = WebRequest.Create(image.Uri);
-            var fileName = Path.Combine(location, $"{item.Identifier}.jpg");
+            var fileName = Path.Combine(fileLocation, $"{item.Identifier}.jpg");
             using (WebResponse response = await request.GetResponseAsync().ConfigureAwait(false))
             {
                 using (Stream stream = response.GetResponseStream())

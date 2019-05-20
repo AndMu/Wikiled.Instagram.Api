@@ -59,8 +59,6 @@ namespace Wikiled.Instagram.Api.Tests.Smart.Caption
             Assert.AreEqual(29, result.TotalTags);
         }
 
-
-
         private CaptionHandler CreateCaptionHandler()
         {
             return new CaptionHandler(new NullLogger<CaptionHandler>());
