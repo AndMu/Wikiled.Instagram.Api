@@ -105,7 +105,12 @@ namespace Wikiled.Instagram.App.Commands
 
             var fileName = await DownloadImage(item, image).ConfigureAwait(false);
             await instagram.MediaProcessor.DeleteMediaAsync(item.Identifier, item.MediaType).ConfigureAwait(false);
-            await UploadImage(fileName, captionText, item.Location).ConfigureAwait(false);
+            var result = await UploadImage(fileName, captionText, item.Location).ConfigureAwait(false);
+            if (!result.Succeeded)
+            {
+                log.LogError("Error: {0}", result.Info.Message);
+            }
+
             File.Delete(fileName);
         }
 
@@ -128,8 +133,19 @@ namespace Wikiled.Instagram.App.Commands
         }
 
       
-        private Task UploadImage(string image, string caption, Location location)
+        private async Task<IResult<InstaMedia>> UploadImage(string image, string caption, LocationShort location)
         {
+            if (location != null)
+            {
+                log.LogInformation("Searching similar locations [{0}]", location.Name);
+                var similarLocations = await instagram.LocationProcessor.SearchLocationAsync(location.Lat, location.Lng, location.Name).ConfigureAwait(false);
+                if (similarLocations.Succeeded)
+                { 
+                    location = similarLocations.Value.FirstOrDefault();
+                    log.LogInformation("Selected location : [{0}]", location?.Name);
+                }
+            }
+            
             log.LogInformation("Uploading Image...");
             var imageData =
                 new ImageUpload
@@ -140,7 +156,7 @@ namespace Wikiled.Instagram.App.Commands
                     Uri = image,
                 };
 
-            return instagram.MediaProcessor.UploadPhotoAsync(imageData, caption, location);
+            return await instagram.MediaProcessor.UploadPhotoAsync(imageData, caption, location).ConfigureAwait(false);
         }
     }
 }

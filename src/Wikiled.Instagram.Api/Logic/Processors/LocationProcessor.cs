@@ -180,11 +180,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     List of locations (short format)
         /// </returns>
-        public async Task<IResult<LocationShortList>> SearchLocationAsync(
-            double latitude,
-            double longitude,
-            string query)
+        public async Task<IResult<LocationShortList>> SearchLocationAsync(double latitude, double longitude, string query)
         {
+            logger.LogDebug("SearchLocationAsync {0} {1} {2}", latitude, longitude, query);
             InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
