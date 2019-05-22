@@ -3,6 +3,8 @@ using System.Net.Http;
 using Autofac;
 using Microsoft.Extensions.Logging;
 using Wikiled.Common.Net.Client;
+using Wikiled.Common.Net.Resilience;
+using Wikiled.Common.Utilities.Modules;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.SessionHandlers;
 using Wikiled.Instagram.Api.Logic;
@@ -10,6 +12,7 @@ using Wikiled.Instagram.Api.Logic.Builder;
 using Wikiled.Instagram.Api.Serialization;
 using Wikiled.Instagram.Api.Smart;
 using Wikiled.Instagram.Api.Smart.Caption;
+using Wikiled.Instagram.Api.Smart.Web;
 
 namespace Wikiled.Instagram.Api.Modules
 {
@@ -29,7 +32,10 @@ namespace Wikiled.Instagram.Api.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterModule<LoggingModule>();
             builder.RegisterType<HttpClient>();
+            builder.RegisterInstance(ResilienceConfig.GenerateCommon()).As<IResilienceConfig>();
+            builder.RegisterType<CommonResilience>().As<IResilience>();
             builder.RegisterType<GenericClientFactory>().As<IGenericClientFactory>();
 
             builder.RegisterType<CaptionHandler>().As<ICaptionHandler>();

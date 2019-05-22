@@ -1,13 +1,10 @@
-using Microsoft.Extensions.Logging;
-using Moq;
-using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
+using NUnit.Framework;
 using Wikiled.Instagram.Api.Classes.Models.Location;
-using Wikiled.Instagram.Api.Smart;
 
-namespace Wikiled.Instagram.Api.Tests.Smart
+namespace Wikiled.Instagram.Api.Tests.Smart.Web
 {
     [TestFixture]
     public class DpSmartTagsByLocationTests

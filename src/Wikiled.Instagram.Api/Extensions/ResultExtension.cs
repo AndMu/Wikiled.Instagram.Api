@@ -12,17 +12,17 @@ namespace Wikiled.Instagram.Api.Extensions
             var result = await action().ConfigureAwait(false);
             if (result.Succeeded)
             {
-                logger?.LogError(result.Info.Message);
-                if (result.Info.Exception != null)
-                {
-                    logger?.LogError(result.Info.Exception, "Failed");
-                    throw result.Info.Exception;
-                }
-
-                throw new ApplicationException(result.Info.Message);
+                return result.Value;
             }
 
-            return result.Value;
+            logger?.LogError(result.Info.Message);
+            if (result.Info.Exception != null)
+            {
+                logger?.LogError(result.Info.Exception, "Failed");
+                throw result.Info.Exception;
+            }
+
+            throw new ApplicationException(result.Info.Message);
         }
     }
 }

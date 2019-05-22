@@ -19,6 +19,10 @@ namespace Wikiled.Instagram.Api.Smart
 
         private readonly ILogger<TagEnricher> logger;
 
+        private const int totalTags = 27;
+
+        private const int totalLocationTags = 3;
+
         public TagEnricher(ILogger<TagEnricher> logger, ISmartTagsByLocation tagsByLocation, ISmartTags smartTags, ICaptionHandler captionHandler)
         {
             this.tagsByLocation = tagsByLocation ?? throw new ArgumentNullException(nameof(tagsByLocation));
@@ -40,10 +44,11 @@ namespace Wikiled.Instagram.Api.Smart
                 return captionHolder;
             }
 
+            var original = captionHolder.Tags.ToArray();
             var locationTags = await tagsByLocation.Get(message.Location).ConfigureAwait(false);
-            foreach (var tag in locationTags.OrderByDescending(item => item.MediaCount).Take(3))
+            foreach (var tag in locationTags.OrderByDescending(item => item.MediaCount).Take(totalLocationTags))
             {
-                if (captionHolder.TotalTags >= 27)
+                if (captionHolder.TotalTags >= totalTags)
                 {
                     return captionHolder;
                 }
@@ -51,7 +56,7 @@ namespace Wikiled.Instagram.Api.Smart
                 captionHolder.AddTag(tag);
             }
 
-            var results = await GetMix(captionHolder.Tags.ToArray()).ConfigureAwait(false);
+            var results = await GetMix(original, totalTags - locationTags.Length).ConfigureAwait(false);
             foreach (var data in results)
             {
                 captionHolder.AddTag(data);
@@ -60,12 +65,14 @@ namespace Wikiled.Instagram.Api.Smart
             return captionHolder;
         }
 
-        private async Task<HashTagData[]> GetMix(HashTagData[] tags)
+        private async Task<HashTagData[]> GetMix(HashTagData[] tags, int total)
         {
             if (tags == null)
             {
                 throw new ArgumentNullException(nameof(tags));
             }
+
+            logger.LogInformation("Getting mix from {0} tags", tags.Length);
 
             var table = new Dictionary<string, HashTagData>(StringComparer.OrdinalIgnoreCase);
             foreach (var tag in tags)
@@ -89,7 +96,7 @@ namespace Wikiled.Instagram.Api.Smart
 
             int indexResults = 0;
 
-            while (table.Count < 27)
+            while (table.Count < total)
             {
                 if (tagsResults.Count == 0)
                 {

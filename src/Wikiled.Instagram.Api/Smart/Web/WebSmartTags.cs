@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Wikiled.Common.Net.Client;
 using Wikiled.Instagram.Api.Smart.Data;
 
-namespace Wikiled.Instagram.Api.Smart
+namespace Wikiled.Instagram.Api.Smart.Web
 {
     public class WebSmartTags : ISmartTags
     {

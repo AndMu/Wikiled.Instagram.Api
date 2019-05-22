@@ -4,7 +4,7 @@ using NUnit.Framework;
 using Wikiled.Instagram.Api.Smart;
 using Wikiled.Instagram.Api.Smart.Data;
 
-namespace Wikiled.Instagram.Api.Tests.Acceptance.Smart
+namespace Wikiled.Instagram.Api.Tests.Acceptance.Smart.Web
 {
     [TestFixture]
     public class WebSmartTagsTests
@@ -14,7 +14,7 @@ namespace Wikiled.Instagram.Api.Tests.Acceptance.Smart
         [SetUp]
         public void Setup()
         {
-            instance = Global.Container.Resolve<ISmartTags>();
+            instance = Global.Container.ResolveNamed<ISmartTags>("Web");
         }
 
         [Test]

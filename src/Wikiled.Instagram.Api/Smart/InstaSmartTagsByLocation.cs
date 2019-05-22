@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.Models.Hashtags;
 using Wikiled.Instagram.Api.Classes.Models.Location;
+using Wikiled.Instagram.Api.Extensions;
 using Wikiled.Instagram.Api.Logic;
 using Wikiled.Instagram.Api.Smart.Data;
 
@@ -33,14 +34,21 @@ namespace Wikiled.Instagram.Api.Smart
             }
 
             log.LogInformation("Extracting popular tags...");
-            IResult<SectionMedia> topMedia = await instagram.LocationProcessor.GetTopLocationFeedsAsync(location.Pk, PaginationParameters.MaxPagesToLoad(1)).ConfigureAwait(false);
-            if (!topMedia.Succeeded)
+            try
             {
-                log.LogWarning("Top media query failed");
-                return new HashTagData[]{};
+                var topMedia = await instagram.Resilience.WebPolicy
+                                              .ExecuteAsync(
+                                                  () => ResultExtension.UnWrap(() => instagram.LocationProcessor.GetTopLocationFeedsAsync(location.Pk, PaginationParameters.MaxPagesToLoad(1)), log))
+                                              .ConfigureAwait(false);
+                return await smartTags.Get(topMedia).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                log.LogError(e, "Failed");
             }
 
-            return await smartTags.Get(topMedia.Value).ConfigureAwait(false);
+            log.LogWarning("Top media query failed");
+            return new HashTagData[] { };
         }
     }
 }

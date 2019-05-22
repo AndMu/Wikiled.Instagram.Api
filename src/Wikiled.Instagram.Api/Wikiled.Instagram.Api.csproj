@@ -6,7 +6,7 @@
     <LangVersion>Latest</LangVersion>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <AssemblyName>Wikiled.Instagram.Api</AssemblyName>
-    <PackageId>InstagramApiSharp</PackageId>
+    <PackageId>Wikiled.Instagram.Api</PackageId>
     <NetStandardImplicitPackageVersion>2.0</NetStandardImplicitPackageVersion>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
@@ -29,14 +29,11 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="System.Reactive" Version="4.1.5" />
+    <PackageReference Include="Wikiled.Common.Utilities" Version="1.1.19" />
     <PackageReference Include="Wikiled.Geolocation" Version="1.0.1" />
     <PackageReference Include="Wikiled.Console" Version="1.3.23" />
     <PackageReference Include="Wikiled.Text.Analysis" Version="1.7.12" />
     <PackageReference Include="Wikiled.Common.Net" Version="1.2.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
 
 

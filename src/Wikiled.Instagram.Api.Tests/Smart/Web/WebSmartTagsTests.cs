@@ -1,15 +1,14 @@
-using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
+using NUnit.Framework;
 using Wikiled.Common.Net.Client;
-using Wikiled.Instagram.Api.Smart;
 using Wikiled.Instagram.Api.Smart.Data;
 
-namespace Wikiled.Instagram.Api.Tests.Smart
+namespace Wikiled.Instagram.Api.Tests.Smart.Web
 {
     [TestFixture]
     public class WebSmartTagsTests
@@ -45,10 +44,10 @@ namespace Wikiled.Instagram.Api.Tests.Smart
                 .Returns(Task.FromResult(new SmartResults
                 {
                     Results = new List<SmartHashtagResult>(
-                        new[] { new SmartHashtagResult() })
+                        new[] { new SmartHashtagResult { Tag = "Test" } })
                 }));
             var result = await instance.Get(HashTagData.FromText("london")).ConfigureAwait(false);
-            Assert.Greater(result.Length, 20);
+            Assert.AreEqual(1, result.Length);
         }
 
         private WebSmartTags CreateManager()

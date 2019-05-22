@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Wikiled.Geolocation;
@@ -10,7 +8,7 @@ using Wikiled.Instagram.Api.Classes.Models.Location;
 using Wikiled.Instagram.Api.Helpers;
 using Wikiled.Instagram.Api.Smart.Data;
 
-namespace Wikiled.Instagram.Api.Smart
+namespace Wikiled.Instagram.Api.Smart.Web
 {
     public class DpSmartTagsByLocation : ISmartTagsByLocation
     {

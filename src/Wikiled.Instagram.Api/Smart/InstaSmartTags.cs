@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.Models.Hashtags;
+using Wikiled.Instagram.Api.Extensions;
 using Wikiled.Instagram.Api.Logic;
 using Wikiled.Instagram.Api.Smart.Data;
 
@@ -30,15 +31,22 @@ namespace Wikiled.Instagram.Api.Smart
                 throw new ArgumentNullException(nameof(tag));
             }
 
-            log.LogInformation("Extracting popular tags...");
-            IResult<SectionMedia> topMedia = await instagram.HashtagProcessor.GetTopHashtagMediaListAsync(tag.Text, PaginationParameters.MaxPagesToLoad(1)).ConfigureAwait(false);
-            if (!topMedia.Succeeded)
+            log.LogInformation("Extracting popular tags for [{0}]...", tag);
+            try
             {
-                log.LogWarning("Top media query failed");
-                return new HashTagData[] { };
+                var topMedia = await instagram.Resilience.WebPolicy
+                                              .ExecuteAsync(
+                                                  () => ResultExtension.UnWrap(() => instagram.HashtagProcessor.GetTopHashtagMediaListAsync(tag.Text, PaginationParameters.MaxPagesToLoad(1)), log))
+                                              .ConfigureAwait(false);
+                return await smartTags.Get(topMedia).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                log.LogError(e, "Failed");
             }
 
-            return await smartTags.Get(topMedia.Value).ConfigureAwait(false);
+            log.LogWarning("Top media query failed");
+            return new HashTagData[] { };
         }
     }
 }

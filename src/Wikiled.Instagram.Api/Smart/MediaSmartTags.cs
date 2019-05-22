@@ -27,7 +27,7 @@ namespace Wikiled.Instagram.Api.Smart
 
         public async Task<HashTagData[]> Get(SectionMedia medias)
         {
-            log.LogDebug("Get tags from media");
+            log.LogDebug("Get tags from [{0}] posts", medias.Medias.Count);
             var table = new Dictionary<string, HashTagData>(StringComparer.OrdinalIgnoreCase);
             foreach (InstaMedia media in medias.Medias)
             {
@@ -44,7 +44,7 @@ namespace Wikiled.Instagram.Api.Smart
                 }
             }
 
-            log.LogInformation("Found [{0}] tags from media", table.Count);
+            log.LogInformation("Found [{0}] tags from media. Sending requests....", table.Count);
             var tasks = new List<Task<HashTagData[]>>();
             foreach (var tagData in table)
             {
