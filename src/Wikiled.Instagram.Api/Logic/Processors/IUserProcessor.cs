@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Wikiled.Common.Net.Resilience;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.Models.Direct;
 using Wikiled.Instagram.Api.Classes.Models.Feed;
@@ -13,7 +14,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
     /// <summary>
     ///     User api functions.
     /// </summary>
-    public interface IUserProcessor
+    public interface IUserProcessor : IResilient
     {
         /// <summary>
         ///     Accept user friendship requst.

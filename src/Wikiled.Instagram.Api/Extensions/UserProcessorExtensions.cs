@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using Wikiled.Common.Net.Resilience;
 using Wikiled.Instagram.Api.Classes.Models.User;
 using Wikiled.Instagram.Api.Logic.Processors;
 
@@ -12,13 +13,9 @@ namespace Wikiled.Instagram.Api.Extensions
         {
             try
             {
-                var result = await ResultExtension
-                    .Retry(() => processor.GetUserAsync(userName))
-                    .ConfigureAwait(false);
-                if (result.Succeeded)
-                {
-                    return result.Value;
-                }
+                return await processor.Resilience.WebPolicy
+                    .ExecuteAsync(async () => await ResultExtension.UnWrap(() => processor.GetUserAsync(userName))
+                                      .ConfigureAwait(false)).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

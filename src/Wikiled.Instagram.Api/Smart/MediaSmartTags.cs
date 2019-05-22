@@ -27,6 +27,7 @@ namespace Wikiled.Instagram.Api.Smart
 
         public async Task<HashTagData[]> Get(SectionMedia medias)
         {
+            log.LogDebug("Get tags from media");
             var table = new Dictionary<string, HashTagData>(StringComparer.OrdinalIgnoreCase);
             foreach (InstaMedia media in medias.Medias)
             {
@@ -36,7 +37,7 @@ namespace Wikiled.Instagram.Api.Smart
                     continue;
                 }
 
-                SmartCaption smart = captionHandler.Extract(text);
+                var smart = captionHandler.Extract(text);
                 foreach (HashTagData tag in smart.Tags.Where(x => !string.IsNullOrEmpty(x.Text)))
                 {
                     table[tag.Tag] = tag;

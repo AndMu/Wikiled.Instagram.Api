@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Net.Http;
+using Wikiled.Common.Net.Resilience;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.Android.DeviceInfo;
 using Wikiled.Instagram.Api.Enums;
@@ -101,7 +102,13 @@ namespace Wikiled.Instagram.Api.Logic.Builder
                 apiVersionType = InstaApiVersionType.Version86;
             }
 
-            var instaApi = new InstaApi(loggerFactory?.CreateLogger<InstaApi>(), httpRequestProcessor, user, apiVersionType.Value, device);
+            var instaApi = new InstaApi(loggerFactory?.CreateLogger<InstaApi>(),
+                                        httpRequestProcessor,
+                                        user,
+                                        apiVersionType.Value,
+                                        device,
+                                        new CommonResilience(loggerFactory?.CreateLogger<CommonResilience>(),
+                                                             ResilienceConfig.GenerateCommon()));
             return instaApi;
         }
 

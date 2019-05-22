@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Net.Http;
 using Autofac;
 using Microsoft.Extensions.Logging;
+using Wikiled.Common.Net.Client;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.SessionHandlers;
 using Wikiled.Instagram.Api.Logic;
@@ -27,6 +29,9 @@ namespace Wikiled.Instagram.Api.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterType<HttpClient>();
+            builder.RegisterType<GenericClientFactory>().As<IGenericClientFactory>();
+
             builder.RegisterType<CaptionHandler>().As<ICaptionHandler>();
             builder.RegisterType<WebSmartTags>().Named<ISmartTags>("Web");
             builder.Register(ctx => new MediaSmartTags(ctx.Resolve<ILogger<MediaSmartTags>>(), ctx.Resolve<ICaptionHandler>(), ctx.ResolveNamed<ISmartTags>("Web"))).As<IMediaSmartTags>();

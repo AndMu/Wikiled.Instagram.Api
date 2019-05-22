@@ -74,7 +74,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         {
             var upProgress = new UploaderProgress
             {
-                Caption = caption ?? string.Empty, UploadState = InstaUploadState.Preparing
+                Caption = caption ?? string.Empty,
+                UploadState = InstaUploadState.Preparing
             };
             try
             {
@@ -253,7 +254,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         {
             var upProgress = new UploaderProgress
             {
-                Caption = caption ?? string.Empty, UploadState = InstaUploadState.Preparing
+                Caption = caption ?? string.Empty,
+                UploadState = InstaUploadState.Preparing
             };
 
             try
@@ -264,20 +266,10 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     instaApi.SetRequestDelay(RequestDelay.FromSeconds(1, 2));
                     foreach (var tag in image.UserTags)
                     {
-                        try
+                        var result = await instaApi.UserProcessor.GetUserSafe(tag.Username, logger).ConfigureAwait(false);
+                        if (result != null)
                         {
-                            var result = await ResultExtension
-                                .Retry(() => instaApi.UserProcessor.GetUserAsync(tag.Username))
-                                .ConfigureAwait(false);
-                            
-                            if (result.Succeeded)
-                            {
-                                tag.Pk = result.Value.Pk;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            logger.LogDebug(ex.Message);
+                            tag.Pk = result.Pk;
                         }
                     }
 
@@ -325,7 +317,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 imageContent.Headers.Add("Content-Transfer-Encoding", "binary");
                 imageContent.Headers.Add("Content-Type", "application/octet-stream");
                 request = httpHelper.GetDefaultRequest(HttpMethod.Post, photoUri, deviceInfo);
-            
+
                 request.Content = imageContent;
                 request.Headers.Add("X-Entity-Type", "image/jpeg");
                 request.Headers.Add("Offset", "0");
@@ -379,7 +371,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         {
             var upProgress = new UploaderProgress
             {
-                Caption = caption ?? string.Empty, UploadState = InstaUploadState.Preparing
+                Caption = caption ?? string.Empty,
+                UploadState = InstaUploadState.Preparing
             };
             try
             {
@@ -514,7 +507,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         {
             var upProgress = new UploaderProgress
             {
-                Caption = caption ?? string.Empty, UploadState = InstaUploadState.Preparing
+                Caption = caption ?? string.Empty,
+                UploadState = InstaUploadState.Preparing
             };
             try
             {

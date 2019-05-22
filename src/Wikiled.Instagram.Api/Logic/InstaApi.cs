@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Wikiled.Common.Net.Resilience;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.Android.DeviceInfo;
 using Wikiled.Instagram.Api.Classes.Models.Account;
@@ -65,13 +66,14 @@ namespace Wikiled.Instagram.Api.Logic
 
         private InstaApiVersionType apiVersionType;
 
-        public InstaApi(ILogger logger, IHttpRequestProcessor httpRequestProcessor, UserSessionData user, InstaApiVersionType version, AndroidDevice deviceInfo)
+        public InstaApi(ILogger logger, IHttpRequestProcessor httpRequestProcessor, UserSessionData user, InstaApiVersionType version, AndroidDevice deviceInfo, IResilience resilience)
         {
             userAuthValidate = new UserAuthValidate();
             User = user;
             this.deviceInfo = deviceInfo;
+            Resilience = resilience ?? throw new ArgumentNullException(nameof(resilience));
             this.logger = logger;
-            HttpRequestProcessor = httpRequestProcessor;
+            HttpRequestProcessor = httpRequestProcessor ?? throw new ArgumentNullException(nameof(httpRequestProcessor));
             apiVersionType = version;
             apiVersion = InstaApiVersionList.GetApiVersionList().GetApiVersion(version);
             HttpHelper = new InstaHttpHelper(apiVersion);
@@ -200,6 +202,8 @@ namespace Wikiled.Instagram.Api.Logic
         ///     <para>It's related to https://instagram.com/accounts/ </para>
         /// </summary>
         public IWebProcessor WebProcessor { get; private set; }
+
+        public IResilience Resilience { get; }
 
         /// <summary>
         ///     Check email availability
@@ -2812,9 +2816,7 @@ namespace Wikiled.Instagram.Api.Logic
             return Delay;
         }
 
-        private async Task<IResult<string>> SendSignedPostRequest(Uri uri,
-                                                                  JObject jData,
-                                                                  Dictionary<string, string> dicData)
+        private async Task<IResult<string>> SendSignedPostRequest(Uri uri,JObject jData, Dictionary<string, string> dicData)
         {
             try
             {
@@ -2891,7 +2893,7 @@ namespace Wikiled.Instagram.Api.Logic
                                                 userAuthValidate,
                                                 this,
                                                 HttpHelper);
-            UserProcessor = new InstaUserProcessor(deviceInfo,
+            UserProcessor = new InstaUserProcessor(deviceInfo, 
                                               User,
                                               HttpRequestProcessor,
                                               logger,

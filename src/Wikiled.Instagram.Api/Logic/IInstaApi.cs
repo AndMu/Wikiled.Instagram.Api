@@ -20,7 +20,7 @@ namespace Wikiled.Instagram.Api.Logic
     /// <summary>
     ///     Base of everything that you want.
     /// </summary>
-    public interface IInstaApi
+    public interface IInstaApi : IResilient
     {
         /// <summary>
         /// Delay

@@ -11,7 +11,7 @@ namespace Wikiled.Instagram.Api.Helpers
 {
     internal class InstaHttpHelper
     {
-        public /*readonly*/ InstaApiVersion ApiVersion;
+        public InstaApiVersion ApiVersion;
 
         internal InstaHttpHelper(InstaApiVersion apiVersionType)
         {
@@ -34,10 +34,7 @@ namespace Wikiled.Instagram.Api.Helpers
             return request;
         }
 
-        public HttpRequestMessage GetDefaultRequest(HttpMethod method,
-                                                    Uri uri,
-                                                    AndroidDevice deviceInfo,
-                                                    Dictionary<string, string> data)
+        public HttpRequestMessage GetDefaultRequest(HttpMethod method, Uri uri, AndroidDevice deviceInfo, Dictionary<string, string> data)
         {
             var request = GetDefaultRequest(HttpMethod.Post, uri, deviceInfo);
             request.Content = new FormUrlEncodedContent(data);
@@ -52,11 +49,7 @@ namespace Wikiled.Instagram.Api.Helpers
             return signature;
         }
 
-        public HttpRequestMessage GetSignedRequest(
-            HttpMethod method,
-            Uri uri,
-            AndroidDevice deviceInfo,
-            Dictionary<string, string> data)
+        public HttpRequestMessage GetSignedRequest(HttpMethod method, Uri uri, AndroidDevice deviceInfo, Dictionary<string, string> data)
         {
             var hash = InstaCryptoHelper.CalculateHash(
                 ApiVersion.SignatureKey,
@@ -78,11 +71,7 @@ namespace Wikiled.Instagram.Api.Helpers
             return request;
         }
 
-        public HttpRequestMessage GetSignedRequest(
-            HttpMethod method,
-            Uri uri,
-            AndroidDevice deviceInfo,
-            Dictionary<string, int> data)
+        public HttpRequestMessage GetSignedRequest(HttpMethod method, Uri uri, AndroidDevice deviceInfo, Dictionary<string, int> data)
         {
             var hash = InstaCryptoHelper.CalculateHash(
                 ApiVersion.SignatureKey,
@@ -104,11 +93,7 @@ namespace Wikiled.Instagram.Api.Helpers
             return request;
         }
 
-        public HttpRequestMessage GetSignedRequest(
-            HttpMethod method,
-            Uri uri,
-            AndroidDevice deviceInfo,
-            Dictionary<string, object> data)
+        public HttpRequestMessage GetSignedRequest(HttpMethod method, Uri uri, AndroidDevice deviceInfo, Dictionary<string, object> data)
         {
             var hash = InstaCryptoHelper.CalculateHash(
                 ApiVersion.SignatureKey,
@@ -130,11 +115,7 @@ namespace Wikiled.Instagram.Api.Helpers
             return request;
         }
 
-        public HttpRequestMessage GetSignedRequest(
-            HttpMethod method,
-            Uri uri,
-            AndroidDevice deviceInfo,
-            JObject data)
+        public HttpRequestMessage GetSignedRequest(HttpMethod method, Uri uri, AndroidDevice deviceInfo, JObject data)
         {
             var hash = InstaCryptoHelper.CalculateHash(
                 ApiVersion.SignatureKey,

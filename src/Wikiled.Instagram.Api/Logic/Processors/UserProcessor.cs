@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Wikiled.Common.Net.Resilience;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.Android.DeviceInfo;
 using Wikiled.Instagram.Api.Classes.Models.Direct;
@@ -65,6 +66,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
             this.instaApi = instaApi;
             this.httpHelper = httpHelper;
         }
+
+        public IResilience Resilience => instaApi.Resilience;
 
         /// <summary>
         ///     Accept user friendship requst.
