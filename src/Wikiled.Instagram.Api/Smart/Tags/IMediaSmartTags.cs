@@ -2,7 +2,7 @@
 using Wikiled.Instagram.Api.Classes.Models.Hashtags;
 using Wikiled.Instagram.Api.Smart.Data;
 
-namespace Wikiled.Instagram.Api.Smart
+namespace Wikiled.Instagram.Api.Smart.Tags
 {
     public interface IMediaSmartTags
     {

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Wikiled.Instagram.Api.Classes.Models.Media;
 using Wikiled.Instagram.Api.Smart.Caption;
 using Wikiled.Instagram.Api.Smart.Data;
+using Wikiled.Instagram.Api.Smart.Location;
+using Wikiled.Instagram.Api.Smart.Tags;
 
 namespace Wikiled.Instagram.Api.Smart
 {
@@ -84,13 +86,13 @@ namespace Wikiled.Instagram.Api.Smart
             foreach (var tag in tags)
             {
                 var result = await smartTags.Get(tag).ConfigureAwait(false);
-                result = result.Where(item => item.Rank.HasValue).ToArray();
+                result = result.Where(item => item.MediaCount.HasValue).ToArray();
                 if (result.Length > 0)
                 {
-                    tagsResults.Insert(0, result.OrderBy(item => item.Rank).ToList());
-                    tagsResults.Add(result.OrderByDescending(item => item.Relevance).ToList());
-                    var relevance = result.Average(item => item.Relevance);
-                    tagsResults.Add(result.Where(item => item.Relevance > relevance).OrderByDescending(item => item.Rank).ToList());
+                    //tagsResults.Insert(0, result.OrderBy(item => item.Rank).ToList());
+                    tagsResults.Add(result.OrderByDescending(item => item.MediaCount).ToList());
+                    //var relevance = result.Average(item => item.Relevance);
+                    //tagsResults.Add(result.Where(item => item.Relevance > relevance).OrderByDescending(item => item.Rank).ToList());
                 }
             }
 

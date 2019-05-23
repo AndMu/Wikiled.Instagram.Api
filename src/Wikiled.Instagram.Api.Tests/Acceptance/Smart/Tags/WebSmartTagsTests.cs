@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Autofac;
 using NUnit.Framework;
-using Wikiled.Instagram.Api.Smart;
 using Wikiled.Instagram.Api.Smart.Data;
+using Wikiled.Instagram.Api.Smart.Tags;
 
-namespace Wikiled.Instagram.Api.Tests.Acceptance.Smart.Web
+namespace Wikiled.Instagram.Api.Tests.Acceptance.Smart.Tags
 {
     [TestFixture]
     public class WebSmartTagsTests

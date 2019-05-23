@@ -4,11 +4,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Wikiled.Geolocation;
-using Wikiled.Instagram.Api.Classes.Models.Location;
 using Wikiled.Instagram.Api.Helpers;
 using Wikiled.Instagram.Api.Smart.Data;
 
-namespace Wikiled.Instagram.Api.Smart.Web
+namespace Wikiled.Instagram.Api.Smart.Location
 {
     public class DpSmartTagsByLocation : ISmartTagsByLocation
     {
@@ -19,7 +18,7 @@ namespace Wikiled.Instagram.Api.Smart.Web
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<HashTagData[]> Get(Location location)
+        public async Task<HashTagData[]> Get(Classes.Models.Location.Location location)
         {
             if (location == null)
             {
@@ -50,7 +49,7 @@ namespace Wikiled.Instagram.Api.Smart.Web
             return new HashTagData[] { };
         }
 
-        private async Task<LocationResult> GetByLocation(Location location, int radius)
+        private async Task<LocationResult> GetByLocation(Classes.Models.Location.Location location, int radius)
         {
             var boundaries = new CoordinateBoundaries(location.Lat, location.Lng, radius);
 

@@ -36,5 +36,9 @@
     <PackageReference Include="Wikiled.Common.Net" Version="1.2.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Smart\Location\" />
+  </ItemGroup>
+
 
 </Project>

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Wikiled.Common.Net.Client;
 using Wikiled.Instagram.Api.Smart.Data;
 
-namespace Wikiled.Instagram.Api.Smart.Web
+namespace Wikiled.Instagram.Api.Smart.Tags
 {
     public class WebSmartTags : ISmartTags
     {

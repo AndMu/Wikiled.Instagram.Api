@@ -58,13 +58,13 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <summary>
         ///     Follow a hashtag
         /// </summary>
-        /// <param name="tagname">Tag name</param>
-        public async Task<IResult<bool>> FollowHashtagAsync(string tagname)
+        /// <param name="tagName">Tag name</param>
+        public async Task<IResult<bool>> FollowHashtagAsync(string tagName)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = InstaUriCreator.GetFollowHashtagUri(tagname);
+                var instaUri = InstaUriCreator.GetFollowHashtagUri(tagName);
 
                 var data = new JObject
                 {
@@ -143,14 +143,14 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <summary>
         ///     Gets the hashtag information by user tagName.
         /// </summary>
-        /// <param name="tagname">Tagname</param>
+        /// <param name="tagName">Tagname</param>
         /// <returns>Hashtag information</returns>
-        public async Task<IResult<ApiHashtag>> GetHashtagInfoAsync(string tagname)
+        public async Task<IResult<ApiHashtag>> GetHashtagInfoAsync(string tagName)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var userUri = InstaUriCreator.GetTagInfoUri(tagname);
+                var userUri = InstaUriCreator.GetTagInfoUri(tagName);
                 var request = httpHelper.GetDefaultRequest(HttpMethod.Get, userUri, deviceInfo);
                 var response = await httpRequestProcessor.SendAsync(request).ConfigureAwait(false);
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -180,13 +180,13 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <summary>
         ///     Get stories of an hashtag
         /// </summary>
-        /// <param name="tagname">Tag name</param>
-        public async Task<IResult<HashtagStory>> GetHashtagStoriesAsync(string tagname)
+        /// <param name="tagName">Tag name</param>
+        public async Task<IResult<HashtagStory>> GetHashtagStoriesAsync(string tagName)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             try
             {
-                var instaUri = InstaUriCreator.GetHashtagStoryUri(tagname);
+                var instaUri = InstaUriCreator.GetHashtagStoryUri(tagName);
 
                 var request =
                     httpHelper.GetDefaultRequest(HttpMethod.Get, instaUri, deviceInfo);
@@ -216,10 +216,10 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <summary>
         ///     Get recent hashtag media list
         /// </summary>
-        /// <param name="tagname">Tag name</param>
+        /// <param name="tagName">Tag name</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
         public async Task<IResult<SectionMedia>> GetRecentHashtagMediaListAsync(
-            string tagname,
+            string tagName,
             PaginationParameters paginationParameters)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
@@ -236,7 +236,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 }
 
                 var mediaResponse = await GetHashtagSection(
-                    tagname,
+                    tagName,
                     Guid.NewGuid().ToString(),
                     paginationParameters.NextMaxId,
                     true).ConfigureAwait(false);
@@ -260,7 +260,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var moreMedias = await GetHashtagSection(
-                        tagname,
+                        tagName,
                         Guid.NewGuid().ToString(),
                         paginationParameters.NextMaxId,
                         true).ConfigureAwait(false);
@@ -343,9 +343,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <summary>
         ///     Get top (ranked) hashtag media list
         /// </summary>
-        /// <param name="tagname">Tag name</param>
+        /// <param name="tagName">Tag name</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        public async Task<IResult<SectionMedia>> GetTopHashtagMediaListAsync(string tagname, PaginationParameters paginationParameters)
+        public async Task<IResult<SectionMedia>> GetTopHashtagMediaListAsync(string tagName, PaginationParameters paginationParameters)
         {
             InstaUserAuthValidator.Validate(userAuthValidate);
             try
@@ -361,7 +361,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                 }
 
                 var mediaResponse = await GetHashtagSection(
-                    tagname,
+                    tagName,
                     Guid.NewGuid().ToString(),
                     paginationParameters.NextMaxId).ConfigureAwait(false);
 
@@ -378,7 +378,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
                     paginationParameters.PagesLoaded < paginationParameters.MaximumPagesToLoad)
                 {
                     var moreMedias = await GetHashtagSection(
-                        tagname,
+                        tagName,
                         Guid.NewGuid().ToString(),
                         paginationParameters.NextMaxId).ConfigureAwait(false);
                     if (!moreMedias.Succeeded)

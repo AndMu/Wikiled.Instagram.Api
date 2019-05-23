@@ -2439,10 +2439,7 @@ namespace Wikiled.Instagram.Api.Helpers
         {
             excludeList = excludeList ?? new List<long>();
             var excludeListStr = $"[{string.Join(",", excludeList)}]";
-            if (!Uri.TryCreate(
-                BaseInstagramUri,
-                string.Format(InstaApiConstants.SearchTags, tag, count),
-                out var instaUri))
+            if (!Uri.TryCreate(BaseInstagramUri, string.Format(InstaApiConstants.SearchTags, tag, count), out var instaUri))
             {
                 throw new Exception("Cant create search tag URI");
             }

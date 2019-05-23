@@ -13,8 +13,8 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <summary>
         ///     Follow a hashtag
         /// </summary>
-        /// <param name="tagname">Tag name</param>
-        Task<IResult<bool>> FollowHashtagAsync(string tagname);
+        /// <param name="tagName">Tag name</param>
+        Task<IResult<bool>> FollowHashtagAsync(string tagName);
 
         /// <summary>
         ///     Get following hashtags information
@@ -28,22 +28,22 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <summary>
         ///     Gets the hashtag information by user tagname.
         /// </summary>
-        /// <param name="tagname">Tagname</param>
+        /// <param name="tagName">Tagname</param>
         /// <returns>Hashtag information</returns>
-        Task<IResult<ApiHashtag>> GetHashtagInfoAsync(string tagname);
+        Task<IResult<ApiHashtag>> GetHashtagInfoAsync(string tagName);
 
         /// <summary>
         ///     Get stories of an hashtag
         /// </summary>
-        /// <param name="tagname">Tag name</param>
-        Task<IResult<HashtagStory>> GetHashtagStoriesAsync(string tagname);
+        /// <param name="tagName">Tag name</param>
+        Task<IResult<HashtagStory>> GetHashtagStoriesAsync(string tagName);
 
         /// <summary>
         ///     Get recent hashtag media list
         /// </summary>
-        /// <param name="tagname">Tag name</param>
+        /// <param name="tagName">Tag name</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        Task<IResult<SectionMedia>> GetRecentHashtagMediaListAsync(string tagname, PaginationParameters paginationParameters);
+        Task<IResult<SectionMedia>> GetRecentHashtagMediaListAsync(string tagName, PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Get suggested hashtags
@@ -56,9 +56,9 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <summary>
         ///     Get top (ranked) hashtag media list
         /// </summary>
-        /// <param name="tagname">Tag name</param>
+        /// <param name="tagName">Tag name</param>
         /// <param name="paginationParameters">Pagination parameters: next id and max amount of pages to load</param>
-        Task<IResult<SectionMedia>> GetTopHashtagMediaListAsync(string tagname, PaginationParameters paginationParameters);
+        Task<IResult<SectionMedia>> GetTopHashtagMediaListAsync(string tagName, PaginationParameters paginationParameters);
 
         /// <summary>
         ///     Searches for specific hashtag by search query.

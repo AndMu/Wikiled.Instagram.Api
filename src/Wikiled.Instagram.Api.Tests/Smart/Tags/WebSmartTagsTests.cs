@@ -7,8 +7,9 @@ using Moq;
 using NUnit.Framework;
 using Wikiled.Common.Net.Client;
 using Wikiled.Instagram.Api.Smart.Data;
+using Wikiled.Instagram.Api.Smart.Tags;
 
-namespace Wikiled.Instagram.Api.Tests.Smart.Web
+namespace Wikiled.Instagram.Api.Tests.Smart.Tags
 {
     [TestFixture]
     public class WebSmartTagsTests

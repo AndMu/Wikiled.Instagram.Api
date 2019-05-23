@@ -671,8 +671,7 @@ namespace Wikiled.Instagram.Api.Logic
 
         public const string UserShoppableMedia = ApiSuffix + "/feed/user/{0}/shoppable_media/";
 
-        public const string CommerceProductInfo =
-            ApiSuffix + "/commerce/products/{0}/?media_id={1}&device_width={2}";
+        public const string CommerceProductInfo = ApiSuffix + "/commerce/products/{0}/?media_id={1}&device_width={2}";
 
         public const string GetTagInfo = ApiSuffix + "/tags/{0}/info/";
 

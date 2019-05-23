@@ -12,7 +12,8 @@ using Wikiled.Instagram.Api.Logic.Builder;
 using Wikiled.Instagram.Api.Serialization;
 using Wikiled.Instagram.Api.Smart;
 using Wikiled.Instagram.Api.Smart.Caption;
-using Wikiled.Instagram.Api.Smart.Web;
+using Wikiled.Instagram.Api.Smart.Location;
+using Wikiled.Instagram.Api.Smart.Tags;
 
 namespace Wikiled.Instagram.Api.Modules
 {

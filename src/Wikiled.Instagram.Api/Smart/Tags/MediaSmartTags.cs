@@ -1,14 +1,14 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Wikiled.Instagram.Api.Classes.Models.Hashtags;
 using Wikiled.Instagram.Api.Classes.Models.Media;
 using Wikiled.Instagram.Api.Smart.Caption;
 using Wikiled.Instagram.Api.Smart.Data;
 
-namespace Wikiled.Instagram.Api.Smart
+namespace Wikiled.Instagram.Api.Smart.Tags
 {
     public class MediaSmartTags : IMediaSmartTags
     {
@@ -25,7 +25,7 @@ namespace Wikiled.Instagram.Api.Smart
             this.smartTags = smartTags ?? throw new ArgumentNullException(nameof(smartTags));
         }
 
-        public async Task<HashTagData[]> Get(SectionMedia medias)
+        public Task<HashTagData[]> Get(SectionMedia medias)
         {
             log.LogDebug("Get tags from [{0}] posts", medias.Medias.Count);
             var table = new Dictionary<string, HashTagData>(StringComparer.OrdinalIgnoreCase);
@@ -40,37 +40,17 @@ namespace Wikiled.Instagram.Api.Smart
                 var smart = captionHandler.Extract(text);
                 foreach (HashTagData tag in smart.Tags.Where(x => !string.IsNullOrEmpty(x.Text)))
                 {
-                    table[tag.Tag] = tag;
-                }
-            }
-
-            log.LogInformation("Found [{0}] tags from media. Sending requests....", table.Count);
-            var tasks = new List<Task<HashTagData[]>>();
-            foreach (var tagData in table)
-            {
-                tasks.Add(smartTags.Get(tagData.Value));
-            }
-
-            foreach (var task in tasks)
-            {
-                try
-                {
-                    var result = await task.ConfigureAwait(false);
-                    foreach (var tagData in result)
+                    if (!table.ContainsKey(tag.Tag))
                     {
-                        if (table.ContainsKey(tagData.Tag))
-                        {
-                            table[tagData.Tag] = tagData;
-                        }
+                        tag.MediaCount = 0;
+                        table[tag.Tag] = tag;
                     }
-                }
-                catch (Exception e)
-                {
-                    log.LogError(e, "Processing");
+
+                    table[tag.Tag].MediaCount += 1;
                 }
             }
 
-            return table.Values.ToArray();
+            return Task.FromResult(table.Values.ToArray());
         }
     }
 }
