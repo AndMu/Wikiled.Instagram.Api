@@ -14,6 +14,8 @@ using Wikiled.Instagram.Api.Smart;
 using Wikiled.Instagram.Api.Smart.Caption;
 using Wikiled.Instagram.Api.Smart.Location;
 using Wikiled.Instagram.Api.Smart.Tags;
+using Wikiled.MachineLearning.Mathematics.Vectors;
+using Wikiled.Text.Analysis.Similarity;
 
 namespace Wikiled.Instagram.Api.Modules
 {
@@ -39,7 +41,13 @@ namespace Wikiled.Instagram.Api.Modules
             builder.RegisterType<CommonResilience>().As<IResilience>();
             builder.RegisterType<GenericClientFactory>().As<IGenericClientFactory>();
 
+            builder.RegisterType<SimilarityDetector>().As<ISimilarityDetector>();
+            builder.RegisterType<OneHotEncoder>().As<IWordVectorEncoder>();
+            builder.RegisterType<CosineSimilarityDistance>().As<IDistance>();
+
             builder.RegisterType<CaptionHandler>().As<ICaptionHandler>();
+            builder.RegisterType<SimilarMediaTags>().As<ISimilarMediaTags>();
+            
             builder.RegisterType<WebSmartTags>().Named<ISmartTags>("Web");
             builder.Register(ctx => new MediaSmartTags(ctx.Resolve<ILogger<MediaSmartTags>>(), ctx.Resolve<ICaptionHandler>(), ctx.ResolveNamed<ISmartTags>("Web"))).As<IMediaSmartTags>();
             builder.RegisterType<InstaSmartTags>().As<ISmartTags>();

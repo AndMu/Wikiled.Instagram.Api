@@ -25,11 +25,14 @@ namespace Wikiled.Instagram.Api.Smart
 
         private const int totalLocationTags = 3;
 
-        public TagEnricher(ILogger<TagEnricher> logger, ISmartTagsByLocation tagsByLocation, ISmartTags smartTags, ICaptionHandler captionHandler)
+        private ISimilarMediaTags similar;
+
+        public TagEnricher(ILogger<TagEnricher> logger, ISmartTagsByLocation tagsByLocation, ISmartTags smartTags, ICaptionHandler captionHandler, ISimilarMediaTags similar)
         {
             this.tagsByLocation = tagsByLocation ?? throw new ArgumentNullException(nameof(tagsByLocation));
             this.smartTags = smartTags ?? throw new ArgumentNullException(nameof(smartTags));
             this.captionHandler = captionHandler ?? throw new ArgumentNullException(nameof(captionHandler));
+            this.similar = similar;
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -46,6 +49,8 @@ namespace Wikiled.Instagram.Api.Smart
                 return captionHolder;
             }
 
+            var result = await similar.Get(captionHolder);
+
             var original = captionHolder.Tags.ToArray();
             var locationTags = await tagsByLocation.Get(message.Location).ConfigureAwait(false);
             foreach (var tag in locationTags.OrderByDescending(item => item.MediaCount).Take(totalLocationTags))
@@ -57,7 +62,7 @@ namespace Wikiled.Instagram.Api.Smart
 
                 captionHolder.AddTag(tag);
             }
-
+            
             var results = await GetMix(original, totalTags - locationTags.Length).ConfigureAwait(false);
             foreach (var data in results)
             {
@@ -83,6 +88,7 @@ namespace Wikiled.Instagram.Api.Smart
             }
 
             var tagsResults = new List<List<HashTagData>>();
+            
             foreach (var tag in tags)
             {
                 var result = await smartTags.Get(tag).ConfigureAwait(false);
