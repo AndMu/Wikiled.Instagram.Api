@@ -25,14 +25,11 @@ namespace Wikiled.Instagram.Api.Smart
 
         private const int totalLocationTags = 3;
 
-        private ISimilarMediaTags similar;
-
-        public TagEnricher(ILogger<TagEnricher> logger, ISmartTagsByLocation tagsByLocation, ISmartTags smartTags, ICaptionHandler captionHandler, ISimilarMediaTags similar)
+        public TagEnricher(ILogger<TagEnricher> logger, ISmartTagsByLocation tagsByLocation, ISmartTags smartTags, ICaptionHandler captionHandler)
         {
             this.tagsByLocation = tagsByLocation ?? throw new ArgumentNullException(nameof(tagsByLocation));
             this.smartTags = smartTags ?? throw new ArgumentNullException(nameof(smartTags));
             this.captionHandler = captionHandler ?? throw new ArgumentNullException(nameof(captionHandler));
-            this.similar = similar;
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -48,8 +45,6 @@ namespace Wikiled.Instagram.Api.Smart
                 logger.LogInformation("Found more than 20 tags on photo - ignoring it");
                 return captionHolder;
             }
-
-            var result = await similar.Get(captionHolder);
 
             var original = captionHolder.Tags.ToArray();
             var locationTags = await tagsByLocation.Get(message.Location).ConfigureAwait(false);
@@ -95,10 +90,10 @@ namespace Wikiled.Instagram.Api.Smart
                 result = result.Where(item => item.MediaCount.HasValue).ToArray();
                 if (result.Length > 0)
                 {
-                    //tagsResults.Insert(0, result.OrderBy(item => item.Rank).ToList());
+                    tagsResults.Insert(0, result.OrderBy(item => item.Rank).ToList());
                     tagsResults.Add(result.OrderByDescending(item => item.MediaCount).ToList());
-                    //var relevance = result.Average(item => item.Relevance);
-                    //tagsResults.Add(result.Where(item => item.Relevance > relevance).OrderByDescending(item => item.Rank).ToList());
+                    var relevance = result.Average(item => item.Relevance);
+                    tagsResults.Add(result.Where(item => item.Relevance > relevance).OrderByDescending(item => item.Rank).ToList());
                 }
             }
 

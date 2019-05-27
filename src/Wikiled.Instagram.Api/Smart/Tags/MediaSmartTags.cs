@@ -25,7 +25,7 @@ namespace Wikiled.Instagram.Api.Smart.Tags
             this.smartTags = smartTags ?? throw new ArgumentNullException(nameof(smartTags));
         }
 
-        public Task<HashTagData[]> Get(SectionMedia medias)
+        public async Task<HashTagData[]> Get(SectionMedia medias)
         {
             log.LogDebug("Get tags from [{0}] posts", medias.Medias.Count);
             var table = new Dictionary<string, HashTagData>(StringComparer.OrdinalIgnoreCase);
@@ -42,15 +42,33 @@ namespace Wikiled.Instagram.Api.Smart.Tags
                 {
                     if (!table.ContainsKey(tag.Tag))
                     {
-                        tag.MediaCount = 0;
                         table[tag.Tag] = tag;
+                        tag.MediaCount = 0;
                     }
 
                     table[tag.Tag].MediaCount += 1;
                 }
             }
 
-            return Task.FromResult(table.Values.ToArray());
+            log.LogInformation("Enriching {0} tags", table.Count);
+            foreach (var data in table.ToArray())
+            {
+                if (table[data.Key].MediaCount.HasValue)
+                {
+                    continue;
+                }
+
+                var result = await smartTags.Get(data.Value).ConfigureAwait(false);
+                foreach (var hashTagData in result)
+                {
+                    if (table.ContainsKey(hashTagData.Tag))
+                    {
+                        table[hashTagData.Tag] = hashTagData;
+                    }
+                }
+            }
+
+            return table.Values.ToArray();
         }
     }
 }

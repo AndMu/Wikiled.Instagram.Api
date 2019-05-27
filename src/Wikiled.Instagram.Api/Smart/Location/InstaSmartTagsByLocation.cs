@@ -39,8 +39,7 @@ namespace Wikiled.Instagram.Api.Smart.Location
                                               .ExecuteAsync(
                                                   () => ResultExtension.UnWrap(() => instagram.LocationProcessor.GetTopLocationFeedsAsync(location.Pk, PaginationParameters.MaxPagesToLoad(1)), log))
                                               .ConfigureAwait(false);
-                //return await smartTags.Get(topMedia).ConfigureAwait(false);
-                throw new NotImplementedException();
+                return await smartTags.Get(topMedia).ConfigureAwait(false);
             }
             catch (Exception e)
             {
