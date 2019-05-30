@@ -13,6 +13,9 @@ namespace Wikiled.Instagram.Api.Smart.Data
             Text = text?.ToLower() ?? throw new ArgumentNullException(nameof(text));
         }
 
+        public HashTagData()
+        { }
+
         public string Tag { get; }
 
         public string Text { get; }

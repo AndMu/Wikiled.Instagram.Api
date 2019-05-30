@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Wikiled.Common.Net.Client;
 using Wikiled.Instagram.Api.Smart.Data;
+using Wikiled.Instagram.Api.Smart.Helpers;
 using Wikiled.Instagram.Api.Smart.Tags;
 
 namespace Wikiled.Instagram.Api.Tests.Smart.Tags
@@ -20,10 +21,13 @@ namespace Wikiled.Instagram.Api.Tests.Smart.Tags
 
         private Mock<IResilientApiClient> client;
 
+        private Mock<ICachedCall> call;
+
         [SetUp]
         public void SetUp()
         {
             client = new Mock<IResilientApiClient>();
+            call = new Mock<ICachedCall>();
             clientFactory = new Mock<IGenericClientFactory>();
             clientFactory.Setup(item => item.ConstructResilient(It.IsAny<Uri>())).Returns(client.Object);
             instance = CreateManager();
@@ -33,15 +37,17 @@ namespace Wikiled.Instagram.Api.Tests.Smart.Tags
         public void Constructor()
         {
             Assert.Throws<ArgumentNullException>(
-                () => new WebSmartTags(null, clientFactory.Object));
+                () => new WebSmartTags(null, clientFactory.Object, call.Object));
             Assert.Throws<ArgumentNullException>(
-                () => new WebSmartTags(new NullLogger<WebSmartTags>(), null));
+                () => new WebSmartTags(new NullLogger<WebSmartTags>(), null, call.Object));
+            Assert.Throws<ArgumentNullException>(
+                () => new WebSmartTags(new NullLogger<WebSmartTags>(), clientFactory.Object, null));
         }
 
         [Test]
         public async Task GetSmart()
         {
-            client.Setup(item => item.GetRequest<SmartResults>("london", CancellationToken.None))
+            call.Setup(item => item.Get(It.IsAny<string>(), It.IsAny<Func<string, Task<SmartResults>>>(), It.IsAny<Func<string, string>>()))
                 .Returns(Task.FromResult(new SmartResults
                 {
                     Results = new List<SmartHashtagResult>(
@@ -53,7 +59,7 @@ namespace Wikiled.Instagram.Api.Tests.Smart.Tags
 
         private WebSmartTags CreateManager()
         {
-            return new WebSmartTags(new NullLogger<WebSmartTags>(), clientFactory.Object);
+            return new WebSmartTags(new NullLogger<WebSmartTags>(), clientFactory.Object, call.Object);
         }
     }
 }

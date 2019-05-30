@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Wikiled.Common.Net.Client;
 using Wikiled.Instagram.Api.Smart.Data;
+using Wikiled.Instagram.Api.Smart.Helpers;
 
 namespace Wikiled.Instagram.Api.Smart.Tags
 {
@@ -14,7 +15,9 @@ namespace Wikiled.Instagram.Api.Smart.Tags
 
         private readonly IResilientApiClient client;
 
-        public WebSmartTags(ILogger<WebSmartTags> logger, IGenericClientFactory clientFactory)
+        private readonly ICachedCall cached;
+
+        public WebSmartTags(ILogger<WebSmartTags> logger, IGenericClientFactory clientFactory, ICachedCall cached)
         {
             if (clientFactory == null)
             {
@@ -22,13 +25,17 @@ namespace Wikiled.Instagram.Api.Smart.Tags
             }
 
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.cached = cached ?? throw new ArgumentNullException(nameof(cached));
             client = clientFactory.ConstructResilient(new Uri("https://d212rkvo8t62el.cloudfront.net/tag/"));
         }
 
         public async Task<HashTagData[]> Get(HashTagData tag)
         {
             logger.LogDebug("Get Web Tags: {0}", tag);
-            var result = await client.GetRequest<SmartResults>($"{tag.Text}", CancellationToken.None).ConfigureAwait(false);
+            var result =
+                await cached
+                    .Get(tag.Text, arg => client.GetRequest<SmartResults>(arg, CancellationToken.None), arg => arg)
+                    .ConfigureAwait(false);
             return result.Results.Select(
                 item =>
                 {

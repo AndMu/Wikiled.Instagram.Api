@@ -53,7 +53,7 @@ namespace Wikiled.Instagram.Api.Smart.Tags
             log.LogInformation("Enriching {0} tags", table.Count);
             foreach (var data in table.ToArray())
             {
-                if (table[data.Key].MediaCount.HasValue)
+                if (table[data.Key].Rank.HasValue)
                 {
                     continue;
                 }

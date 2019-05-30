@@ -12,6 +12,7 @@ using Wikiled.Instagram.Api.Logic.Builder;
 using Wikiled.Instagram.Api.Serialization;
 using Wikiled.Instagram.Api.Smart;
 using Wikiled.Instagram.Api.Smart.Caption;
+using Wikiled.Instagram.Api.Smart.Helpers;
 using Wikiled.Instagram.Api.Smart.Location;
 using Wikiled.Instagram.Api.Smart.Tags;
 using Wikiled.MachineLearning.Mathematics.Vectors;
@@ -47,7 +48,9 @@ namespace Wikiled.Instagram.Api.Modules
 
             builder.RegisterType<CaptionHandler>().As<ICaptionHandler>();
             builder.RegisterType<SimilarMediaTags>().As<ISimilarMediaTags>();
-            
+
+            builder.RegisterType<FileCachedCall>().As<ICachedCall>();
+
             builder.RegisterType<WebSmartTags>().Named<ISmartTags>("Web");
             builder.Register(ctx => new MediaSmartTags(ctx.Resolve<ILogger<MediaSmartTags>>(), ctx.Resolve<ICaptionHandler>(), ctx.ResolveNamed<ISmartTags>("Web"))).As<IMediaSmartTags>();
             builder.RegisterType<InstaSmartTags>().As<ISmartTags>();
