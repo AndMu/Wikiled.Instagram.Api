@@ -23,12 +23,13 @@ namespace Wikiled.Instagram.Api.Converters.Business
                 UserId = user.InstagramUserId,
                 Username = user.Username
             };
-            if (user.BusinessProfile != null && user.BusinessProfile.Id != null)
+
+            if (user.BusinessProfile?.Id != null)
             {
                 statisfics.BusinessProfileId = user.BusinessProfile.Id;
             }
 
-            if (user.ProfilePicture != null && user.ProfilePicture.Uri != null)
+            if (user.ProfilePicture?.Uri != null)
             {
                 statisfics.ProfilePicture = user.ProfilePicture.Uri;
             }
@@ -37,120 +38,180 @@ namespace Wikiled.Instagram.Api.Converters.Business
 
             var businessManager = user.BusinessManager;
 
-            if (businessManager.PromotionsUnit != null && businessManager.PromotionsUnit.SummaryPromotions != null)
+            CheckPromotions(businessManager, statisfics);
+
+            CheckAccountSummary(businessManager, statisfics);
+
+            CheckStories(businessManager, statisfics);
+
+            CheckTopPosts(businessManager, statisfics);
+
+            CheckFollowers(businessManager, statisfics);
+
+            CheckAccountInsights(businessManager, statisfics);
+
+            return statisfics;
+        }
+
+        private static void CheckPromotions(InstaStatisticsBusinessManagerResponse businessManager, InstaStatistics statisfics)
+        {
+            if (businessManager.PromotionsUnit?.SummaryPromotions == null)
             {
-                try
-                {
-                    statisfics.BusinessManager.PromotionsUnit = new InstaStatisticsSummaryPromotions
-                    {
-                        Edges = businessManager.PromotionsUnit.SummaryPromotions.Edges
-                    };
-                }
-                catch
-                {
-                }
+                return;
             }
 
-            if (businessManager.AccountSummaryUnit != null && businessManager.AccountSummaryUnit != null)
+            try
             {
-                try
+                statisfics.BusinessManager.PromotionsUnit = new InstaStatisticsSummaryPromotions
                 {
-                    statisfics.BusinessManager.AccountSummaryUnit = new InstaStatisticsAccountSummaryUnit
-                    {
-                        FollowersCount = businessManager.AccountSummaryUnit.FollowersCount ?? 0,
-                        FollowersDeltaFromLastWeek =
-                            businessManager.AccountSummaryUnit.FollowersDeltaFromLastWeek ?? 0,
-                        PostsCount = businessManager.AccountSummaryUnit.PostsCount ?? 0,
-                        PostsDeltaFromLastWeek = businessManager.AccountSummaryUnit.PostsDeltaFromLastWeek ?? 0
-                    };
-                }
-                catch
-                {
-                }
+                    Edges = businessManager.PromotionsUnit.SummaryPromotions.Edges
+                };
+            }
+            catch
+            {
+            }
+        }
+
+        private static void CheckAccountSummary(InstaStatisticsBusinessManagerResponse businessManager, InstaStatistics statisfics)
+        {
+            if (businessManager.AccountSummaryUnit == null)
+            {
+                return;
             }
 
-            if (businessManager.StoriesUnit != null)
+            try
             {
-                try
+                statisfics.BusinessManager.AccountSummaryUnit = new InstaStatisticsAccountSummaryUnit
                 {
-                    var storyUnit = new InstaStatisticsStoriesUnit
+                    FollowersCount = businessManager.AccountSummaryUnit.FollowersCount ?? 0,
+                    FollowersDeltaFromLastWeek =
+                        businessManager.AccountSummaryUnit.FollowersDeltaFromLastWeek ?? 0,
+                    PostsCount = businessManager.AccountSummaryUnit.PostsCount ?? 0,
+                    PostsDeltaFromLastWeek = businessManager.AccountSummaryUnit.PostsDeltaFromLastWeek ?? 0
+                };
+            }
+            catch
+            {
+            }
+        }
+
+        private static void CheckAccountInsights(InstaStatisticsBusinessManagerResponse businessManager,
+                                                 InstaStatistics statisfics)
+        {
+            if (businessManager.AccountInsightsUnit == null)
+            {
+                return;
+            }
+
+            try
+            {
+                statisfics.BusinessManager.AccountInsightsUnit = new InstaStatisticsAccountInsightsUnit
+                {
+                    LastWeekCall = businessManager.AccountInsightsUnit.LastWeekCall ?? 0,
+                    LastWeekGetDirection = businessManager.AccountInsightsUnit.LastWeekGetDirection ?? 0,
+                    LastWeekImpressions = businessManager.AccountInsightsUnit.LastWeekImpressions ?? 0,
+                    LastWeekProfileVisits = businessManager.AccountInsightsUnit.LastWeekProfileVisits ?? 0,
+                    LastWeekReach = businessManager.AccountInsightsUnit.LastWeekReach ?? 0,
+                    LastWeekText = businessManager.AccountInsightsUnit.LastWeekText ?? 0,
+                    LastWeekWebsiteVisits = businessManager.AccountInsightsUnit.LastWeekWebsiteVisits ?? 0,
+                    LastWeekEmail = businessManager.AccountInsightsUnit.LastWeekWebsiteVisits ?? 0,
+                    WeekOverWeekCall = businessManager.AccountInsightsUnit.WeekOverWeekEmail ?? 0,
+                    WeekOverWeekEmail = businessManager.AccountInsightsUnit.WeekOverWeekEmail ?? 0,
+                    WeekOverWeekGetDirection =
+                        businessManager.AccountInsightsUnit.WeekOverWeekGetDirection ?? 0,
+                    WeekOverWeekImpressions = businessManager.AccountInsightsUnit.WeekOverWeekImpressions ?? 0,
+                    WeekOverWeekProfileVisits = businessManager.AccountInsightsUnit.WeekOverWeekReach ?? 0,
+                    WeekOverWeekReach = businessManager.AccountInsightsUnit.WeekOverWeekReach ?? 0,
+                    WeekOverWeekText = businessManager.AccountInsightsUnit.WeekOverWeekText ?? 0,
+                    WeekOverWeekWebsiteVisits =
+                        businessManager.AccountInsightsUnit.WeekOverWeekWebsiteVisits ?? 0
+                };
+
+                if (businessManager.AccountInsightsUnit.InstagramAccountInsightsChannel != null)
+                {
+                    try
                     {
-                        LastWeekStoriesCount = businessManager.StoriesUnit.LastWeekStoriesCount ?? 0,
-                        State = businessManager.StoriesUnit.State,
-                        WeekOverWeekStoriesDelta = businessManager.StoriesUnit.WeekOverWeekStoriesDelta ?? 0
-                    };
-                    if (businessManager.StoriesUnit.SummaryStories != null)
-                    {
-                        storyUnit.SummaryStories = new InstaStatisticsSummaryStories
-                        {
-                            Count = businessManager.StoriesUnit.SummaryStories.Count ?? 0,
-                            Edges = businessManager.StoriesUnit.SummaryStories.Edges
-                        };
+                        statisfics.BusinessManager.AccountInsightsUnit.InstagramAccountInsightsChannel =
+                            new InstaStatisticsInsightsChannel
+                            {
+                                ChannelId = businessManager
+                                    .AccountInsightsUnit.InstagramAccountInsightsChannel.ChannelId,
+                                Id = businessManager.AccountInsightsUnit.InstagramAccountInsightsChannel.Id,
+                                Tips = businessManager.AccountInsightsUnit.InstagramAccountInsightsChannel.Tips,
+                                UnseenCount = businessManager.AccountInsightsUnit.InstagramAccountInsightsChannel
+                                        .UnseenCount ??
+                                    0
+                            };
                     }
-
-                    statisfics.BusinessManager.StoriesUnit = storyUnit;
-                }
-                catch
-                {
-                }
-            }
-
-            if (businessManager.TopPostsUnit != null)
-            {
-                try
-                {
-                    statisfics.BusinessManager.TopPostsUnit = new InstaStatisticsTopPostsUnit
+                    catch
                     {
-                        LastWeekPostsCount = businessManager.TopPostsUnit.LastWeekPostsCount ?? 0,
-                        WeekOverWeekPostsDelta = businessManager.TopPostsUnit.WeekOverWeekPostsDelta ?? 0
-                    };
-                    if (businessManager.TopPostsUnit.SummaryPosts != null)
+                    }
+                }
+
+                if (businessManager.AccountInsightsUnit.AccountActionsLastWeekDailyGraph?.TotalCountGraph?.DataPoints !=
+                    null)
+                {
+                    foreach (var dataPoint in businessManager.AccountInsightsUnit.AccountActionsLastWeekDailyGraph
+                        .TotalCountGraph.DataPoints)
                     {
-                        foreach (var media in businessManager.TopPostsUnit.SummaryPosts.Edges)
+                        try
+                        {
+                            var convertedDataPoint = InstaConvertersFabric.Instance
+                                .GetStatisticsDataPointConverter(dataPoint)
+                                .Convert();
+                            statisfics.BusinessManager.AccountInsightsUnit.AccountActionsLastWeekDailyGraph.Add(
+                                convertedDataPoint);
+                        }
+                        catch
+                        {
+                        }
+                    }
+                }
+
+                if (businessManager.AccountInsightsUnit.AccountDiscoveryLastWeekDailyGraph?.Nodes != null)
+                {
+                    foreach (var node in businessManager.AccountInsightsUnit.AccountDiscoveryLastWeekDailyGraph
+                        .Nodes)
+                    {
+                        foreach (var dataPoint in node.DataPoints)
                         {
                             try
                             {
-                                var convertedMedia = InstaConvertersFabric.Instance.GetMediaShortConverter(media.Node)
+                                var convertedDataPoint = InstaConvertersFabric.Instance
+                                    .GetStatisticsDataPointConverter(dataPoint)
                                     .Convert();
-                                statisfics.BusinessManager.TopPostsUnit.SummaryPosts.Add(convertedMedia);
+                                statisfics.BusinessManager.AccountInsightsUnit.AccountDiscoveryLastWeekDailyGraph
+                                    .Add(convertedDataPoint);
                             }
                             catch
                             {
                             }
                         }
                     }
-
-                    if (businessManager.TopPostsUnit.TopPosts != null)
-                    {
-                        foreach (var media in businessManager.TopPostsUnit.TopPosts.Edges)
-                        {
-                            try
-                            {
-                                var convertedMedia = InstaConvertersFabric.Instance.GetMediaShortConverter(media.Node)
-                                    .Convert();
-                                statisfics.BusinessManager.TopPostsUnit.TopPosts.Add(convertedMedia);
-                            }
-                            catch
-                            {
-                            }
-                        }
-                    }
-                }
-                catch
-                {
                 }
             }
-
-            if (businessManager.FollowersUnit != null)
+            catch
             {
-                try
+            }
+        }
+
+        private static void CheckFollowers(InstaStatisticsBusinessManagerResponse businessManager, InstaStatistics statisfics)
+        {
+            if (businessManager.FollowersUnit == null)
+            {
+                return;
+            }
+
+            try
+            {
+                statisfics.BusinessManager.FollowersUnit = new InstaStatisticsFollowersUnit
                 {
-                    statisfics.BusinessManager.FollowersUnit = new InstaStatisticsFollowersUnit
-                    {
-                        FollowersUnitState = businessManager.FollowersUnit.FollowersUnitState,
-                        FollowersDeltaFromLastWeek =
-                            businessManager.FollowersUnit.FollowersDeltaFromLastWeek ?? default
-                    };
+                    FollowersUnitState = businessManager.FollowersUnit.FollowersUnitState,
+                    FollowersDeltaFromLastWeek = businessManager.FollowersUnit.FollowersDeltaFromLastWeek ?? default
+                };
+
+                if (businessManager.FollowersUnit.AllFollowersAgeGraph != null)
+                {
                     foreach (var dataPoint in businessManager.FollowersUnit.AllFollowersAgeGraph.DataPoints)
                     {
                         try
@@ -164,7 +225,10 @@ namespace Wikiled.Instagram.Api.Converters.Business
                         {
                         }
                     }
+                }
 
+                if (businessManager.FollowersUnit.DaysHourlyFollowersGraphs != null)
+                {
                     foreach (var graph in businessManager.FollowersUnit.DaysHourlyFollowersGraphs)
                     {
                         foreach (var dataPoint in graph.DataPoints)
@@ -182,7 +246,10 @@ namespace Wikiled.Instagram.Api.Converters.Business
                             }
                         }
                     }
+                }
 
+                if (businessManager.FollowersUnit.FollowersTopCitiesGraph != null)
+                {
                     foreach (var dataPoint in businessManager.FollowersUnit.FollowersTopCitiesGraph.DataPoints)
                     {
                         try
@@ -196,7 +263,10 @@ namespace Wikiled.Instagram.Api.Converters.Business
                         {
                         }
                     }
+                }
 
+                if (businessManager.FollowersUnit.FollowersTopCountriesGraph != null)
+                {
                     foreach (var dataPoint in businessManager.FollowersUnit.FollowersTopCountriesGraph.DataPoints)
                     {
                         try
@@ -210,7 +280,10 @@ namespace Wikiled.Instagram.Api.Converters.Business
                         {
                         }
                     }
+                }
 
+                if (businessManager.FollowersUnit.GenderGraph != null)
+                {
                     foreach (var dataPoint in businessManager.FollowersUnit.GenderGraph.DataPoints)
                     {
                         try
@@ -224,7 +297,10 @@ namespace Wikiled.Instagram.Api.Converters.Business
                         {
                         }
                     }
+                }
 
+                if (businessManager.FollowersUnit.MenFollowersAgeGraph != null)
+                {
                     foreach (var dataPoint in businessManager.FollowersUnit.MenFollowersAgeGraph.DataPoints)
                     {
                         try
@@ -238,7 +314,10 @@ namespace Wikiled.Instagram.Api.Converters.Business
                         {
                         }
                     }
+                }
 
+                if (businessManager.FollowersUnit.TodayHourlyGraph != null)
+                {
                     foreach (var dataPoint in businessManager.FollowersUnit.TodayHourlyGraph.DataPoints)
                     {
                         try
@@ -252,7 +331,10 @@ namespace Wikiled.Instagram.Api.Converters.Business
                         {
                         }
                     }
+                }
 
+                if (businessManager.FollowersUnit.WeekDailyFollowersGraph != null)
+                {
                     foreach (var dataPoint in businessManager.FollowersUnit.WeekDailyFollowersGraph.DataPoints)
                     {
                         try
@@ -266,7 +348,10 @@ namespace Wikiled.Instagram.Api.Converters.Business
                         {
                         }
                     }
+                }
 
+                if (businessManager.FollowersUnit.WomenFollowersAgeGraph != null)
+                {
                     foreach (var dataPoint in businessManager.FollowersUnit.WomenFollowersAgeGraph.DataPoints)
                     {
                         try
@@ -281,110 +366,92 @@ namespace Wikiled.Instagram.Api.Converters.Business
                         }
                     }
                 }
-                catch
-                {
-                }
+            }
+            catch
+            {
+            }
+        }
+
+        private static void CheckTopPosts(InstaStatisticsBusinessManagerResponse businessManager, InstaStatistics statisfics)
+        {
+            if (businessManager.TopPostsUnit == null)
+            {
+                return;
             }
 
-            if (businessManager.AccountInsightsUnit != null)
+            try
             {
-                try
+                statisfics.BusinessManager.TopPostsUnit = new InstaStatisticsTopPostsUnit
                 {
-                    statisfics.BusinessManager.AccountInsightsUnit = new InstaStatisticsAccountInsightsUnit
-                    {
-                        LastWeekCall = businessManager.AccountInsightsUnit.LastWeekCall ?? 0,
-                        LastWeekGetDirection = businessManager.AccountInsightsUnit.LastWeekGetDirection ?? 0,
-                        LastWeekImpressions = businessManager.AccountInsightsUnit.LastWeekImpressions ?? 0,
-                        LastWeekProfileVisits = businessManager.AccountInsightsUnit.LastWeekProfileVisits ?? 0,
-                        LastWeekReach = businessManager.AccountInsightsUnit.LastWeekReach ?? 0,
-                        LastWeekText = businessManager.AccountInsightsUnit.LastWeekText ?? 0,
-                        LastWeekWebsiteVisits = businessManager.AccountInsightsUnit.LastWeekWebsiteVisits ?? 0,
-                        LastWeekEmail = businessManager.AccountInsightsUnit.LastWeekWebsiteVisits ?? 0,
-                        WeekOverWeekCall = businessManager.AccountInsightsUnit.WeekOverWeekEmail ?? 0,
-                        WeekOverWeekEmail = businessManager.AccountInsightsUnit.WeekOverWeekEmail ?? 0,
-                        WeekOverWeekGetDirection =
-                            businessManager.AccountInsightsUnit.WeekOverWeekGetDirection ?? 0,
-                        WeekOverWeekImpressions = businessManager.AccountInsightsUnit.WeekOverWeekImpressions ?? 0,
-                        WeekOverWeekProfileVisits = businessManager.AccountInsightsUnit.WeekOverWeekReach ?? 0,
-                        WeekOverWeekReach = businessManager.AccountInsightsUnit.WeekOverWeekReach ?? 0,
-                        WeekOverWeekText = businessManager.AccountInsightsUnit.WeekOverWeekText ?? 0,
-                        WeekOverWeekWebsiteVisits =
-                            businessManager.AccountInsightsUnit.WeekOverWeekWebsiteVisits ?? 0
-                    };
-
-                    if (businessManager.AccountInsightsUnit.InstagramAccountInsightsChannel != null)
+                    LastWeekPostsCount = businessManager.TopPostsUnit.LastWeekPostsCount ?? 0,
+                    WeekOverWeekPostsDelta = businessManager.TopPostsUnit.WeekOverWeekPostsDelta ?? 0
+                };
+                if (businessManager.TopPostsUnit.SummaryPosts != null)
+                {
+                    foreach (var media in businessManager.TopPostsUnit.SummaryPosts.Edges)
                     {
                         try
                         {
-                            statisfics.BusinessManager.AccountInsightsUnit.InstagramAccountInsightsChannel =
-                                new InstaStatisticsInsightsChannel
-                                {
-                                    ChannelId = businessManager
-                                        .AccountInsightsUnit.InstagramAccountInsightsChannel.ChannelId,
-                                    Id = businessManager.AccountInsightsUnit.InstagramAccountInsightsChannel.Id,
-                                    Tips = businessManager.AccountInsightsUnit.InstagramAccountInsightsChannel.Tips,
-                                    UnseenCount = businessManager.AccountInsightsUnit.InstagramAccountInsightsChannel
-                                            .UnseenCount ??
-                                        0
-                                };
+                            var convertedMedia = InstaConvertersFabric.Instance.GetMediaShortConverter(media.Node)
+                                .Convert();
+                            statisfics.BusinessManager.TopPostsUnit.SummaryPosts.Add(convertedMedia);
                         }
                         catch
                         {
                         }
                     }
-
-                    if (businessManager.AccountInsightsUnit.AccountActionsLastWeekDailyGraph != null &&
-                        businessManager.AccountInsightsUnit.AccountActionsLastWeekDailyGraph.TotalCountGraph != null &&
-                        businessManager.AccountInsightsUnit.AccountActionsLastWeekDailyGraph.TotalCountGraph
-                            .DataPoints !=
-                        null)
-                    {
-                        foreach (var dataPoint in businessManager.AccountInsightsUnit.AccountActionsLastWeekDailyGraph
-                            .TotalCountGraph.DataPoints)
-                        {
-                            try
-                            {
-                                var convertedDataPoint = InstaConvertersFabric.Instance
-                                    .GetStatisticsDataPointConverter(dataPoint)
-                                    .Convert();
-                                statisfics.BusinessManager.AccountInsightsUnit.AccountActionsLastWeekDailyGraph.Add(
-                                    convertedDataPoint);
-                            }
-                            catch
-                            {
-                            }
-                        }
-                    }
-
-                    if (businessManager.AccountInsightsUnit.AccountDiscoveryLastWeekDailyGraph != null &&
-                        businessManager.AccountInsightsUnit.AccountDiscoveryLastWeekDailyGraph.Nodes != null)
-                    {
-                        foreach (var node in businessManager.AccountInsightsUnit.AccountDiscoveryLastWeekDailyGraph
-                            .Nodes)
-                        {
-                            foreach (var dataPoint in node.DataPoints)
-                            {
-                                try
-                                {
-                                    var convertedDataPoint = InstaConvertersFabric.Instance
-                                        .GetStatisticsDataPointConverter(dataPoint)
-                                        .Convert();
-                                    statisfics.BusinessManager.AccountInsightsUnit.AccountDiscoveryLastWeekDailyGraph
-                                        .Add(convertedDataPoint);
-                                }
-                                catch
-                                {
-                                }
-                            }
-                        }
-                    }
                 }
-                catch
+
+                if (businessManager.TopPostsUnit.TopPosts != null)
                 {
+                    foreach (var media in businessManager.TopPostsUnit.TopPosts.Edges)
+                    {
+                        try
+                        {
+                            var convertedMedia = InstaConvertersFabric.Instance.GetMediaShortConverter(media.Node)
+                                .Convert();
+                            statisfics.BusinessManager.TopPostsUnit.TopPosts.Add(convertedMedia);
+                        }
+                        catch
+                        {
+                        }
+                    }
                 }
             }
+            catch
+            {
+            }
+        }
 
-            return statisfics;
+        private static void CheckStories(InstaStatisticsBusinessManagerResponse businessManager, InstaStatistics statisfics)
+        {
+            if (businessManager.StoriesUnit == null)
+            {
+                return;
+            }
+
+            try
+            {
+                var storyUnit = new InstaStatisticsStoriesUnit
+                {
+                    LastWeekStoriesCount = businessManager.StoriesUnit.LastWeekStoriesCount ?? 0,
+                    State = businessManager.StoriesUnit.State,
+                    WeekOverWeekStoriesDelta = businessManager.StoriesUnit.WeekOverWeekStoriesDelta ?? 0
+                };
+                if (businessManager.StoriesUnit.SummaryStories != null)
+                {
+                    storyUnit.SummaryStories = new InstaStatisticsSummaryStories
+                    {
+                        Count = businessManager.StoriesUnit.SummaryStories.Count ?? 0,
+                        Edges = businessManager.StoriesUnit.SummaryStories.Edges
+                    };
+                }
+
+                statisfics.BusinessManager.StoriesUnit = storyUnit;
+            }
+            catch
+            {
+            }
         }
     }
 }

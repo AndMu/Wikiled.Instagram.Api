@@ -199,7 +199,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <summary>
         ///     Disable branded content approval
         /// </summary>
-        public Task<IResult<InstaBrandedContent>> DisbaleBrandedContentApprovalAsync()
+        public Task<IResult<InstaBrandedContent>> DisableBrandedContentApprovalAsync()
         {
             return UpdateBrandedContent(0);
         }

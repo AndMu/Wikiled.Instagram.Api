@@ -666,21 +666,17 @@ namespace Wikiled.Instagram.Api.Converters
             return new InstaUserContactConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaUserPresence, InstaUserPresenceResponse> GetSingleUserPresenceConverter(
-            InstaUserPresenceResponse response)
+        public IObjectConverter<InstaUserPresence, InstaUserPresenceResponse> GetSingleUserPresenceConverter(InstaUserPresenceResponse response)
         {
             return new InstaSingleUserPresenceConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaStatistics, InstaStatisticsRootResponse> GetStatisticsConverter(
-            InstaStatisticsRootResponse response)
+        public IObjectConverter<InstaStatistics, InstaStatisticsRootResponse> GetStatisticsConverter(InstaStatisticsRootResponse response)
         {
             return new InstaStatisticsConverter { SourceObject = response };
         }
 
-        public IObjectConverter<InstaStatisticsDataPointItem, InstaStatisticsDataPointItemResponse>
-            GetStatisticsDataPointConverter(
-                InstaStatisticsDataPointItemResponse response)
+        public IObjectConverter<InstaStatisticsDataPointItem, InstaStatisticsDataPointItemResponse> GetStatisticsDataPointConverter(InstaStatisticsDataPointItemResponse response)
         {
             return new InstaStatisticsDataPointConverter { SourceObject = response };
         }

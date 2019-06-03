@@ -30,9 +30,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         ///     Get suggested searches
         /// </summary>
         /// <param name="searchType">Search type(only blended and users works)</param>
-        Task<IResult<InstaDiscoverSuggestedSearches>> GetSuggestedSearchesAsync(
-            InstaDiscoverSearchType searchType =
-                InstaDiscoverSearchType.Users);
+        Task<IResult<InstaDiscoverSuggestedSearches>> GetSuggestedSearchesAsync(InstaDiscoverSearchType searchType = InstaDiscoverSearchType.Users);
 
         /// <summary>
         ///     Get top searches

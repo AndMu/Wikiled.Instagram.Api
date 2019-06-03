@@ -173,11 +173,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="InstaUserShortList" />
         /// </returns>
-        Task<IResult<InstaUserShortList>> GetUserFollowersAsync(
-            string username,
-            PaginationParameters paginationParameters,
-            string searchQuery = "",
-            bool mutualsfirst = false);
+        Task<IResult<InstaUserShortList>> GetUserFollowersAsync(string username, PaginationParameters paginationParameters, string searchQuery = "", bool mutualsfirst = false);
 
         /// <summary>
         ///     Get followers list by user id(pk) asynchronously
@@ -188,11 +184,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="InstaUserShortList" />
         /// </returns>
-        Task<IResult<InstaUserShortList>> GetUserFollowersByIdAsync(
-            long userId,
-            PaginationParameters paginationParameters,
-            string searchQuery = "",
-            bool mutualsfirst = false);
+        Task<IResult<InstaUserShortList>> GetUserFollowersByIdAsync(long userId, PaginationParameters paginationParameters, string searchQuery = "", bool mutualsfirst = false);
 
         /// <summary>
         ///     Get following list by username asynchronously
@@ -203,10 +195,7 @@ namespace Wikiled.Instagram.Api.Logic.Processors
         /// <returns>
         ///     <see cref="InstaUserShortList" />
         /// </returns>
-        Task<IResult<InstaUserShortList>> GetUserFollowingAsync(
-            string username,
-            PaginationParameters paginationParameters,
-            string searchQuery = "");
+        Task<IResult<InstaUserShortList>> GetUserFollowingAsync(string username, PaginationParameters paginationParameters, string searchQuery = "");
 
         /// <summary>
         ///     Get following list by user id(pk) asynchronously

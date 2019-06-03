@@ -25,6 +25,7 @@ namespace Wikiled.Instagram.App
             starter.LoggerFactory.AddNLog();
             starter.RegisterCommand<DiscoveryCommand, BasicConfig>("discovery");
             starter.RegisterCommand<EnrichCommand, EnrichConfig>("enrich");
+            starter.RegisterCommand<RemoveFollowersCommand, BasicConfig>("remove");
             source = new CancellationTokenSource();
             task = starter.StartAsync(source.Token);
             System.Console.WriteLine("Please press CTRL+C to break...");
