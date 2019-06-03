@@ -36,8 +36,7 @@ namespace Wikiled.Instagram.Api.Smart
         public async Task<SmartCaption> Enrich(InstaMedia message)
         {
             logger.LogInformation("Generating caption...");
-            //SmartCaption captionHolder = captionHandler.Extract(message.Caption?.Text);
-            SmartCaption captionHolder = captionHandler.Extract("Memories from Barcelona 🥰 #barcelona🇪🇸 #Spain #weekendgetaway #trip #travel");
+            SmartCaption captionHolder = captionHandler.Extract(message.Caption?.Text);
             logger.LogInformation("Found [{0}] tags in original caption", captionHolder.TotalTags);
 
             if (captionHolder.TotalTags > 20)
@@ -90,10 +89,7 @@ namespace Wikiled.Instagram.Api.Smart
                 result = result.Where(item => item.MediaCount.HasValue).ToArray();
                 if (result.Length > 0)
                 {
-                    tagsResults.Insert(0, result.OrderBy(item => item.Rank).ToList());
                     tagsResults.Add(result.OrderByDescending(item => item.MediaCount).ToList());
-                    var relevance = result.Average(item => item.Relevance);
-                    tagsResults.Add(result.Where(item => item.Relevance > relevance).OrderByDescending(item => item.Rank).ToList());
                 }
             }
 
