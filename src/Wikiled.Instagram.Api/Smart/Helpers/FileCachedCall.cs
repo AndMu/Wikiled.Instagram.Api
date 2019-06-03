@@ -47,7 +47,16 @@ namespace Wikiled.Instagram.Api.Smart.Helpers
 
             var result = await underlying(arg).ConfigureAwait(false);
             logger.LogInformation("Saving <{0}>", file);
-            await result.SerializeJsonZip(file).ConfigureAwait(false);
+            try
+            {
+                await result.SerializeJsonZip(file).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Error");
+                throw;
+            }
+            
             return result;
         }
     }
