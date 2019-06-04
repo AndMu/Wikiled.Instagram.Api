@@ -45,13 +45,22 @@ namespace Wikiled.Instagram.App.Commands
             var followersLookup = followers.Value.ToLookup(item => item.Pk);
 
             log.LogInformation("User is following {0} without feedback", followingLookup.Count(item => !followersLookup.Contains(item.Key)));
-            for (int i = config.From; i < config.To; i++)
+            int total = 0;
+            for (int i = config.From; i < config.To && i < following.Value.Count; i++)
             {
                 var user = following.Value[i];
                 if (!followersLookup.Contains(user.Pk))
                 {
-                    log.LogInformation("Unfollowing {0}", user.FullName);
-                    await instagram.UserProcessor.UnFollowUserAsync(user.Pk).ConfigureAwait(false);
+                    total++;
+                    var result = await instagram.UserProcessor.UnFollowUserAsync(user.Pk).ConfigureAwait(false);
+                    if (result.Succeeded)
+                    {
+                        log.LogInformation("Unfollowed ({1}) {0}", user.FullName, total);
+                    }
+                    else
+                    {
+                        log.LogInformation("Failed Unfollow: {0}", result.Info);
+                    }
                 }
             }
         }
