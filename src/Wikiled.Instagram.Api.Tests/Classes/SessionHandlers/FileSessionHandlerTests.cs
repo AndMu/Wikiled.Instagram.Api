@@ -3,6 +3,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.IO;
+using Wikiled.Common.Utilities.Auth;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.SessionHandlers;
 using Wikiled.Instagram.Api.Logic;
@@ -48,7 +49,9 @@ namespace Wikiled.Instagram.Api.Tests.Classes.SessionHandlers
             mockInstaApi.Setup(item => item.GetStateData()).Returns(data);
             instance = new FileSessionHandler(new NullLogger<FileSessionHandler>(),
                                               mockInstaApi.Object,
-                                              new EncryptedSerializer(new PlainSerializer(), mockInstaApi.Object));
+                                              new EncryptedSerializer(new PlainSerializer(),
+                                                                      mockInstaApi.Object,
+                                                                      new SimpleEncryptor()));
             instance.Save(newFile);
             data = null;
             var result = instance.Load(newFile);

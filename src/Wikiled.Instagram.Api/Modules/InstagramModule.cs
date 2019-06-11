@@ -4,6 +4,7 @@ using Autofac;
 using Microsoft.Extensions.Logging;
 using Wikiled.Common.Net.Client;
 using Wikiled.Common.Net.Resilience;
+using Wikiled.Common.Utilities.Auth;
 using Wikiled.Common.Utilities.Modules;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.SessionHandlers;
@@ -38,6 +39,8 @@ namespace Wikiled.Instagram.Api.Modules
         {
             builder.RegisterModule<LoggingModule>();
             builder.RegisterType<HttpClient>();
+            builder.RegisterType<SimpleEncryptor>().As<IEncryptor>();
+            
             builder.RegisterInstance(ResilienceConfig.GenerateCommon()).As<IResilienceConfig>();
             builder.RegisterType<CommonResilience>().As<IResilience>();
             builder.RegisterType<GenericClientFactory>().As<IGenericClientFactory>();
@@ -56,9 +59,8 @@ namespace Wikiled.Instagram.Api.Modules
             builder.RegisterType<InstaSmartTags>().As<ISmartTags>();
             builder.RegisterType<TagEnricher>().As<ITagEnricher>();
             builder.RegisterType<InstaSmartTagsByLocation>().As<ISmartTagsByLocation>();
-            builder.RegisterType<PlainSerializer>().Named<ISerializer>("Plain");
-            builder.Register(ctx => new EncryptedSerializer(ctx.ResolveNamed<ISerializer>("Plain"), ctx.Resolve<IInstaApi>()))
-                .As<ISerializer>();
+            builder.RegisterType<PlainSerializer>().As<ISerializer>();
+            builder.RegisterDecorator<EncryptedSerializer, ISerializer>();
             builder.RegisterType<FileSessionHandler>().As<ISessionHandler>();
             builder.RegisterInstance(new UserSessionData { UserName = user, Password = password });
             builder.Register(

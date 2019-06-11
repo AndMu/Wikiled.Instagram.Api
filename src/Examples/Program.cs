@@ -4,6 +4,7 @@ using NLog.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Wikiled.Common.Utilities.Auth;
 using Wikiled.Instagram.Api.Classes;
 using Wikiled.Instagram.Api.Classes.SessionHandlers;
 using Wikiled.Instagram.Api.Logic;
@@ -55,7 +56,10 @@ namespace Examples
 
                 var session = new FileSessionHandler(loggerFactory.CreateLogger<FileSessionHandler>(),
                                                      api,
-                                                     new EncryptedSerializer(new PlainSerializer(), api));
+                                                     new EncryptedSerializer(
+                                                         new PlainSerializer(),
+                                                         api,
+                                                         new SimpleEncryptor()));
                 // create account
                 // to create new account please check this:
                 // https://github.com/ramtinak/InstagramApiSharp/wiki/Create-new-account
