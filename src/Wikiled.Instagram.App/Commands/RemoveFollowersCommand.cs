@@ -61,7 +61,6 @@ namespace Wikiled.Instagram.App.Commands
                 {
                     total++;
                     var result = await instagram.UserProcessor.UnFollowUserAsync(user.Pk).ConfigureAwait(false);
-                    //result = await instagram.UserProcessor.FollowUserAsync(user.Pk).ConfigureAwait(false);
                     if (result.Succeeded)
                     {
                         log.LogInformation("Unfollowed ({1}) {0}", user.FullName, total);
